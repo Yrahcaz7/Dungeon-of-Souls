@@ -1,7 +1,7 @@
 var canvas;
 var ctx;
 
-function retrieveCanvasData() {
+function canvasData() {
 	let canv = document.getElementById("canvas");
 	if (canv === undefined || canv === null) return false;
 	canvas = canv;
