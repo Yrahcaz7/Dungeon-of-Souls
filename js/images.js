@@ -54,15 +54,49 @@ function spawnEnemies() {
 		if (enemy[0] == 'slime') ctx.drawImage(slime, Math.floor(animframe[a]) * 64, 0, 64, 64, x, y, 64, 64);
 		if (enemy[0] == 'smallSlime') ctx.drawImage(smallSlime, Math.floor(animframe[a]) * 64, 0, 64, 64, x, y, 64, 64);
 		animframe[a] += (Math.random() + 0.5) * 0.1;
-		percentage = enemy[2] / enemy[1] * 100;
+		percentage = enemy[1] / enemy[2] * 100;
 		if (percentage < 0) frame = 0;
 		else if (percentage > 100) frame = 62;
 		else frame = percentage * 0.62;
 		ctx.drawImage(healthBar, 0, Math.round(frame) * 11, 64, 12, x, y + 64, 64, 12);
-		drawNumber(x + 10, y + 66, enemy[2]);
+		drawNumber(x + 25, y + 66, enemy[1], 'left');
+		drawNumber(x + 34, y + 66, enemy[2], 'right');
 	};
 };
 
-function drawNumber(x, y, num) {
-	ctx.drawImage(numbers, Math.round(num) * 6, 0, 5, 8, x, y, 5, 8);
+function drawNumber(x, y, num, position = 'right') {
+	num = Math.round(num);
+	if (position == 'right') {
+		if (num >= 1000) {
+			ctx.drawImage(numbers, Math.floor(num / 1000) * 6, 0, 5, 8, x, y, 5, 8);
+			ctx.drawImage(numbers, Math.floor(num / 100 % 10) * 6, 0, 5, 8, x + 6, y, 5, 8);
+			ctx.drawImage(numbers, Math.floor(num / 10 % 10) * 6, 0, 5, 8, x + 12, y, 5, 8);
+			ctx.drawImage(numbers, num % 10 * 6, 0, 5, 8, x + 18, y, 5, 8);
+		} else if (num >= 100) {
+			ctx.drawImage(numbers, Math.floor(num / 100) * 6, 0, 5, 8, x, y, 5, 8);
+			ctx.drawImage(numbers, Math.floor(num / 10 % 10) * 6, 0, 5, 8, x + 6, y, 5, 8);
+			ctx.drawImage(numbers, num % 10 * 6, 0, 5, 8, x + 12, y, 5, 8);
+		} else if (num >= 10) {
+			ctx.drawImage(numbers, Math.floor(num / 10) * 6, 0, 5, 8, x, y, 5, 8);
+			ctx.drawImage(numbers, num % 10 * 6, 0, 5, 8, x + 6, y, 5, 8);
+		} else {
+			ctx.drawImage(numbers, num * 6, 0, 5, 8, x, y, 5, 8);
+		};
+	} else if (position == 'left') {
+		if (num >= 1000) {
+			ctx.drawImage(numbers, Math.floor(num / 1000) * 6, 0, 5, 8, x - 18, y, 5, 8);
+			ctx.drawImage(numbers, Math.floor(num / 100 % 10) * 6, 0, 5, 8, x - 12, y, 5, 8);
+			ctx.drawImage(numbers, Math.floor(num / 10 % 10) * 6, 0, 5, 8, x - 6, y, 5, 8);
+			ctx.drawImage(numbers, num % 10 * 6, 0, 5, 8, x, y, 5, 8);
+		} else if (num >= 100) {
+			ctx.drawImage(numbers, Math.floor(num / 100) * 6, 0, 5, 8, x - 12, y, 5, 8);
+			ctx.drawImage(numbers, Math.floor(num / 10 % 10) * 6, 0, 5, 8, x - 6, y, 5, 8);
+			ctx.drawImage(numbers, num % 10 * 6, 0, 5, 8, x, y, 5, 8);
+		} else if (num >= 10) {
+			ctx.drawImage(numbers, Math.floor(num / 10) * 6, 0, 5, 8, x - 6, y, 5, 8);
+			ctx.drawImage(numbers, num % 10 * 6, 0, 5, 8, x, y, 5, 8);
+		} else {
+			ctx.drawImage(numbers, num * 6, 0, 5, 8, x, y, 5, 8);
+		};
+	};
 };
