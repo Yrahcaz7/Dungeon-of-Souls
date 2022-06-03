@@ -1,6 +1,6 @@
 const slime = new Image;
 
-slime.src = "Slime-Sheet.png";
+slime.src = "images/Slime.png";
 
 function spawnSlime(x, y, frame) {
 	ctx.mozImageSmoothingEnabled = false;
