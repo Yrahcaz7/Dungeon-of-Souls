@@ -2,7 +2,7 @@ var game = {
     tickspeed: 100,
     health: 100,
     floor: 1,
-    inBattle: false,
+    state: 'enter',
     enemies: [],
 };
 
@@ -15,9 +15,14 @@ function hardReset() {
 const gameloop = setInterval(function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (game.floor == 1) {
-        if (!game.inBattle) {
-            game.enemies.push(['slime', 20, 20]);
-            game.inBattle = true;
+        if (game.state=='enter') {
+            game.enemies.push(['smallSlime', 20, 20]);
+            game.state = 'battle';
+        };
+    } else if (game.floor == 2) {
+        if (game.state=='enter') {
+            game.enemies.push(['slime', 30, 30]);
+            game.state = 'battle';
         };
     };
     spawnEnemies();

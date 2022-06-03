@@ -1,10 +1,14 @@
 const slime = new Image;
 
+const smallSlime = new Image;
+
 const healthBar = new Image;
 
-var slimeFrame = [0, 1, 2, 3];
+var animframe = [0, 1, 2, 3];
 
 slime.src = "images/slime.png";
+
+smallSlime.src = "images/smallSlime.png";
 
 healthBar.src = "images/healthBar.png";
 
@@ -48,17 +52,16 @@ function spawnEnemies() {
 				y = 5;
 			};
 		};
-		if (enemy[0] == 'slime') {
-			spawnSlime(x, y, a);
-			drawHealth(x, y + 64, enemy[2] / enemy[1] * 100);
-		};
+		spawnEnemy(x, y, enemy[0], a);
+		drawHealth(x, y + 64, enemy[2] / enemy[1] * 100);
 	};
 };
 
-function spawnSlime(x, y, num) {
-	if (slimeFrame[num] >= 4) slimeFrame[num] = 0;
-	ctx.drawImage(slime, Math.floor(slimeFrame[num]) * 64, 0, 64, 64, x, y, 64, 64);
-	slimeFrame[num] += (Math.random() + 0.5) * 0.1;
+function spawnEnemy(x, y, type, num) {
+	if (animframe[num] >= 4) animframe[num] = 0;
+	if (type == 'slime') ctx.drawImage(slime, Math.floor(animframe[num]) * 64, 0, 64, 64, x, y, 64, 64);
+	if (type == 'smallSlime') ctx.drawImage(smallSlime, Math.floor(animframe[num]) * 64, 0, 64, 64, x, y, 64, 64);
+	animframe[num] += (Math.random() + 0.5) * 0.1;
 };
 
 function drawHealth(x, y, percentage) {
