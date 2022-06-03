@@ -14,7 +14,7 @@ function retrieveCanvasData() {
 function resizeCanvas() {
 	if (!retrieveCanvasData()) return;
 	canvas.width = 0;
-    canvas.height = 0;
-	canvas.width  = window.innerWidth;
+	canvas.height = 0;
+	canvas.width = window.innerWidth;
 	canvas.height = window.innerHeight;
 };
