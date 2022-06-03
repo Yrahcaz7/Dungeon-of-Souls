@@ -6,6 +6,12 @@ var game = {
     enemies: [],
 };
 
+function hardReset() {
+    localStorage.removeItem('Yrahcaz7/Dungeon-of-Souls/save');
+    game = null;
+    location.reload();
+};
+
 const gameloop = setInterval(function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (game.floor == 1) {
