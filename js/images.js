@@ -1,8 +1,4 @@
-const slime = new Image;
-
-const smallSlime = new Image;
-
-const healthBar = new Image;
+const slime = new Image, smallSlime = new Image, healthBar = new Image, numbers = new Image;
 
 var animframe = [0, 1, 2, 3];
 
@@ -11,6 +7,8 @@ slime.src = "images/slime.png";
 smallSlime.src = "images/smallSlime.png";
 
 healthBar.src = "images/healthBar.png";
+
+numbers.src = "images/numbers.png";
 
 function spawnEnemies() {
 	for (let a = 0; a < game.enemies.length; a++) {
@@ -60,6 +58,11 @@ function spawnEnemies() {
 		if (percentage < 0) frame = 0;
 		else if (percentage > 100) frame = 62;
 		else frame = percentage * 0.62;
-		ctx.drawImage(healthBar, 0, Math.round(frame) * 11 - 10, 64, 12, x, y + 64, 64, 12);
+		ctx.drawImage(healthBar, 0, Math.round(frame) * 11, 64, 12, x, y + 64, 64, 12);
+		drawNumber(x + 10, y + 66, enemy[2]);
 	};
+};
+
+function drawNumber(x, y, num) {
+	ctx.drawImage(numbers, Math.round(num) * 6, 0, 5, 8, x, y, 5, 8);
 };
