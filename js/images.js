@@ -2,7 +2,7 @@ const slime = new Image;
 
 const healthBar = new Image;
 
-var slimeFrame = 0;
+var slimeFrame = [0, 1, 2, 3];
 
 slime.src = "images/slime.png";
 
@@ -49,16 +49,16 @@ function spawnEnemies() {
 			};
 		};
 		if (enemy[0] == 'slime') {
-			spawnSlime(x, y);
+			spawnSlime(x, y, a);
 			drawHealth(x, y + 64, enemy[2] / enemy[1] * 100);
 		};
 	};
 };
 
-function spawnSlime(x, y) {
-	if (slimeFrame >= 4) slimeFrame = 0;
-	ctx.drawImage(slime, Math.floor(slimeFrame) * 64, 0, 64, 64, x, y, 64, 64);
-	slimeFrame += 0.1;
+function spawnSlime(x, y, num) {
+	if (slimeFrame[num] >= 4) slimeFrame[num] = 0;
+	ctx.drawImage(slime, Math.floor(slimeFrame[num]) * 64, 0, 64, 64, x, y, 64, 64);
+	slimeFrame[num] += (Math.random() + 0.5) * 0.1;
 };
 
 function drawHealth(x, y, percentage) {
