@@ -1,20 +1,20 @@
-const slime = new Image, smallSlime = new Image, // monsters
+const slime_big = new Image, slime_small = new Image, // monsters
 
 background = new Image, clock = new Image, // backrounds
 
-healthBar = new Image, letters_black = new Image, letters_red = new Image, view = new Image; // other
+health_bar = new Image, letters_black = new Image, letters_red = new Image, view = new Image; // other
 
 var backAnim = [0, "up"], enemyAnim = [0, 1, 2, 3];
 
-slime.src = "images/slime.png";
+slime_big.src = "images/slime_big.png";
 
-smallSlime.src = "images/smallSlime.png";
+slime_small.src = "images/slime_small.png";
 
 background.src = "images/background.png";
 
 clock.src = "images/clock.png";
 
-healthBar.src = "images/healthBar.png";
+health_bar.src = "images/health_bar.png";
 
 letters_black.src = "images/letters_black.png";
 
@@ -75,17 +75,17 @@ function spawnEnemies() {
 			};
 		};
 		if (enemyAnim[a] >= 4) enemyAnim[a] = 0;
-		if (enemy[0] == "slime") {
-			ctx.drawImage(slime, Math.floor(enemyAnim[a]) * 64, 0, 64, 64, x, y, 64, 64);
-		} else if (enemy[0] == "smallSlime") {
-			ctx.drawImage(smallSlime, Math.floor(enemyAnim[a]) * 64, 0, 64, 64, x, y, 64, 64);
+		if (enemy[0] == "slime_big") {
+			ctx.drawImage(slime_big, Math.floor(enemyAnim[a]) * 64, 0, 64, 64, x, y, 64, 64);
+		} else if (enemy[0] == "slime_small") {
+			ctx.drawImage(slime_small, Math.floor(enemyAnim[a]) * 64, 0, 64, 64, x, y, 64, 64);
 		};
 		enemyAnim[a] += (Math.random() + 0.5) * 0.1;
 		percentage = enemy[1] / enemy[2];
 		if (percentage < 0) frame = 0;
 		else if (percentage > 1) frame = 62;
 		else frame = percentage * 62;
-		ctx.drawImage(healthBar, 0, Math.round(frame) * 11, 64, 12, x, y + 64, 64, 12);
+		ctx.drawImage(health_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 64, 64, 12);
 		drawLore(x + 25, y + 66, enemy[1], "black", "left");
 		drawLore(x + 34, y + 66, enemy[2], "black", "right");
 	};

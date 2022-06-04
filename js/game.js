@@ -17,12 +17,12 @@ const gameloop = setInterval(function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (game.floor == 1) {
         if (game.state=="enter") {
-            game.enemies.push(["smallSlime", 20, 20]);
+            game.enemies.push(["slime_small", 20, 20]);
             game.state = "battle";
         };
     } else if (game.floor == 2) {
         if (game.state=="enter") {
-            game.enemies.push(["slime", 30, 30]);
+            game.enemies.push(["slime_big", 30, 30]);
             game.state = "battle";
         };
     };
