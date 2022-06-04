@@ -4,6 +4,7 @@ var game = {
     floor: 1,
     state: 'enter',
     enemies: [],
+    hiddenEnemies: [],
 };
 
 function hardReset() {

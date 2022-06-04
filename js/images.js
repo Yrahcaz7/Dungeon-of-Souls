@@ -1,4 +1,4 @@
-const slime = new Image, smallSlime = new Image, healthBar = new Image, numbers = new Image, background = new Image;
+const slime = new Image, smallSlime = new Image, healthBar = new Image, numbers = new Image, view = new Image;
 
 var animframe = [0, 1, 2, 3];
 
@@ -10,10 +10,15 @@ healthBar.src = "images/healthBar.png";
 
 numbers.src = "images/numbers.png";
 
-background.src = "images/background.png";
+view.src = "images/view.png";
 
 function spawnEnemies() {
-	ctx.drawImage(background, 0, 0);
+	if (game.enemies.length > 4) {
+		for (let a = 4; a < game.enemies.length; a++) {
+			game.hiddenEnemies[a - 4] = game.enemies[a];
+			game.enemies.splice(a, 1);
+		};
+	};
 	for (let a = 0; a < game.enemies.length; a++) {
 		enemy = game.enemies[a];
 		if (game.enemies.length == 1) {
@@ -65,6 +70,7 @@ function spawnEnemies() {
 		drawNumber(x + 25, y + 66, enemy[1], 'left');
 		drawNumber(x + 34, y + 66, enemy[2], 'right');
 	};
+	ctx.drawImage(view, 0, 0);
 };
 
 function drawNumber(x, y, num, position = 'right') {
