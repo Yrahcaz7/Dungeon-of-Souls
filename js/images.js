@@ -1,4 +1,4 @@
-const slime = new Image, smallSlime = new Image, healthBar = new Image, numbers = new Image;
+const slime = new Image, smallSlime = new Image, healthBar = new Image, numbers = new Image, background = new Image;
 
 var animframe = [0, 1, 2, 3];
 
@@ -10,7 +10,10 @@ healthBar.src = "images/healthBar.png";
 
 numbers.src = "images/numbers.png";
 
+background.src = "images/background.png";
+
 function spawnEnemies() {
+	ctx.drawImage(background, 0, 0);
 	for (let a = 0; a < game.enemies.length; a++) {
 		enemy = game.enemies[a];
 		if (game.enemies.length == 1) {
