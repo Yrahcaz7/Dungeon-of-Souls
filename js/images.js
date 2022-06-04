@@ -1,10 +1,12 @@
 const slime_big = new Image, slime_small = new Image, // monsters
 
-background = new Image, floating_arch = new Image, clock = new Image, // backrounds
+background = new Image, floating_arch = new Image, // backrounds
+
+clock_face = new Image, clock_hour_hand = new Image, clock_min_hand = new Image, // the clock
 
 health_bar = new Image, letters_black = new Image, letters_red = new Image, view = new Image; // other
 
-var backAnim = [0, "up", 0.5, "down"], enemyAnim = [0, 1, 2, 3];
+var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1, 2, 3];
 
 slime_big.src = "images/slime_big.png";
 
@@ -14,7 +16,11 @@ background.src = "images/background.png";
 
 floating_arch.src = "images/floating_arch.png";
 
-clock.src = "images/clock.png";
+clock_face.src = "images/clock_face.png";
+
+clock_hour_hand.src = "images/clock_hour_hand.png";
+
+clock_min_hand.src = "images/clock_min_hand.png";
 
 health_bar.src = "images/health_bar.png";
 
@@ -27,7 +33,9 @@ view.src = "images/view.png";
 function spawnEnemies() {
 	ctx.drawImage(background, 0, 0);
 	ctx.drawImage(floating_arch, 86, 10 - Math.round(backAnim[0]));
-	ctx.drawImage(clock, 120, 28 - Math.round(backAnim[2]));
+	ctx.drawImage(clock_face, 120, 28 - Math.round(backAnim[2]));
+	ctx.drawImage(clock_hour_hand, 133, 41 - Math.round(backAnim[2]));
+	ctx.drawImage(clock_min_hand, 129, 37 - Math.round(backAnim[2]));
 	if (backAnim[0] >= 1) backAnim[1] = "down";
 	else if (backAnim[0] <= -1) backAnim[1] = "up";
 	if (backAnim[1] == "up") backAnim[0] += (Math.random() + 0.5) * 0.075;
