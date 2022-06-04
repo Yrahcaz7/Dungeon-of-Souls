@@ -24,7 +24,7 @@ view.src = "images/view.png";
 
 function spawnEnemies() {
 	ctx.drawImage(background, 0, 0);
-	ctx.drawImage(clock, 122, 28 - Math.round(backAnim[0]));
+	ctx.drawImage(clock, 120, 28 - Math.round(backAnim[0]));
 	if (backAnim[0] >= 1) backAnim[1] = "down";
 	else if (backAnim[0] <= -1) backAnim[1] = "up";
 	if (backAnim[1] == "up") backAnim[0] += (Math.random() + 0.5) * 0.075;
