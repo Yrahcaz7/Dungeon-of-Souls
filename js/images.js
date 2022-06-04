@@ -4,7 +4,7 @@ background = new Image, clock = new Image, // backrounds
 
 healthBar = new Image, numbers = new Image, view = new Image; // other
 
-var enemyAnim = [0, 1, 2, 3];
+var backAnim = [0, "up"], enemyAnim = [0, 1, 2, 3];
 
 slime.src = "images/slime.png";
 
@@ -22,7 +22,11 @@ view.src = "images/view.png";
 
 function spawnEnemies() {
 	ctx.drawImage(background, 0, 0);
-	ctx.drawImage(clock, 122, 28);
+	ctx.drawImage(clock, 122, 28 - Math.round(backAnim[0]));
+	if (backAnim[0] >= 1) backAnim[1] = "down";
+	else if (backAnim[0] <= -1) backAnim[1] = "up";
+	if (backAnim[1] == "up") backAnim[0] += (Math.random() + 0.5) * 0.075;
+	else if (backAnim[1] == "down") backAnim[0] -= (Math.random() + 0.5) * 0.075;
 	if (game.enemies.length > 4) {
 		for (let a = 4; a < game.enemies.length; a++) {
 			game.hiddenEnemies[a - 4] = game.enemies[a];
