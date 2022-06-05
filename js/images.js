@@ -6,7 +6,7 @@ clock_face = new Image, clock_hour_hand = new Image, clock_min_hand = new Image,
 
 health_bar = new Image, letters_black = new Image, letters_red = new Image, view = new Image; // other
 
-var backAnim = [0, "up", 0.5, "down", Math.round(Math.random() * 80), Math.round(Math.random() * 80)], enemyAnim = [0, 1, 2, 3];
+var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1, 2, 3];
 
 slime_big.src = "images/slime_big.png";
 
@@ -30,12 +30,19 @@ letters_red.src = "images/letters_red.png";
 
 view.src = "images/view.png";
 
+const HourConvert = 81 / 12, // number of frames divided by number of hours on a clock (12)
+
+MinConvert = 79 / 60; // number of frames divided by number of minutes in an hour
+
 function spawnEnemies() {
+	now = new Date(Date.now());
+	time = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()];
+	if (time[0] >= 12) time[0] = time[0] - 12;
 	ctx.drawImage(background, 0, 0);
 	ctx.drawImage(floating_arch, 86, 10 - Math.round(backAnim[0]));
 	ctx.drawImage(clock_face, 120, 28 - Math.round(backAnim[2]));
-	ctx.drawImage(clock_hour_hand, Math.floor(backAnim[5]) * 24, 0, 24, 24, 138, 46 - Math.round(backAnim[2]), 24, 24);
-	ctx.drawImage(clock_min_hand, Math.floor(backAnim[4]) * 34, 0, 34, 34, 133, 41 - Math.round(backAnim[2]), 34, 34);
+	ctx.drawImage(clock_hour_hand, Math.floor((time[0] + (time[1] / 60)) * HourConvert) * 24, 0, 24, 24, 138, 46 - Math.round(backAnim[2]), 24, 24);
+	ctx.drawImage(clock_min_hand, Math.floor((time[1] + (time[2] / 60)) * MinConvert) * 34, 0, 34, 34, 133, 41 - Math.round(backAnim[2]), 34, 34);
 	if (backAnim[0] >= 1) backAnim[1] = "down";
 	else if (backAnim[0] <= -1) backAnim[1] = "up";
 	if (backAnim[1] == "up") backAnim[0] += (Math.random() + 0.5) * 0.075;
@@ -44,10 +51,6 @@ function spawnEnemies() {
 	else if (backAnim[2] <= -1) backAnim[3] = "up";
 	if (backAnim[3] == "up") backAnim[2] += (Math.random() + 0.5) * 0.075;
 	else if (backAnim[3] == "down") backAnim[2] -= (Math.random() + 0.5) * 0.075;
-	if (backAnim[4] >= 79) backAnim[4] = 0;
-	if (backAnim[5] >= 81) backAnim[5] = 0;
-	backAnim[4] += 1;
-	backAnim[5] += 1 / 60;
 	if (game.enemies.length > 4) {
 		for (let a = 4; a < game.enemies.length; a++) {
 			game.hiddenEnemies[a - 4] = game.enemies[a];
