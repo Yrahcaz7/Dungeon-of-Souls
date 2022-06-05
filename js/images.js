@@ -129,7 +129,7 @@ function renderRoom() {
 	drawLore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
-function startEnemyAnimation(index, type) {
+function startEnemyAnim(index, type) {
 	if (type === null || index === null || type === undefined || index === undefined) return;
 	tempAnim = [0, type, "normal", index];
 	if (type == "slime_small_launch") {
