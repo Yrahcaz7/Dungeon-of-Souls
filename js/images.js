@@ -35,7 +35,7 @@ function spawnEnemies() {
 	ctx.drawImage(floating_arch, 86, 10 - Math.round(backAnim[0]));
 	ctx.drawImage(clock_face, 120, 28 - Math.round(backAnim[2]));
 	ctx.drawImage(clock_hour_hand, Math.floor(backAnim[5]) * 24, 0, 24, 24, 138, 46 - Math.round(backAnim[2]), 24, 24);
-	ctx.drawImage(clock_min_hand, 133, 41 - Math.round(backAnim[2]));
+	ctx.drawImage(clock_min_hand, Math.floor(backAnim[4]) * 34, 0, 34, 34, 133, 41 - Math.round(backAnim[2]), 34, 34);
 	if (backAnim[0] >= 1) backAnim[1] = "down";
 	else if (backAnim[0] <= -1) backAnim[1] = "up";
 	if (backAnim[1] == "up") backAnim[0] += (Math.random() + 0.5) * 0.075;
@@ -44,7 +44,7 @@ function spawnEnemies() {
 	else if (backAnim[2] <= -1) backAnim[3] = "up";
 	if (backAnim[3] == "up") backAnim[2] += (Math.random() + 0.5) * 0.075;
 	else if (backAnim[3] == "down") backAnim[2] -= (Math.random() + 0.5) * 0.075;
-	if (backAnim[4] >= 81) backAnim[4] = 0;
+	if (backAnim[4] >= 79) backAnim[4] = 0;
 	if (backAnim[5] >= 81) backAnim[5] = 0;
 	backAnim[4] += 1;
 	backAnim[5] += 1 / 60;
