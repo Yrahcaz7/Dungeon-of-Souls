@@ -36,7 +36,7 @@ const HourConvert = 82 / 12, // number of frames divided by number of hours on a
 
 MinConvert = 80 / 60; // number of frames divided by number of minutes in an hour
 
-function spawnEnemies() {
+function renderRoom() {
 	var now = new Date(Date.now());
 	var time = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()];
 	time[2] += (time[3] / 1000);

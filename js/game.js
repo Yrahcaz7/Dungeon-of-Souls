@@ -26,5 +26,5 @@ const gameloop = setInterval(function() {
             game.state = "battle";
         };
     };
-    spawnEnemies();
+    renderRoom();
 }, game.tickspeed);
