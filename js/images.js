@@ -32,9 +32,9 @@ letters_red.src = "images/letters_red.png";
 
 view.src = "images/view.png";
 
-const HourConvert = 81 / 12, // number of frames divided by number of hours on a clock (12)
+const HourConvert = 82 / 12, // number of frames divided by number of hours on a clock (12)
 
-MinConvert = 79 / 60; // number of frames divided by number of minutes in an hour
+MinConvert = 80 / 60; // number of frames divided by number of minutes in an hour
 
 function spawnEnemies() {
 	var now = new Date(Date.now());
@@ -46,8 +46,8 @@ function spawnEnemies() {
 	ctx.drawImage(background, 0, 0);
 	ctx.drawImage(floating_arch, 86, 10 - Math.round(backAnim[0]));
 	ctx.drawImage(clock_face, 120, 28 - Math.round(backAnim[2]));
-	ctx.drawImage(clock_hour_hand, Math.floor((time[0] + (time[1] / 60)) * HourConvert) * 24, 0, 24, 24, 138, 46 - Math.round(backAnim[2]), 24, 24);
-	ctx.drawImage(clock_min_hand, Math.floor((time[1] + (time[2] / 60)) * MinConvert) * 34, 0, 34, 34, 133, 41 - Math.round(backAnim[2]), 34, 34);
+	ctx.drawImage(clock_hour_hand, Math.floor((time[0]) * HourConvert) * 24, 0, 24, 24, 138, 46 - Math.round(backAnim[2]), 24, 24);
+	ctx.drawImage(clock_min_hand, Math.floor((time[1]) * MinConvert) * 34, 0, 34, 34, 133, 41 - Math.round(backAnim[2]), 34, 34);
 	ctx.drawImage(clock_node, 146, 54 - Math.round(backAnim[2]));
 	if (backAnim[0] >= 1) backAnim[1] = "down";
 	else if (backAnim[0] <= -1) backAnim[1] = "up";
