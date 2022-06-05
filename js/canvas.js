@@ -7,6 +7,7 @@ function canvasData() {
 	canvas = canv;
 	width = canvas.width;
 	height = canvas.height;
+	centerY = height / 2 - 50;
 	ctx = canvas.getContext("2d");
 	return true;
 };

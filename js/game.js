@@ -27,4 +27,5 @@ const gameloop = setInterval(function() {
         };
     };
     renderRoom();
+    enemyAnimations();
 }, game.tickspeed);
