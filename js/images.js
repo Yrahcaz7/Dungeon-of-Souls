@@ -35,8 +35,11 @@ const HourConvert = 81 / 12, // number of frames divided by number of hours on a
 MinConvert = 79 / 60; // number of frames divided by number of minutes in an hour
 
 function spawnEnemies() {
-	now = new Date(Date.now());
-	time = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()];
+	var now = new Date(Date.now());
+	var time = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()];
+	time[2] += (time[3] / 1000);
+	time[1] += (time[2] / 60);
+	time[0] += (time[1] / 60);
 	if (time[0] >= 12) time[0] = time[0] - 12;
 	ctx.drawImage(background, 0, 0);
 	ctx.drawImage(floating_arch, 86, 10 - Math.round(backAnim[0]));
