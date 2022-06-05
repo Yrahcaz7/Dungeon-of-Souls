@@ -36,17 +36,19 @@ MinConvert = 80 / 60; // number of frames divided by number of minutes in an hou
 function renderRoom() {
 	var now = new Date(Date.now()),
 		time = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()],
+		clockX = 170,
+		clockY = 63 - Math.round(backAnim[2]),
 		centerY = height / 2 - 50;
 	time[2] += (time[3] / 1000);
 	time[1] += (time[2] / 60);
 	time[0] += (time[1] / 60);
 	if (time[0] >= 12) time[0] = time[0] - 12;
 	ctx.drawImage(background, 0, 0);
-	ctx.drawImage(floating_arch, 136, 42 - Math.round(backAnim[0]));
-	ctx.drawImage(clock_face, 170, 71 - Math.round(backAnim[2]));
-	ctx.drawImage(clock_hour_hand, Math.floor((time[0]) * HourConvert) * 24, 0, 24, 24, 188, 89 - Math.round(backAnim[2]), 24, 24);
-	ctx.drawImage(clock_min_hand, Math.floor((time[1]) * MinConvert) * 34, 0, 34, 34, 183, 84 - Math.round(backAnim[2]), 34, 34);
-	ctx.drawImage(clock_node, 196, 97 - Math.round(backAnim[2]));
+	ctx.drawImage(floating_arch, 136, 34 - Math.round(backAnim[0]));
+	ctx.drawImage(clock_face, clockX, clockY);
+	ctx.drawImage(clock_hour_hand, Math.floor((time[0]) * HourConvert) * 24, 0, 24, 24, clockX + 18, clockY + 18, 24, 24);
+	ctx.drawImage(clock_min_hand, Math.floor((time[1]) * MinConvert) * 34, 0, 34, 34, clockX + 13, clockY + 13, 34, 34);
+	ctx.drawImage(clock_node, clockX + 26, clockY + 26);
 	if (backAnim[0] >= 1) backAnim[1] = "down";
 	else if (backAnim[0] <= -1) backAnim[1] = "up";
 	if (backAnim[1] == "up") backAnim[0] += (Math.random() + 0.5) * 0.075;
