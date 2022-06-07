@@ -1,11 +1,14 @@
-const slime_big = new Image, slime_small = new Image, // monsters
+const player_idle = new Image, // player
+	slime_big = new Image, slime_small = new Image, // monsters
 	slime_small_launch = new Image, // monster animations
 	background = new Image, floating_arch = new Image, // backrounds
 	clock_face = new Image, clock_hour_hand = new Image, clock_min_hand = new Image, clock_node = new Image, // the clock
 	health_bar = new Image, letters_black = new Image, letters_red = new Image, view = new Image; // other
 
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5],
-	tempAnim = [0, false, "normal", -1], invNum = -1;
+	tempAnim = [0, false, "normal", -1], playerAnim = 0, invNum = -1;
+
+player_idle.src = "images/player (120x80)/_idle.png";
 
 slime_big.src = "images/slime_big.png";
 slime_small.src = "images/slime_small.png";
@@ -71,7 +74,7 @@ function renderRoom() {
 			y = centerY - 32;
 		};
 		if (game.enemies.length == 1) {
-			x = width - 110;
+			x = width - 105;
 			y = centerY;
 		} else if (game.enemies.length == 2) {
 			if (a == 0) {
@@ -129,6 +132,20 @@ function renderRoom() {
 	drawLore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
+function player() {
+	var x = 15, y = centerY - 20;
+	if (playerAnim >= 10) playerAnim = 0;
+	ctx.drawImage(player_idle, Math.floor(playerAnim) * 120, 0, 120, 80, x, y, 120, 80);
+	playerAnim += 0.25;
+	percentage = game.health / game.maxhealth;
+	if (percentage < 0) frame = 0;
+	else if (percentage > 1) frame = 62;
+	else frame = percentage * 62;
+	ctx.drawImage(health_bar, 0, Math.round(frame) * 11, 64, 12, x + 22, y + 80, 64, 12);
+	drawLore(x + 47, y + 82, game.health, "black", "left");
+	drawLore(x + 56, y + 82, game.maxhealth, "black", "right");
+};
+
 function startEnemyAnim(index, type) {
 	if (type === null || index === null || type === undefined || index === undefined) return;
 	tempAnim = [0, type, "normal", index];
@@ -150,7 +167,7 @@ function enemyAnimations() {
 			y = centerY - 32;
 		};
 		if (game.enemies.length == 1) {
-			x = width - 110;
+			x = width - 105;
 			y = centerY;
 		} else if (game.enemies.length == 2) {
 			if (tempAnim[1] == 0) {

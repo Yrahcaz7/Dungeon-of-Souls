@@ -1,6 +1,7 @@
 var game = {
     tickspeed: 100,
     health: 100,
+    maxhealth: 100,
     floor: 1,
     state: "enter",
     enemies: [],
@@ -27,5 +28,6 @@ const gameloop = setInterval(function() {
         };
     };
     renderRoom();
+    player();
     enemyAnimations();
 }, game.tickspeed);
