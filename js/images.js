@@ -1,4 +1,4 @@
-const player_idle = new Image, player_attack = new Image, player_hit = new Image, // player
+const player_idle = new Image, player_attack = new Image, player_attack_2 = new Image, player_hit = new Image, // player
 	slime_big = new Image, slime_small = new Image, // monsters
 	slime_small_launch = new Image, // monster animations
 	background = new Image, floating_arch = new Image, // backrounds
@@ -10,6 +10,7 @@ var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5
 
 player_idle.src = "images/player/idle.png";
 player_attack.src = "images/player/attack.png";
+player_attack_2.src = "images/player/attack_2.png";
 player_hit.src = "images/player/hit.png";
 
 slime_big.src = "images/slime_big.png";
@@ -143,19 +144,24 @@ function startPlayerAnim(type) {
 function player() {
 	var x = 15, y = centerY - 20;
 	if (playerAnim[1] == "idle") {
-		if (playerAnim[0] >= 10) playerAnim[0] = 0;
 		ctx.drawImage(player_idle, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
+		if (playerAnim[0] >= 10) playerAnim[0] = 0;
 	};
 	if (playerAnim[1] == "attack") {
-		if (playerAnim[0] >= 4) playerAnim = [0, "idle"];
 		ctx.drawImage(player_attack, Math.floor(playerAnim[0]) * 120, 0, 120, 84, x, y, 120, 84);
 		playerAnim[0]++;
+		if (playerAnim[0] >= 4) playerAnim = [0, "idle"];
+	};
+	if (playerAnim[1] == "attack_2") {
+		ctx.drawImage(player_attack_2, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		playerAnim[0]++;
+		if (playerAnim[0] >= 6) playerAnim = [0, "idle"];
 	};
 	if (playerAnim[1] == "hit") {
-		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
 		ctx.drawImage(player_hit, 0, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.5;
+		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
 	};
 	percentage = game.health / game.maxhealth;
 	if (percentage < 0) frame = 0;
