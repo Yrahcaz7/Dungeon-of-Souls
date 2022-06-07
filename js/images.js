@@ -149,7 +149,7 @@ function player() {
 	};
 	if (playerAnim[1] == "attack") {
 		if (playerAnim[0] >= 4) playerAnim = [0, "idle"];
-		ctx.drawImage(player_attack, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		ctx.drawImage(player_attack, Math.floor(playerAnim[0]) * 120, 0, 120, 84, x, y, 120, 84);
 		playerAnim[0]++;
 	};
 	if (playerAnim[1] == "hit") {
