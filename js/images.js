@@ -8,7 +8,7 @@ const player_idle = new Image, // player
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5],
 	tempAnim = [0, false, "normal", -1], playerAnim = [0, "idle"], invNum = -1;
 
-player_idle.src = "images/player/_idle.png";
+player_idle.src = "images/player/idle.png";
 
 slime_big.src = "images/slime_big.png";
 slime_small.src = "images/slime_small.png";
