@@ -1,4 +1,4 @@
-const player_idle = new Image, // player
+const player_idle = new Image, player_attack = new Image, player_hit = new Image, // player
 	slime_big = new Image, slime_small = new Image, // monsters
 	slime_small_launch = new Image, // monster animations
 	background = new Image, floating_arch = new Image, // backrounds
@@ -9,6 +9,8 @@ var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5
 	tempAnim = [0, false, "normal", -1], playerAnim = [0, "idle"], invNum = -1;
 
 player_idle.src = "images/player/idle.png";
+player_attack.src = "images/player/attack.png";
+player_hit.src = "images/player/hit.png";
 
 slime_big.src = "images/slime_big.png";
 slime_small.src = "images/slime_small.png";
@@ -135,7 +137,7 @@ function renderRoom() {
 function startPlayerAnim(type) {
 	if (type === null || type === undefined) return;
 	type = "" + type;
-	playerAnim == [0, type];
+	playerAnim = [0, type];
 };
 
 function player() {
@@ -144,6 +146,16 @@ function player() {
 		if (playerAnim[0] >= 10) playerAnim[0] = 0;
 		ctx.drawImage(player_idle, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
+	};
+	if (playerAnim[1] == "attack") {
+		if (playerAnim[0] >= 4) playerAnim = [0, "idle"];
+		ctx.drawImage(player_attack, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		playerAnim[0]++;
+	};
+	if (playerAnim[1] == "hit") {
+		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
+		ctx.drawImage(player_hit, 0, 0, 120, 80, x, y, 120, 80);
+		playerAnim[0] += 0.5;
 	};
 	percentage = game.health / game.maxhealth;
 	if (percentage < 0) frame = 0;
@@ -213,11 +225,8 @@ function enemyAnimations() {
 	};
 	if (tempAnim[1] == "slime_small_launch") {
 		ctx.drawImage(slime_small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, x - 64, y, 128, 64);
-		if (tempAnim[2] == "normal") {
-			tempAnim[0] += 1;
-		} else if (tempAnim[2] == "backwards") {
-			tempAnim[0] -= 1;
-		};
+		if (tempAnim[2] == "normal") tempAnim[0]++;
+		else if (tempAnim[2] == "backwards") tempAnim[0]--;
 		if (tempAnim[0] >= 14) {
 			tempAnim[0] = 12;
 			tempAnim[2] = "backwards";
