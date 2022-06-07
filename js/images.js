@@ -6,9 +6,9 @@ const player_idle = new Image, // player
 	health_bar = new Image, letters_black = new Image, letters_red = new Image, view = new Image; // other
 
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5],
-	tempAnim = [0, false, "normal", -1], playerAnim = 0, invNum = -1;
+	tempAnim = [0, false, "normal", -1], playerAnim = [0, "idle"], invNum = -1;
 
-player_idle.src = "images/player (120x80)/_idle.png";
+player_idle.src = "images/player/_idle.png";
 
 slime_big.src = "images/slime_big.png";
 slime_small.src = "images/slime_small.png";
@@ -132,11 +132,19 @@ function renderRoom() {
 	drawLore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
+function startPlayerAnim(type) {
+	if (type === null || type === undefined) return;
+	type = "" + type;
+	playerAnim == [0, type];
+};
+
 function player() {
 	var x = 15, y = centerY - 20;
-	if (playerAnim >= 10) playerAnim = 0;
-	ctx.drawImage(player_idle, Math.floor(playerAnim) * 120, 0, 120, 80, x, y, 120, 80);
-	playerAnim += 0.25;
+	if (playerAnim[1] == "idle") {
+		if (playerAnim[0] >= 10) playerAnim[0] = 0;
+		ctx.drawImage(player_idle, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		playerAnim[0] += 0.25;
+	};
 	percentage = game.health / game.maxhealth;
 	if (percentage < 0) frame = 0;
 	else if (percentage > 1) frame = 62;
