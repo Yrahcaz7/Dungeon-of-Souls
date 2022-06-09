@@ -252,7 +252,7 @@ function enemyAnimations() {
 function setCardPos() {
 	var length = game.hand.length;
 	game.handpos = [];
-	center = width / 2;
+	center = width / 2 - 2;
 	if (length == 1) {
 		game.handpos = [center - 32];
 	} else if (length == 2) {
@@ -271,8 +271,8 @@ function setCardPos() {
 function renderCards() {
 	setCardPos();
 	for (let index = 0; index < game.hand.length; index++) {
-		var card = game.hand[index], y = 140;
-		if (game.select.includes(index)) y = 102;
+		var card = game.hand[index], y = 138;
+		if (game.select.includes(index)) y = 100;
 		if (card == "basic_attack") {
 			ctx.drawImage(card_basic_attack, game.handpos[index], y);
 		};
