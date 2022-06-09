@@ -1,18 +1,17 @@
 var game = {
-    tickspeed: 100,
     health: 100,
-    maxhealth: 100,
+    maxHealth: 100,
     floor: 1,
     state: "enter",
     turn: "none",
     select: ["none", 0],
     energy: 3,
-    maxenergy: 3,
+    maxEnergy: 3,
     enemies: [],
     deck: ["basic_attack", "basic_attack", "basic_attack", "basic_attack", "basic_attack", "basic_attack", "basic_attack"],
     hand: [],
-    handsize: 5,
-    handpos: [],
+    handSize: 5,
+    handPos: [],
     discard: [],
 }, actionTimer = -1, notif = [0, 0];
 
@@ -39,13 +38,13 @@ function shuffleDeck(newCard = null) {
 
 function drawHand() {
     let index = 0;
-    for (; index < game.handsize && index < game.deck.length; index++) {
+    for (; index < game.handSize && index < game.deck.length; index++) {
         game.hand.push(game.deck[index]);
     };
-    if (index != game.handsize) {
+    if (index != game.handSize) {
         game.deck.push(game.discard);
         shuffleDeck();
-        for (; index < game.handsize && index < game.deck.length; index++) {
+        for (; index < game.handSize && index < game.deck.length; index++) {
             game.hand.push(game.deck[index]);
         };
     };
@@ -58,7 +57,7 @@ function enterBattle() {
     game.state = "battle";
     shuffleDeck();
     drawHand();
-    game.energy = game.maxenergy;
+    game.energy = game.maxEnergy;
     game.turn = "player";
 };
 
@@ -97,7 +96,7 @@ function playerTurn() {
         //} else if (selected == "card_name" && game.energy >= 1) {
             
         } else {
-            notif = [game.handpos[game.select[1]] + 32, 0];
+            notif = [game.handPos[game.select[1]] + 32, 0];
             actionTimer = 1;
         };
     };
@@ -123,4 +122,4 @@ const gameloop = setInterval(function() {
     player();
     enemyAnimations();
     renderCards();
-}, game.tickspeed);
+}, 100);

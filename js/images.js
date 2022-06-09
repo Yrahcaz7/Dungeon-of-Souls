@@ -128,16 +128,20 @@ function renderRoom() {
 			};
 		};
 		enemyAnim[a] += (Math.random() + 0.5) * 0.1;
-		percentage = enemy[1] / enemy[2];
-		if (percentage < 0) frame = 0;
-		else if (percentage > 1) frame = 62;
-		else frame = percentage * 62;
-		ctx.drawImage(health_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 64, 64, 12);
-		drawLore(x + 25, y + 66, enemy[1], "black", "left");
-		drawLore(x + 34, y + 66, enemy[2], "black", "right");
+		bars(x, y, enemy[1], enemy[2]);
 	};
 	ctx.drawImage(view, 0, 0);
 	drawLore(1, 1, "floor: " + game.floor, "red", "right");
+};
+
+function bars(x, y, health, maxHealth) {
+	percentage = health / maxHealth;
+	if (percentage < 0) frame = 0;
+	else if (percentage > 1) frame = 62;
+	else frame = percentage * 62;
+	ctx.drawImage(health_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 64, 64, 12);
+	drawLore(x + 25, y + 66, health, "black", "left");
+	drawLore(x + 34, y + 66, maxHealth, "black", "right");
 };
 
 function startPlayerAnim(type) {
@@ -168,13 +172,7 @@ function player() {
 		playerAnim[0] += 0.5;
 		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
 	};
-	percentage = game.health / game.maxhealth;
-	if (percentage < 0) frame = 0;
-	else if (percentage > 1) frame = 62;
-	else frame = percentage * 62;
-	ctx.drawImage(health_bar, 0, Math.round(frame) * 11, 64, 12, x + 22, y + 80, 64, 12);
-	drawLore(x + 47, y + 82, game.health, "black", "left");
-	drawLore(x + 56, y + 82, game.maxhealth, "black", "right");
+	bars(x + 22, y + 16, game.health, game.maxHealth);
 };
 
 function startEnemyAnim(index, type) {
@@ -251,20 +249,20 @@ function enemyAnimations() {
 
 function setCardPos() {
 	var length = game.hand.length;
-	game.handpos = [];
+	game.handPos = [];
 	center = width / 2 - 2;
 	if (length == 1) {
-		game.handpos = [center - 32];
+		game.handPos = [center - 32];
 	} else if (length == 2) {
-		game.handpos = [center - 64 - 1, center + 1];
+		game.handPos = [center - 64 - 1, center + 1];
 	} else if (length == 3) {
-		game.handpos = [center - 96 - 2, center - 32, center + 32 + 2];
+		game.handPos = [center - 96 - 2, center - 32, center + 32 + 2];
 	} else if (length == 4) {
-		game.handpos = [center - 128 - 3, center - 64 - 1, center + 1, center + 64 + 3];
+		game.handPos = [center - 128 - 3, center - 64 - 1, center + 1, center + 64 + 3];
 	} else if (length == 5) {
-		game.handpos = [center - 160 - 4, center - 96 - 2, center - 32, center + 32 + 2, center + 96 + 4];
+		game.handPos = [center - 160 - 4, center - 96 - 2, center - 32, center + 32 + 2, center + 96 + 4];
 	} else if (length == 6) {
-		game.handpos = [center - 192 - 5, center - 128 - 3, center - 64 - 1, center + 1, center + 64 + 3, center + 128 + 5];
+		game.handPos = [center - 192 - 5, center - 128 - 3, center - 64 - 1, center + 1, center + 64 + 3, center + 128 + 5];
 	};
 };
 
@@ -274,7 +272,7 @@ function renderCards() {
 		var card = game.hand[index], y = 138;
 		if (game.select.includes(index)) y = 100;
 		if (card == "basic_attack") {
-			ctx.drawImage(card_basic_attack, game.handpos[index], y);
+			ctx.drawImage(card_basic_attack, game.handPos[index], y);
 		};
 	};
 	if (notif[0] || notif[1]) {
