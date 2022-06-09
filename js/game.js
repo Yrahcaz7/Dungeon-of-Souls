@@ -55,6 +55,7 @@ function enterBattle() {
 };
 
 const gameloop = setInterval(function() {
+    // visuals
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (game.floor == 1) {
         if (game.state == "enter") {
@@ -71,4 +72,6 @@ const gameloop = setInterval(function() {
     player();
     enemyAnimations();
     renderCards();
+    // actions
+    console.log(action);
 }, game.tickspeed);
