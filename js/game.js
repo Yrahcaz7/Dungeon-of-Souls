@@ -14,7 +14,7 @@ var game = {
     handsize: 5,
     handpos: [],
     discard: [],
-};
+}, actionTimer = -1, notif = [0, 0];
 
 function hardReset() {
     localStorage.removeItem("Yrahcaz7/Dungeon-of-Souls/save");
@@ -63,6 +63,10 @@ function enterBattle() {
 };
 
 function playerTurn() {
+    // action timer
+    actionTimer--;
+    if (actionTimer > -1) return;
+    if (!actionTimer || actionTimer < -1) actionTimer = -1;
     // select hand
     if (game.select[0] == "none") game.select = ["hand", 0];
     // select card
@@ -70,19 +74,30 @@ function playerTurn() {
         if (!game.hand) {
             game.select[1] = 0;
         } else {
-            if (action == "left" && game.select[1] > 0) game.select[1]--;
-            else if (action == "right" && game.select[1] < game.hand.length - 1) game.select[1]++;
+            if (action == "left" && game.select[1] > 0) {
+                game.select[1]--;
+                actionTimer = 1;
+            } else if (action == "right" && game.select[1] < game.hand.length - 1) {
+                game.select[1]++;
+                actionTimer = 1;
+            };
             if (game.select[1] < 0) game.select[1] = 0;
             else if (game.select[1] >= game.hand.length - 1) game.select[1] = game.hand.length - 1;
         };
     };
     // play card
     if (action == "enter" && game.select[0] == "hand") {
-        if (game.hand[game.select[1]] == "basic_attack" && game.energy >= 1) {
-            startPlayerAnim("attack");
+        var selected = game.hand[game.select[1]];
+        if (selected == "basic_attack" && game.energy >= 1) {
             game.energy--;
-            game.discard.push(game.hand[game.select[1]]);
+            startPlayerAnim("attack");
+            game.discard.push(selected);
             game.hand.splice(game.select[1], 1);
+            actionTimer = 4;
+        //} else if (selected == "card_name" && game.energy >= 1) {
+            
+        } else {
+            notif = [game.handpos[game.select[1]] + 32, 0];
         };
     };
 };
