@@ -25,18 +25,18 @@ slime_small_launch.src = "images/slime_small_launch.png";
 background.src = "images/background.png";
 floating_arch.src = "images/floating_arch.png";
 
-clock_face.src = "images/clock_face.png";
-clock_hour_hand.src = "images/clock_hour_hand.png";
-clock_min_hand.src = "images/clock_min_hand.png";
-clock_node.src = "images/clock_node.png";
+clock_face.src = "images/clock/face.png";
+clock_hour_hand.src = "images/clock/hour_hand.png";
+clock_min_hand.src = "images/clock/min_hand.png";
+clock_node.src = "images/clock/node.png";
 
-letters_fade_0.src = "images/letters_fade_0.png";
-letters_fade_1.src = "images/letters_fade_1.png";
-letters_fade_2.src = "images/letters_fade_2.png";
+letters_fade_0.src = "images/letters/fade_0.png";
+letters_fade_1.src = "images/letters/fade_1.png";
+letters_fade_2.src = "images/letters/fade_2.png";
 
 health_bar.src = "images/health_bar.png";
-letters_black.src = "images/letters_black.png";
-letters_red.src = "images/letters_red.png";
+letters_black.src = "images/letters/black.png";
+letters_red.src = "images/letters/red.png";
 view.src = "images/view.png";
 
 const HourConvert = 82 / 12, // number of frames divided by number of hours on a clock (12)
