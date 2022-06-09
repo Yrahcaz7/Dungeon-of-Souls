@@ -62,10 +62,7 @@ function renderRoom() {
 	if (backAnim[3] == "up") backAnim[2] += (Math.random() + 0.5) * 0.075;
 	else if (backAnim[3] == "down") backAnim[2] -= (Math.random() + 0.5) * 0.075;
 	if (game.enemies.length > 6) {
-		for (let a = 6; a < game.enemies.length; a++) {
-			game.hiddenEnemies[a - 6] = game.enemies[a];
-			game.enemies.splice(a, 1);
-		};
+		game.enemies.splice(6);
 	};
 	for (let a = 0; a < game.enemies.length; a++) {
 		enemy = game.enemies[a];
@@ -254,11 +251,11 @@ function setCardPos() {
 	if (length == 1) {
 		game.handpos = [center - 32];
 	} else if (length == 2) {
-		game.handpos = [center - 64 - 1, center + 32 + 1];
+		game.handpos = [center - 64 - 1, center + 1];
 	} else if (length == 3) {
 		game.handpos = [center - 96 - 2, center - 32, center + 32 + 2];
 	} else if (length == 4) {
-		game.handpos = [center - 96 - 3, center - 32 - 1, center + 32 + 1, center + 96 + 3];
+		game.handpos = [center - 128 - 3, center - 64 - 1, center + 1, center + 64 + 3];
 	} else if (length == 5) {
 		game.handpos = [center - 160 - 4, center - 96 - 2, center - 32, center + 32 + 2, center + 96 + 4];
 	} else if (length == 6) {
