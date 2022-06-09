@@ -141,6 +141,18 @@ function bars(x, y, health, maxHealth, block, maxBlock) {
 	if (percentage < 0) frame = 0;
 	else if (percentage > 1) frame = 62;
 	else frame = percentage * 62;
+	if (health < 10 && maxHealth >= 10) {
+		health = "0" + health;
+		if (maxHealth >= 100) health = "0" + health;
+		if (maxHealth >= 1000) health = "0" + health;
+	};
+	if (health < 100 && maxHealth >= 100) {
+		health = "0" + health;
+		if (maxHealth >= 1000) health = "0" + health;
+	};
+	if (health < 1000 && maxHealth >= 1000) {
+		 health = "0" + health;
+	};
 	ctx.drawImage(health_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 64, 64, 12);
 	drawLore(x + 25, y + 66, health, "black", "left");
 	drawLore(x + 34, y + 66, maxHealth, "black", "right");
@@ -149,6 +161,18 @@ function bars(x, y, health, maxHealth, block, maxBlock) {
 	if (percentage < 0) frame = 0;
 	else if (percentage > 1) frame = 62;
 	else frame = percentage * 62;
+	if (block < 10 && maxBlock >= 10) {
+		block = "0" + block;
+		if (maxBlock >= 100) block = "0" + block;
+		if (maxBlock >= 1000) block = "0" + block;
+	};
+	if (block < 100 && maxBlock >= 100) {
+		block = "0" + block;
+		if (maxBlock >= 1000) block = "0" + block;
+	};
+	if (block < 1000 && maxBlock >= 1000) {
+		block = "0" + block;
+	};
 	ctx.drawImage(block_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 75, 64, 12);
 	drawLore(x + 25, y + 77, block, "black", "left");
 	drawLore(x + 34, y + 77, maxBlock, "black", "right");
