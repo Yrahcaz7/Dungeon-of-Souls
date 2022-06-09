@@ -6,6 +6,9 @@ var game = {
     state: "enter",
     enemies: [],
     hiddenEnemies: [],
+    deck: [],
+    hand: [],
+    discard: [],
 };
 
 function hardReset() {
@@ -30,4 +33,5 @@ const gameloop = setInterval(function() {
     renderRoom();
     player();
     enemyAnimations();
+    renderCards();
 }, game.tickspeed);
