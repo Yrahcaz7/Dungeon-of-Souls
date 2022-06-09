@@ -4,6 +4,7 @@ var game = {
     maxhealth: 100,
     floor: 1,
     state: "enter",
+    turn: "none",
     select: ["none", 0],
     enemies: [],
     hiddenEnemies: [],
@@ -47,15 +48,29 @@ function drawHand() {
             game.hand.push(game.deck[index]);
         };
     };
+    for (index--; index >= 0; index--) {
+        game.deck.splice(index, 1);
+    };
 };
 
 function enterBattle() {
     game.state = "battle";
     shuffleDeck();
     drawHand();
+    game.turn = "player";
+};
+
+function playerTurn() {
+    // select hand
+    if (game.select[0] == "none") game.select = ["hand", 0];
+    // select card
+    if (action == "left" && game.select[1] > 0) game.select[1]--;
+    else if (action == "right" && game.select[1] < game.hand.length - 1) game.select[1]++;
 };
 
 const gameloop = setInterval(function() {
+    // actions
+    if (game.turn == "player") playerTurn();
     // visuals
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (game.floor == 1) {
@@ -73,6 +88,4 @@ const gameloop = setInterval(function() {
     player();
     enemyAnimations();
     renderCards();
-    // actions
-    console.log(action);
 }, game.tickspeed);

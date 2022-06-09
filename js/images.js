@@ -269,9 +269,10 @@ function setCardPos() {
 function renderCards() {
 	setCardPos();
 	for (let index = 0; index < game.hand.length; index++) {
-		var card = game.hand[index];
+		var card = game.hand[index], y = 140;
+		if (game.select.includes(index)) y = 102;
 		if (card == "basic_attack") {
-			ctx.drawImage(card_basic_attack, game.handpos[index], 140);
+			ctx.drawImage(card_basic_attack, game.handpos[index], y);
 		};
 	};
 };
