@@ -4,8 +4,8 @@ const player_idle = new Image, player_attack = new Image, player_attack_2 = new 
 	slime_small_launch = new Image, // monster animations
 	background = new Image, floating_arch = new Image, // backrounds
 	clock_face = new Image, clock_hour_hand = new Image, clock_min_hand = new Image, clock_node = new Image, // the clock
-	letters_fade_0 = new Image, letters_fade_1 = new Image, letters_fade_2 = new Image, // transparent letters
-	health_bar = new Image, letters_black = new Image, letters_red = new Image, view = new Image; // other
+	letters_black = new Image, letters_red = new Image, letters_fade = [new Image, new Image, new Image], // letters
+	health_bar = new Image, view = new Image; // other
 
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5],
 	tempAnim = [0, false, "normal", -1], playerAnim = [0, "idle"], invNum = -1;
@@ -30,9 +30,9 @@ clock_hour_hand.src = "images/clock/hour_hand.png";
 clock_min_hand.src = "images/clock/min_hand.png";
 clock_node.src = "images/clock/node.png";
 
-letters_fade_0.src = "images/letters/fade_0.png";
-letters_fade_1.src = "images/letters/fade_1.png";
-letters_fade_2.src = "images/letters/fade_2.png";
+letters_fade[0].src = "images/letters/fade_0.png";
+letters_fade[1].src = "images/letters/fade_1.png";
+letters_fade[2].src = "images/letters/fade_2.png";
 
 health_bar.src = "images/health_bar.png";
 letters_black.src = "images/letters/black.png";
@@ -293,9 +293,9 @@ function drawLore(x, y, string, color = "black", position = "right") {
 	var img = letters_black;
 	string = "" + string;
 	if (color == "red") img = letters_red;
-	else if (color == "fade_0") img = letters_fade_0;
-	else if (color == "fade_1") img = letters_fade_1;
-	else if (color == "fade_2") img = letters_fade_2;
+	else if (color == "fade_0") img = letters_fade[0];
+	else if (color == "fade_1") img = letters_fade[1];
+	else if (color == "fade_2") img = letters_fade[2];
 	for (let a = 0; a < string.length; a++) {
 		index = string.charCodeAt(a);
 		if (position == "right") {
