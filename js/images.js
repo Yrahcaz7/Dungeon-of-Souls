@@ -5,7 +5,7 @@ const player_idle = new Image, player_attack = new Image, player_attack_2 = new 
 	background = new Image, floating_arch = new Image, // backrounds
 	clock_face = new Image, clock_hour_hand = new Image, clock_min_hand = new Image, clock_node = new Image, // the clock
 	letters_black = new Image, letters_red = new Image, letters_fade = [new Image, new Image, new Image], // letters
-	health_bar = new Image, view = new Image; // other
+	health_bar = new Image, block_bar = new Image, view = new Image; // other
 
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5],
 	tempAnim = [0, false, "normal", -1], playerAnim = [0, "idle"], invNum = -1;
@@ -30,13 +30,14 @@ clock_hour_hand.src = "images/clock/hour_hand.png";
 clock_min_hand.src = "images/clock/min_hand.png";
 clock_node.src = "images/clock/node.png";
 
+letters_black.src = "images/letters/black.png";
+letters_red.src = "images/letters/red.png";
 letters_fade[0].src = "images/letters/fade_0.png";
 letters_fade[1].src = "images/letters/fade_1.png";
 letters_fade[2].src = "images/letters/fade_2.png";
 
 health_bar.src = "images/health_bar.png";
-letters_black.src = "images/letters/black.png";
-letters_red.src = "images/letters/red.png";
+block_bar.src = "images/block_bar.png";
 view.src = "images/view.png";
 
 const HourConvert = 82 / 12, // number of frames divided by number of hours on a clock (12)
@@ -128,20 +129,29 @@ function renderRoom() {
 			};
 		};
 		enemyAnim[a] += (Math.random() + 0.5) * 0.1;
-		bars(x, y, enemy[1], enemy[2]);
+		bars(x, y, enemy[1], enemy[2], enemy[3], enemy[4]);
 	};
 	ctx.drawImage(view, 0, 0);
 	drawLore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
-function bars(x, y, health, maxHealth) {
-	percentage = health / maxHealth;
+function bars(x, y, health, maxHealth, block, maxBlock) {
+	if (health === null || health === undefined || maxHealth === null || maxHealth === undefined) return;
+	var frame, percentage = health / maxHealth;
 	if (percentage < 0) frame = 0;
 	else if (percentage > 1) frame = 62;
 	else frame = percentage * 62;
 	ctx.drawImage(health_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 64, 64, 12);
 	drawLore(x + 25, y + 66, health, "black", "left");
 	drawLore(x + 34, y + 66, maxHealth, "black", "right");
+	if (block === null || block === undefined || maxBlock === null || maxBlock === undefined || block < 1) return;
+	percentage = block / maxBlock;
+	if (percentage < 0) frame = 0;
+	else if (percentage > 1) frame = 62;
+	else frame = percentage * 62;
+	ctx.drawImage(block_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 75, 64, 12);
+	drawLore(x + 25, y + 77, block, "black", "left");
+	drawLore(x + 34, y + 77, maxBlock, "black", "right");
 };
 
 function startPlayerAnim(type) {
@@ -172,7 +182,7 @@ function player() {
 		playerAnim[0] += 0.5;
 		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
 	};
-	bars(x + 22, y + 16, game.health, game.maxHealth);
+	bars(x + 22, y + 16, game.health, game.maxHealth, game.block, game.maxBlock);
 };
 
 function startEnemyAnim(index, type) {

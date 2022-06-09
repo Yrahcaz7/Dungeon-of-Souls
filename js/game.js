@@ -1,6 +1,8 @@
 var game = {
     health: 100,
     maxHealth: 100,
+    block: 0,
+    maxBlock: 100,
     floor: 1,
     state: "enter",
     turn: "none",
@@ -109,12 +111,12 @@ const gameloop = setInterval(function() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (game.floor == 1) {
         if (game.state == "enter") {
-            game.enemies.push(["slime_small", 20, 20]);
+            game.enemies.push(["slime_small", 20, 20, 0, 10]);
             enterBattle();
         };
     } else if (game.floor == 2) {
         if (game.state == "enter") {
-            game.enemies.push(["slime_big", 30, 30]);
+            game.enemies.push(["slime_big", 30, 30, 5, 25]);
             enterBattle();
         };
     };
