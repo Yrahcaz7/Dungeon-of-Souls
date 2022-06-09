@@ -2,6 +2,7 @@ var canvas;
 var ctx;
 
 function canvasData() {
+	document.body.style.cursor = "none";
 	let canv = document.getElementById("canvas");
 	if (canv === undefined || canv === null) return false;
 	canvas = canv;

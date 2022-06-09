@@ -247,8 +247,37 @@ function enemyAnimations() {
 	} else invNum = false;
 };
 
+function drawCard(image, length, index) {
+	if (length == 1) {
+		ctx.drawImage(image, width / 2 - 32, 140);
+	} else if (length == 2) {
+		if (index == 0) ctx.drawImage(image, width / 2 - 64 - 1, 140);
+		else if (index == 1) ctx.drawImage(image, width / 2 + 32 + 1, 140);
+	} else if (length == 3) {
+		if (index == 0) ctx.drawImage(image, width / 2 - 96 - 2, 140);
+		else if (index == 1) ctx.drawImage(image, width / 2 - 32, 140);
+		else if (index == 2) ctx.drawImage(image, width / 2 + 32 + 2, 140);
+	} else if (length == 4) {
+		if (index == 0) ctx.drawImage(image, width / 2 - 128 - 3, 140);
+		else if (index == 1) ctx.drawImage(image, width / 2 - 64 - 1, 140);
+		else if (index == 2) ctx.drawImage(image, width / 2 + 32 + 1, 140);
+		else if (index == 3) ctx.drawImage(image, width / 2 + 96 + 3, 140);
+	} else if (length == 5) {
+		if (index == 0) ctx.drawImage(image, width / 2 - 160 - 4, 140);
+		else if (index == 1) ctx.drawImage(image, width / 2 - 96 - 2, 140);
+		else if (index == 2) ctx.drawImage(image, width / 2 - 32, 140);
+		else if (index == 3) ctx.drawImage(image, width / 2 + 32 + 2, 140);
+		else if (index == 4) ctx.drawImage(image, width / 2 + 96 + 4, 140);
+	};
+};
+
 function renderCards() {
-	if (game.hand.includes("basic_attack")) ctx.drawImage(card_basic_attack, (width - 64) / 2, 140);
+	for (let index = 0; index < game.hand.length; index++) {
+		var card = game.hand[index];
+		if (card == "basic_attack") {
+			drawCard(card_basic_attack, game.hand.length, index);
+		};
+	};
 };
 
 function drawLore(x, y, string, color = "black", position = "right") {
