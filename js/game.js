@@ -98,6 +98,7 @@ function playerTurn() {
             
         } else {
             notif = [game.handpos[game.select[1]] + 32, 0];
+            actionTimer = 1;
         };
     };
 };
