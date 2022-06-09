@@ -247,35 +247,31 @@ function enemyAnimations() {
 	} else invNum = false;
 };
 
-function drawCard(image, length, index) {
+function setCardPos() {
+	var length = game.hand.length;
+	game.handpos = [];
+	center = width / 2;
 	if (length == 1) {
-		ctx.drawImage(image, width / 2 - 32, 140);
+		game.handpos = [center - 32];
 	} else if (length == 2) {
-		if (index == 0) ctx.drawImage(image, width / 2 - 64 - 1, 140);
-		else if (index == 1) ctx.drawImage(image, width / 2 + 32 + 1, 140);
+		game.handpos = [center - 64 - 1, center + 32 + 1];
 	} else if (length == 3) {
-		if (index == 0) ctx.drawImage(image, width / 2 - 96 - 2, 140);
-		else if (index == 1) ctx.drawImage(image, width / 2 - 32, 140);
-		else if (index == 2) ctx.drawImage(image, width / 2 + 32 + 2, 140);
+		game.handpos = [center - 96 - 2, center - 32, center + 32 + 2];
 	} else if (length == 4) {
-		if (index == 0) ctx.drawImage(image, width / 2 - 128 - 3, 140);
-		else if (index == 1) ctx.drawImage(image, width / 2 - 64 - 1, 140);
-		else if (index == 2) ctx.drawImage(image, width / 2 + 32 + 1, 140);
-		else if (index == 3) ctx.drawImage(image, width / 2 + 96 + 3, 140);
+		game.handpos = [center - 96 - 3, center - 32 - 1, center + 32 + 1, center + 96 + 3];
 	} else if (length == 5) {
-		if (index == 0) ctx.drawImage(image, width / 2 - 160 - 4, 140);
-		else if (index == 1) ctx.drawImage(image, width / 2 - 96 - 2, 140);
-		else if (index == 2) ctx.drawImage(image, width / 2 - 32, 140);
-		else if (index == 3) ctx.drawImage(image, width / 2 + 32 + 2, 140);
-		else if (index == 4) ctx.drawImage(image, width / 2 + 96 + 4, 140);
+		game.handpos = [center - 160 - 4, center - 96 - 2, center - 32, center + 32 + 2, center + 96 + 4];
+	} else if (length == 6) {
+		game.handpos = [center - 192 - 5, center - 128 - 3, center - 64 - 1, center + 1, center + 64 + 3, center + 128 + 5];
 	};
 };
 
 function renderCards() {
+	setCardPos();
 	for (let index = 0; index < game.hand.length; index++) {
 		var card = game.hand[index];
 		if (card == "basic_attack") {
-			drawCard(card_basic_attack, game.hand.length, index);
+			ctx.drawImage(card_basic_attack, game.handpos[index], 140);
 		};
 	};
 };

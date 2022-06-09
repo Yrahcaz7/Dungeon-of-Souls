@@ -10,6 +10,7 @@ var game = {
     deck: ["basic_attack", "basic_attack", "basic_attack", "basic_attack", "basic_attack", "basic_attack", "basic_attack"],
     hand: [],
     handsize: 5,
+    handpos: [],
     discard: [],
 };
 
