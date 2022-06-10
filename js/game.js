@@ -99,9 +99,14 @@ function playerTurn() {
             if (action == "left" && game.select[1] > 0) {
                 game.select[1]--;
                 actionTimer = 1;
-            } else if (action == "right" && game.select[1] < game.hand.length - 1) {
-                game.select[1]++;
-                actionTimer = 1;
+            } else if (action == "right") {
+                if (game.select[1] < game.hand.length - 1) {
+                    game.select[1]++;
+                    actionTimer = 1;
+                } else {
+                    game.select = ["lookat_enemy", 0];
+                    actionTimer = 1;
+                };
             } else if (action == "up") {
                 game.select = ["looker", 0];
                 actionTimer = 1;
@@ -128,12 +133,15 @@ function playerTurn() {
         actionTimer = 1;
     };
     // select enemy
-    if (game.select[0] == "attack_enemy") {
+    if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") {
         if (action == "left" && game.select[1] < game.enemies.length - 1) {
             game.select[1]++;
             actionTimer = 1;
         } else if (action == "right" && game.select[1] > 0) {
             game.select[1]--;
+            actionTimer = 1;
+        } else if (action == "down" && game.select[0] == "lookat_enemy") {
+            game.select = ["hand", game.hand.length - 1];
             actionTimer = 1;
         };
     };

@@ -297,7 +297,7 @@ function renderCards() {
 };
 
 function target() {
-	if (game.select[0] == "attack_enemy") {
+	if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") {
         enemySelect = game.enemies[game.select[1]];
         pos = game.enemyPos[game.select[1]];
         if (enemySelect[0] == "slime_small") select(pos[0] + 19, pos[1] + 35, 18, 20);
