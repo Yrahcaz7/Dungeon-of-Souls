@@ -299,21 +299,34 @@ function setCardPos() {
 	} else if (length == 5) {
 		game.handPos = [center - 160 - 4, center - 96 - 2, center - 32, center + 32 + 2, center + 96 + 4];
 	} else if (length == 6) {
-		game.handPos = [center - 192 - 5, center - 128 - 3, center - 64 - 1, center + 1, center + 64 + 3, center + 128 + 5];
+		game.handPos = [center - 192 + 10, center - 128 + 6, center - 64 + 2, center - 2, center + 64 - 6, center + 128 - 10];
+	} else if (length == 7) {
+		game.handPos = [center - 224 + 39, center - 160 + 26, center - 96 + 13, center - 32, center + 32 - 13, center + 96 - 26, center + 160 - 39];
+	} else if (length == 8) {
+		game.handPos = [center - 256 + 70, center - 192 + 50, center - 128 + 30, center - 64 + 10, center - 10, center + 64 - 30, center + 128 - 50, center + 192 - 70];
+	};
+};
+
+function showCard(type, index, y) {
+	if (type == "basic_attack") {
+		ctx.drawImage(card_basic_attack, game.handPos[index], y);
 	};
 };
 
 function renderCards() {
 	setCardPos();
+	var temp = -1;
 	for (let index = 0; index < game.hand.length; index++) {
 		var card = game.hand[index], y = 138;
 		if (game.select[0] == "hand" && game.select[1] == index) {
-			ctx.drawImage(select_card, game.handPos[index] - 1, 99);
-			y = 100;
+			temp = index;
+		} else {
+			showCard(card, index, y);
 		};
-		if (card == "basic_attack") {
-			ctx.drawImage(card_basic_attack, game.handPos[index], y);
-		};
+	};
+	if (temp != -1) {
+		ctx.drawImage(select_card, game.handPos[temp] - 1, 99);
+		showCard(game.hand[temp], temp, 100);
 	};
 	if (notif[0] || notif[1]) {
 		var color = "lightRed";
