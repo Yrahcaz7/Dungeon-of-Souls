@@ -7,6 +7,7 @@ var game = {
     state: "enter",
     turn: "none",
     select: ["none", 0],
+    enemyAtt: "none",
     energy: 3,
     maxEnergy: 3,
     enemies: [],
@@ -84,7 +85,7 @@ function playerTurn() {
     // select card
     if (game.select[0] == "hand") {
         if (!game.hand) {
-            game.select[1] = 0;
+            game.select[1] = -1;
         } else {
             if (action == "left" && game.select[1] > 0) {
                 game.select[1]--;
@@ -100,15 +101,40 @@ function playerTurn() {
             else if (game.select[1] >= game.hand.length - 1) game.select[1] = game.hand.length - 1;
         };
     };
+    // attack enemy
+    if (action == "enter" && game.select[0] == "attack_enemy") {
+        if ("basic_attack") {
+            game.energy--;
+            startPlayerAnim("attack");
+            game.select[0] = "attack_fin";
+            game.discard.push(selected);
+            game.hand.splice(game.select[1], 1);
+            actionTimer = 4;
+        };
+    };
+    if (game.select[0] == "attack_fin" && actionTimer < 0) {
+        game.enemies[game.select[1]][1] -= 5;
+        game.select = ["hand", 0];
+        game.enemyAtt = "none";
+        actionTimer = 1;
+    };
+    // select enemy
+    if (game.select[0] == "attack_enemy") {
+        if (action == "left" && game.select[1] < game.enemies.length - 1) {
+            game.select[1]++;
+            actionTimer = 1;
+        } else if (action == "right" && game.select[1] > 0) {
+            game.select[1]--;
+            actionTimer = 1;
+        };
+    };
     // play card
     if (action == "enter" && game.select[0] == "hand") {
         var selected = game.hand[game.select[1]];
         if (selected == "basic_attack" && game.energy >= 1) {
-            game.energy--;
-            startPlayerAnim("attack");
-            game.discard.push(selected);
-            game.hand.splice(game.select[1], 1);
-            actionTimer = 4;
+            game.select = ["attack_enemy", game.enemies.length - 1];
+            game.enemyAtt = "basic_attack";
+            actionTimer = 5;
         //} else if (selected == "card_name" && game.energy >= 1) {
             
         } else {
