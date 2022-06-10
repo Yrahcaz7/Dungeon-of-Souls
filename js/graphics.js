@@ -38,69 +38,7 @@ function renderRoom() {
 		game.enemies.splice(6);
 	};
 	if (game.select[0] != "looker" || !game.select[1]) {
-		game.enemyPos = [];
-		for (let index = 0; index < game.enemies.length; index++) {
-			enemy = game.enemies[index];
-			if (index == 0) {
-				x = width - 70;
-				y = centerY;
-			} else if (index == 1) {
-				x = width - 140;
-				y = centerY + 32;
-			} else if (index == 2) {
-				x = width - 140;
-				y = centerY - 32;
-			};
-			if (game.enemies.length == 1) {
-				x = width - 105;
-				y = centerY;
-			} else if (game.enemies.length == 2) {
-				if (index == 0) {
-					x = width - 70;
-					y = centerY - 5;
-				} else if (index == 1) {
-					x = width - 140;
-					y = centerY + 20;
-				};
-			} else if (game.enemies.length == 4) {
-				if (index == 3) {
-					x = width - 210;
-					y = centerY;
-				};
-			} else if (game.enemies.length == 5) {
-				if (index == 3) {
-					x = width - 210;
-					y = centerY + 32;
-				} else if (index == 4) {
-					x = width - 210;
-					y = centerY - 32;
-				};
-			} else if (game.enemies.length == 6) {
-				if (index == 3) {
-					x = width - 210;
-					y = centerY + 64;
-				} else if (index == 4) {
-					x = width - 210;
-					y = centerY;
-				} else if (index == 5) {
-					x = width - 210;
-					y = centerY - 64;
-				};
-			};
-			x = Math.round(x);
-			y = Math.round(y);
-			game.enemyPos.push([x, y]);
-			if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
-			if (index !== invNum) {
-				if (enemy[0] == "slime_big") {
-					ctx.drawImage(slime_big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, x, y, 64, 64);
-				} else if (enemy[0] == "slime_small") {
-					ctx.drawImage(slime_small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, x, y, 64, 64);
-				};
-			};
-			enemyAnim[index] += (Math.random() + 0.5) * 0.1;
-			bars(x, y, enemy[1], enemy[2], enemy[3], enemy[4]);
-		};
+		enemies();
 	};
     ctx.drawImage(view, 0, 0);
     if (game.select[0] == "help") ctx.drawImage(select_round, 2, 11);
@@ -202,8 +140,71 @@ function startEnemyAnim(index, type) {
 	} else invNum = false;
 };
 
-function enemyAnimations() {
-	if (tempAnim[3] == -1) return;
+function enemies() {
+    game.enemyPos = [];
+    for (let index = 0; index < game.enemies.length; index++) {
+        enemy = game.enemies[index];
+        if (index == 0) {
+            x = width - 70;
+            y = centerY;
+        } else if (index == 1) {
+            x = width - 140;
+            y = centerY + 32;
+        } else if (index == 2) {
+            x = width - 140;
+            y = centerY - 32;
+        };
+        if (game.enemies.length == 1) {
+            x = width - 105;
+            y = centerY;
+        } else if (game.enemies.length == 2) {
+            if (index == 0) {
+                x = width - 70;
+                y = centerY - 5;
+            } else if (index == 1) {
+                x = width - 140;
+                y = centerY + 20;
+            };
+        } else if (game.enemies.length == 4) {
+            if (index == 3) {
+                x = width - 210;
+                y = centerY;
+            };
+        } else if (game.enemies.length == 5) {
+            if (index == 3) {
+                x = width - 210;
+                y = centerY + 32;
+            } else if (index == 4) {
+                x = width - 210;
+                y = centerY - 32;
+            };
+        } else if (game.enemies.length == 6) {
+            if (index == 3) {
+                x = width - 210;
+                y = centerY + 64;
+            } else if (index == 4) {
+                x = width - 210;
+                y = centerY;
+            } else if (index == 5) {
+                x = width - 210;
+                y = centerY - 64;
+            };
+        };
+        x = Math.round(x);
+        y = Math.round(y);
+        game.enemyPos.push([x, y]);
+        if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
+        if (index !== invNum) {
+            if (enemy[0] == "slime_big") {
+                ctx.drawImage(slime_big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, x, y, 64, 64);
+            } else if (enemy[0] == "slime_small") {
+                ctx.drawImage(slime_small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, x, y, 64, 64);
+            };
+        };
+        enemyAnim[index] += (Math.random() + 0.5) * 0.1;
+        bars(x, y, enemy[1], enemy[2], enemy[3], enemy[4]);
+    };
+    if (tempAnim[3] == -1) return;
 	x = game.enemyPos[tempAnim[3]][0];
 	y = game.enemyPos[tempAnim[3]][1];
 	if (tempAnim[1] == "slime_small_launch") {

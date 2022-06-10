@@ -174,7 +174,6 @@ const gameloop = setInterval(function() {
     renderRoom();
     if (game.select[0] != "looker" || !game.select[1]) {
         player();
-        enemyAnimations();
         renderCards();
         target();
     };
