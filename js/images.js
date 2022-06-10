@@ -7,50 +7,74 @@ const player_idle = new Image, player_attack = new Image, player_attack_2 = new 
 	letters_black = new Image, letters_red = new Image, letters_lightRed = new Image, // solid letters
 	letters_fade = [new Image, new Image, new Image], // transparent letters
 	health_bar = new Image, block_bar = new Image, energy = new Image, // bars
-	looker = new Image, select_looker = new Image, select_card = new Image, view = new Image; // other
+	select_looker = new Image, select_card = new Image, selector = [new Image, new Image, new Image, new Image], // selectors
+	looker = new Image, view = new Image; // other
 
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5],
-	tempAnim = [0, false, "normal", -1], playerAnim = [0, "idle"], invNum = -1;
+	tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], invNum = -1;
 
+// player
 player_idle.src = "images/player/idle.png";
 player_attack.src = "images/player/attack.png";
 player_attack_2.src = "images/player/attack_2.png";
 player_hit.src = "images/player/hit.png";
 
+// cards
 card_basic_attack.src = "images/cards/basic_attack.png";
 
+// monsters
 slime_big.src = "images/slime_big.png";
 slime_small.src = "images/slime_small.png";
 
+// monster animations
 slime_small_launch.src = "images/slime_small_launch.png";
 
+// backrounds
 background.src = "images/background.png";
 floating_arch.src = "images/floating_arch.png";
 
+// the clock
 clock_face.src = "images/clock/face.png";
 clock_hour_hand.src = "images/clock/hour_hand.png";
 clock_min_hand.src = "images/clock/min_hand.png";
 clock_node.src = "images/clock/node.png";
 
+// solid letters
 letters_black.src = "images/letters/black.png";
 letters_red.src = "images/letters/red.png";
 letters_lightRed.src = "images/letters/lightRed.png";
+
+// transparent letters
 letters_fade[0].src = "images/letters/fade_0.png";
 letters_fade[1].src = "images/letters/fade_1.png";
 letters_fade[2].src = "images/letters/fade_2.png";
 
+// bars
 health_bar.src = "images/health_bar.png";
 block_bar.src = "images/block_bar.png";
 energy.src = "images/energy.png";
 
-looker.src = "images/looker.png";
+// selectors
 select_looker.src = "images/select/looker.png";
 select_card.src = "images/select/card.png";
+selector[0].src = "images/select/u_l.png";
+selector[1].src = "images/select/u_r.png";
+selector[2].src = "images/select/d_l.png";
+selector[3].src = "images/select/d_r.png";
+
+// other
+looker.src = "images/looker.png";
 view.src = "images/view.png";
 
 const HourConvert = 82 / 12, // number of frames divided by number of hours on a clock (12)
-
 MinConvert = 80 / 60; // number of frames divided by number of minutes in an hour
+
+function select(x, y, width, height) {
+	ctx.drawImage(selector[0], x - 2, y - 2);
+	ctx.drawImage(selector[1], x + width + 2, y - 2);
+	ctx.drawImage(selector[2], x - 2, y + height + 2);
+	ctx.drawImage(selector[3], x + width + 2, y + height + 2);
+};
 
 function renderRoom() {
 	var now = new Date(Date.now()),
@@ -79,15 +103,16 @@ function renderRoom() {
 		game.enemies.splice(6);
 	};
 	if (game.select[0] != "looker" || !game.select[1]) {
-		for (let a = 0; a < game.enemies.length; a++) {
-			enemy = game.enemies[a];
-			if (a == 0) {
+		game.enemyPos = [];
+		for (let index = 0; index < game.enemies.length; index++) {
+			enemy = game.enemies[index];
+			if (index == 0) {
 				x = width - 70;
 				y = centerY;
-			} else if (a == 1) {
+			} else if (index == 1) {
 				x = width - 140;
 				y = centerY + 32;
-			} else if (a == 2) {
+			} else if (index == 2) {
 				x = width - 140;
 				y = centerY - 32;
 			};
@@ -95,49 +120,50 @@ function renderRoom() {
 				x = width - 105;
 				y = centerY;
 			} else if (game.enemies.length == 2) {
-				if (a == 0) {
+				if (index == 0) {
 					x = width - 70;
 					y = centerY - 5;
-				} else if (a == 1) {
+				} else if (index == 1) {
 					x = width - 140;
 					y = centerY + 20;
 				};
 			} else if (game.enemies.length == 4) {
-				if (a == 3) {
+				if (index == 3) {
 					x = width - 210;
 					y = centerY;
 				};
 			} else if (game.enemies.length == 5) {
-				if (a == 3) {
+				if (index == 3) {
 					x = width - 210;
 					y = centerY + 32;
-				} else if (a == 4) {
+				} else if (index == 4) {
 					x = width - 210;
 					y = centerY - 32;
 				};
 			} else if (game.enemies.length == 6) {
-				if (a == 3) {
+				if (index == 3) {
 					x = width - 210;
 					y = centerY + 64;
-				} else if (a == 4) {
+				} else if (index == 4) {
 					x = width - 210;
 					y = centerY;
-				} else if (a == 5) {
+				} else if (index == 5) {
 					x = width - 210;
 					y = centerY - 64;
 				};
 			};
 			x = Math.round(x);
 			y = Math.round(y);
-			if (enemyAnim[a] >= 4) enemyAnim[a] = 0;
-			if (a !== invNum) {
+			game.enemyPos.push([x, y]);
+			if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
+			if (index !== invNum) {
 				if (enemy[0] == "slime_big") {
-					ctx.drawImage(slime_big, Math.floor(enemyAnim[a]) * 64, 0, 64, 64, x, y, 64, 64);
+					ctx.drawImage(slime_big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, x, y, 64, 64);
 				} else if (enemy[0] == "slime_small") {
-					ctx.drawImage(slime_small, Math.floor(enemyAnim[a]) * 64, 0, 64, 64, x, y, 64, 64);
+					ctx.drawImage(slime_small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, x, y, 64, 64);
 				};
 			};
-			enemyAnim[a] += (Math.random() + 0.5) * 0.1;
+			enemyAnim[index] += (Math.random() + 0.5) * 0.1;
 			bars(x, y, enemy[1], enemy[2], enemy[3], enemy[4]);
 		};
 	};
@@ -163,11 +189,11 @@ function bars(x, y, health, maxHealth, block, maxBlock) {
 		if (maxHealth >= 1000) health = "0" + health;
 	};
 	if (health < 1000 && maxHealth >= 1000) {
-		 health = "0" + health;
+		health = "0" + health;
 	};
-	ctx.drawImage(health_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 64, 64, 12);
-	drawLore(x + 25, y + 66, health, "black", "left");
-	drawLore(x + 34, y + 66, maxHealth, "black", "right");
+	ctx.drawImage(health_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 65, 64, 12);
+	drawLore(x + 25, y + 67, health, "black", "left");
+	drawLore(x + 34, y + 67, maxHealth, "black", "right");
 	if (block === null || block === undefined || maxBlock === null || maxBlock === undefined || block < 1) return;
 	percentage = block / maxBlock;
 	if (percentage < 0) frame = 0;
@@ -185,9 +211,9 @@ function bars(x, y, health, maxHealth, block, maxBlock) {
 	if (block < 1000 && maxBlock >= 1000) {
 		block = "0" + block;
 	};
-	ctx.drawImage(block_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 75, 64, 12);
-	drawLore(x + 25, y + 77, block, "black", "left");
-	drawLore(x + 34, y + 77, maxBlock, "black", "right");
+	ctx.drawImage(block_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 76, 64, 12);
+	drawLore(x + 25, y + 78, block, "black", "left");
+	drawLore(x + 34, y + 78, maxBlock, "black", "right");
 };
 
 function startPlayerAnim(type) {
@@ -218,7 +244,7 @@ function player() {
 		playerAnim[0] += 0.5;
 		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
 	};
-	bars(x + 22, y + 16, game.health, game.maxHealth, game.block, game.maxBlock);
+	bars(x + 22, y + 15, game.health, game.maxHealth, game.block, game.maxBlock);
 	var frame, en = game.energy, maxEn = game.maxEnergy, percentage = en / maxEn;
 	if (percentage < 0) frame = 0;
 	else if (percentage > 1) frame = 30;
@@ -232,7 +258,7 @@ function player() {
 };
 
 function startEnemyAnim(index, type) {
-	if (type === null || index === null || type === undefined || index === undefined) return;
+	if (index === null || index === undefined || type === null || type === undefined) return;
 	tempAnim = [0, type, "normal", index];
 	if (type == "slime_small_launch") {
 		invNum = index;
@@ -240,54 +266,9 @@ function startEnemyAnim(index, type) {
 };
 
 function enemyAnimations() {
-	if (tempAnim[1]) {
-		if (tempAnim[1] == 0) {
-			x = width - 70;
-			y = centerY;
-		} else if (tempAnim[1] == 1) {
-			x = width - 140;
-			y = centerY + 32;
-		} else if (tempAnim[1] == 2) {
-			x = width - 140;
-			y = centerY - 32;
-		};
-		if (game.enemies.length == 1) {
-			x = width - 105;
-			y = centerY;
-		} else if (game.enemies.length == 2) {
-			if (tempAnim[1] == 0) {
-				x = width - 70;
-				y = centerY - 5;
-			} else if (a == 1) {
-				x = width - 140;
-				y = centerY + 20;
-			};
-		} else if (game.enemies.length == 4) {
-			if (tempAnim[1] == 3) {
-				x = width - 210;
-				y = centerY;
-			};
-		} else if (game.enemies.length == 5) {
-			if (tempAnim[1] == 3) {
-				x = width - 210;
-				y = centerY + 32;
-			} else if (tempAnim[1] == 4) {
-				x = width - 210;
-				y = centerY - 32;
-			};
-		} else if (game.enemies.length == 6) {
-			if (tempAnim[1] == 3) {
-				x = width - 210;
-				y = centerY + 64;
-			} else if (tempAnim[1] == 4) {
-				x = width - 210;
-				y = centerY;
-			} else if (tempAnim[1] == 5) {
-				x = width - 210;
-				y = centerY - 64;
-			};
-		};
-	};
+	if (tempAnim[3] == -1) return;
+	x = game.enemyPos[tempAnim[3]][0];
+	y = game.enemyPos[tempAnim[3]][1];
 	if (tempAnim[1] == "slime_small_launch") {
 		ctx.drawImage(slime_small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, x - 64, y, 128, 64);
 		if (tempAnim[2] == "normal") tempAnim[0]++;
@@ -296,7 +277,7 @@ function enemyAnimations() {
 			tempAnim[0] = 12;
 			tempAnim[2] = "backwards";
 		} else if (tempAnim[0] < 0) {
-			tempAnim = [0, false, "normal", -1];
+			tempAnim = [0, "none", "normal", -1];
 			enemyAnim[tempAnim[3]] = 0;
 		};
 		invNum = tempAnim[3];
@@ -343,6 +324,15 @@ function renderCards() {
 		notif[1]++;
 		if (notif[1] > 11) notif = [0, 0];
 	};
+};
+
+function target() {
+	if (game.select[0] == "attack_enemy") {
+        enemySelect = game.enemies[game.select[1]];
+        pos = game.enemyPos[game.select[1]];
+        if (enemySelect[0] == "slime_small") select(pos[0] + 19, pos[1] + 35, 18, 20);
+        else if (enemySelect[0] == "slime_big") select(pos[0], pos[1], 64, 64);
+    };
 };
 
 function drawLore(x, y, string, color = "black", position = "right") {

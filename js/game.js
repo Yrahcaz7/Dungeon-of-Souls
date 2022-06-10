@@ -11,6 +11,7 @@ var game = {
     energy: 3,
     maxEnergy: 3,
     enemies: [],
+    enemyPos: [],
     deck: ["basic_attack", "basic_attack", "basic_attack", "basic_attack", "basic_attack", "basic_attack", "basic_attack"],
     hand: [],
     handSize: 5,
@@ -165,5 +166,6 @@ const gameloop = setInterval(function() {
         player();
         enemyAnimations();
         renderCards();
+        target();
     };
 }, 100);
