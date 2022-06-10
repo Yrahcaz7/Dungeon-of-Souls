@@ -6,7 +6,8 @@ const player_idle = new Image, player_attack = new Image, player_attack_2 = new 
 	clock_face = new Image, clock_hour_hand = new Image, clock_min_hand = new Image, clock_node = new Image, // the clock
 	letters_black = new Image, letters_red = new Image, letters_lightRed = new Image, // solid letters
 	letters_fade = [new Image, new Image, new Image], // transparent letters
-	health_bar = new Image, block_bar = new Image, view = new Image; // other
+	health_bar = new Image, block_bar = new Image, // bars
+	looker = new Image, select_looker = new Image, select_card = new Image, view = new Image; // other
 
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5],
 	tempAnim = [0, false, "normal", -1], playerAnim = [0, "idle"], invNum = -1;
@@ -40,6 +41,10 @@ letters_fade[2].src = "images/letters/fade_2.png";
 
 health_bar.src = "images/health_bar.png";
 block_bar.src = "images/block_bar.png";
+
+looker.src = "images/looker.png";
+select_looker.src = "images/select/looker.png";
+select_card.src = "images/select/card.png";
 view.src = "images/view.png";
 
 const HourConvert = 82 / 12, // number of frames divided by number of hours on a clock (12)
@@ -72,68 +77,72 @@ function renderRoom() {
 	if (game.enemies.length > 6) {
 		game.enemies.splice(6);
 	};
-	for (let a = 0; a < game.enemies.length; a++) {
-		enemy = game.enemies[a];
-		if (a == 0) {
-			x = width - 70;
-			y = centerY;
-		} else if (a == 1) {
-			x = width - 140;
-			y = centerY + 32;
-		} else if (a == 2) {
-			x = width - 140;
-			y = centerY - 32;
-		};
-		if (game.enemies.length == 1) {
-			x = width - 105;
-			y = centerY;
-		} else if (game.enemies.length == 2) {
+	if (game.select[0] != "looker" || !game.select[1]) {
+		for (let a = 0; a < game.enemies.length; a++) {
+			enemy = game.enemies[a];
 			if (a == 0) {
 				x = width - 70;
-				y = centerY - 5;
+				y = centerY;
 			} else if (a == 1) {
 				x = width - 140;
-				y = centerY + 20;
-			};
-		} else if (game.enemies.length == 4) {
-			if (a == 3) {
-				x = width - 210;
-				y = centerY;
-			};
-		} else if (game.enemies.length == 5) {
-			if (a == 3) {
-				x = width - 210;
 				y = centerY + 32;
-			} else if (a == 4) {
-				x = width - 210;
+			} else if (a == 2) {
+				x = width - 140;
 				y = centerY - 32;
 			};
-		} else if (game.enemies.length == 6) {
-			if (a == 3) {
-				x = width - 210;
-				y = centerY + 64;
-			} else if (a == 4) {
-				x = width - 210;
+			if (game.enemies.length == 1) {
+				x = width - 105;
 				y = centerY;
-			} else if (a == 5) {
-				x = width - 210;
-				y = centerY - 64;
+			} else if (game.enemies.length == 2) {
+				if (a == 0) {
+					x = width - 70;
+					y = centerY - 5;
+				} else if (a == 1) {
+					x = width - 140;
+					y = centerY + 20;
+				};
+			} else if (game.enemies.length == 4) {
+				if (a == 3) {
+					x = width - 210;
+					y = centerY;
+				};
+			} else if (game.enemies.length == 5) {
+				if (a == 3) {
+					x = width - 210;
+					y = centerY + 32;
+				} else if (a == 4) {
+					x = width - 210;
+					y = centerY - 32;
+				};
+			} else if (game.enemies.length == 6) {
+				if (a == 3) {
+					x = width - 210;
+					y = centerY + 64;
+				} else if (a == 4) {
+					x = width - 210;
+					y = centerY;
+				} else if (a == 5) {
+					x = width - 210;
+					y = centerY - 64;
+				};
 			};
-		};
-		x = Math.round(x);
-		y = Math.round(y);
-		if (enemyAnim[a] >= 4) enemyAnim[a] = 0;
-		if (a !== invNum) {
-			if (enemy[0] == "slime_big") {
-				ctx.drawImage(slime_big, Math.floor(enemyAnim[a]) * 64, 0, 64, 64, x, y, 64, 64);
-			} else if (enemy[0] == "slime_small") {
-				ctx.drawImage(slime_small, Math.floor(enemyAnim[a]) * 64, 0, 64, 64, x, y, 64, 64);
+			x = Math.round(x);
+			y = Math.round(y);
+			if (enemyAnim[a] >= 4) enemyAnim[a] = 0;
+			if (a !== invNum) {
+				if (enemy[0] == "slime_big") {
+					ctx.drawImage(slime_big, Math.floor(enemyAnim[a]) * 64, 0, 64, 64, x, y, 64, 64);
+				} else if (enemy[0] == "slime_small") {
+					ctx.drawImage(slime_small, Math.floor(enemyAnim[a]) * 64, 0, 64, 64, x, y, 64, 64);
+				};
 			};
+			enemyAnim[a] += (Math.random() + 0.5) * 0.1;
+			bars(x, y, enemy[1], enemy[2], enemy[3], enemy[4]);
 		};
-		enemyAnim[a] += (Math.random() + 0.5) * 0.1;
-		bars(x, y, enemy[1], enemy[2], enemy[3], enemy[4]);
 	};
 	ctx.drawImage(view, 0, 0);
+	if (game.select[0] == "looker") ctx.drawImage(select_looker, 2, 11);
+	ctx.drawImage(looker, 2, 11);
 	drawLore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
@@ -306,7 +315,10 @@ function renderCards() {
 	setCardPos();
 	for (let index = 0; index < game.hand.length; index++) {
 		var card = game.hand[index], y = 138;
-		if (game.select.includes(index)) y = 100;
+		if (game.select[0] == "hand" && game.select[1] == index) {
+			ctx.drawImage(select_card, game.handPos[index] - 1, 99);
+			y = 100;
+		};
 		if (card == "basic_attack") {
 			ctx.drawImage(card_basic_attack, game.handPos[index], y);
 		};
@@ -316,7 +328,7 @@ function renderCards() {
 		if (notif[1] >= 9) color = "fade_2";
 		else if (notif[1] >= 7) color = "fade_1";
 		else if (notif[1] >= 5) color = "fade_0";
-		drawLore(notif[0], 92 - notif[1], "not enough energy", color, "center");
+		drawLore(notif[0], 91 - notif[1], "not enough energy", color, "center");
 		notif[1]++;
 		if (notif[1] > 11) notif = [0, 0];
 	};

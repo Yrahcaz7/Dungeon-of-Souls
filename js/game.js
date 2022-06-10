@@ -70,6 +70,17 @@ function playerTurn() {
     if (!actionTimer || actionTimer < -1) actionTimer = -1;
     // select hand
     if (game.select[0] == "none") game.select = ["hand", 0];
+    // activate / deactivate looker
+    if (action == "enter" && game.select[0] == "looker") {
+        if (game.select[1] == 0) game.select[1] = 1;
+        else game.select[1] = 0;
+        actionTimer = 2;
+    };
+    // deselect looker
+    if (action == "down" && game.select[0] == "looker" && !game.select[1]) {
+        game.select = ["hand", 0];
+        actionTimer = 1;
+    };
     // select card
     if (game.select[0] == "hand") {
         if (!game.hand) {
@@ -80,6 +91,9 @@ function playerTurn() {
                 actionTimer = 1;
             } else if (action == "right" && game.select[1] < game.hand.length - 1) {
                 game.select[1]++;
+                actionTimer = 1;
+            } else if (action == "up") {
+                game.select = ["looker", 0];
                 actionTimer = 1;
             };
             if (game.select[1] < 0) game.select[1] = 0;
@@ -121,7 +135,9 @@ const gameloop = setInterval(function() {
         };
     };
     renderRoom();
-    player();
-    enemyAnimations();
-    renderCards();
+    if (game.select[0] != "looker" || !game.select[1]) {
+        player();
+        enemyAnimations();
+        renderCards();
+    };
 }, 100);
