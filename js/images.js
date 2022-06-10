@@ -6,7 +6,7 @@ const player_idle = new Image, player_attack = new Image, player_attack_2 = new 
 	clock_face = new Image, clock_hour_hand = new Image, clock_min_hand = new Image, clock_node = new Image, // the clock
 	letters_black = new Image, letters_red = new Image, letters_lightRed = new Image, // solid letters
 	letters_fade = [new Image, new Image, new Image], // transparent letters
-	health_bar = new Image, block_bar = new Image, // bars
+	health_bar = new Image, block_bar = new Image, energy = new Image, // bars
 	looker = new Image, select_looker = new Image, select_card = new Image, view = new Image; // other
 
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5],
@@ -41,6 +41,7 @@ letters_fade[2].src = "images/letters/fade_2.png";
 
 health_bar.src = "images/health_bar.png";
 block_bar.src = "images/block_bar.png";
+energy.src = "images/energy.png";
 
 looker.src = "images/looker.png";
 select_looker.src = "images/select/looker.png";
@@ -218,6 +219,16 @@ function player() {
 		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
 	};
 	bars(x + 22, y + 16, game.health, game.maxHealth, game.block, game.maxBlock);
+	var frame, en = game.energy, maxEn = game.maxEnergy, percentage = en / maxEn;
+	if (percentage < 0) frame = 0;
+	else if (percentage > 1) frame = 30;
+	else frame = percentage * 30;
+	if (en < 10 && maxEn >= 10) {
+		en = "0" + en;
+	};
+	ctx.drawImage(energy, 0, Math.round(frame) * 31, 32, 32, x, y + 16, 32, 32);
+	drawLore(x + 9, y + 28, en, "black", "left");
+	drawLore(x + 18, y + 28, maxEn, "black", "right");
 };
 
 function startEnemyAnim(index, type) {
