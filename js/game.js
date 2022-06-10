@@ -143,7 +143,7 @@ function playerTurn() {
     };
     // attack enemy
     if (action == "enter" && game.select[0] == "attack_enemy") {
-        if ("basic_attack") {
+        if (game.enemyAtt == "basic_attack") {
             game.energy--;
             startPlayerAnim("attack");
             game.select[0] = "attack_fin";

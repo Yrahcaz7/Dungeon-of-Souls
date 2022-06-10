@@ -249,14 +249,22 @@ function setCardPos() {
 	};
 };
 
-function showCard(type, index, y) {
+function showCard(type, index, y, overrideX = NaN) {
+    var x = game.handPos[index];
+    overrideX = +overrideX;
+    if (overrideX !== null && overrideX !== undefined && overrideX === overrideX) x = overrideX;
 	if (type == "basic_attack") {
-		ctx.drawImage(card_basic_attack, game.handPos[index], y);
+		ctx.drawImage(card_basic_attack, x, y);
 	};
 };
 
 function renderCards() {
 	setCardPos();
+    if (game.select[0] == "attack_enemy") {
+        showCard(game.enemyAtt, 0, height / 2 - 48, 104);
+        ctx.drawImage(select_card, 103, height / 2 - 48 - 1);
+    };
+    if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") return;
 	var temp = -1;
 	for (let index = 0; index < game.hand.length; index++) {
 		var card = game.hand[index];
