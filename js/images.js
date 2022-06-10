@@ -4,7 +4,8 @@ const player_idle = new Image, player_attack = new Image, player_attack_2 = new 
 	slime_small_launch = new Image, // monster animations
 	background = new Image, floating_arch = new Image, // backrounds
 	clock_face = new Image, clock_hour_hand = new Image, clock_min_hand = new Image, clock_node = new Image, // the clock
-	letters_black = new Image, letters_red = new Image, letters_fade = [new Image, new Image, new Image], // letters
+	letters_black = new Image, letters_red = new Image, letters_lightRed = new Image, // solid letters
+	letters_fade = [new Image, new Image, new Image], // transparent letters
 	health_bar = new Image, block_bar = new Image, view = new Image; // other
 
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5],
@@ -32,6 +33,7 @@ clock_node.src = "images/clock/node.png";
 
 letters_black.src = "images/letters/black.png";
 letters_red.src = "images/letters/red.png";
+letters_lightRed.src = "images/letters/lightRed.png";
 letters_fade[0].src = "images/letters/fade_0.png";
 letters_fade[1].src = "images/letters/fade_1.png";
 letters_fade[2].src = "images/letters/fade_2.png";
@@ -310,13 +312,13 @@ function renderCards() {
 		};
 	};
 	if (notif[0] || notif[1]) {
-		var color = "black";
+		var color = "lightRed";
 		if (notif[1] >= 9) color = "fade_2";
-		else if (notif[1] >= 6) color = "fade_1";
-		else if (notif[1] >= 3) color = "fade_0";
+		else if (notif[1] >= 7) color = "fade_1";
+		else if (notif[1] >= 5) color = "fade_0";
 		drawLore(notif[0], 92 - notif[1], "not enough energy", color, "center");
 		notif[1]++;
-		if (notif[1] > 12) notif = [0, 0];
+		if (notif[1] > 11) notif = [0, 0];
 	};
 };
 
@@ -325,6 +327,7 @@ function drawLore(x, y, string, color = "black", position = "right") {
 	var img = letters_black;
 	string = "" + string;
 	if (color == "red") img = letters_red;
+	else if (color == "lightRed") img = letters_lightRed;
 	else if (color == "fade_0") img = letters_fade[0];
 	else if (color == "fade_1") img = letters_fade[1];
 	else if (color == "fade_2") img = letters_fade[2];
