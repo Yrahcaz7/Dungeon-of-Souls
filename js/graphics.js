@@ -6,9 +6,9 @@ var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5
 
 function select(x, y, width, height) {
 	ctx.drawImage(selector[0], x - 2, y - 2);
-	ctx.drawImage(selector[1], x + width + 2, y - 2);
-	ctx.drawImage(selector[2], x - 2, y + height + 2);
-	ctx.drawImage(selector[3], x + width + 2, y + height + 2);
+	ctx.drawImage(selector[1], x + width - 6, y - 2);
+	ctx.drawImage(selector[2], x - 2, y + height - 7);
+	ctx.drawImage(selector[3], x + width - 6, y + height - 7);
 };
 
 function renderRoom() {
@@ -58,12 +58,10 @@ function bars(x, y, health, maxHealth, block, maxBlock) {
 		health = "0" + health;
 		if (maxHealth >= 100) health = "0" + health;
 		if (maxHealth >= 1000) health = "0" + health;
-	};
-	if (health < 100 && maxHealth >= 100) {
+	} else if (health < 100 && maxHealth >= 100) {
 		health = "0" + health;
 		if (maxHealth >= 1000) health = "0" + health;
-	};
-	if (health < 1000 && maxHealth >= 1000) {
+	} else if (health < 1000 && maxHealth >= 1000) {
 		health = "0" + health;
 	};
 	ctx.drawImage(health_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 65, 64, 12);
@@ -78,12 +76,10 @@ function bars(x, y, health, maxHealth, block, maxBlock) {
 		block = "0" + block;
 		if (maxBlock >= 100) block = "0" + block;
 		if (maxBlock >= 1000) block = "0" + block;
-	};
-	if (block < 100 && maxBlock >= 100) {
+	} else if (block < 100 && maxBlock >= 100) {
 		block = "0" + block;
 		if (maxBlock >= 1000) block = "0" + block;
-	};
-	if (block < 1000 && maxBlock >= 1000) {
+	} else if (block < 1000 && maxBlock >= 1000) {
 		block = "0" + block;
 	};
 	ctx.drawImage(block_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 76, 64, 12);
@@ -300,8 +296,13 @@ function target() {
 	if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") {
         enemySelect = game.enemies[game.select[1]];
         pos = game.enemyPos[game.select[1]];
-        if (enemySelect[0] == "slime_small") select(pos[0] + 19, pos[1] + 35, 18, 20);
-        else if (enemySelect[0] == "slime_big") select(pos[0], pos[1], 64, 64);
+        if (enemySelect[0] == "slime_small") {
+            select(pos[0] + 19, pos[1] + 35, 26, 29);
+            drawLore(pos[0] + 32, pos[1] + 24, "small slime", "white", "center");
+        } else if (enemySelect[0] == "slime_big") {
+            select(pos[0] + 5, pos[1] + 25, 54, 39);
+            drawLore(pos[0] + 32, pos[1] + 14, "big slime", "white", "center");
+        };
     };
 };
 
@@ -310,6 +311,7 @@ function drawLore(x, y, string, color = "black", position = "right") {
 	var img = letters_black;
 	string = "" + string;
 	if (color == "red") img = letters_red;
+    else if (color == "white") img = letters_white;
 	else if (color == "fade_0") img = letters_fade[0];
 	else if (color == "fade_1") img = letters_fade[1];
 	else if (color == "fade_2") img = letters_fade[2];

@@ -4,7 +4,7 @@ const player_idle = new Image, player_attack = new Image, player_attack_2 = new 
 	slime_small_launch = new Image, // monster animations
 	background = new Image, floating_arch = new Image, // backrounds
 	clock_face = new Image, clock_hour_hand = new Image, clock_min_hand = new Image, clock_node = new Image, // the clock
-	letters_black = new Image, letters_red = new Image, // solid letters
+	letters_black = new Image, letters_red = new Image, letters_white = new Image, // solid letters
 	letters_fade = [new Image, new Image, new Image], // transparent letters
 	health_bar = new Image, block_bar = new Image, energy = new Image, // bars
 	select_round = new Image, select_card = new Image, selector = [new Image, new Image, new Image, new Image], // selectors
@@ -39,6 +39,7 @@ clock_node.src = "images/clock/node.png";
 // solid letters
 letters_black.src = "images/letters/black.png";
 letters_red.src = "images/letters/red.png";
+letters_white.src = "images/letters/white.png";
 
 // transparent letters
 letters_fade[0].src = "images/letters/fade_0.png";

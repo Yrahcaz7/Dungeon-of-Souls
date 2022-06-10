@@ -104,10 +104,36 @@ function playerTurn() {
                     game.select[1]++;
                     actionTimer = 1;
                 } else {
-                    game.select = ["lookat_enemy", 0];
+                    var to = -1, distance = -1;
+                    for (let a = 0; a < game.enemies.length; a++) {
+                        if (game.enemyPos[a][1] > distance) {
+                            distance = game.enemyPos[a][1];
+                            to = a;
+                        };
+                    };
+                    game.select = ["lookat_enemy", to];
                     actionTimer = 1;
+                    return;
                 };
             } else if (action == "up") {
+                if (game.handPos[game.select[1]] >= width / 2 - 32) {
+                    var to = -1, distance = -1;
+                    for (let a = 0; a < game.enemies.length; a++) {
+                        if (game.enemyPos[a][1] > distance) {
+                            distance = game.enemyPos[a][1];
+                            to = a;
+                        };
+                    };
+                    for (let a = 0; a < game.enemies.length; a++) {
+                        if (game.enemyPos[a][0] < distance) {
+                            distance = game.enemyPos[a][0];
+                            to = a;
+                        };
+                    };
+                    game.select = ["lookat_enemy", to];
+                    actionTimer = 1;
+                    return;
+                };
                 game.select = ["looker", 0];
                 actionTimer = 1;
             };
