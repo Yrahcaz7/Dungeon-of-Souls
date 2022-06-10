@@ -102,10 +102,12 @@ function renderRoom() {
 			bars(x, y, enemy[1], enemy[2], enemy[3], enemy[4]);
 		};
 	};
-	ctx.drawImage(view, 0, 0);
-	if (game.select[0] == "looker") ctx.drawImage(select_looker, 2, 11);
-	ctx.drawImage(looker, 2, 11);
-	drawLore(1, 1, "floor: " + game.floor, "red", "right");
+    ctx.drawImage(view, 0, 0);
+    if (game.select[0] == "help") ctx.drawImage(select_round, 2, 11);
+    if (game.select[0] == "looker") ctx.drawImage(select_round, 22, 11);
+    ctx.drawImage(help, 2, 11);
+    ctx.drawImage(looker, 22, 11);
+    drawLore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
 function bars(x, y, health, maxHealth, block, maxBlock) {

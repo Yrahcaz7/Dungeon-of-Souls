@@ -7,8 +7,8 @@ const player_idle = new Image, player_attack = new Image, player_attack_2 = new 
 	letters_black = new Image, letters_red = new Image, letters_lightRed = new Image, // solid letters
 	letters_fade = [new Image, new Image, new Image], // transparent letters
 	health_bar = new Image, block_bar = new Image, energy = new Image, // bars
-	select_looker = new Image, select_card = new Image, selector = [new Image, new Image, new Image, new Image], // selectors
-	looker = new Image, view = new Image; // other
+	select_round = new Image, select_card = new Image, selector = [new Image, new Image, new Image, new Image], // selectors
+	looker = new Image, help = new Image, view = new Image; // other
 
 // player
 player_idle.src = "images/player/idle.png";
@@ -52,7 +52,7 @@ block_bar.src = "images/block_bar.png";
 energy.src = "images/energy.png";
 
 // selectors
-select_looker.src = "images/select/looker.png";
+select_round.src = "images/select/round.png";
 select_card.src = "images/select/card.png";
 selector[0].src = "images/select/u_l.png";
 selector[1].src = "images/select/u_r.png";
@@ -61,4 +61,5 @@ selector[3].src = "images/select/d_r.png";
 
 // other
 looker.src = "images/looker.png";
+help.src = "images/help.png";
 view.src = "images/view.png";

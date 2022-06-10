@@ -78,10 +78,18 @@ function playerTurn() {
         else game.select[1] = 0;
         actionTimer = 2;
     };
-    // deselect looker
-    if (action == "down" && game.select[0] == "looker" && !game.select[1]) {
-        game.select = ["hand", 0];
-        actionTimer = 1;
+    // deselect extras
+    if ((game.select[0] == "help" || game.select[0] == "looker") && !game.select[1]) {
+        if (action == "left" && game.select[0] == "looker") {
+            game.select = ["help", 0];
+            actionTimer = 1;
+        } else if (action == "right" && game.select[0] == "help") {
+            game.select = ["looker", 0];
+            actionTimer = 1;
+        } else if (action == "down") {
+            game.select = ["hand", 0];
+            actionTimer = 1;
+        };
     };
     // select card
     if (game.select[0] == "hand") {
@@ -146,10 +154,11 @@ function playerTurn() {
 };
 
 const gameloop = setInterval(function() {
+    // clear
+    ctx.clearRect(0, 0, width, height);
     // actions
     if (game.turn == "player") playerTurn();
-    // visuals
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    // load floor
     if (game.floor == 1) {
         if (game.state == "enter") {
             game.enemies.push(["slime_small", 20, 20, 0, 10]);
@@ -161,6 +170,7 @@ const gameloop = setInterval(function() {
             enterBattle();
         };
     };
+    // visuals
     renderRoom();
     if (game.select[0] != "looker" || !game.select[1]) {
         player();
