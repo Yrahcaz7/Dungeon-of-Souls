@@ -10,9 +10,6 @@ const player_idle = new Image, player_attack = new Image, player_attack_2 = new 
 	select_looker = new Image, select_card = new Image, selector = [new Image, new Image, new Image, new Image], // selectors
 	looker = new Image, view = new Image; // other
 
-var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5],
-	tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], invNum = -1;
-
 // player
 player_idle.src = "images/player/idle.png";
 player_attack.src = "images/player/attack.png";
