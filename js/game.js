@@ -17,7 +17,7 @@ var game = {
     handSize: 5,
     handPos: [],
     discard: [],
-}, actionTimer = -1, notif = [0, 0];
+}, actionTimer = -1, notif = [-1, 0];
 
 function hardReset() {
     localStorage.removeItem("Yrahcaz7/Dungeon-of-Souls/save");
@@ -147,7 +147,7 @@ function playerTurn() {
         //} else if (selected == "card_name" && game.energy >= 1) {
             
         } else {
-            notif = [game.handPos[game.select[1]] + 32, 0];
+            notif = [game.select[1], 0];
             actionTimer = 1;
         };
     };

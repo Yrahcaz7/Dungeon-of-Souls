@@ -285,14 +285,14 @@ function renderCards() {
             if (cardAnim[index] < 0) cardAnim[index] = 0;
         };
     };
-	if (notif[0] || notif[1]) {
-		var color = "lightRed";
+	if (notif[0] != -1) {
+		var color = "red";
 		if (notif[1] >= 9) color = "fade_2";
 		else if (notif[1] >= 7) color = "fade_1";
 		else if (notif[1] >= 5) color = "fade_0";
-		drawLore(notif[0], 91 - notif[1], "not enough energy", color, "center");
+		drawLore(game.handPos[notif[0]] + 32, 129 - Math.ceil(cardAnim[notif[0]]) - notif[1], "not enough energy", color, "center");
 		notif[1]++;
-		if (notif[1] > 11) notif = [0, 0];
+		if (notif[1] > 11) notif = [-1, 0];
 	};
 };
 
@@ -310,7 +310,6 @@ function drawLore(x, y, string, color = "black", position = "right") {
 	var img = letters_black;
 	string = "" + string;
 	if (color == "red") img = letters_red;
-	else if (color == "lightRed") img = letters_lightRed;
 	else if (color == "fade_0") img = letters_fade[0];
 	else if (color == "fade_1") img = letters_fade[1];
 	else if (color == "fade_2") img = letters_fade[2];
