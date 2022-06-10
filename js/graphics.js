@@ -1,7 +1,7 @@
 const HourConvert = 82 / 12, // number of frames divided by number of hours on a clock (12)
 MinConvert = 80 / 60; // number of frames divided by number of minutes in an hour
 
-var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5],
+var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 	tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], invNum = -1;
 
 function select(x, y, width, height) {
@@ -260,17 +260,28 @@ function renderCards() {
 	setCardPos();
 	var temp = -1;
 	for (let index = 0; index < game.hand.length; index++) {
-		var card = game.hand[index], y = 138;
+		var card = game.hand[index];
 		if (game.select[0] == "hand" && game.select[1] == index) {
 			temp = index;
 		} else {
-			showCard(card, index, y);
+			showCard(card, index, 138 - Math.floor(cardAnim[index]));
 		};
 	};
 	if (temp != -1) {
-		ctx.drawImage(select_card, game.handPos[temp] - 1, 99);
-		showCard(game.hand[temp], temp, 100);
-	};
+		ctx.drawImage(select_card, game.handPos[temp] - 1, 137 - Math.floor(cardAnim[temp]));
+        showCard(game.hand[temp], temp, 138 - Math.floor(cardAnim[temp]));
+        if (cardAnim[temp] < 38) cardAnim[temp] += 4 + Math.random();
+        if (cardAnim[temp] > 38) cardAnim[temp] = 38;
+    };
+    for (let index = 0; index < game.hand.length; index++) {
+        var card = game.hand[index];
+        if (index == temp) {
+            continue;
+        } else {
+            if (cardAnim[index] > 0) cardAnim[index] -= 3.5 + Math.random();
+            if (cardAnim[index] < 0) cardAnim[index] = 0;
+        };
+    };
 	if (notif[0] || notif[1]) {
 		var color = "lightRed";
 		if (notif[1] >= 9) color = "fade_2";
