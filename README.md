@@ -7,3 +7,4 @@ Is there something more to this place than what it seems?
 Inspired by ***Slay the Spire*** and ***Die in the Dungeon***.
 
 Player sprites taken from [**here**](https://aamatniekss.itch.io/fantasy-knight-free-pixelart-animated-character) and modified slightly.
+Some player sprites, however, are only based off of those.
