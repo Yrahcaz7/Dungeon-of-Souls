@@ -43,8 +43,9 @@ function renderRoom() {
     ctx.drawImage(view, 0, 0);
     if (game.select[0] == "help") ctx.drawImage(select_round, 2, 11);
     if (game.select[0] == "looker") ctx.drawImage(select_round, 22, 11);
-    ctx.drawImage(help, 2, 11);
-    ctx.drawImage(looker, 22, 11);
+    ctx.drawImage(help, 3, 12);
+    if (game.select[0] == "looker" && game.select[1] == 1) ctx.drawImage(looker, 15, 0, 16, 16, 23, 12, 16, 16);
+	else ctx.drawImage(looker, 0, 0, 16, 16, 23, 12, 16, 16);
     drawLore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
@@ -277,7 +278,7 @@ function renderCards() {
 	if (temp != -1) {
 		ctx.drawImage(select_card, game.handPos[temp] - 1, 137 - Math.floor(cardAnim[temp]));
         showCard(game.hand[temp], temp, 138 - Math.floor(cardAnim[temp]));
-        if (cardAnim[temp] < 38) cardAnim[temp] += 4 + Math.random();
+        if (cardAnim[temp] < 38) cardAnim[temp] += 5 + Math.random();
         if (cardAnim[temp] > 38) cardAnim[temp] = 38;
     };
     for (let index = 0; index < game.hand.length; index++) {
@@ -285,7 +286,7 @@ function renderCards() {
         if (index == temp) {
             continue;
         } else {
-            if (cardAnim[index] > 0) cardAnim[index] -= 3.5 + Math.random();
+            if (cardAnim[index] > 0) cardAnim[index] -= 4.5 + Math.random();
             if (cardAnim[index] < 0) cardAnim[index] = 0;
         };
     };
