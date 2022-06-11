@@ -1,5 +1,5 @@
 const player_idle = new Image, player_attack = new Image, player_attack_2 = new Image, player_hit = new Image, // player
-	card_basic_attack = new Image, // cards
+	card_basic_attack = new Image, card_block = new Image, // cards
 	slime_big = new Image, slime_small = new Image, // monsters
 	slime_small_launch = new Image, // monster animations
 	background = new Image, floating_arch = new Image, // backrounds
@@ -18,6 +18,7 @@ player_hit.src = "images/player/hit.png";
 
 // cards
 card_basic_attack.src = "images/cards/basic_attack.png";
+card_block.src = "images/cards/block.png";
 
 // monsters
 slime_big.src = "images/slime_big.png";

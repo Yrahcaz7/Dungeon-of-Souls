@@ -257,6 +257,9 @@ function showCard(type, index, y, overrideX = NaN) {
 	if (type == "basic_attack") {
 		ctx.drawImage(card_basic_attack, x, y);
 	};
+	if (type == "block") {
+		ctx.drawImage(card_block, x, y);
+	};
 };
 
 function renderCards() {

@@ -12,10 +12,11 @@ var game = {
     maxEnergy: 3,
     enemies: [],
     enemyPos: [],
-    deck: ["basic_attack", "basic_attack", "basic_attack", "basic_attack", "basic_attack", "basic_attack", "basic_attack"],
+    deck: ["basic_attack", "basic_attack", "basic_attack", "basic_attack", "block", "block", "block", "block"],
     hand: [],
     handSize: 5,
     handPos: [],
+    activeCard: -1,
     discard: [],
 }, actionTimer = -1, notif = [-1, 0];
 
@@ -146,14 +147,16 @@ function playerTurn() {
         if (game.enemyAtt == "basic_attack") {
             game.energy--;
             startPlayerAnim("attack");
-            game.select[0] = "attack_fin";
-            game.discard.push(selected);
-            game.hand.splice(game.select[1], 1);
-            actionTimer = 4;
         };
+        game.select[0] = "attack_fin";
+        game.discard.push(game.hand[game.activeCard]);
+        game.hand.splice(game.activeCard, 1);
+        actionTimer = 4;
     };
     if (game.select[0] == "attack_fin" && actionTimer < 0) {
-        game.enemies[game.select[1]][1] -= 5;
+        if (game.enemyAtt == "basic_attack") {
+            game.enemies[game.select[1]][1] -= 5;
+        };
         game.select = ["hand", 0];
         game.enemyAtt = "none";
         actionTimer = 1;
@@ -175,11 +178,16 @@ function playerTurn() {
     if (action == "enter" && game.select[0] == "hand") {
         var selected = game.hand[game.select[1]];
         if (selected == "basic_attack" && game.energy >= 1) {
+            game.activeCard = game.select[1];
             game.select = ["attack_enemy", game.enemies.length - 1];
             game.enemyAtt = "basic_attack";
             actionTimer = 5;
-        //} else if (selected == "card_name" && game.energy >= 1) {
-            
+        } else if (selected == "block" && game.energy >= 1) {
+            game.energy--;
+            game.block += 4;
+            game.discard.push(game.hand[game.select[1]]);
+            game.hand.splice(game.select[1], 1);
+            actionTimer = 5;
         } else {
             notif = [game.select[1], 0];
             actionTimer = 1;
