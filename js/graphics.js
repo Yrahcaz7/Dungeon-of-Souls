@@ -205,11 +205,16 @@ function enemies() {
 	x = game.enemyPos[tempAnim[3]][0];
 	y = game.enemyPos[tempAnim[3]][1];
 	if (tempAnim[1] == "slime_small_launch") {
-		ctx.drawImage(slime_small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, x - 64, y, 128, 64);
+		if (tempAnim[0] >= 10) {
+			var phase = ((tempAnim[0] - 9) / 10),
+			posX = (((x - 69) - 64) * phase),
+			posY = (((y - (centerY + 10))) * phase);
+			ctx.drawImage(slime_small_launch, 9 * 128, 0, 128, 64, x - 64 - posX, y - posY, 128, 64);
+		} else ctx.drawImage(slime_small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, x - 64, y, 128, 64);
 		if (tempAnim[2] == "normal") tempAnim[0]++;
 		else if (tempAnim[2] == "backwards") tempAnim[0]--;
-		if (tempAnim[0] >= 14) {
-			tempAnim[0] = 12;
+		if (tempAnim[0] >= 20) {
+			tempAnim[0] = 18;
 			tempAnim[2] = "backwards";
 		} else if (tempAnim[0] < 0) {
 			tempAnim = [0, "none", "normal", -1];
