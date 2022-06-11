@@ -12,7 +12,7 @@ var game = {
     maxEnergy: 3,
     enemies: [],
     enemyPos: [],
-    deck: ["basic_attack", "basic_attack", "basic_attack", "basic_attack", "block", "block", "block", "block"],
+    deck: ["slash", "slash", "slash", "slash", "block", "block", "block", "block"],
     hand: [],
     handSize: 5,
     handPos: [],
@@ -144,7 +144,7 @@ function playerTurn() {
     };
     // attack enemy
     if (action == "enter" && game.select[0] == "attack_enemy") {
-        if (game.enemyAtt == "basic_attack") {
+        if (game.enemyAtt == "slash") {
             game.energy--;
             startPlayerAnim("attack");
         };
@@ -154,7 +154,7 @@ function playerTurn() {
         actionTimer = 4;
     };
     if (game.select[0] == "attack_fin" && actionTimer < 0) {
-        if (game.enemyAtt == "basic_attack") {
+        if (game.enemyAtt == "slash") {
             game.enemies[game.select[1]][1] -= 5;
         };
         game.select = ["hand", 0];
@@ -177,10 +177,10 @@ function playerTurn() {
     // play card
     if (action == "enter" && game.select[0] == "hand") {
         var selected = game.hand[game.select[1]];
-        if (selected == "basic_attack" && game.energy >= 1) {
+        if (selected == "slash" && game.energy >= 1) {
             game.activeCard = game.select[1];
             game.select = ["attack_enemy", game.enemies.length - 1];
-            game.enemyAtt = "basic_attack";
+            game.enemyAtt = "slash";
             actionTimer = 5;
         } else if (selected == "block" && game.energy >= 1) {
             game.energy--;

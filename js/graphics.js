@@ -254,8 +254,8 @@ function showCard(type, index, y, overrideX = NaN) {
     var x = game.handPos[index];
     overrideX = +overrideX;
     if (overrideX !== null && overrideX !== undefined && overrideX === overrideX) x = overrideX;
-	if (type == "basic_attack") {
-		ctx.drawImage(card_basic_attack, x, y);
+	if (type == "slash") {
+		ctx.drawImage(card_slash, x, y);
 	};
 	if (type == "block") {
 		ctx.drawImage(card_block, x, y);
@@ -275,21 +275,21 @@ function renderCards() {
 		if (game.select[0] == "hand" && game.select[1] == index) {
 			temp = index;
 		} else {
-			showCard(card, index, 138 - Math.floor(cardAnim[index]));
+			showCard(card, index, 146 - Math.floor(cardAnim[index]));
 		};
 	};
 	if (temp != -1) {
-		ctx.drawImage(select_card, game.handPos[temp] - 1, 137 - Math.floor(cardAnim[temp]));
-        showCard(game.hand[temp], temp, 138 - Math.floor(cardAnim[temp]));
-        if (cardAnim[temp] < 38) cardAnim[temp] += 5 + Math.random();
-        if (cardAnim[temp] > 38) cardAnim[temp] = 38;
+		ctx.drawImage(select_card, game.handPos[temp] - 1, 145 - Math.floor(cardAnim[temp]));
+        showCard(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]));
+        if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
+        if (cardAnim[temp] > 44) cardAnim[temp] = 44;
     };
     for (let index = 0; index < game.hand.length; index++) {
         var card = game.hand[index];
         if (index == temp) {
             continue;
         } else {
-            if (cardAnim[index] > 0) cardAnim[index] -= 4.5 + Math.random();
+            if (cardAnim[index] > 0) cardAnim[index] -= 6 + Math.random();
             if (cardAnim[index] < 0) cardAnim[index] = 0;
         };
     };
@@ -298,7 +298,7 @@ function renderCards() {
 		if (notif[1] >= 9) color = "fade_2";
 		else if (notif[1] >= 7) color = "fade_1";
 		else if (notif[1] >= 5) color = "fade_0";
-		drawLore(game.handPos[notif[0]] + 32, 129 - Math.ceil(cardAnim[notif[0]]) - notif[1], "not enough energy", color, "center");
+		drawLore(game.handPos[notif[0]] + 32, 137 - Math.ceil(cardAnim[notif[0]]) - notif[1], "not enough energy", color, "center");
 		notif[1]++;
 		if (notif[1] > 11) notif = [-1, 0];
 	};
