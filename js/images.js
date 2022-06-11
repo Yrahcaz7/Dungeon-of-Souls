@@ -6,7 +6,7 @@ const player_idle = new Image, player_attack = new Image, player_attack_2 = new 
 	clock_face = new Image, clock_hour_hand = new Image, clock_min_hand = new Image, clock_node = new Image, // the clock
 	letters_black = new Image, letters_red = new Image, letters_white = new Image, // solid letters
 	letters_fade = [new Image, new Image, new Image], // transparent letters
-	health_bar = new Image, block_bar = new Image, energy = new Image, // bars
+	health_bar = new Image, shield_bar = new Image, energy = new Image, // bars
 	select_round = new Image, select_card = new Image, selector = [new Image, new Image, new Image, new Image], // selectors
 	looker = new Image, help = new Image, view = new Image; // other
 
@@ -49,7 +49,7 @@ letters_fade[2].src = "images/letters/fade_2.png";
 
 // bars
 health_bar.src = "images/health_bar.png";
-block_bar.src = "images/block_bar.png";
+shield_bar.src = "images/shield_bar.png";
 energy.src = "images/energy.png";
 
 // selectors

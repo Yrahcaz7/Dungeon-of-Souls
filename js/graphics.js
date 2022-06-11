@@ -49,7 +49,7 @@ function renderRoom() {
     drawLore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
-function bars(x, y, health, maxHealth, block, maxBlock) {
+function bars(x, y, health, maxHealth, shield, maxShield) {
 	if (health === null || health === undefined || maxHealth === null || maxHealth === undefined) return;
 	var frame, percentage = health / maxHealth;
 	if (percentage < 0) frame = 0;
@@ -68,24 +68,24 @@ function bars(x, y, health, maxHealth, block, maxBlock) {
 	ctx.drawImage(health_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 65, 64, 12);
 	drawLore(x + 25, y + 67, health, "black", "left");
 	drawLore(x + 34, y + 67, maxHealth, "black", "right");
-	if (block === null || block === undefined || maxBlock === null || maxBlock === undefined || block < 1) return;
-	percentage = block / maxBlock;
+	if (shield === null || shield === undefined || maxShield === null || maxShield === undefined || shield < 1) return;
+	percentage = shield / maxShield;
 	if (percentage < 0) frame = 0;
 	else if (percentage > 1) frame = 62;
 	else frame = percentage * 62;
-	if (block < 10 && maxBlock >= 10) {
-		block = "0" + block;
-		if (maxBlock >= 100) block = "0" + block;
-		if (maxBlock >= 1000) block = "0" + block;
-	} else if (block < 100 && maxBlock >= 100) {
-		block = "0" + block;
-		if (maxBlock >= 1000) block = "0" + block;
-	} else if (block < 1000 && maxBlock >= 1000) {
-		block = "0" + block;
+	if (shield < 10 && maxShield >= 10) {
+		shield = "0" + shield;
+		if (maxShield >= 100) shield = "0" + shield;
+		if (maxShield >= 1000) shield = "0" + shield;
+	} else if (shield < 100 && maxShield >= 100) {
+		shield = "0" + shield;
+		if (maxShield >= 1000) shield = "0" + shield;
+	} else if (shield < 1000 && maxShield >= 1000) {
+		shield = "0" + shield;
 	};
-	ctx.drawImage(block_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 76, 64, 12);
-	drawLore(x + 25, y + 78, block, "black", "left");
-	drawLore(x + 34, y + 78, maxBlock, "black", "right");
+	ctx.drawImage(shield_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 76, 64, 12);
+	drawLore(x + 25, y + 78, shield, "black", "left");
+	drawLore(x + 34, y + 78, maxShield, "black", "right");
 };
 
 function startPlayerAnim(type) {
@@ -116,7 +116,7 @@ function player() {
 		playerAnim[0] += 0.5;
 		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
 	};
-	bars(x + 22, y + 15, game.health, game.maxHealth, game.block, game.maxBlock);
+	bars(x + 22, y + 15, game.health, game.maxHealth, game.shield, game.maxShield);
 	var frame, en = game.energy, maxEn = game.maxEnergy, percentage = en / maxEn;
 	if (percentage < 0) frame = 0;
 	else if (percentage > 1) frame = 30;

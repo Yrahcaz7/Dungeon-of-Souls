@@ -1,8 +1,8 @@
 var game = {
     health: 60,
     maxHealth: 60,
-    block: 0,
-    maxBlock: 60,
+    shield: 0,
+    maxShield: 60,
     floor: 1,
     state: "enter",
     turn: "none",
@@ -184,7 +184,7 @@ function playerTurn() {
             actionTimer = 5;
         } else if (selected == "block" && game.energy >= 1) {
             game.energy--;
-            game.block += 4;
+            game.shield += 4;
             game.discard.push(game.hand[game.select[1]]);
             game.hand.splice(game.select[1], 1);
             actionTimer = 5;
