@@ -1,8 +1,8 @@
 var game = {
-    health: 100,
-    maxHealth: 100,
+    health: 60,
+    maxHealth: 60,
     block: 0,
-    maxBlock: 100,
+    maxBlock: 60,
     floor: 1,
     state: "enter",
     turn: "none",
