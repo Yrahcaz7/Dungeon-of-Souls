@@ -116,6 +116,11 @@ function player() {
 		playerAnim[0] += 0.5;
 		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
 	};
+	if (playerAnim[1] == "shield") {
+		ctx.drawImage(player_shield, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		playerAnim[0] += 0.25;
+		if (playerAnim[0] > 2) playerAnim[0] = 2;
+	};
 	bars(x + 22, y + 15, game.health, game.maxHealth, game.shield, game.maxShield);
 	var frame, en = game.energy, maxEn = game.maxEnergy, percentage = en / maxEn;
 	if (percentage < 0) frame = 0;
@@ -207,8 +212,8 @@ function enemies() {
 	if (tempAnim[1] == "slime_small_launch") {
 		if (tempAnim[0] >= 10) {
 			var phase = ((tempAnim[0] - 9) / 10),
-			posX = (((x - 69) - 64) * phase),
-			posY = (((y - (centerY + 10))) * phase);
+			posX = Math.round(((x - 68) - 64) * phase),
+			posY = Math.round(((y - (centerY + 10))) * phase);
 			ctx.drawImage(slime_small_launch, 9 * 128, 0, 128, 64, x - 64 - posX, y - posY, 128, 64);
 		} else ctx.drawImage(slime_small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, x - 64, y, 128, 64);
 		if (tempAnim[2] == "normal") tempAnim[0]++;

@@ -1,4 +1,4 @@
-const player_idle = new Image, player_attack = new Image, player_attack_2 = new Image, player_hit = new Image, // player
+const player_idle = new Image, player_attack = new Image, player_attack_2 = new Image, player_hit = new Image,  player_shield = new Image, // player
 	card_slash = new Image, card_block = new Image, // cards
 	slime_big = new Image, slime_small = new Image, // monsters
 	slime_small_launch = new Image, // monster animations
@@ -15,6 +15,7 @@ player_idle.src = "images/player/idle.png";
 player_attack.src = "images/player/attack.png";
 player_attack_2.src = "images/player/attack_2.png";
 player_hit.src = "images/player/hit.png";
+player_shield.src = "images/player/shield.png";
 
 // cards
 card_slash.src = "images/cards/slash.png";
