@@ -203,6 +203,8 @@ function playerTurn() {
 const gameloop = setInterval(function() {
     // clear
     ctx.clearRect(0, 0, width, height);
+    // update data
+    updateData();
     // actions
     if (game.turn == "player") playerTurn();
     // load floor
