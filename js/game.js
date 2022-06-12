@@ -37,8 +37,12 @@ function randomize(array) {
     return array;
 };
 
-function shuffleDeck(newCard = null) {
-    if (newCard) game.deck.push("" + newCard);
+function shuffleDeck(...newCards) {
+    if (newCards) {
+        for (let card of newCards) {
+            game.deck.push("" + card);
+        };
+    };
     game.deck = randomize(game.deck);
 };
 
@@ -106,7 +110,7 @@ function playerTurn() {
                     game.select[1]++;
                     actionTimer = 1;
                 } else {
-                    var to = -1, distance = -1;
+                    let to = -1, distance = -1;
                     for (let a = 0; a < game.enemies.length; a++) {
                         if (game.enemyPos[a][1] > distance) {
                             distance = game.enemyPos[a][1];
@@ -119,7 +123,7 @@ function playerTurn() {
                 };
             } else if (action == "up") {
                 if (game.handPos[game.select[1]] >= width / 2 - 32) {
-                    var to = -1, distance = -1;
+                    let to = -1, distance = -1;
                     for (let a = 0; a < game.enemies.length; a++) {
                         if (game.enemyPos[a][1] > distance) {
                             distance = game.enemyPos[a][1];

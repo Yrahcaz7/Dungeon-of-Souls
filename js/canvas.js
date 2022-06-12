@@ -2,7 +2,7 @@ var canvas, width = 0, height = 0, centerY = 0, ctx, action = "none";
 
 function canvasData() {
 	document.body.style.cursor = "none";
-	var canv = document.getElementById("canvas");
+	let canv = document.getElementById("canvas");
 	if (canv === null || canv === undefined) return false;
 	canvas = canv;
 	width = canvas.width;
@@ -13,7 +13,7 @@ function canvasData() {
 };
 
 document.addEventListener("keydown", (event) => {
-	var key = event.keyCode;
+	let key = event.keyCode;
 	if (key == 32 || key == 13) action = "enter";
 	else if (key == 87 || key == 38) action = "up";
 	else if (key == 65 || key == 37) action = "left";
