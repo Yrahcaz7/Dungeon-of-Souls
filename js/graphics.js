@@ -41,11 +41,11 @@ function renderRoom() {
 		enemies();
 	};
     ctx.drawImage(view, 0, 0);
-    if (game.select[0] == "help") ctx.drawImage(select_round, 2, 11);
-    if (game.select[0] == "looker") ctx.drawImage(select_round, 22, 11);
-    ctx.drawImage(help, 3, 12);
-    if (game.select[0] == "looker" && game.select[1] == 1) ctx.drawImage(looker, 15, 0, 16, 16, 23, 12, 16, 16);
-	else ctx.drawImage(looker, 0, 0, 16, 16, 23, 12, 16, 16);
+    if (game.select[0] == "help") ctx.drawImage(select_round, width - 20, 2);
+    if (game.select[0] == "looker") ctx.drawImage(select_round, width - 39, 2);
+    ctx.drawImage(help, width - 19, 3);
+    if (game.select[0] == "looker" && game.select[1] == 1) ctx.drawImage(looker, 15, 0, 16, 16, width - 38, 3, 16, 16);
+	else ctx.drawImage(looker, 0, 0, 16, 16, width - 38, 3, 16, 16);
     drawLore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
