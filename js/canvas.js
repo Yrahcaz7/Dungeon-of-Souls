@@ -20,15 +20,15 @@ document.addEventListener("keydown", (event) => {
 	else if (key == 83 || key == 40) action = "down";
 	else if (key == 68 || key == 39) action = "right";
 	else action = "none";
-	if (key == 27) closeFullscreen();
-	else if (key == 9) openFullscreen();
+	if (key == 27) exitFullscreen();
+	else if (key == 9) enterFullscreen();
 });
 
 document.addEventListener("keyup", () => {
 	action = "none";
 });
 
-function openFullscreen() {
+function enterFullscreen() {
   	if (document.body.requestFullscreen) {
     	document.body.requestFullscreen();
   	} else if (document.body.webkitRequestFullscreen) {
@@ -38,7 +38,7 @@ function openFullscreen() {
   	};
 };
 
-function closeFullscreen() {
+function exitFullscreen() {
   	if (document.body.exitFullscreen) {
     	document.body.exitFullscreen();
   	} else if (document.body.webkitExitFullscreen) {
