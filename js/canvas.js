@@ -1,8 +1,8 @@
-var canvas, ctx, key, action = "none";
+var canvas, width, height, centerY, ctx, key, action = "none";
 
 function canvasData() {
 	document.body.style.cursor = "none";
-	let canv = document.getElementById("canvas");
+	var canv = document.getElementById("canvas");
 	if (canv === null || canv === undefined) return false;
 	canvas = canv;
 	width = canvas.width;

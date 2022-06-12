@@ -142,80 +142,40 @@ function startEnemyAnim(index, type) {
 	} else invNum = false;
 };
 
+function setEnemyPos() {
+	var number = game.enemies.length;
+	if (number == 1) game.enemyPos = [[width - 105, centerY]];
+	else if (number == 2) game.enemyPos = [[width - 70, centerY - 5], [width - 140, centerY + 20]];
+	else if (number == 3) game.enemyPos = [[width - 70, centerY], [width - 140, centerY + 32], [width - 140, centerY - 32]];
+	else if (number == 4) game.enemyPos = [[width - 70, centerY], [width - 140, centerY + 32], [width - 140, centerY - 32], [width - 210, centerY]];
+	else if (number == 5) game.enemyPos = [[width - 70, centerY], [width - 140, centerY + 32], [width - 140, centerY - 32], [width - 210, centerY + 32], [width - 210, centerY - 32]];
+	else if (number == 6) game.enemyPos = [[width - 70, centerY], [width - 140, centerY + 32], [width - 140, centerY - 32], [width - 210, centerY + 64], [width - 210, centerY], [width - 210, centerY - 64]];
+};
+
 function enemies() {
-    game.enemyPos = [];
-    for (let index = 0; index < game.enemies.length; index++) {
-        var x, y, enemy = game.enemies[index];
-        if (index == 0) {
-            x = width - 70;
-            y = centerY;
-        } else if (index == 1) {
-            x = width - 140;
-            y = centerY + 32;
-        } else if (index == 2) {
-            x = width - 140;
-            y = centerY - 32;
-        };
-        if (game.enemies.length == 1) {
-            x = width - 105;
-            y = centerY;
-        } else if (game.enemies.length == 2) {
-            if (index == 0) {
-                x = width - 70;
-                y = centerY - 5;
-            } else if (index == 1) {
-                x = width - 140;
-                y = centerY + 20;
-            };
-        } else if (game.enemies.length == 4) {
-            if (index == 3) {
-                x = width - 210;
-                y = centerY;
-            };
-        } else if (game.enemies.length == 5) {
-            if (index == 3) {
-                x = width - 210;
-                y = centerY + 32;
-            } else if (index == 4) {
-                x = width - 210;
-                y = centerY - 32;
-            };
-        } else if (game.enemies.length == 6) {
-            if (index == 3) {
-                x = width - 210;
-                y = centerY + 64;
-            } else if (index == 4) {
-                x = width - 210;
-                y = centerY;
-            } else if (index == 5) {
-                x = width - 210;
-                y = centerY - 64;
-            };
-        };
-        x = Math.round(x);
-        y = Math.round(y);
-        game.enemyPos.push([x, y]);
+	setEnemyPos();
+	for (let index = 0; index < game.enemies.length; index++) {
+        var enemy = game.enemies[index], pos = game.enemyPos[index];
         if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
         if (index !== invNum) {
             if (enemy.type == "slime_big") {
-                ctx.drawImage(slime_big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, x, y, 64, 64);
+                ctx.drawImage(slime_big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
             } else if (enemy.type == "slime_small") {
-                ctx.drawImage(slime_small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, x, y, 64, 64);
+                ctx.drawImage(slime_small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
             };
         };
         enemyAnim[index] += (Math.random() + 0.5) * 0.1;
-        bars(x, y, enemy.health, enemy.maxHealth, enemy.shield, enemy.maxShield);
+        bars(pos[0], pos[1], enemy.health, enemy.maxHealth, enemy.shield, enemy.maxShield);
     };
     if (tempAnim[3] == -1) return;
-	x = game.enemyPos[tempAnim[3]][0];
-	y = game.enemyPos[tempAnim[3]][1];
+	var pos = game.enemyPos[tempAnim[3]];
 	if (tempAnim[1] == "slime_small_launch") {
 		if (tempAnim[0] >= 10) {
 			var phase = ((tempAnim[0] - 9) / 10),
-			posX = Math.round(((x - 68) - 64) * phase),
-			posY = Math.round(((y - (centerY + 10))) * phase);
-			ctx.drawImage(slime_small_launch, 9 * 128, 0, 128, 64, x - 64 - posX, y - posY, 128, 64);
-		} else ctx.drawImage(slime_small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, x - 64, y, 128, 64);
+				posX = Math.round(((x - 68) - 64) * phase),
+				posY = Math.round(((y - (centerY + 10))) * phase);
+			ctx.drawImage(slime_small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
+		} else ctx.drawImage(slime_small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
 		if (tempAnim[2] == "normal") tempAnim[0]++;
 		else if (tempAnim[2] == "backwards") tempAnim[0]--;
 		if (tempAnim[0] >= 20) {
@@ -230,34 +190,20 @@ function enemies() {
 };
 
 function setCardPos() {
-	var length = game.hand.length;
-	game.handPos = [];
+	var number = game.hand.length;
 	center = width / 2 - 2;
-	if (length == 1) {
-		game.handPos = [center - 32];
-	} else if (length == 2) {
-		game.handPos = [center - 64 - 1, center + 1];
-	} else if (length == 3) {
-		game.handPos = [center - 96 - 2, center - 32, center + 32 + 2];
-	} else if (length == 4) {
-		game.handPos = [center - 128 - 3, center - 64 - 1, center + 1, center + 64 + 3];
-	} else if (length == 5) {
-		game.handPos = [center - 160 - 4, center - 96 - 2, center - 32, center + 32 + 2, center + 96 + 4];
-	} else if (length == 6) {
-		game.handPos = [center - 192 + 10, center - 128 + 6, center - 64 + 2, center - 2, center + 64 - 6, center + 128 - 10];
-	} else if (length == 7) {
-		game.handPos = [center - 224 + 42, center - 160 + 28, center - 96 + 14, center - 32, center + 32 - 14, center + 96 - 28, center + 160 - 42];
-	} else if (length == 8) {
-		game.handPos = [center - 256 + 77, center - 192 + 55, center - 128 + 33, center - 64 + 11, center - 11, center + 64 - 33, center + 128 - 55, center + 192 - 77];
-	} else if (length == 9) {
-		game.handPos = [center - 288 + 104, center - 224 + 78, center - 160 + 52, center - 96 + 26, center - 32, center + 32 - 26, center + 96 - 52, center + 160 - 78, center + 224 - 104];
-	} else if (length == 10) {
-		game.handPos = [center - 320 + 135, center - 256 + 105, center - 192 + 75, center - 128 + 45, center - 64 + 15, center - 15, center + 64 - 45, center + 128 - 75, center + 192 - 105, center + 256 - 135];
-	} else if (length == 11) {
-		game.handPos = [center - 352 + 170, center - 288 + 136, center - 224 + 102, center - 160 + 68, center - 96 + 34, center - 32, center + 32 - 34, center + 96 - 68, center + 160 - 102, center + 224 - 136, center + 288 - 170];
-	} else if (length == 12) {
-		game.handPos = [center - 384 + 198, center - 320 + 162, center - 256 + 126, center - 192 + 90, center - 128 + 54, center - 64 + 18, center - 18, center + 64 - 54, center + 128 - 90, center + 192 - 126, center + 256 - 162, center + 320 - 198];
-	};
+	if (number == 1) game.handPos = [center - 32];
+	else if (number == 2) game.handPos = [center - 64 - 1, center + 1];
+	else if (number == 3) game.handPos = [center - 96 - 2, center - 32, center + 32 + 2];
+	else if (number == 4) game.handPos = [center - 128 - 3, center - 64 - 1, center + 1, center + 64 + 3];
+	else if (number == 5) game.handPos = [center - 160 - 4, center - 96 - 2, center - 32, center + 32 + 2, center + 96 + 4];
+	else if (number == 6) game.handPos = [center - 192 + 10, center - 128 + 6, center - 64 + 2, center - 2, center + 64 - 6, center + 128 - 10];
+	else if (number == 7) game.handPos = [center - 224 + 42, center - 160 + 28, center - 96 + 14, center - 32, center + 32 - 14, center + 96 - 28, center + 160 - 42];
+	else if (number == 8) game.handPos = [center - 256 + 77, center - 192 + 55, center - 128 + 33, center - 64 + 11, center - 11, center + 64 - 33, center + 128 - 55, center + 192 - 77];
+	else if (number == 9) game.handPos = [center - 288 + 104, center - 224 + 78, center - 160 + 52, center - 96 + 26, center - 32, center + 32 - 26, center + 96 - 52, center + 160 - 78, center + 224 - 104];
+	else if (number == 10) game.handPos = [center - 320 + 135, center - 256 + 105, center - 192 + 75, center - 128 + 45, center - 64 + 15, center - 15, center + 64 - 45, center + 128 - 75, center + 192 - 105, center + 256 - 135];
+	else if (number == 11) game.handPos = [center - 352 + 170, center - 288 + 136, center - 224 + 102, center - 160 + 68, center - 96 + 34, center - 32, center + 32 - 34, center + 96 - 68, center + 160 - 102, center + 224 - 136, center + 288 - 170];
+	else if (number == 12) game.handPos = [center - 384 + 198, center - 320 + 162, center - 256 + 126, center - 192 + 90, center - 128 + 54, center - 64 + 18, center - 18, center + 64 - 54, center + 128 - 90, center + 192 - 126, center + 256 - 162, center + 320 - 198];
 };
 
 function showCard(type, index, y, overrideX = NaN) {
