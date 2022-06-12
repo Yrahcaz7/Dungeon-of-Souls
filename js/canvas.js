@@ -20,8 +20,30 @@ document.addEventListener("keydown", (event) => {
 	else if (key == 83 || key == 40) action = "down";
 	else if (key == 68 || key == 39) action = "right";
 	else action = "none";
+	if (key == 27) closeFullscreen();
+	else if (key == 9) openFullscreen();
 });
 
 document.addEventListener("keyup", () => {
 	action = "none";
 });
+
+function openFullscreen() {
+  	if (document.body.requestFullscreen) {
+    	document.body.requestFullscreen();
+  	} else if (document.body.webkitRequestFullscreen) {
+    	document.body.webkitRequestFullscreen();
+  	} else if (document.body.msRequestFullscreen) {
+    	document.body.msRequestFullscreen();
+  	};
+};
+
+function closeFullscreen() {
+  	if (document.body.exitFullscreen) {
+    	document.body.exitFullscreen();
+  	} else if (document.body.webkitExitFullscreen) {
+    	document.body.webkitExitFullscreen();
+  	} else if (document.body.msExitFullscreen) {
+    	document.body.msExitFullscreen();
+  	};
+};
