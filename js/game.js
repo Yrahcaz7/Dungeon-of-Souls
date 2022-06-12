@@ -203,7 +203,7 @@ const gameloop = setInterval(function() {
     // load floor
     if (game.floor == 1) {
         if (game.state == "enter") {
-            game.enemies.push(new Enemy("slime_small", 0));
+            game.enemies.push(new Enemy("slime_small", 1));
             enterBattle();
         };
     } else if (game.floor == 2) {
