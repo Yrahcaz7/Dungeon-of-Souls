@@ -155,7 +155,7 @@ function playerTurn() {
     };
     if (game.select[0] == "attack_fin" && actionTimer < 0) {
         if (game.enemyAtt == "slash") {
-            game.enemies[game.select[1]][1] -= 5;
+            game.enemies[game.select[1]].health -= 5;
         };
         game.select = ["hand", 0];
         game.enemyAtt = "none";
@@ -203,12 +203,12 @@ const gameloop = setInterval(function() {
     // load floor
     if (game.floor == 1) {
         if (game.state == "enter") {
-            game.enemies.push(["slime_small", 20, 20, 0, 10]);
+            game.enemies.push(new Enemy("slime_small", 0));
             enterBattle();
         };
     } else if (game.floor == 2) {
         if (game.state == "enter") {
-            game.enemies.push(["slime_big", 30, 30, 5, 25]);
+            game.enemies.push(new Enemy("slime_big", 1));
             enterBattle();
         };
     };

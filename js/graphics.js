@@ -119,7 +119,7 @@ function player() {
 	if (playerAnim[1] == "shield") {
 		ctx.drawImage(player_shield, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
-		if (playerAnim[0] > 2) playerAnim[0] = 2;
+		if (playerAnim[0] >= 3) playerAnim[0] = 2;
 	};
 	bars(x + 22, y + 15, game.health, game.maxHealth, game.shield, game.maxShield);
 	var frame, en = game.energy, maxEn = game.maxEnergy, percentage = en / maxEn;
@@ -145,7 +145,7 @@ function startEnemyAnim(index, type) {
 function enemies() {
     game.enemyPos = [];
     for (let index = 0; index < game.enemies.length; index++) {
-        enemy = game.enemies[index];
+        var x, y, enemy = game.enemies[index];
         if (index == 0) {
             x = width - 70;
             y = centerY;
@@ -197,14 +197,14 @@ function enemies() {
         game.enemyPos.push([x, y]);
         if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
         if (index !== invNum) {
-            if (enemy[0] == "slime_big") {
+            if (enemy.type == "slime_big") {
                 ctx.drawImage(slime_big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, x, y, 64, 64);
-            } else if (enemy[0] == "slime_small") {
+            } else if (enemy.type == "slime_small") {
                 ctx.drawImage(slime_small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, x, y, 64, 64);
             };
         };
         enemyAnim[index] += (Math.random() + 0.5) * 0.1;
-        bars(x, y, enemy[1], enemy[2], enemy[3], enemy[4]);
+        bars(x, y, enemy.health, enemy.maxHealth, enemy.shield, enemy.maxShield);
     };
     if (tempAnim[3] == -1) return;
 	x = game.enemyPos[tempAnim[3]][0];
@@ -316,12 +316,12 @@ function renderCards() {
 
 function target() {
 	if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") {
-        enemySelect = game.enemies[game.select[1]];
+        enemyType = game.enemies[game.select[1]].type;
         pos = game.enemyPos[game.select[1]];
-        if (enemySelect[0] == "slime_small") {
+        if (enemyType == "slime_small") {
             select(pos[0] + 19, pos[1] + 35, 26, 29);
             drawLore(pos[0] + 32, pos[1] + 24, "small slime", "white", "center");
-        } else if (enemySelect[0] == "slime_big") {
+        } else if (enemyType == "slime_big") {
             select(pos[0] + 5, pos[1] + 25, 54, 39);
             drawLore(pos[0] + 32, pos[1] + 14, "big slime", "white", "center");
         };
