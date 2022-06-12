@@ -22,11 +22,11 @@ card_slash.src = "images/cards/slash.png";
 card_block.src = "images/cards/block.png";
 
 // monsters
-slime_big.src = "images/slime_big.png";
-slime_small.src = "images/slime_small.png";
+slime_big.src = "images/enemies/slime/big.png";
+slime_small.src = "images/enemies/slime/small.png";
 
 // monster animations
-slime_small_launch.src = "images/slime_small_launch.png";
+slime_small_launch.src = "images/enemies/slime/small_launch.png";
 
 // backrounds
 background.src = "images/background.png";
