@@ -12,6 +12,7 @@ var game = {
     maxEnergy: 3,
     enemies: [],
     enemyPos: [],
+    enemyIndex: 0,
     deck: ["slash", "slash", "slash", "slash", "block", "block", "block", "block"],
     hand: [],
     handSize: 5,
@@ -203,11 +204,13 @@ const gameloop = setInterval(function() {
     // load floor
     if (game.floor == 1) {
         if (game.state == "enter") {
+            game.enemyIndex = 0;
             game.enemies.push(new Enemy("slime_small", 1));
             enterBattle();
         };
     } else if (game.floor == 2) {
         if (game.state == "enter") {
+            game.enemyIndex = 0;
             game.enemies.push(new Enemy("slime_big", 1));
             enterBattle();
         };
