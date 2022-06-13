@@ -20,6 +20,8 @@ function renderRoom() {
 	time[1] += (time[2] / 60);
 	time[0] += (time[1] / 60);
 	if (time[0] >= 12) time[0] = time[0] - 12;
+	ctx.drawImage(cave, 0, 0);
+	ctx.drawImage(shade, 0, 0);
 	ctx.drawImage(background, 0, 0);
 	ctx.drawImage(floating_arch, 136, 34 - Math.round(backAnim[0]));
 	ctx.drawImage(clock_face, clockX, clockY);
