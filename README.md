@@ -1,5 +1,9 @@
 # Dungeon of Souls
 
+> Copyright (C) 2022 Yrahcaz7
+>
+> Copyright details are [**here**](https://github.com/Yrahcaz7/Dungeon-of-Souls/blob/main/LICENSE).
+
 ## Storyline
 
 You have been trapped in this dungeon as long as you can remember.
