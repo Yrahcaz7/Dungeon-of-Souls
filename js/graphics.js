@@ -12,7 +12,7 @@ function select(x, y, width, height) {
 };
 
 function renderRoom() {
-	var now = new Date(Date.now()),
+	let now = new Date(Date.now()),
 		time = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()],
 		clockX = 170,
 		clockY = 63 - Math.round(backAnim[2]);
@@ -53,7 +53,7 @@ function renderRoom() {
 
 function bars(x, y, health, maxHealth, shield, maxShield) {
 	if (health === null || health === undefined || maxHealth === null || maxHealth === undefined) return;
-	var frame, percentage = health / maxHealth;
+	let frame, percentage = health / maxHealth;
 	if (percentage < 0) frame = 0;
 	else if (percentage > 1) frame = 62;
 	else frame = percentage * 62;
@@ -97,7 +97,7 @@ function startPlayerAnim(type) {
 };
 
 function player() {
-	var x = 15, y = centerY - 20;
+	let x = 15, y = centerY - 20;
 	if (playerAnim[1] == "idle") {
 		ctx.drawImage(player_idle, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
@@ -124,7 +124,7 @@ function player() {
 		if (playerAnim[0] >= 3) playerAnim[0] = 2;
 	};
 	bars(x + 22, y + 15, game.health, game.maxHealth, game.shield, game.maxShield);
-	var frame, en = game.energy, maxEn = game.maxEnergy, percentage = en / maxEn;
+	let frame, en = game.energy, maxEn = game.maxEnergy, percentage = en / maxEn;
 	if (percentage < 0) frame = 0;
 	else if (percentage > 1) frame = 30;
 	else frame = percentage * 30;
@@ -146,7 +146,7 @@ function startEnemyAnim(index, type) {
 
 function enemies() {
 	for (let index = 0; index < game.enemies.length; index++) {
-        var enemy = game.enemies[index], pos = game.enemyPos[index];
+        let enemy = game.enemies[index], pos = game.enemyPos[index];
         if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
         if (index !== invNum) {
             if (enemy.type == "slime_big") {
@@ -159,10 +159,10 @@ function enemies() {
         bars(pos[0], pos[1], enemy.health, enemy.maxHealth, enemy.shield, enemy.maxShield);
     };
     if (tempAnim[3] == -1) return;
-	var pos = game.enemyPos[tempAnim[3]];
+	let pos = game.enemyPos[tempAnim[3]];
 	if (tempAnim[1] == "slime_small_launch") {
 		if (tempAnim[0] >= 10) {
-			var phase = ((tempAnim[0] - 9) / 10),
+			let phase = ((tempAnim[0] - 9) / 10),
 				posX = Math.round(((x - 68) - 64) * phase),
 				posY = Math.round(((y - (centerY + 10))) * phase);
 			ctx.drawImage(slime_small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
@@ -181,7 +181,7 @@ function enemies() {
 };
 
 function showCard(type, index, y, overrideX = NaN) {
-    var x = game.handPos[index];
+    let x = game.handPos[index];
     overrideX = +overrideX;
     if (overrideX !== null && overrideX !== undefined && overrideX === overrideX) x = overrideX;
 	if (type == "slash") {
@@ -198,9 +198,9 @@ function renderCards() {
         ctx.drawImage(select_card, 103, height / 2 - 48 - 1);
     };
     if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") return;
-	var temp = -1;
+	let temp = -1;
 	for (let index = 0; index < game.hand.length; index++) {
-		var card = game.hand[index];
+		let card = game.hand[index];
 		if (game.select[0] == "hand" && game.select[1] == index) {
 			temp = index;
 		} else {
@@ -214,7 +214,6 @@ function renderCards() {
         if (cardAnim[temp] > 44) cardAnim[temp] = 44;
     };
     for (let index = 0; index < game.hand.length; index++) {
-        var card = game.hand[index];
         if (index == temp) {
             continue;
         } else {
@@ -223,7 +222,7 @@ function renderCards() {
         };
     };
 	if (notif[0] != -1) {
-		var color = "red";
+		let color = "red";
 		if (notif[1] >= 9) color = "fade_2";
 		else if (notif[1] >= 7) color = "fade_1";
 		else if (notif[1] >= 5) color = "fade_0";
@@ -249,7 +248,7 @@ function target() {
 
 function drawLore(x, y, string, color = "black", position = "right") {
 	if (string === null || string === undefined) return;
-	var img = letters_black;
+	let img = letters_black;
 	string = "" + string;
 	if (color == "red") img = letters_red;
     else if (color == "white") img = letters_white;
