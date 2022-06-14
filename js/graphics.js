@@ -2,7 +2,7 @@ const HourConvert = 82 / 12, // number of frames divided by number of hours on a
 MinConvert = 80 / 60; // number of frames divided by number of minutes in an hour
 
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], invNum = -1;
+tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], invNum = -1;
 
 function select(x, y, width, height) {
 	ctx.drawImage(selector[0], x - 2, y - 2);
