@@ -9,6 +9,10 @@ function canvasData() {
 	height = canvas.height;
 	centerY = height / 2 - 50;
 	ctx = canvas.getContext("2d");
+	ctx.mozImageSmoothingEnabled = false;
+	ctx.webkitImageSmoothingEnabled = false;
+	ctx.msImageSmoothingEnabled = false;
+	ctx.imageSmoothingEnabled = false;
 	return true;
 };
 
