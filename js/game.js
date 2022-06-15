@@ -112,24 +112,20 @@ function playerTurn() {
         if (!game.hand) {
             game.select[1] = -1;
         } else {
-            if (action == "left" && game.select[1] > 0) {
-                game.select[1]--;
-                actionTimer = 1;
+            if (action == "left") {
+                if (game.select[1] > 0) {
+                    game.select[1]--;
+                    actionTimer = 1;
+                } else {
+                    game.select[1] = game.hand.length - 1;
+                };
                 return;
             } else if (action == "right") {
                 if (game.select[1] < game.hand.length - 1) {
                     game.select[1]++;
                     actionTimer = 1;
                 } else {
-                    let to = -1, distance = -1;
-                    for (let a = 0; a < game.enemies.length; a++) {
-                        if (game.enemyPos[a][1] > distance) {
-                            distance = game.enemyPos[a][1];
-                            to = a;
-                        };
-                    };
-                    game.select = ["lookat_enemy", to];
-                    actionTimer = 1;
+                    game.select[1] = 0;
                 };
                 return;
             } else if (action == "up") {
