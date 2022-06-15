@@ -1,5 +1,5 @@
 function updateData() {
-    //enemyPos
+    // enemyPos
 	let number = game.enemies.length;
 	if (number == 1) game.enemyPos = [[width - 105, centerY]];
 	else if (number == 2) game.enemyPos = [[width - 70, centerY - 5], [width - 140, centerY + 20]];
@@ -7,7 +7,7 @@ function updateData() {
 	else if (number == 4) game.enemyPos = [[width - 70, centerY], [width - 140, centerY + 32], [width - 140, centerY - 32], [width - 210, centerY]];
 	else if (number == 5) game.enemyPos = [[width - 70, centerY], [width - 140, centerY + 32], [width - 140, centerY - 32], [width - 210, centerY + 32], [width - 210, centerY - 32]];
 	else if (number == 6) game.enemyPos = [[width - 70, centerY], [width - 140, centerY + 32], [width - 140, centerY - 32], [width - 210, centerY + 64], [width - 210, centerY], [width - 210, centerY - 64]];
-	//handPos
+	// handPos
     number = game.hand.length;
 	let center = width / 2 - 2;
 	if (number == 1) game.handPos = [center - 32];

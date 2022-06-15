@@ -204,7 +204,7 @@ function renderCards() {
 		if (game.select[0] == "hand" && game.select[1] == index) {
 			temp = index;
 		} else {
-			showCard(card, index, 146 - Math.floor(cardAnim[index]));
+			showCard(card, index, height - 54 - Math.floor(cardAnim[index]));
 		};
 	};
 	if (temp != -1) {
