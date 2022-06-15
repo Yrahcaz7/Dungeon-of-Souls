@@ -20,9 +20,9 @@ function renderRoom() {
 	time[1] += (time[2] / 60);
 	time[0] += (time[1] / 60);
 	if (time[0] >= 12) time[0] = time[0] - 12;
-	ctx.drawImage(cave, 0, 0);
-	ctx.drawImage(shade, 0, 0);
-	ctx.drawImage(background, 0, 0);
+	ctx.drawImage(cave, 0, 0, width, height);
+	ctx.drawImage(shade, 0, 0, width, height);
+	ctx.drawImage(background, 0, 0, width, height);
 	ctx.drawImage(floating_arch, 136, 34 - Math.round(backAnim[0]));
 	ctx.drawImage(clock_face, clockX, clockY);
 	ctx.drawImage(clock_hour_hand, Math.floor((time[0]) * HourConvert) * 24, 0, 24, 24, clockX + 18, clockY + 18, 24, 24);
@@ -208,8 +208,8 @@ function renderCards() {
 		};
 	};
 	if (temp != -1) {
-		ctx.drawImage(select_card, game.handPos[temp] - 1, 145 - Math.floor(cardAnim[temp]));
-        showCard(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]));
+		ctx.drawImage(select_card, game.handPos[temp] - 1, height - 54 - 1 - Math.floor(cardAnim[temp]));
+        showCard(game.hand[temp], temp, height - 54 - Math.floor(cardAnim[temp]));
         if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
         if (cardAnim[temp] > 44) cardAnim[temp] = 44;
     };
@@ -226,7 +226,7 @@ function renderCards() {
 		if (notif[1] >= 9) color = "fade_2";
 		else if (notif[1] >= 7) color = "fade_1";
 		else if (notif[1] >= 5) color = "fade_0";
-		drawLore(game.handPos[notif[0]] + 32, 137 - Math.ceil(cardAnim[notif[0]]) - notif[1], "not enough energy", color, "center");
+		drawLore(game.handPos[notif[0]] + 32, height - 54 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1], "not enough energy", color, "center");
 		notif[1]++;
 		if (notif[1] > 11) notif = [-1, 0];
 	};
