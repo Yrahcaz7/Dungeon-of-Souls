@@ -4,6 +4,14 @@ MinConvert = 80 / 60; // number of frames divided by number of minutes in an hou
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], invNum = -1;
 
+function draw(image, x = 0, y = 0, w = (width / scale), h = (height / scale)) {
+	ctx.drawImage(image, x * scale, y * scale, w * scale, h * scale);
+};
+
+function advDraw(image, sx, sy, sw, sh, dx, dy, dw, dh) {
+	ctx.drawImage(image, sx, sy, sw, sh, dx * scale, dy * scale, dw * scale, dh * scale);
+};
+
 function select(x, y, width, height) {
 	ctx.drawImage(selector[0], x - 2, y - 2);
 	ctx.drawImage(selector[1], x + width - 6, y - 2);
@@ -14,20 +22,20 @@ function select(x, y, width, height) {
 function renderRoom() {
 	let now = new Date(Date.now()),
 		time = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()],
-		clockX = 170 * scale,
-		clockY = (63 - Math.round(backAnim[2])) * scale;
+		clockX = 170,
+		clockY = 63 - Math.round(backAnim[2]);
 	time[2] += (time[3] / 1000);
 	time[1] += (time[2] / 60);
 	time[0] += (time[1] / 60);
 	if (time[0] >= 12) time[0] = time[0] - 12;
-	ctx.drawImage(cave, 0, 0, width, height);
-	ctx.drawImage(shade, 0, 0, width, height);
-	ctx.drawImage(background, 0, 0, width, height);
-	ctx.drawImage(floating_arch, 136 * scale, (34 - Math.round(backAnim[0])) * scale, 128 * scale, 90 * scale);
-	ctx.drawImage(clock_face, clockX, clockY, 60 * scale, 60 * scale);
-	ctx.drawImage(clock_hour_hand, Math.floor((time[0]) * HourConvert) * 24, 0, 24, 24, clockX + (18 * scale), clockY + (18 * scale), 24 * scale, 24 * scale);
-	ctx.drawImage(clock_min_hand, Math.floor((time[1]) * MinConvert) * 34, 0, 34, 34, clockX + (13 * scale), clockY + (13 * scale), 34 * scale, 34 * scale);
-	ctx.drawImage(clock_node, clockX + (26 * scale), clockY + (26 * scale), 8 * scale, 8 * scale);
+	draw(cave);
+	draw(shade);
+	draw(background);
+	draw(floating_arch, 136, 34 - Math.round(backAnim[0]), 128, 90);
+	draw(clock_face, clockX, clockY, 60, 60);
+	advDraw(clock_hour_hand, Math.floor((time[0]) * HourConvert) * 24, 0, 24, 24, clockX + 18, clockY + 18, 24, 24);
+	advDraw(clock_min_hand, Math.floor((time[1]) * MinConvert) * 34, 0, 34, 34, clockX + 13, clockY + 13, 34, 34);
+	draw(clock_node, clockX + 26, clockY + 26, 8, 8);
 	if (backAnim[0] >= 1) backAnim[1] = "down";
 	else if (backAnim[0] <= -1) backAnim[1] = "up";
 	if (backAnim[1] == "up") backAnim[0] += (Math.random() + 0.5) * 0.075;
@@ -42,12 +50,12 @@ function renderRoom() {
 	if (game.select[0] != "looker" || !game.select[1]) {
 		enemies();
 	};
-    ctx.drawImage(view, 0, 0, width, height);
-    if (game.select[0] == "help") ctx.drawImage(select_round, width - 20, 2);
-    if (game.select[0] == "looker") ctx.drawImage(select_round, width - 39, 2);
-    ctx.drawImage(help, width - 19, 3);
-    if (game.select[0] == "looker" && game.select[1] == 1) ctx.drawImage(looker, 15, 0, 16, 16, width - 38, 3, 16, 16);
-	else ctx.drawImage(looker, 0, 0, 16, 16, width - 38, 3, 16, 16);
+	draw(view);
+    if (game.select[0] == "help") draw(select_round, 380, 2, 18, 18);
+    if (game.select[0] == "looker") draw(select_round, 361, 2, 18, 18);
+	draw(help, 381, 3, 16, 16);
+    if (game.select[0] == "looker" && game.select[1] == 1) advDraw(looker, 15, 0, 16, 16, 362, 3, 16, 16);
+	else advDraw(looker, 0, 0, 16, 16, 362, 3, 16, 16);
     drawLore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
