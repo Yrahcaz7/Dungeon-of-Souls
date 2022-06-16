@@ -1,8 +1,8 @@
-var canvas, scale, ctx, action = "none";
+var canvas, scale, ctx, action = "none", screenState = "window";
 
 function canvasData() {
 	let canv = document.getElementById("canvas");
-	if (canv === null || canv === undefined) return false;
+	if (!canv) return false;
 	canvas = canv;
 	scale = canvas.width / 400;
 	ctx = canvas.getContext("2d");
@@ -21,30 +21,31 @@ document.addEventListener("keydown", (event) => {
 	else if (key == 83 || key == 40) action = "down";
 	else if (key == 68 || key == 39) action = "right";
 	else action = "none";
-	if (key == 27) exitFullscreen();
-	else if (key == 9) enterFullscreen();
+	if (key == 27) fullscreen("exit");
+	else if (key == 9) fullscreen();
 });
 
 document.addEventListener("keyup", () => {
 	action = "none";
 });
 
-function enterFullscreen() {
-  	if (document.body.requestFullscreen) {
-    	document.body.requestFullscreen();
-  	} else if (document.body.webkitRequestFullscreen) {
-    	document.body.webkitRequestFullscreen();
-  	} else if (document.body.msRequestFullscreen) {
-    	document.body.msRequestFullscreen();
-  	};
-};
-
-function exitFullscreen() {
-  	if (document.body.exitFullscreen) {
-    	document.body.exitFullscreen();
-  	} else if (document.body.webkitExitFullscreen) {
-    	document.body.webkitExitFullscreen();
-  	} else if (document.body.msExitFullscreen) {
-    	document.body.msExitFullscreen();
-  	};
+function fullscreen(state = "enter") {
+	if (state == "exit") {
+		if (document.body.exitFullscreen) {
+			document.body.exitFullscreen();
+		} else if (document.body.webkitExitFullscreen) {
+			document.body.webkitExitFullscreen();
+	  	} else if (document.body.msExitFullscreen) {
+			document.body.msExitFullscreen();
+		};
+	} else {
+		screenState = "fullscreen";
+  		if (document.body.requestFullscreen) {
+    		document.body.requestFullscreen();
+  		} else if (document.body.webkitRequestFullscreen) {
+    		document.body.webkitRequestFullscreen();
+  		} else if (document.body.msRequestFullscreen) {
+	    	document.body.msRequestFullscreen();
+  		};
+	};
 };
