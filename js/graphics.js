@@ -1,6 +1,3 @@
-const HourConvert = 82 / 12, // number of frames divided by number of hours on a clock (12)
-MinConvert = 80 / 60; // number of frames divided by number of minutes in an hour
-
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], invNum = -1;
 
@@ -27,6 +24,11 @@ function advDraw(image, sx, sy, sw, sh, dx, dy, dw = sw, dh = sh) {
 };
 
 function select(x, y, width, height) {
+	x = +x;
+	y = +y;
+	width = +width;
+	height = +height;
+	if ((!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
 	draw(selector[0], x - 2, y - 2);
 	draw(selector[1], x + width - 6, y - 2);
 	draw(selector[2], x - 2, y + height - 7);
@@ -47,8 +49,8 @@ function renderRoom() {
 	draw(background);
 	draw(floating_arch, 136, 34 - Math.round(backAnim[0]));
 	draw(clock_face, clockX, clockY);
-	advDraw(clock_hour_hand, Math.floor((time[0]) * HourConvert) * 24, 0, 24, 24, clockX + 18, clockY + 18, 24, 24);
-	advDraw(clock_min_hand, Math.floor((time[1]) * MinConvert) * 34, 0, 34, 34, clockX + 13, clockY + 13, 34, 34);
+	advDraw(clock_hour_hand, Math.floor((time[0]) * 82 / 12) * 24, 0, 24, 24, clockX + 18, clockY + 18, 24, 24);
+	advDraw(clock_min_hand, Math.floor((time[1]) * 80 / 60) * 34, 0, 34, 34, clockX + 13, clockY + 13, 34, 34);
 	draw(clock_node, clockX + 26, clockY + 26);
 	if (backAnim[0] >= 1) backAnim[1] = "down";
 	else if (backAnim[0] <= -1) backAnim[1] = "up";
