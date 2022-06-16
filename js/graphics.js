@@ -4,7 +4,7 @@ MinConvert = 80 / 60; // number of frames divided by number of minutes in an hou
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], invNum = -1;
 
-function draw(image, x = 0, y = 0, w = (width / scale), h = (height / scale)) {
+function draw(image, x = 0, y = 0, w = +image.width, h = +image.height) {
 	ctx.drawImage(image, x * scale, y * scale, w * scale, h * scale);
 };
 
@@ -13,10 +13,10 @@ function advDraw(image, sx, sy, sw, sh, dx, dy, dw, dh) {
 };
 
 function select(x, y, width, height) {
-	ctx.drawImage(selector[0], x - 2, y - 2);
-	ctx.drawImage(selector[1], x + width - 6, y - 2);
-	ctx.drawImage(selector[2], x - 2, y + height - 7);
-	ctx.drawImage(selector[3], x + width - 6, y + height - 7);
+	draw(selector[0], x - 2, y - 2);
+	draw(selector[1], x + width - 6, y - 2);
+	draw(selector[2], x - 2, y + height - 7);
+	draw(selector[3], x + width - 6, y + height - 7);
 };
 
 function renderRoom() {
@@ -31,11 +31,11 @@ function renderRoom() {
 	draw(cave);
 	draw(shade);
 	draw(background);
-	draw(floating_arch, 136, 34 - Math.round(backAnim[0]), 128, 90);
-	draw(clock_face, clockX, clockY, 60, 60);
+	draw(floating_arch, 136, 34 - Math.round(backAnim[0]));
+	draw(clock_face, clockX, clockY);
 	advDraw(clock_hour_hand, Math.floor((time[0]) * HourConvert) * 24, 0, 24, 24, clockX + 18, clockY + 18, 24, 24);
 	advDraw(clock_min_hand, Math.floor((time[1]) * MinConvert) * 34, 0, 34, 34, clockX + 13, clockY + 13, 34, 34);
-	draw(clock_node, clockX + 26, clockY + 26, 8, 8);
+	draw(clock_node, clockX + 26, clockY + 26);
 	if (backAnim[0] >= 1) backAnim[1] = "down";
 	else if (backAnim[0] <= -1) backAnim[1] = "up";
 	if (backAnim[1] == "up") backAnim[0] += (Math.random() + 0.5) * 0.075;
@@ -75,7 +75,7 @@ function bars(x, y, health, maxHealth, shield, maxShield) {
 	} else if (health < 1000 && maxHealth >= 1000) {
 		health = "0" + health;
 	};
-	ctx.drawImage(health_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 65, 64, 12);
+	advDraw(health_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 65, 64, 12);
 	drawLore(x + 25, y + 67, health, "black", "left");
 	drawLore(x + 34, y + 67, maxHealth, "black", "right");
 	if (shield === null || shield === undefined || maxShield === null || maxShield === undefined || shield < 1) return;
@@ -93,7 +93,7 @@ function bars(x, y, health, maxHealth, shield, maxShield) {
 	} else if (shield < 1000 && maxShield >= 1000) {
 		shield = "0" + shield;
 	};
-	ctx.drawImage(shield_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 76, 64, 12);
+	advDraw(shield_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 76, 64, 12);
 	drawLore(x + 25, y + 78, shield, "black", "left");
 	drawLore(x + 34, y + 78, maxShield, "black", "right");
 };
@@ -105,29 +105,29 @@ function startPlayerAnim(type) {
 };
 
 function player() {
-	let x = 15, y = centerY - 20;
+	let x = 15, y = 30;
 	if (playerAnim[1] == "idle") {
-		ctx.drawImage(player_idle, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		advDraw(player_idle, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 10) playerAnim[0] = 0;
 	};
 	if (playerAnim[1] == "attack") {
-		ctx.drawImage(player_attack, Math.floor(playerAnim[0]) * 120, 0, 120, 84, x, y, 120, 84);
+		advDraw(player_attack, Math.floor(playerAnim[0]) * 120, 0, 120, 84, x, y, 120, 84);
 		playerAnim[0]++;
 		if (playerAnim[0] >= 4) playerAnim = [0, "idle"];
 	};
 	if (playerAnim[1] == "attack_2") {
-		ctx.drawImage(player_attack_2, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		advDraw(player_attack_2, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0]++;
 		if (playerAnim[0] >= 6) playerAnim = [0, "idle"];
 	};
 	if (playerAnim[1] == "hit") {
-		ctx.drawImage(player_hit, 0, 0, 120, 80, x, y, 120, 80);
+		advDraw(player_hit, 0, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.5;
 		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
 	};
 	if (playerAnim[1] == "shield") {
-		ctx.drawImage(player_shield, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		advDraw(player_shield, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 3) playerAnim[0] = 2;
 	};
@@ -139,7 +139,7 @@ function player() {
 	if (en < 10 && maxEn >= 10) {
 		en = "0" + en;
 	};
-	ctx.drawImage(energy, 0, Math.round(frame) * 31, 32, 32, x, y + 16, 32, 32);
+	advDraw(energy, 0, Math.round(frame) * 31, 32, 32, x, y + 16, 32, 32);
 	drawLore(x + 9, y + 28, en, "black", "left");
 	drawLore(x + 18, y + 28, maxEn, "black", "right");
 };
@@ -158,9 +158,9 @@ function enemies() {
         if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
         if (index !== invNum) {
             if (enemy.type == "slime_big") {
-                ctx.drawImage(slime_big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
+                advDraw(slime_big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
             } else if (enemy.type == "slime_small") {
-                ctx.drawImage(slime_small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
+                advDraw(slime_small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
             };
         };
         enemyAnim[index] += (Math.random() + 0.5) * 0.1;
@@ -171,10 +171,10 @@ function enemies() {
 	if (tempAnim[1] == "slime_small_launch") {
 		if (tempAnim[0] >= 10) {
 			let phase = ((tempAnim[0] - 9) / 10),
-				posX = Math.round(((x - 68) - 64) * phase),
-				posY = Math.round(((y - (centerY + 10))) * phase);
-			ctx.drawImage(slime_small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
-		} else ctx.drawImage(slime_small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
+			posX = Math.round(((x - 68) - 64) * phase),
+			posY = Math.round(((y - (50 + 10))) * phase);
+			advDraw(slime_small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
+		} else advDraw(slime_small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
 		if (tempAnim[2] == "normal") tempAnim[0]++;
 		else if (tempAnim[2] == "backwards") tempAnim[0]--;
 		if (tempAnim[0] >= 20) {
@@ -189,21 +189,25 @@ function enemies() {
 };
 
 function showCard(type, index, y, overrideX = NaN) {
-    let x = game.handPos[index];
+    let x = game.handPos[index], img;
     overrideX = +overrideX;
     if (overrideX !== null && overrideX !== undefined && overrideX === overrideX) x = overrideX;
 	if (type == "slash") {
-		ctx.drawImage(card_slash, x, y);
+		img = card_slash;
+	} else if (type == "block") {
+		img = card_block;
+	} else {
+		console.error("card " + index + " is invalid type: " + type);
+		console.log("displaying default image... note: this bugged card is unplayable.");
+		img = card_slash;
 	};
-	if (type == "block") {
-		ctx.drawImage(card_block, x, y);
-	};
+	draw(img, x, y, 66, 98);
 };
 
 function renderCards() {
     if (game.select[0] == "attack_enemy") {
-        showCard(game.enemyAtt, 0, height / 2 - 48, 104);
-        ctx.drawImage(select_card, 103, height / 2 - 48 - 1);
+        showCard(game.enemyAtt, 0, 52, 104);
+		draw(select_card, 103, 52 - 1, 68, 100);
     };
     if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") return;
 	let temp = -1;
@@ -212,12 +216,12 @@ function renderCards() {
 		if (game.select[0] == "hand" && game.select[1] == index) {
 			temp = index;
 		} else {
-			showCard(card, index, height - 54 - Math.floor(cardAnim[index]));
+			showCard(card, index, 146 - Math.floor(cardAnim[index]));
 		};
 	};
 	if (temp != -1) {
-		ctx.drawImage(select_card, game.handPos[temp] - 1, height - 54 - 1 - Math.floor(cardAnim[temp]));
-        showCard(game.hand[temp], temp, height - 54 - Math.floor(cardAnim[temp]));
+		draw(select_card, game.handPos[temp] - 1, 146 - 1 - Math.floor(cardAnim[temp]), 68, 100);
+        showCard(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]));
         if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
         if (cardAnim[temp] > 44) cardAnim[temp] = 44;
     };
@@ -234,7 +238,7 @@ function renderCards() {
 		if (notif[1] >= 9) color = "fade_2";
 		else if (notif[1] >= 7) color = "fade_1";
 		else if (notif[1] >= 5) color = "fade_0";
-		drawLore(game.handPos[notif[0]] + 32, height - 54 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1], "not enough energy", color, "center");
+		drawLore(game.handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1], "not enough energy", color, "center");
 		notif[1]++;
 		if (notif[1] > 11) notif = [-1, 0];
 	};
@@ -266,11 +270,11 @@ function drawLore(x, y, string, color = "black", position = "right") {
 	for (let a = 0; a < string.length; a++) {
 		index = string.charCodeAt(a);
 		if (position == "right") {
-			ctx.drawImage(img, (index - 32) * 6, 0, 5, 10, x + (a * 6), y, 5, 10);
+			advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 6), y, 5, 10);
 		} else if (position == "left") {
-			ctx.drawImage(img, (index - 32) * 6, 0, 5, 10, x + ((a - string.length + 1) * 6), y, 5, 10);
+			advDraw(img, (index - 32) * 6, 0, 5, 10, x + ((a - string.length + 1) * 6), y, 5, 10);
 		} else if (position == "center") {
-			ctx.drawImage(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (string.length * 3), y, 5, 10);
+			advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (string.length * 3), y, 5, 10);
 		};
 	};
 };
