@@ -49,8 +49,8 @@ function renderRoom() {
 	draw(background);
 	draw(floating_arch, 136, 34 - Math.round(backAnim[0]));
 	draw(clock_face, clockX, clockY);
-	advDraw(clock_hour_hand, Math.floor((time[0]) * 82 / 12) * 24, 0, 24, 24, clockX + 18, clockY + 18, 24, 24);
-	advDraw(clock_min_hand, Math.floor((time[1]) * 80 / 60) * 34, 0, 34, 34, clockX + 13, clockY + 13, 34, 34);
+	advDraw(clock_hour_hand, Math.floor((time[0]) * 82 / 12) * 24, 0, 24, 24, clockX + 18, clockY + 18);
+	advDraw(clock_min_hand, Math.floor((time[1]) * 80 / 60) * 34, 0, 34, 34, clockX + 13, clockY + 13);
 	draw(clock_node, clockX + 26, clockY + 26);
 	if (backAnim[0] >= 1) backAnim[1] = "down";
 	else if (backAnim[0] <= -1) backAnim[1] = "up";
@@ -67,11 +67,11 @@ function renderRoom() {
 		enemies();
 	};
 	draw(view);
-    if (game.select[0] == "help") draw(select_round, 380, 2, 18, 18);
-    if (game.select[0] == "looker") draw(select_round, 361, 2, 18, 18);
-	draw(help, 381, 3, 16, 16);
-    if (game.select[0] == "looker" && game.select[1] == 1) advDraw(looker, 15, 0, 16, 16, 362, 3, 16, 16);
-	else advDraw(looker, 0, 0, 16, 16, 362, 3, 16, 16);
+    if (game.select[0] == "help") draw(select_round, 380, 2);
+    if (game.select[0] == "looker") draw(select_round, 361, 2);
+	draw(help, 381, 3);
+    if (game.select[0] == "looker" && game.select[1] == 1) advDraw(looker, 15, 0, 16, 16, 362, 3);
+	else advDraw(looker, 0, 0, 16, 16, 362, 3);
     drawLore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
@@ -208,7 +208,7 @@ function enemies() {
 function showCard(type, index, y, overrideX = NaN) {
     let x = game.handPos[index], img;
     overrideX = +overrideX;
-    if (!overrideX && overrideX !== 0 && overrideX === overrideX) x = overrideX;
+    if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
 	if (type == "slash") {
 		img = card_slash;
 	} else if (type == "block") {
@@ -224,7 +224,7 @@ function showCard(type, index, y, overrideX = NaN) {
 function renderCards() {
     if (game.select[0] == "attack_enemy") {
         showCard(game.enemyAtt, 0, 52, 104);
-		draw(select_card, 103, 52 - 1, 68, 100);
+		draw(select_card, 103, 52 - 1);
     };
     if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") return;
 	let temp = -1;
@@ -237,7 +237,7 @@ function renderCards() {
 		};
 	};
 	if (temp != -1) {
-		draw(select_card, game.handPos[temp] - 1, 146 - 1 - Math.floor(cardAnim[temp]), 68, 100);
+		draw(select_card, game.handPos[temp] - 1, 146 - 1 - Math.floor(cardAnim[temp]));
         showCard(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]));
         if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
         if (cardAnim[temp] > 44) cardAnim[temp] = 44;
