@@ -1,14 +1,11 @@
-var canvas, width = 0, height = 0, centerY = 0, scale, ctx, action = "none";
+var canvas, scale, ctx, action = "none";
 
 function canvasData() {
 	document.body.style.cursor = "none";
 	let canv = document.getElementById("canvas");
 	if (canv === null || canv === undefined) return false;
 	canvas = canv;
-	width = canvas.width;
-	height = canvas.height;
-	centerY = height / 2 - 50;
-	scale = width / 400;
+	scale = canvas.width / 400;
 	ctx = canvas.getContext("2d");
 	ctx.mozImageSmoothingEnabled = false;
 	ctx.webkitImageSmoothingEnabled = false;

@@ -213,7 +213,7 @@ function playerTurn() {
 
 const gameloop = setInterval(function() {
     // clear
-    ctx.clearRect(0, 0, width, height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     // update data
     updateData();
     // actions
