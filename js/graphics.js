@@ -267,15 +267,15 @@ function target() {
         pos = game.enemyPos[game.select[1]];
         if (enemyType == "slime_small") {
             select(pos[0] + 19, pos[1] + 35, 26, 29);
-            drawLore(pos[0] + 32, pos[1] + 24, "small slime", "white", "center");
+            drawLore(pos[0] + 32, pos[1] + 28, "small slime", "white", "center", true);
         } else if (enemyType == "slime_big") {
             select(pos[0] + 5, pos[1] + 25, 54, 39);
-            drawLore(pos[0] + 32, pos[1] + 14, "big slime", "white", "center");
+            drawLore(pos[0] + 32, pos[1] + 18, "big slime", "white", "center", true);
         };
     };
 };
 
-function drawLore(x, y, string, color = "black", position = "right") {
+function drawLore(x, y, string, color = "black", position = "right", small = false) {
 	if ((!x && x !== 0) || (!y && y !== 0) || string === null || string === undefined) return;
 	let img = letters_black;
 	string = "" + string;
@@ -286,12 +286,22 @@ function drawLore(x, y, string, color = "black", position = "right") {
 	else if (color == "fade_2") img = letters_fade[2];
 	for (let a = 0; a < string.length; a++) {
 		index = string.charCodeAt(a);
-		if (position == "right") {
-			advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 6), y, 5, 10);
-		} else if (position == "left") {
-			advDraw(img, (index - 32) * 6, 0, 5, 10, x + ((a - string.length + 1) * 6), y, 5, 10);
-		} else if (position == "center") {
-			advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (string.length * 3), y, 5, 10);
+		if (small) {
+			if (position == "right") {
+				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 3), y, 2.5, 5);
+			} else if (position == "left") {
+				advDraw(img, (index - 32) * 6, 0, 5, 10, x + ((a - string.length + 1) * 3), y, 2.5, 5);
+			} else if (position == "center") {
+				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 3) - (string.length * 1.5), y, 2.5, 5);
+			};
+		} else {
+			if (position == "right") {
+				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 6), y, 5, 10);
+			} else if (position == "left") {
+				advDraw(img, (index - 32) * 6, 0, 5, 10, x + ((a - string.length + 1) * 6), y, 5, 10);
+			} else if (position == "center") {
+				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (string.length * 3), y, 5, 10);
+			};
 		};
 	};
 };
