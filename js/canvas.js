@@ -1,4 +1,4 @@
-var canvas, width = 0, height = 0, centerY = 0, ctx, action = "none";
+var canvas, width = 0, height = 0, centerY = 0, scale, ctx, action = "none";
 
 function canvasData() {
 	document.body.style.cursor = "none";
@@ -8,6 +8,7 @@ function canvasData() {
 	width = canvas.width;
 	height = canvas.height;
 	centerY = height / 2 - 50;
+	scale = width / 400;
 	ctx = canvas.getContext("2d");
 	ctx.mozImageSmoothingEnabled = false;
 	ctx.webkitImageSmoothingEnabled = false;

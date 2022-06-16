@@ -14,8 +14,8 @@ function select(x, y, width, height) {
 function renderRoom() {
 	let now = new Date(Date.now()),
 		time = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()],
-		clockX = 170,
-		clockY = 63 - Math.round(backAnim[2]);
+		clockX = 170 * scale,
+		clockY = (63 - Math.round(backAnim[2])) * scale;
 	time[2] += (time[3] / 1000);
 	time[1] += (time[2] / 60);
 	time[0] += (time[1] / 60);
@@ -23,11 +23,11 @@ function renderRoom() {
 	ctx.drawImage(cave, 0, 0, width, height);
 	ctx.drawImage(shade, 0, 0, width, height);
 	ctx.drawImage(background, 0, 0, width, height);
-	ctx.drawImage(floating_arch, 136, 34 - Math.round(backAnim[0]));
-	ctx.drawImage(clock_face, clockX, clockY);
-	ctx.drawImage(clock_hour_hand, Math.floor((time[0]) * HourConvert) * 24, 0, 24, 24, clockX + 18, clockY + 18, 24, 24);
-	ctx.drawImage(clock_min_hand, Math.floor((time[1]) * MinConvert) * 34, 0, 34, 34, clockX + 13, clockY + 13, 34, 34);
-	ctx.drawImage(clock_node, clockX + 26, clockY + 26);
+	ctx.drawImage(floating_arch, 136 * scale, (34 - Math.round(backAnim[0])) * scale, 128 * scale, 90 * scale);
+	ctx.drawImage(clock_face, clockX, clockY, 60 * scale, 60 * scale);
+	ctx.drawImage(clock_hour_hand, Math.floor((time[0]) * HourConvert) * 24, 0, 24, 24, clockX + (18 * scale), clockY + (18 * scale), 24 * scale, 24 * scale);
+	ctx.drawImage(clock_min_hand, Math.floor((time[1]) * MinConvert) * 34, 0, 34, 34, clockX + (13 * scale), clockY + (13 * scale), 34 * scale, 34 * scale);
+	ctx.drawImage(clock_node, clockX + (26 * scale), clockY + (26 * scale), 8 * scale, 8 * scale);
 	if (backAnim[0] >= 1) backAnim[1] = "down";
 	else if (backAnim[0] <= -1) backAnim[1] = "up";
 	if (backAnim[1] == "up") backAnim[0] += (Math.random() + 0.5) * 0.075;
@@ -42,7 +42,7 @@ function renderRoom() {
 	if (game.select[0] != "looker" || !game.select[1]) {
 		enemies();
 	};
-    ctx.drawImage(view, 0, 0);
+    ctx.drawImage(view, 0, 0, width, height);
     if (game.select[0] == "help") ctx.drawImage(select_round, width - 20, 2);
     if (game.select[0] == "looker") ctx.drawImage(select_round, width - 39, 2);
     ctx.drawImage(help, width - 19, 3);
