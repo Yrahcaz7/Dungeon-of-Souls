@@ -1,7 +1,6 @@
 var canvas, scale, ctx, action = "none";
 
 function canvasData() {
-	document.body.style.cursor = "none";
 	let canv = document.getElementById("canvas");
 	if (canv === null || canv === undefined) return false;
 	canvas = canv;
