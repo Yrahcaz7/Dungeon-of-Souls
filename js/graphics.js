@@ -5,10 +5,24 @@ var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5
 tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], invNum = -1;
 
 function draw(image, x = 0, y = 0, w = +image.width, h = +image.height) {
+	x = +x;
+	y = +y;
+	w = +w;
+	h = +h;
+	if (!image || (!x && x !== 0) || (!y && y !== 0) || !w || !h) return;
 	ctx.drawImage(image, x * scale, y * scale, w * scale, h * scale);
 };
 
-function advDraw(image, sx, sy, sw, sh, dx, dy, dw, dh) {
+function advDraw(image, sx, sy, sw, sh, dx, dy, dw = sw, dh = sh) {
+	sx = +sx;
+	sy = +sy;
+	sw = +sw;
+	sh = +sh;
+	dx = +dx;
+	dy = +dy;
+	dw = +dw;
+	dh = +dh;
+	if (!image || (!sx && sx !== 0) || (!sy && sy !== 0) || !sw || !sh || (!dx && dx !== 0) || (!dy && dy !== 0) || !dw || !dh) return;
 	ctx.drawImage(image, sx, sy, sw, sh, dx * scale, dy * scale, dw * scale, dh * scale);
 };
 
@@ -60,7 +74,8 @@ function renderRoom() {
 };
 
 function bars(x, y, health, maxHealth, shield, maxShield) {
-	if (health === null || health === undefined || maxHealth === null || maxHealth === undefined) return;
+	x = +x; y = +y; health = +health; maxHealth = +maxHealth; shield = +shield; maxShield = +maxShield;
+	if ((!x && x !== 0) || (!y && y !== 0) || (!health && health !== 0) || !maxHealth) return;
 	let frame, percentage = health / maxHealth;
 	if (percentage < 0) frame = 0;
 	else if (percentage > 1) frame = 62;
@@ -78,7 +93,7 @@ function bars(x, y, health, maxHealth, shield, maxShield) {
 	advDraw(health_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 65, 64, 12);
 	drawLore(x + 25, y + 67, health, "black", "left");
 	drawLore(x + 34, y + 67, maxHealth, "black", "right");
-	if (shield === null || shield === undefined || maxShield === null || maxShield === undefined || shield < 1) return;
+	if (!shield || !maxShield) return;
 	percentage = shield / maxShield;
 	if (percentage < 0) frame = 0;
 	else if (percentage > 1) frame = 62;
@@ -191,7 +206,7 @@ function enemies() {
 function showCard(type, index, y, overrideX = NaN) {
     let x = game.handPos[index], img;
     overrideX = +overrideX;
-    if (overrideX !== null && overrideX !== undefined && overrideX === overrideX) x = overrideX;
+    if (!overrideX && overrideX !== 0 && overrideX === overrideX) x = overrideX;
 	if (type == "slash") {
 		img = card_slash;
 	} else if (type == "block") {
@@ -259,7 +274,7 @@ function target() {
 };
 
 function drawLore(x, y, string, color = "black", position = "right") {
-	if (string === null || string === undefined) return;
+	if ((!x && x !== 0) || (!y && y !== 0) || string === null || string === undefined) return;
 	let img = letters_black;
 	string = "" + string;
 	if (color == "red") img = letters_red;
