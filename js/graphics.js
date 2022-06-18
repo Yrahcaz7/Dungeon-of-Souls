@@ -285,29 +285,35 @@ function drawLore(x, y, string, color = "black", position = "right", small = fal
 	else if (color == "fade_1") img = letters_fade[1];
 	else if (color == "fade_2") img = letters_fade[2];
 	for (let a = 0; a < string.length; a++) {
-		let index = string.charCodeAt(a);
+		let index = string.charCodeAt(a), len = string.length;
 		if (index == 10) {
 			enters++;
 			enterIndex = a + 1;
 		};
-		if (enters) a -= enterIndex;
+		if (enters) {
+			a -= enterIndex;
+			len -= enterIndex;
+		};
 		if (small) {
 			if (position == "right") {
 				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 3), y + (enters * 5.5), 2.5, 5);
 			} else if (position == "left") {
-				advDraw(img, (index - 32) * 6, 0, 5, 10, x + ((a - string.length + 1) * 3), y + (enters * 5.5), 2.5, 5);
+				advDraw(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 3), y + (enters * 5.5), 2.5, 5);
 			} else if (position == "center") {
-				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 3) - (string.length * 1.5), y + (enters * 5.5), 2.5, 5);
+				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 3) - (len * 1.5), y + (enters * 5.5), 2.5, 5);
 			};
 		} else {
 			if (position == "right") {
 				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 6), y + (enters * 11), 5, 10);
 			} else if (position == "left") {
-				advDraw(img, (index - 32) * 6, 0, 5, 10, x + ((a - string.length + 1) * 6), y + (enters * 11), 5, 10);
+				advDraw(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 6), y + (enters * 11), 5, 10);
 			} else if (position == "center") {
-				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (string.length * 3), y + (enters * 11), 5, 10);
+				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (len * 3), y + (enters * 11), 5, 10);
 			};
 		};
-		if (enters) a += enterIndex;
+		if (enters) {
+			a += enterIndex;
+			len += enterIndex;
+		};
 	};
 };

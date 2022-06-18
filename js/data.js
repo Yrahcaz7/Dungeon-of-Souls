@@ -1,4 +1,8 @@
-const text = "You have been trapped in this dungeon as long as you can remember.\n"
+const text = "Copyright (C) 2022 Yrahcaz7\n"
+	+ "Copyright details can be seen in \"LICENSE.txt\".\n"
+	+ "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-Souls\".\n"
+	+ "\n\n\n"
+	+ "You have been trapped in this dungeon as long as you can remember.\n"
 	+ "You are determined to get out, so you pick up some armour and start climbing up the floors.\n"
 	+ "As you go higher, you get closer to the exit, but the monsters get stronger.\n"
 	+ "As time goes on, you wonder... what was the reason you were trapped here in the first place?\n"
@@ -13,7 +17,12 @@ const text = "You have been trapped in this dungeon as long as you can remember.
 	+ "After each battle, you will get rewards, and you can get better cards.\n"
 	+ "Try to get a good synergy between the cards in your deck.\n"
 	+ "If you reach 0 health, you die and lose your progress.\n"
-	+ "However, you can use your new knowledge to reach higher heights next time."
+	+ "However, you can use your new knowledge to reach higher heights next time.\n"
+	+ "\n\n\n"
+	+ "When the hands align,\n"
+	+ "find the fragment of time.\n"
+	+ "Else, at the edge of the sky,\n"
+	+ "you shall eternally die."
 
 function updateData() {
 	// hide
