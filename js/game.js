@@ -84,8 +84,8 @@ function playerTurn() {
         actionTimer = 1;
         return;
     };
-    // activate / deactivate looker
-    if (action == "enter" && game.select[0] == "looker") {
+    // activate / deactivate extras
+    if (action == "enter" && (game.select[0] == "help" || game.select[0] == "looker")) {
         if (game.select[1] == 0) game.select[1] = 1;
         else game.select[1] = 0;
         actionTimer = 2;
@@ -233,10 +233,12 @@ const gameloop = setInterval(function() {
         };
     };
     // visuals
-    renderRoom();
+    backgrounds();
     if (game.select[0] != "looker" || !game.select[1]) {
+        enemies();
         player();
-        renderCards();
         target();
     };
+    foregrounds();
+    if (game.select[0] != "looker" || !game.select[1]) renderCards();
 }, 100);

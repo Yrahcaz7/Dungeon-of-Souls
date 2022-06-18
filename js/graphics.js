@@ -35,7 +35,7 @@ function select(x, y, width, height) {
 	draw(selector[3], x + width - 6, y + height - 7);
 };
 
-function renderRoom() {
+function backgrounds() {
 	let now = new Date(Date.now()),
 		time = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()],
 		clockX = 170,
@@ -60,11 +60,12 @@ function renderRoom() {
 	else if (backAnim[2] <= -1) backAnim[3] = "up";
 	if (backAnim[3] == "up") backAnim[2] += (Math.random() + 0.5) * 0.075;
 	else if (backAnim[3] == "down") backAnim[2] -= (Math.random() + 0.5) * 0.075;
-	if (game.enemies.length > 6) {
-		game.enemies.splice(6);
-	};
-	if (game.select[0] != "looker" || !game.select[1]) {
-		enemies();
+};
+
+function foregrounds() {
+	if (game.select[0] == "help" && game.select[1]) {
+		draw(shade);
+		draw(shade);
 	};
 	draw(view);
     if (game.select[0] == "help") draw(select_round, 380, 2);
@@ -170,6 +171,9 @@ function startEnemyAnim(index, type) {
 };
 
 function enemies() {
+	if (game.enemies.length > 6) {
+		game.enemies.splice(6);
+	};
 	for (let index = 0; index < game.enemies.length; index++) {
         let enemy = game.enemies[index], pos = game.enemyPos[index];
         if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
