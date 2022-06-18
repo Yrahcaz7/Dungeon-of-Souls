@@ -242,14 +242,16 @@ const gameloop = setInterval(function() {
         target();
     };
     foregrounds();
-    if (!hide) renderCards();
+    if (!hide) {
+        renderCards();
+    };
     if (game.select[0] == "help" && game.select[1]) {
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
         draw(select_round, 380, 2);
 		draw(help, 381, 3);
 		drawLore(1, 1, "Storyline:", "white");
-		drawLore(1, 39.5, "Controls:", "white");
-		drawLore(1, 67, "How to Play:", "white");
+		drawLore(1, 45, "Controls:", "white");
+		drawLore(1, 78, "How to Play:", "white");
 		drawLore(1, 12, text, "white", "right", true);
 	};
 }, 100);
