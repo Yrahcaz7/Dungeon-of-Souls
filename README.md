@@ -2,7 +2,7 @@
 
 > Copyright (C) 2022 Yrahcaz7
 >
-> Copyright details are [**here**](https://github.com/Yrahcaz7/Dungeon-of-Souls/blob/main/LICENSE).
+> Copyright details are [**here**](https://github.com/Yrahcaz7/Dungeon-of-Souls/blob/main/LICENSE.txt).
 
 ## Storyline
 
