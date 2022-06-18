@@ -19,7 +19,7 @@ var game = {
     handPos: [],
     activeCard: -1,
     discard: [],
-}, actionTimer = -1, notif = [-1, 0];
+}, actionTimer = -1, notif = [-1, 0], hide = (game.select[0] == "help" || game.select[0] == "looker") && game.select[1];
 
 function hardReset() {
     localStorage.removeItem("Yrahcaz7/Dungeon-of-Souls/save");
@@ -218,6 +218,8 @@ const gameloop = setInterval(function() {
     updateData();
     // actions
     if (game.turn == "player") playerTurn();
+    // update data again
+    updateData();
     // load floor
     if (game.floor == 1) {
         if (game.state == "enter") {
@@ -234,11 +236,20 @@ const gameloop = setInterval(function() {
     };
     // visuals
     backgrounds();
-    if (game.select[0] != "looker" || !game.select[1]) {
+    if (!hide) {
         enemies();
         player();
         target();
     };
     foregrounds();
-    if (game.select[0] != "looker" || !game.select[1]) renderCards();
+    if (!hide) renderCards();
+    if (game.select[0] == "help" && game.select[1]) {
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+        draw(select_round, 380, 2);
+		draw(help, 381, 3);
+		drawLore(1, 1, "Storyline:", "white");
+		drawLore(1, 39.5, "Controls:", "white");
+		drawLore(1, 67, "How to Play:", "white");
+		drawLore(1, 12, text, "white", "right", true);
+	};
 }, 100);

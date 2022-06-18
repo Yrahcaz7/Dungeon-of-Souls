@@ -1,15 +1,23 @@
-const text = "You have a deck of cards, which you draw the top 5 from each turn.\n"
+const text = "You have been trapped in this dungeon as long as you can remember.\n"
+	+ "You are determined to get out, so you pick up some armour and start climbing up the floors.\n"
+	+ "As you go higher, you get closer to the exit, but the monsters get stronger.\n"
+	+ "As time goes on, you wonder... what was the reason you were trapped here in the first place?\n"
+	+ "Is there something more to this place than what it seems?\n"
+	+ "\n\n"
+	+ "Use the arrow keys or WASD keys to select things.\n"
+	+ "Press enter or the space bar to perform an action.\n"
+	+ "Press tab to enter full screen, and escape to exit it.\n"
+	+ "\n\n"
+	+ "You have a deck of cards, which you draw the top 5 from each turn.\n"
 	+ "You can play the cards in your hand for the effect(s) they say.\n"
 	+ "After each battle, you will get rewards, and you can get better cards.\n"
 	+ "Try to get a good synergy between the cards in your deck.\n"
 	+ "If you reach 0 health, you die and lose your progress.\n"
-	+ "However, you can use your new knowledge to reach higher heights next time.\n"
-	+ "\n\n"
-	+ "Use the arrow keys or WASD keys to select things.\n"
-	+ "Press enter or the space bar to perform an action.\n"
-	+ "Press tab to enter full screen, and escape to exit it."
+	+ "However, you can use your new knowledge to reach higher heights next time."
 
 function updateData() {
+	// hide
+	hide = (game.select[0] == "help" || game.select[0] == "looker") && game.select[1];
     // enemyPos
 	let number = game.enemies.length;
 	if (number == 1) game.enemyPos = [[400 - 105, 50]];
