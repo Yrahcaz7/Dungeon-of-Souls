@@ -3,12 +3,11 @@
 }
 
 canvas {
-	top: 0;
-	left: 0;
+    top: 0;
+    left: 0;
     width: 100%;
-    background-color: #101050;
-	position: absolute;
-	z-index: -999;
+    position: absolute;
+    z-index: -999;
     image-rendering: -moz-crisp-edges;
     image-rendering: -webkit-crisp-edges;
     image-rendering: pixelated;
