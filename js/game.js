@@ -1,3 +1,21 @@
+/*
+	Dungeon of Souls
+	Copyright (C) 2022 Yrahcaz7
+
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program. If not, see <https://www.gnu.org/licenses/>.
+*/
+
 var game = {
     health: 60,
     maxHealth: 60,
@@ -246,14 +264,15 @@ const gameloop = setInterval(function() {
         renderCards();
     };
     if (game.select[0] == "help" && game.select[1]) {
+        ctx.fillStyle = "#000000cc";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         draw(select_round, 380, 2);
         draw(help, 381, 3);
         drawLore(1, 1, "Dungeon of Souls", "white");
-        drawLore(1, 34, "Storyline:", "white");
-        drawLore(1, 78, "Controls:", "white");
-        drawLore(1, 111, "How to Play:", "white");
-        drawLore(1, 160.5, "An ominous feeling...", "white");
+        drawLore(1, 23, "Storyline:", "white");
+        drawLore(1, 67, "Controls:", "white");
+        drawLore(1, 100, "How to Play:", "white");
+        drawLore(1, 149.5, "An ominous feeling...", "white");
         drawLore(1, 12, text, "white", "right", true);
 	};
 }, 100);
