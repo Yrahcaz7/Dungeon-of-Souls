@@ -2,6 +2,8 @@
 
 > Copyright (C) 2022 Yrahcaz7
 >
+> GNU General Public License (version 3)
+>
 > Copyright details are [**here**](https://github.com/Yrahcaz7/Dungeon-of-Souls/blob/main/LICENSE.txt).
 
 ## Storyline
