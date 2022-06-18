@@ -65,7 +65,8 @@ function backgrounds() {
 function foregrounds() {
 	if (game.select[0] == "help" && game.select[1]) {
 		draw(shade);
-		draw(shade);
+		drawLore(10, 12, "How to Play:", "white");
+		drawLore(10, 23, text, "white", "right", true);
 	};
 	draw(view);
     if (game.select[0] == "help") draw(select_round, 380, 2);
@@ -281,7 +282,7 @@ function target() {
 
 function drawLore(x, y, string, color = "black", position = "right", small = false) {
 	if ((!x && x !== 0) || (!y && y !== 0) || string === null || string === undefined) return;
-	let img = letters_black;
+	let img = letters_black, enters = 0, enterIndex = 0;
 	string = "" + string;
 	if (color == "red") img = letters_red;
     else if (color == "white") img = letters_white;
@@ -289,23 +290,29 @@ function drawLore(x, y, string, color = "black", position = "right", small = fal
 	else if (color == "fade_1") img = letters_fade[1];
 	else if (color == "fade_2") img = letters_fade[2];
 	for (let a = 0; a < string.length; a++) {
-		index = string.charCodeAt(a);
+		let index = string.charCodeAt(a);
+		if (index == 10) {
+			enters++;
+			enterIndex = a + 1;
+		};
+		if (enters) a -= enterIndex;
 		if (small) {
 			if (position == "right") {
-				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 3), y, 2.5, 5);
+				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 3), y + (enters * 5.5), 2.5, 5);
 			} else if (position == "left") {
-				advDraw(img, (index - 32) * 6, 0, 5, 10, x + ((a - string.length + 1) * 3), y, 2.5, 5);
+				advDraw(img, (index - 32) * 6, 0, 5, 10, x + ((a - string.length + 1) * 3), y + (enters * 5.5), 2.5, 5);
 			} else if (position == "center") {
-				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 3) - (string.length * 1.5), y, 2.5, 5);
+				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 3) - (string.length * 1.5), y + (enters * 5.5), 2.5, 5);
 			};
 		} else {
 			if (position == "right") {
-				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 6), y, 5, 10);
+				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 6), y + (enters * 11), 5, 10);
 			} else if (position == "left") {
-				advDraw(img, (index - 32) * 6, 0, 5, 10, x + ((a - string.length + 1) * 6), y, 5, 10);
+				advDraw(img, (index - 32) * 6, 0, 5, 10, x + ((a - string.length + 1) * 6), y + (enters * 11), 5, 10);
 			} else if (position == "center") {
-				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (string.length * 3), y, 5, 10);
+				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (string.length * 3), y + (enters * 11), 5, 10);
 			};
 		};
+		if (enters) a += enterIndex;
 	};
 };
