@@ -3,7 +3,11 @@ const text = "You have a deck of cards, which you draw the top 5 from each turn.
 	+ "After each battle, you will get rewards, and you can get better cards.\n"
 	+ "Try to get a good synergy between the cards in your deck.\n"
 	+ "If you reach 0 health, you die and lose your progress.\n"
-	+ "However, you can use your new knowledge to reach higher heights next time."
+	+ "However, you can use your new knowledge to reach higher heights next time.\n"
+	+ "\n\n"
+	+ "Use the arrow keys or WASD keys to select things.\n"
+	+ "Press enter or the space bar to perform an action.\n"
+	+ "Press tab to enter full screen, and escape to exit it."
 
 function updateData() {
     // enemyPos

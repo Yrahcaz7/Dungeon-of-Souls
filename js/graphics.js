@@ -67,6 +67,7 @@ function foregrounds() {
 		draw(shade);
 		drawLore(10, 12, "How to Play:", "white");
 		drawLore(10, 23, text, "white", "right", true);
+		drawLore(10, 56, "Controls:", "white");
 	};
 	draw(view);
     if (game.select[0] == "help") draw(select_round, 380, 2);
