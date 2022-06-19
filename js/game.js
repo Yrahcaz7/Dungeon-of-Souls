@@ -256,7 +256,7 @@ const gameloop = setInterval(function() {
     backgrounds();
     if (!hide) {
         enemies();
-        player();
+        playerGraphics();
         target();
     };
     foregrounds();
@@ -266,7 +266,7 @@ const gameloop = setInterval(function() {
     if (game.select[0] == "help" && game.select[1]) {
         ctx.fillStyle = "#000000cc";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        draw(select_round, 380, 2);
+        draw(select.round, 380, 2);
         draw(help, 381, 3);
         drawLore(1, 1, "Dungeon of Souls", "white");
         drawLore(1, 23, "Storyline:", "white");

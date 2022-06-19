@@ -16,35 +16,56 @@
     along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const player_idle = new Image, player_attack = new Image, player_attack_2 = new Image, player_hit = new Image, player_shield = new Image, // player
-card_slash = new Image, card_block = new Image, // cards
-slime_big = new Image, slime_small = new Image, // monsters
-slime_small_launch = new Image, // monster animations
+const player = {
+    idle: new Image,
+    attack: new Image,
+    attack_2: new Image,
+    hit: new Image,
+    shield: new Image,
+}, card = {
+    slash: new Image,
+    block: new Image,
+}, slime = {
+    big: new Image,
+    small: new Image,
+    small_launch: new Image,
+},
 cave = new Image, shade = new Image, background = new Image, floating_arch = new Image, // backrounds
-clock_face = new Image, clock_hour_hand = new Image, clock_min_hand = new Image, clock_node = new Image, // the clock
-letters_black = new Image, letters_red = new Image, letters_white = new Image, // solid letters
-letters_fade = [new Image, new Image, new Image], // transparent letters
+clock = {
+    face: new Image,
+    hour_hand: new Image,
+    min_hand: new Image,
+    node: new Image,
+}, letters = {
+    black: new Image,
+    red: new Image,
+    white: new Image,
+    fade: [new Image, new Image, new Image],
+},
 health_bar = new Image, shield_bar = new Image, energy = new Image, // bars
-select_round = new Image, select_card = new Image, select_deck = new Image, selector = [new Image, new Image, new Image, new Image], // selectors
+select = {
+    round: new Image,
+    card: new Image,
+    deck: new Image,
+    selector: [new Image, new Image, new Image, new Image],
+},
 help = new Image, looker = new Image, end = new Image, deck = new Image, view = new Image; // other
 
 // player
-player_idle.src = "images/player/idle.png";
-player_attack.src = "images/player/attack.png";
-player_attack_2.src = "images/player/attack_2.png";
-player_hit.src = "images/player/hit.png";
-player_shield.src = "images/player/shield.png";
+player.idle.src = "images/player/idle.png";
+player.attack.src = "images/player/attack.png";
+player.attack_2.src = "images/player/attack_2.png";
+player.hit.src = "images/player/hit.png";
+player.shield.src = "images/player/shield.png";
 
 // cards
-card_slash.src = "images/cards/slash.png";
-card_block.src = "images/cards/block.png";
+card.slash.src = "images/cards/slash.png";
+card.block.src = "images/cards/block.png";
 
-// monsters
-slime_big.src = "images/enemies/slime/big.png";
-slime_small.src = "images/enemies/slime/small.png";
-
-// monster animations
-slime_small_launch.src = "images/enemies/slime/small_launch.png";
+// slimes
+slime.big.src = "images/enemies/slime/big.png";
+slime.small.src = "images/enemies/slime/small.png";
+slime.small_launch.src = "images/enemies/slime/small_launch.png";
 
 // backrounds
 cave.src = "images/cave.png";
@@ -53,20 +74,18 @@ background.src = "images/background.png";
 floating_arch.src = "images/floating_arch.png";
 
 // the clock
-clock_face.src = "images/clock/face.png";
-clock_hour_hand.src = "images/clock/hour_hand.png";
-clock_min_hand.src = "images/clock/min_hand.png";
-clock_node.src = "images/clock/node.png";
+clock.face.src = "images/clock/face.png";
+clock.hour_hand.src = "images/clock/hour_hand.png";
+clock.min_hand.src = "images/clock/min_hand.png";
+clock.node.src = "images/clock/node.png";
 
-// solid letters
-letters_black.src = "images/letters/black.png";
-letters_red.src = "images/letters/red.png";
-letters_white.src = "images/letters/white.png";
-
-// transparent letters
-letters_fade[0].src = "images/letters/fade_0.png";
-letters_fade[1].src = "images/letters/fade_1.png";
-letters_fade[2].src = "images/letters/fade_2.png";
+// letters
+letters.black.src = "images/letters/black.png";
+letters.red.src = "images/letters/red.png";
+letters.white.src = "images/letters/white.png";
+letters.fade[0].src = "images/letters/fade_0.png";
+letters.fade[1].src = "images/letters/fade_1.png";
+letters.fade[2].src = "images/letters/fade_2.png";
 
 // bars
 health_bar.src = "images/health_bar.png";
@@ -74,13 +93,13 @@ shield_bar.src = "images/shield_bar.png";
 energy.src = "images/energy.png";
 
 // selectors
-select_round.src = "images/select/round.png";
-select_card.src = "images/select/card.png";
-select_deck.src = "images/select/deck.png";
-selector[0].src = "images/select/u_l.png";
-selector[1].src = "images/select/u_r.png";
-selector[2].src = "images/select/d_l.png";
-selector[3].src = "images/select/d_r.png";
+select.round.src = "images/select/round.png";
+select.card.src = "images/select/card.png";
+select.deck.src = "images/select/deck.png";
+select.selector[0].src = "images/select/u_l.png";
+select.selector[1].src = "images/select/u_r.png";
+select.selector[2].src = "images/select/d_l.png";
+select.selector[3].src = "images/select/d_r.png";
 
 // other
 help.src = "images/help.png";

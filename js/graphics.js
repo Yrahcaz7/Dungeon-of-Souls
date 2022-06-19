@@ -41,16 +41,16 @@ function advDraw(image, sx, sy, sw, sh, dx, dy, dw = sw, dh = sh) {
 	ctx.drawImage(image, sx, sy, sw, sh, dx * scale, dy * scale, dw * scale, dh * scale);
 };
 
-function select(x, y, width, height) {
+function selectIt(x, y, width, height) {
 	x = +x;
 	y = +y;
 	width = +width;
 	height = +height;
 	if ((!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
-	draw(selector[0], x - 2, y - 2);
-	draw(selector[1], x + width - 6, y - 2);
-	draw(selector[2], x - 2, y + height - 7);
-	draw(selector[3], x + width - 6, y + height - 7);
+	draw(select.selector[0], x - 2, y - 2);
+	draw(select.selector[1], x + width - 6, y - 2);
+	draw(select.selector[2], x - 2, y + height - 7);
+	draw(select.selector[3], x + width - 6, y + height - 7);
 };
 
 function backgrounds() {
@@ -66,10 +66,10 @@ function backgrounds() {
 	draw(shade);
 	draw(background);
 	draw(floating_arch, 136, 34 - Math.round(backAnim[0]));
-	draw(clock_face, clockX, clockY);
-	advDraw(clock_hour_hand, Math.floor((time[0]) * 82 / 12) * 24, 0, 24, 24, clockX + 18, clockY + 18);
-	advDraw(clock_min_hand, Math.floor((time[1]) * 80 / 60) * 34, 0, 34, 34, clockX + 13, clockY + 13);
-	draw(clock_node, clockX + 26, clockY + 26);
+	draw(clock.face, clockX, clockY);
+	advDraw(clock.hour_hand, Math.floor((time[0]) * 82 / 12) * 24, 0, 24, 24, clockX + 18, clockY + 18);
+	advDraw(clock.min_hand, Math.floor((time[1]) * 80 / 60) * 34, 0, 34, 34, clockX + 13, clockY + 13);
+	draw(clock.node, clockX + 26, clockY + 26);
 	if (backAnim[0] >= 1) backAnim[1] = "down";
 	else if (backAnim[0] <= -1) backAnim[1] = "up";
 	if (backAnim[1] == "up") backAnim[0] += (Math.random() + 0.5) * 0.075;
@@ -83,14 +83,14 @@ function backgrounds() {
 function foregrounds() {
 	draw(view);
 	draw(help, 381, 3);
-	if (game.select[0] == "help") draw(select_round, 380, 2);
+	if (game.select[0] == "help") draw(select.round, 380, 2);
     if (game.select[0] == "looker" && game.select[1] == 1) advDraw(looker, 15, 0, 16, 16, 362, 3);
 	else advDraw(looker, 0, 0, 16, 16, 362, 3);
-	if (game.select[0] == "looker") draw(select_round, 361, 2);
+	if (game.select[0] == "looker") draw(select.round, 361, 2);
 	draw(end, 3, 163);
-	if (game.select[0] == "end") draw(select_round, 2, 162);
+	if (game.select[0] == "end") draw(select.round, 2, 162);
 	draw(deck, 3, 182);
-	if (game.select[0] == "deck") draw(select_deck, 2, 162);
+	if (game.select[0] == "deck") draw(select.deck, 2, 162);
     drawLore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
@@ -140,30 +140,30 @@ function startPlayerAnim(type) {
 	playerAnim = [0, type];
 };
 
-function player() {
+function playerGraphics() {
 	let x = 15, y = 30;
 	if (playerAnim[1] == "idle") {
-		advDraw(player_idle, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		advDraw(player.idle, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 10) playerAnim[0] = 0;
 	};
 	if (playerAnim[1] == "attack") {
-		advDraw(player_attack, Math.floor(playerAnim[0]) * 120, 0, 120, 84, x, y, 120, 84);
+		advDraw(player.attack, Math.floor(playerAnim[0]) * 120, 0, 120, 84, x, y, 120, 84);
 		playerAnim[0]++;
 		if (playerAnim[0] >= 4) playerAnim = [0, "idle"];
 	};
 	if (playerAnim[1] == "attack_2") {
-		advDraw(player_attack_2, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		advDraw(player.attack_2, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0]++;
 		if (playerAnim[0] >= 6) playerAnim = [0, "idle"];
 	};
 	if (playerAnim[1] == "hit") {
-		advDraw(player_hit, 0, 0, 120, 80, x, y, 120, 80);
+		advDraw(player.hit, 0, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.5;
 		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
 	};
 	if (playerAnim[1] == "shield") {
-		advDraw(player_shield, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		advDraw(player.shield, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 3) playerAnim[0] = 2;
 	};
@@ -197,9 +197,9 @@ function enemies() {
         if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
         if (index !== invNum) {
             if (enemy.type == "slime_big") {
-                advDraw(slime_big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
+                advDraw(slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
             } else if (enemy.type == "slime_small") {
-                advDraw(slime_small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
+                advDraw(slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
             };
         };
         enemyAnim[index] += (Math.random() + 0.5) * 0.1;
@@ -212,8 +212,8 @@ function enemies() {
 			let phase = ((tempAnim[0] - 9) / 10),
 			posX = Math.round(((x - 68) - 64) * phase),
 			posY = Math.round(((y - (50 + 10))) * phase);
-			advDraw(slime_small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
-		} else advDraw(slime_small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
+			advDraw(slime.small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
+		} else advDraw(slime.small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
 		if (tempAnim[2] == "normal") tempAnim[0]++;
 		else if (tempAnim[2] == "backwards") tempAnim[0]--;
 		if (tempAnim[0] >= 20) {
@@ -232,13 +232,13 @@ function showCard(type, index, y, overrideX = NaN) {
     overrideX = +overrideX;
     if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
 	if (type == "slash") {
-		img = card_slash;
+		img = card.slash;
 	} else if (type == "block") {
-		img = card_block;
+		img = card.block;
 	} else {
 		console.error("card " + index + " is invalid type: " + type);
 		console.log("displaying default image... note: this bugged card is unplayable.");
-		img = card_slash;
+		img = card.slash;
 	};
 	draw(img, x, y, 66, 98);
 };
@@ -246,7 +246,7 @@ function showCard(type, index, y, overrideX = NaN) {
 function renderCards() {
     if (game.select[0] == "attack_enemy") {
         showCard(game.enemyAtt, 0, 52, 104);
-		draw(select_card, 103, 52 - 1);
+		draw(select.card, 103, 52 - 1);
     };
     if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") return;
 	let temp = -1;
@@ -259,7 +259,7 @@ function renderCards() {
 		};
 	};
 	if (temp != -1) {
-		draw(select_card, game.handPos[temp] - 1, 146 - 1 - Math.floor(cardAnim[temp]));
+		draw(select.card, game.handPos[temp] - 1, 146 - 1 - Math.floor(cardAnim[temp]));
         showCard(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]));
         if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
         if (cardAnim[temp] > 44) cardAnim[temp] = 44;
@@ -288,10 +288,10 @@ function target() {
         enemyType = game.enemies[game.select[1]].type;
         pos = game.enemyPos[game.select[1]];
         if (enemyType == "slime_small") {
-            select(pos[0] + 19, pos[1] + 35, 26, 29);
+            selectIt(pos[0] + 19, pos[1] + 35, 26, 29);
             drawLore(pos[0] + 32, pos[1] + 28, "small slime", "white", "center", true);
         } else if (enemyType == "slime_big") {
-            select(pos[0] + 5, pos[1] + 25, 54, 39);
+            selectIt(pos[0] + 5, pos[1] + 25, 54, 39);
             drawLore(pos[0] + 32, pos[1] + 18, "big slime", "white", "center", true);
         };
     };
@@ -299,13 +299,13 @@ function target() {
 
 function drawLore(x, y, string, color = "black", position = "right", small = false) {
 	if ((!x && x !== 0) || (!y && y !== 0) || string === null || string === undefined) return;
-	let img = letters_black, enters = 0, enterIndex = 0;
+	let img = letters.black, enters = 0, enterIndex = 0;
 	string = "" + string;
-	if (color == "red") img = letters_red;
-    else if (color == "white") img = letters_white;
-	else if (color == "fade_0") img = letters_fade[0];
-	else if (color == "fade_1") img = letters_fade[1];
-	else if (color == "fade_2") img = letters_fade[2];
+	if (color == "red") img = letters.red;
+    else if (color == "white") img = letters.white;
+	else if (color == "fade_0") img = letters.fade[0];
+	else if (color == "fade_1") img = letters.fade[1];
+	else if (color == "fade_2") img = letters.fade[2];
 	for (let a = 0; a < string.length; a++) {
 		let index = string.charCodeAt(a), len = string.length;
 		if (index == 10) {
