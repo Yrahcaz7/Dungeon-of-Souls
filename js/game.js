@@ -264,10 +264,9 @@ const gameloop = setInterval(function() {
         renderCards();
     };
     if (game.select[0] == "help" && game.select[1]) {
-        ctx.fillStyle = "#000000cc";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        draw(select.round, 380, 2);
-        draw(help, 381, 3);
+        drawRect("#000000cc");
+        drawImage(help, 381, 3);
+        drawImage(select.round, 380, 2);
         drawLore(1, 1, "Dungeon of Souls", "white");
         drawLore(1, 23, "Storyline:", "white");
         drawLore(1, 67, "Controls:", "white");
