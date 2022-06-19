@@ -211,7 +211,7 @@ function playerTurn() {
         if (selected.name == "slash" && game.energy >= 1) {
             game.activeCard = game.select[1];
             game.select = ["attack_enemy", game.enemies.length - 1];
-            game.enemyAtt = game.hand[game.select[1]];
+            game.enemyAtt = game.hand[game.activeCard];
             actionTimer = 5;
             return;
         } else if (selected.name == "block" && game.energy >= 1) {
