@@ -49,7 +49,8 @@ clock = {
 },
 select = {
     round: new Image,
-    card: new Image,
+    card_normal: new Image,
+    card_unplayable: new Image,
     deck: new Image,
     selector: [new Image, new Image, new Image, new Image],
 },
@@ -98,7 +99,8 @@ bar.energy.src = "images/bar/energy.png";
 
 // selectors
 select.round.src = "images/select/round.png";
-select.card.src = "images/select/card.png";
+select.card_normal.src = "images/select/card_normal.png";
+select.card_unplayable.src = "images/select/card_unplayable.png";
 select.deck.src = "images/select/deck.png";
 select.selector[0].src = "images/select/u_l.png";
 select.selector[1].src = "images/select/u_r.png";

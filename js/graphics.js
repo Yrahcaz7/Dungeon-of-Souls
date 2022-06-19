@@ -298,7 +298,7 @@ function enemyGraphics() {
 function renderCards() {
     if (game.select[0] == "attack_enemy") {
         draw.card(game.enemyAtt, 0, 52, 104);
-		draw.image(select.card, 103, 52 - 1);
+		draw.image(select.card_normal, 103, 52 - 1);
     };
     if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") return;
 	let temp = -1;
@@ -311,7 +311,7 @@ function renderCards() {
 		};
 	};
 	if (temp != -1) {
-		draw.image(select.card, game.handPos[temp] - 1, 146 - 1 - Math.floor(cardAnim[temp]));
+		draw.image(select.card_normal, game.handPos[temp] - 1, 146 - 1 - Math.floor(cardAnim[temp]));
         draw.card(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]));
         if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
         if (cardAnim[temp] > 44) cardAnim[temp] = 44;
