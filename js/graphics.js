@@ -107,7 +107,8 @@ const draw = {
 			if (_card.unplayable) draw.image(select.card_unplayable, x + 1, y + 1);
 			else draw.image(select.card_normal, x - 1, y - 1);
 		};
-		draw.image(img, x + 6, y + 6, 56, 92);
+		if (_card.name == "error") draw.image(img, x, y, 66, 98);
+		else draw.image(img, x + 6, y + 6, 56, 92);
 		draw.lore(x + 33, y + 90, _card.rarity + "|" + _card.type, "black", "center", true);
 		if (!_card.unplayable) {
 			draw.image(card._energy, x, y);
