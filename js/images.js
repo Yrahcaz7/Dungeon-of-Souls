@@ -26,7 +26,7 @@ letters_black = new Image, letters_red = new Image, letters_white = new Image, /
 letters_fade = [new Image, new Image, new Image], // transparent letters
 health_bar = new Image, shield_bar = new Image, energy = new Image, // bars
 select_round = new Image, select_card = new Image, selector = [new Image, new Image, new Image, new Image], // selectors
-looker = new Image, help = new Image, view = new Image; // other
+looker = new Image, help = new Image, end = new Image, view = new Image; // other
 
 // player
 player_idle.src = "images/player/idle.png";
@@ -84,4 +84,5 @@ selector[3].src = "images/select/d_r.png";
 // other
 looker.src = "images/looker.png";
 help.src = "images/help.png";
+end.src = "images/end.png";
 view.src = "images/view.png";

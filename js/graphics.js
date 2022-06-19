@@ -82,6 +82,7 @@ function backgrounds() {
 
 function foregrounds() {
 	draw(view);
+	draw(end, 3, 181);
     if (game.select[0] == "help") draw(select_round, 380, 2);
     if (game.select[0] == "looker") draw(select_round, 361, 2);
 	draw(help, 381, 3);
