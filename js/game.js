@@ -181,7 +181,7 @@ function playerTurn() {
         return;
     };
     if (game.select[0] == "attack_fin" && actionTimer < 0) {
-        if (game.enemyAtt == "slash") {
+        if (game.enemyAtt.name == "slash") {
             game.enemies[game.select[1]].health -= 5;
         };
         game.select = ["hand", 0];

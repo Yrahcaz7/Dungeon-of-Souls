@@ -91,7 +91,7 @@ const draw = {
 		draw.lore(x + 25, y + 78, shield, "black", "left");
 		draw.lore(x + 34, y + 78, maxShield, "black", "right");
 	},
-	card(_card, index, y, overrideX = NaN) {
+	card(_card, index, y, selected = false, overrideX = NaN) {
 		let x = game.handPos[index], img = card.error, name = _card.name, type = _card.type;
 		overrideX = +overrideX;
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
@@ -107,6 +107,10 @@ const draw = {
 		if (type == "curse") draw.image(card._curse, x, y, 66, 98);
 		if (type == "defense") draw.image(card._defense, x, y, 66, 98);
 		if (type == "magic") draw.image(card._magic, x, y, 66, 98);
+		if (selected) {
+			if (_card.unplayable) draw.image(select.card_unplayable, x - 1, y - 1, 68, 100);
+			else draw.image(select.card_normal, x - 1, y - 1, 68, 100);
+		};
 		draw.image(img, x, y, 66, 98);
 	},
 	lore(x, y, string, color = "black", position = "right", small = false) {
@@ -301,8 +305,7 @@ function enemyGraphics() {
 
 function renderCards() {
     if (game.select[0] == "attack_enemy") {
-        draw.card(game.enemyAtt, 0, 52, 104);
-		draw.image(select.card_normal, 103, 52 - 1);
+        draw.card(game.enemyAtt, 0, 52, true, 104);
     };
     if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") return;
 	let temp = -1;
@@ -315,12 +318,7 @@ function renderCards() {
 		};
 	};
 	if (temp != -1) {
-		if (game.hand[temp].unplayable) {
-			draw.image(select.card_unplayable, game.handPos[temp] - 1, 146 - 1 - Math.floor(cardAnim[temp]));
-		} else {
-			draw.image(select.card_normal, game.handPos[temp] - 1, 146 - 1 - Math.floor(cardAnim[temp]));
-		};
-        draw.card(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]));
+        draw.card(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]), true);
         if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
         if (cardAnim[temp] > 44) cardAnim[temp] = 44;
     };
