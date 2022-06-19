@@ -82,12 +82,15 @@ function backgrounds() {
 
 function foregrounds() {
 	draw(view);
-	draw(end, 3, 181);
-    if (game.select[0] == "help") draw(select_round, 380, 2);
-    if (game.select[0] == "looker") draw(select_round, 361, 2);
 	draw(help, 381, 3);
+	if (game.select[0] == "help") draw(select_round, 380, 2);
     if (game.select[0] == "looker" && game.select[1] == 1) advDraw(looker, 15, 0, 16, 16, 362, 3);
 	else advDraw(looker, 0, 0, 16, 16, 362, 3);
+	if (game.select[0] == "looker") draw(select_round, 361, 2);
+	draw(end, 3, 163);
+	if (game.select[0] == "end") draw(select_round, 2, 162);
+	draw(deck, 3, 182);
+	if (game.select[0] == "deck") draw(select_deck, 2, 162);
     drawLore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
