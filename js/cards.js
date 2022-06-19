@@ -21,6 +21,7 @@ class Card {
         this.name = name;
         this.rarity = "";
         this.type = "";
+        this.energyCost = 0;
         this.unplayable = false;
         // error
         if (name != "slash" && name != "block" && name != "error") {
@@ -43,6 +44,10 @@ class Card {
         };
         if (name == "error") {
             this.type = "curse";
+        };
+        // energy cost
+        if (name == "slash" || name == "block") {
+            this.energyCost = 1;
         };
         // special
         if (name == "error") {
