@@ -242,13 +242,13 @@ const gameloop = setInterval(function() {
     if (game.floor == 1) {
         if (game.state == "enter") {
             game.enemyIndex = 0;
-            game.enemies.push(new Enemy("slime_small", 1));
+            game.enemies.push(new Enemy("slime_small"));
             enterBattle();
         };
     } else if (game.floor == 2) {
         if (game.state == "enter") {
             game.enemyIndex = 0;
-            game.enemies.push(new Enemy("slime_big", 1));
+            game.enemies.push(new Enemy("slime_big"));
             enterBattle();
         };
     };
