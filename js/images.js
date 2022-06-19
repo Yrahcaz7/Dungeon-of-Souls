@@ -23,6 +23,11 @@ const player = {
     hit: new Image,
     shield: new Image,
 }, card = {
+    _attack: new Image,
+    _curse: new Image,
+    _defense: new Image,
+    _magic: new Image,
+    back: new Image,
     error: new Image,
     slash: new Image,
     block: new Image,
@@ -64,6 +69,11 @@ player.hit.src = "images/player/hit.png";
 player.shield.src = "images/player/shield.png";
 
 // cards
+card._attack.src = "images/cards/_attack.png";
+card._curse.src = "images/cards/_curse.png";
+card._defense.src = "images/cards/_defense.png";
+card._magic.src = "images/cards/_magic.png";
+card.back.src = "images/cards/back.png";
 card.error.src = "images/cards/error.png";
 card.slash.src = "images/cards/slash.png";
 card.block.src = "images/cards/block.png";

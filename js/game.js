@@ -170,7 +170,7 @@ function playerTurn() {
     };
     // attack enemy
     if (action == "enter" && game.select[0] == "attack_enemy") {
-        if (game.enemyAtt == "slash") {
+        if (game.enemyAtt.name == "slash") {
             game.energy--;
             startAnim.player("attack");
         };
@@ -211,7 +211,7 @@ function playerTurn() {
         if (selected.name == "slash" && game.energy >= 1) {
             game.activeCard = game.select[1];
             game.select = ["attack_enemy", game.enemies.length - 1];
-            game.enemyAtt = "slash";
+            game.enemyAtt = game.hand[game.select[1]];
             actionTimer = 5;
             return;
         } else if (selected.name == "block" && game.energy >= 1) {
