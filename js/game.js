@@ -172,7 +172,7 @@ function playerTurn() {
     if (action == "enter" && game.select[0] == "attack_enemy") {
         if (game.enemyAtt == "slash") {
             game.energy--;
-            startPlayerAnim("attack");
+            startAnim.player("attack");
         };
         game.select[0] = "attack_fin";
         game.discard.push(game.hand[game.activeCard]);
