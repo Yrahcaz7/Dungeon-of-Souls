@@ -255,7 +255,7 @@ const gameloop = setInterval(function() {
     // visuals
     backgrounds();
     if (!hide) {
-        enemies();
+        enemyGraphics();
         playerGraphics();
         target();
     };

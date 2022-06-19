@@ -30,7 +30,7 @@ const player = {
     small: new Image,
     small_launch: new Image,
 },
-cave = new Image, shade = new Image, background = new Image, floating_arch = new Image, // backrounds
+cave = new Image, background = new Image, floating_arch = new Image, // backrounds
 clock = {
     face: new Image,
     hour_hand: new Image,
@@ -72,7 +72,6 @@ slime.small_launch.src = "images/enemies/slime/small_launch.png";
 
 // backrounds
 cave.src = "images/cave.png";
-shade.src = "images/shade.png";
 background.src = "images/background.png";
 floating_arch.src = "images/floating_arch.png";
 

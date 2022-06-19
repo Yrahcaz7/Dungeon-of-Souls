@@ -63,7 +63,8 @@ function backgrounds() {
 	time[0] += (time[1] / 60);
 	if (time[0] >= 12) time[0] = time[0] - 12;
 	draw(cave);
-	draw(shade);
+	ctx.fillStyle = "#10106080";
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
 	draw(background);
 	draw(floating_arch, 136, 34 - Math.round(backAnim[0]));
 	draw(clock.face, clockX, clockY);
@@ -188,7 +189,7 @@ function startEnemyAnim(index, type) {
 	} else invNum = false;
 };
 
-function enemies() {
+function enemyGraphics() {
 	if (game.enemies.length > 6) {
 		game.enemies.splice(6);
 	};
