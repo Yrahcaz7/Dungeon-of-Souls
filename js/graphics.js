@@ -91,17 +91,16 @@ const draw = {
 		draw.lore(x + 25, y + 78, shield, "black", "left");
 		draw.lore(x + 34, y + 78, maxShield, "black", "right");
 	},
-	card(type, index, y, overrideX = NaN) {
-		let x = game.handPos[index], img;
+	card(name, index, y, overrideX = NaN) {
+		let x = game.handPos[index], img = card.error;
 		overrideX = +overrideX;
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
-		if (type == "slash") {
+		if (name == "slash") {
 			img = card.slash;
-		} else if (type == "block") {
+		} else if (name == "block") {
 			img = card.block;
 		} else {
-			console.error("card " + index + " is invalid type: " + type);
-			img = card.error;
+			console.error("card " + index + " is invalid type: " + name);
 		};
 		draw.image(img, x, y, 66, 98);
 	},
@@ -307,12 +306,12 @@ function renderCards() {
 		if (game.select[0] == "hand" && game.select[1] == index) {
 			temp = index;
 		} else {
-			draw.card(card, index, 146 - Math.floor(cardAnim[index]));
+			draw.card(card.name, index, 146 - Math.floor(cardAnim[index]));
 		};
 	};
 	if (temp != -1) {
 		draw.image(select.card_normal, game.handPos[temp] - 1, 146 - 1 - Math.floor(cardAnim[temp]));
-        draw.card(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]));
+        draw.card(game.hand[temp].name, temp, 146 - Math.floor(cardAnim[temp]));
         if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
         if (cardAnim[temp] > 44) cardAnim[temp] = 44;
     };

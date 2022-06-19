@@ -31,7 +31,7 @@ var game = {
     enemies: [],
     enemyPos: [],
     enemyIndex: 0,
-    deck: ["slash", "slash", "slash", "slash", "block", "block", "block", "block"],
+    deck: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block")],
     hand: [],
     handSize: 5,
     handPos: [],
@@ -208,20 +208,20 @@ function playerTurn() {
     // play card
     if (action == "enter" && game.select[0] == "hand") {
         var selected = game.hand[game.select[1]];
-        if (selected == "slash" && game.energy >= 1) {
+        if (selected.name == "slash" && game.energy >= 1) {
             game.activeCard = game.select[1];
             game.select = ["attack_enemy", game.enemies.length - 1];
             game.enemyAtt = "slash";
             actionTimer = 5;
             return;
-        } else if (selected == "block" && game.energy >= 1) {
+        } else if (selected.name == "block" && game.energy >= 1) {
             game.energy--;
             game.shield += 4;
             game.discard.push(game.hand[game.select[1]]);
             game.hand.splice(game.select[1], 1);
             actionTimer = 5;
             return;
-        } else {
+        } else if (!selected.unplayable) {
             notif = [game.select[1], 0];
             actionTimer = 1;
             return;
