@@ -161,6 +161,21 @@ const draw = {
 	},
 };
 
+const startAnim = {
+	player(type) {
+		if (!type) return;
+		type = "" + type;
+		playerAnim = [0, type];
+	},
+	enemy(index, type) {
+		if ((!index && index !== 0) || !type) return;
+		tempAnim = [0, type, "normal", index];
+		if (type == "slime_small_launch") {
+			invNum = index;
+		} else invNum = false;
+	},
+};
+
 function backgrounds() {
 	let now = new Date(Date.now()),
 		time = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()],
@@ -202,12 +217,6 @@ function foregrounds() {
     draw.lore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
-function startPlayerAnim(type) {
-	if (!type) return;
-	type = "" + type;
-	playerAnim = [0, type];
-};
-
 function playerGraphics() {
 	let x = 15, y = 30;
 	if (playerAnim[1] == "idle") {
@@ -246,14 +255,6 @@ function playerGraphics() {
 	draw.imageSector(bar.energy, 0, Math.round(frame) * 31, 32, 32, x, y + 16, 32, 32);
 	draw.lore(x + 9, y + 28, en, "black", "left");
 	draw.lore(x + 18, y + 28, maxEn, "black", "right");
-};
-
-function startEnemyAnim(index, type) {
-	if ((!index && index !== 0) || !type) return;
-	tempAnim = [0, type, "normal", index];
-	if (type == "slime_small_launch") {
-		invNum = index;
-	} else invNum = false;
 };
 
 function enemyGraphics() {

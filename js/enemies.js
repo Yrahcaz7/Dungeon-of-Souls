@@ -30,8 +30,8 @@ class Enemy {
     };
     startAction(type) {
         if (type == "attack") {
-            if (game.shield >= 1) startPlayerAnim("shield");
-            startEnemyAnim(this.location, "slime_small_launch");
+            if (game.shield >= 1) startAnim.player("shield");
+            startAnim.enemy(this.location, "slime_small_launch");
         };
     };
     middleAction(type) {
@@ -44,7 +44,7 @@ class Enemy {
             } else {
                 game.shield -= damage;
             };
-            if (game.shield < 1) startPlayerAnim("hit");
+            if (game.shield < 1) startAnim.player("hit");
         };
     };
     finishAction(type) {
