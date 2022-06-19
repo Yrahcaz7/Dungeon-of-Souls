@@ -101,8 +101,7 @@ const draw = {
 			img = card.block;
 		} else {
 			console.error("card " + index + " is invalid type: " + type);
-			console.log("displaying default image... note: this bugged card is unplayable.");
-			img = card.slash;
+			img = card.error;
 		};
 		draw.image(img, x, y, 66, 98);
 	},

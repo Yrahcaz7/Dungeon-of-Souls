@@ -23,6 +23,7 @@ const player = {
     hit: new Image,
     shield: new Image,
 }, card = {
+    error: new Image,
     slash: new Image,
     block: new Image,
 }, slime = {
@@ -62,6 +63,7 @@ player.hit.src = "images/player/hit.png";
 player.shield.src = "images/player/shield.png";
 
 // cards
+card.error.src = "images/cards/error.png";
 card.slash.src = "images/cards/slash.png";
 card.block.src = "images/cards/block.png";
 
