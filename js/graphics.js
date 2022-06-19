@@ -95,18 +95,14 @@ const draw = {
 		let x = game.handPos[index], img = card.error, name = _card.name, type = _card.type;
 		overrideX = +overrideX;
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
-		if (name == "slash") {
-			img = card.slash;
-		} else if (name == "block") {
-			img = card.block;
-		} else {
-			console.error("card " + index + " is invalid type: " + name);
-		};
+		if (name == "slash") img = card.slash;
+		else if (name == "block") img = card.block;
+		else console.error("card " + index + " is invalid type: " + name);
 		if (name != "error") draw.image(card.back, x, y, 66, 98);
-		if (type == "attack") draw.image(card._attack, x, y, 66, 98);
-		if (type == "curse") draw.image(card._curse, x, y, 66, 98);
-		if (type == "defense") draw.image(card._defense, x, y, 66, 98);
-		if (type == "magic") draw.image(card._magic, x, y, 66, 98);
+		if (type == "attack") draw.image(card._attack, x + 3, y + 3, 62, 94);
+		if (type == "curse") draw.image(card._curse, x + 3, y + 3, 62, 94);
+		if (type == "defense") draw.image(card._defense, x + 3, y + 3, 62, 94);
+		if (type == "magic") draw.image(card._magic, x + 3, y + 3, 62, 94);
 		if (selected) {
 			if (_card.unplayable) draw.image(select.card_unplayable, x - 1, y - 1, 68, 100);
 			else draw.image(select.card_normal, x - 1, y - 1, 68, 100);
