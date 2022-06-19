@@ -108,6 +108,7 @@ const draw = {
 			else draw.image(select.card_normal, x - 1, y - 1);
 		};
 		draw.image(img, x, y, 66, 98);
+		draw.lore(x + 33, y + 90, _card.rarity + "|" + _card.type, "black", "center", true);
 	},
 	lore(x, y, string, color = "black", position = "right", small = false) {
 		if ((!x && x !== 0) || (!y && y !== 0) || string === null || string === undefined) return;

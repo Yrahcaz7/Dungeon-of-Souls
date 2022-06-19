@@ -32,7 +32,7 @@ class Card {
             this.rarity = "error";
         };
         if (name == "slash" || name == "block") {
-            this.rarity = "basic";
+            this.rarity = "starter";
         };
         // type
         if (name == "slash") {
