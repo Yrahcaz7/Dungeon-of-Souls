@@ -19,16 +19,16 @@
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], invNum = -1;
 
-function draw(image, x = 0, y = 0, w = +image.width, h = +image.height) {
+function drawImage(image, x = 0, y = 0, width = +image.width, height = +image.height) {
 	x = +x;
 	y = +y;
-	w = +w;
-	h = +h;
-	if (!image || (!x && x !== 0) || (!y && y !== 0) || !w || !h) return;
-	ctx.drawImage(image, x * scale, y * scale, w * scale, h * scale);
+	width = +width;
+	height = +height;
+	if (!image || (!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
+	ctx.drawImage(image, x * scale, y * scale, width * scale, height * scale);
 };
 
-function advDraw(image, sx, sy, sw, sh, dx, dy, dw = sw, dh = sh) {
+function drawImageSection(image, sx, sy, sw, sh, dx, dy, dw = sw, dh = sh) {
 	sx = +sx;
 	sy = +sy;
 	sw = +sw;
@@ -41,16 +41,27 @@ function advDraw(image, sx, sy, sw, sh, dx, dy, dw = sw, dh = sh) {
 	ctx.drawImage(image, sx, sy, sw, sh, dx * scale, dy * scale, dw * scale, dh * scale);
 };
 
+function drawRect(color, x = 0, y = 0, width = canvas.width, height = canvas.height) {
+	color = "" + color;
+	x = +x;
+	y = +y;
+	width = +width;
+	height = +height;
+	if (!color || (!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
+	ctx.fillStyle = color;
+	ctx.fillRect(x, y, width, height);
+};
+
 function selectIt(x, y, width, height) {
 	x = +x;
 	y = +y;
 	width = +width;
 	height = +height;
 	if ((!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
-	draw(select.selector[0], x - 2, y - 2);
-	draw(select.selector[1], x + width - 6, y - 2);
-	draw(select.selector[2], x - 2, y + height - 7);
-	draw(select.selector[3], x + width - 6, y + height - 7);
+	drawImage(select.selector[0], x - 2, y - 2);
+	drawImage(select.selector[1], x + width - 6, y - 2);
+	drawImage(select.selector[2], x - 2, y + height - 7);
+	drawImage(select.selector[3], x + width - 6, y + height - 7);
 };
 
 function backgrounds() {
@@ -62,15 +73,14 @@ function backgrounds() {
 	time[1] += (time[2] / 60);
 	time[0] += (time[1] / 60);
 	if (time[0] >= 12) time[0] = time[0] - 12;
-	draw(cave);
-	ctx.fillStyle = "#10106080";
-	ctx.fillRect(0, 0, canvas.width, canvas.height);
-	draw(background);
-	draw(floating_arch, 136, 34 - Math.round(backAnim[0]));
-	draw(clock.face, clockX, clockY);
-	advDraw(clock.hour_hand, Math.floor((time[0]) * 82 / 12) * 24, 0, 24, 24, clockX + 18, clockY + 18);
-	advDraw(clock.min_hand, Math.floor((time[1]) * 80 / 60) * 34, 0, 34, 34, clockX + 13, clockY + 13);
-	draw(clock.node, clockX + 26, clockY + 26);
+	drawImage(cave);
+	drawRect("#10106080");
+	drawImage(background);
+	drawImage(floating_arch, 136, 34 - Math.round(backAnim[0]));
+	drawImage(clock.face, clockX, clockY);
+	drawImageSection(clock.hour_hand, Math.floor((time[0]) * 82 / 12) * 24, 0, 24, 24, clockX + 18, clockY + 18);
+	drawImageSection(clock.min_hand, Math.floor((time[1]) * 80 / 60) * 34, 0, 34, 34, clockX + 13, clockY + 13);
+	drawImage(clock.node, clockX + 26, clockY + 26);
 	if (backAnim[0] >= 1) backAnim[1] = "down";
 	else if (backAnim[0] <= -1) backAnim[1] = "up";
 	if (backAnim[1] == "up") backAnim[0] += (Math.random() + 0.5) * 0.075;
@@ -82,16 +92,16 @@ function backgrounds() {
 };
 
 function foregrounds() {
-	draw(view);
-	draw(help, 381, 3);
-	if (game.select[0] == "help") draw(select.round, 380, 2);
-    if (game.select[0] == "looker" && game.select[1] == 1) advDraw(looker, 15, 0, 16, 16, 362, 3);
-	else advDraw(looker, 0, 0, 16, 16, 362, 3);
-	if (game.select[0] == "looker") draw(select.round, 361, 2);
-	draw(end, 3, 163);
-	if (game.select[0] == "end") draw(select.round, 2, 162);
-	draw(deck, 3, 182);
-	if (game.select[0] == "deck") draw(select.deck, 2, 162);
+	drawImage(view);
+	drawImage(help, 381, 3);
+	if (game.select[0] == "help") drawImage(select.round, 380, 2);
+    if (game.select[0] == "looker" && game.select[1] == 1) drawImageSection(looker, 15, 0, 16, 16, 362, 3);
+	else drawImageSection(looker, 0, 0, 16, 16, 362, 3);
+	if (game.select[0] == "looker") drawImage(select.round, 361, 2);
+	drawImage(end, 3, 163);
+	if (game.select[0] == "end") drawImage(select.round, 2, 162);
+	drawImage(deck, 3, 182);
+	if (game.select[0] == "deck") drawImage(select.deck, 2, 162);
     drawLore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
@@ -112,7 +122,7 @@ function bars(x, y, health, maxHealth, shield, maxShield) {
 	} else if (health < 1000 && maxHealth >= 1000) {
 		health = "0" + health;
 	};
-	advDraw(bar.health, 0, Math.round(frame) * 11, 64, 12, x, y + 65, 64, 12);
+	drawImageSection(bar.health, 0, Math.round(frame) * 11, 64, 12, x, y + 65, 64, 12);
 	drawLore(x + 25, y + 67, health, "black", "left");
 	drawLore(x + 34, y + 67, maxHealth, "black", "right");
 	if (!shield || !maxShield) return;
@@ -130,13 +140,13 @@ function bars(x, y, health, maxHealth, shield, maxShield) {
 	} else if (shield < 1000 && maxShield >= 1000) {
 		shield = "0" + shield;
 	};
-	advDraw(bar.shield, 0, Math.round(frame) * 11, 64, 12, x, y + 76, 64, 12);
+	drawImageSection(bar.shield, 0, Math.round(frame) * 11, 64, 12, x, y + 76, 64, 12);
 	drawLore(x + 25, y + 78, shield, "black", "left");
 	drawLore(x + 34, y + 78, maxShield, "black", "right");
 };
 
 function startPlayerAnim(type) {
-	if (type === null || type === undefined) return;
+	if (!type) return;
 	type = "" + type;
 	playerAnim = [0, type];
 };
@@ -144,27 +154,27 @@ function startPlayerAnim(type) {
 function playerGraphics() {
 	let x = 15, y = 30;
 	if (playerAnim[1] == "idle") {
-		advDraw(player.idle, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		drawImageSection(player.idle, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 10) playerAnim[0] = 0;
 	};
 	if (playerAnim[1] == "attack") {
-		advDraw(player.attack, Math.floor(playerAnim[0]) * 120, 0, 120, 84, x, y, 120, 84);
+		drawImageSection(player.attack, Math.floor(playerAnim[0]) * 120, 0, 120, 84, x, y, 120, 84);
 		playerAnim[0]++;
 		if (playerAnim[0] >= 4) playerAnim = [0, "idle"];
 	};
 	if (playerAnim[1] == "attack_2") {
-		advDraw(player.attack_2, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		drawImageSection(player.attack_2, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0]++;
 		if (playerAnim[0] >= 6) playerAnim = [0, "idle"];
 	};
 	if (playerAnim[1] == "hit") {
-		advDraw(player.hit, 0, 0, 120, 80, x, y, 120, 80);
+		drawImageSection(player.hit, 0, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.5;
 		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
 	};
 	if (playerAnim[1] == "shield") {
-		advDraw(player.shield, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		drawImageSection(player.shield, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 3) playerAnim[0] = 2;
 	};
@@ -176,13 +186,13 @@ function playerGraphics() {
 	if (en < 10 && maxEn >= 10) {
 		en = "0" + en;
 	};
-	advDraw(bar.energy, 0, Math.round(frame) * 31, 32, 32, x, y + 16, 32, 32);
+	drawImageSection(bar.energy, 0, Math.round(frame) * 31, 32, 32, x, y + 16, 32, 32);
 	drawLore(x + 9, y + 28, en, "black", "left");
 	drawLore(x + 18, y + 28, maxEn, "black", "right");
 };
 
 function startEnemyAnim(index, type) {
-	if (index === null || index === undefined || type === null || type === undefined) return;
+	if ((!index && index !== 0) || !type) return;
 	tempAnim = [0, type, "normal", index];
 	if (type == "slime_small_launch") {
 		invNum = index;
@@ -198,9 +208,9 @@ function enemyGraphics() {
         if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
         if (index !== invNum) {
             if (enemy.type == "slime_big") {
-                advDraw(slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
+                drawImageSection(slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
             } else if (enemy.type == "slime_small") {
-                advDraw(slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
+                drawImageSection(slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
             };
         };
         enemyAnim[index] += (Math.random() + 0.5) * 0.1;
@@ -213,8 +223,8 @@ function enemyGraphics() {
 			let phase = ((tempAnim[0] - 9) / 10),
 			posX = Math.round(((game.enemyPos[tempAnim[3]][0] - 68) - 64) * phase),
 			posY = Math.round(((game.enemyPos[tempAnim[3]][1] - (50 + 10))) * phase);
-			advDraw(slime.small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
-		} else advDraw(slime.small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
+			drawImageSection(slime.small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
+		} else drawImageSection(slime.small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
 		if (tempAnim[2] == "normal") tempAnim[0]++;
 		else if (tempAnim[2] == "backwards") tempAnim[0]--;
 		if (tempAnim[0] >= 20) {
@@ -241,13 +251,13 @@ function showCard(type, index, y, overrideX = NaN) {
 		console.log("displaying default image... note: this bugged card is unplayable.");
 		img = card.slash;
 	};
-	draw(img, x, y, 66, 98);
+	drawImage(img, x, y, 66, 98);
 };
 
 function renderCards() {
     if (game.select[0] == "attack_enemy") {
         showCard(game.enemyAtt, 0, 52, 104);
-		draw(select.card, 103, 52 - 1);
+		drawImage(select.card, 103, 52 - 1);
     };
     if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") return;
 	let temp = -1;
@@ -260,7 +270,7 @@ function renderCards() {
 		};
 	};
 	if (temp != -1) {
-		draw(select.card, game.handPos[temp] - 1, 146 - 1 - Math.floor(cardAnim[temp]));
+		drawImage(select.card, game.handPos[temp] - 1, 146 - 1 - Math.floor(cardAnim[temp]));
         showCard(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]));
         if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
         if (cardAnim[temp] > 44) cardAnim[temp] = 44;
@@ -319,19 +329,19 @@ function drawLore(x, y, string, color = "black", position = "right", small = fal
 		};
 		if (small) {
 			if (position == "right") {
-				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 3), y + (enters * 5.5), 2.5, 5);
+				drawImageSection(img, (index - 32) * 6, 0, 5, 10, x + (a * 3), y + (enters * 5.5), 2.5, 5);
 			} else if (position == "left") {
-				advDraw(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 3), y + (enters * 5.5), 2.5, 5);
+				drawImageSection(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 3), y + (enters * 5.5), 2.5, 5);
 			} else if (position == "center") {
-				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 3) - (len * 1.5), y + (enters * 5.5), 2.5, 5);
+				drawImageSection(img, (index - 32) * 6, 0, 5, 10, x + (a * 3) - (len * 1.5), y + (enters * 5.5), 2.5, 5);
 			};
 		} else {
 			if (position == "right") {
-				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 6), y + (enters * 11), 5, 10);
+				drawImageSection(img, (index - 32) * 6, 0, 5, 10, x + (a * 6), y + (enters * 11), 5, 10);
 			} else if (position == "left") {
-				advDraw(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 6), y + (enters * 11), 5, 10);
+				drawImageSection(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 6), y + (enters * 11), 5, 10);
 			} else if (position == "center") {
-				advDraw(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (len * 3), y + (enters * 11), 5, 10);
+				drawImageSection(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (len * 3), y + (enters * 11), 5, 10);
 			};
 		};
 		if (enters) {
