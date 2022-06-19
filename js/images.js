@@ -27,6 +27,7 @@ const player = {
     _curse: new Image,
     _defense: new Image,
     _magic: new Image,
+    _energy: new Image,
     back: new Image,
     error: new Image,
     slash: new Image,
@@ -68,11 +69,14 @@ player.attack_2.src = "images/player/attack_2.png";
 player.hit.src = "images/player/hit.png";
 player.shield.src = "images/player/shield.png";
 
-// cards
+// _cardStuff
 card._attack.src = "images/cards/_attack.png";
 card._curse.src = "images/cards/_curse.png";
 card._defense.src = "images/cards/_defense.png";
 card._magic.src = "images/cards/_magic.png";
+card._energy.src = "images/cards/_energy.png";
+
+// cards
 card.back.src = "images/cards/back.png";
 card.error.src = "images/cards/error.png";
 card.slash.src = "images/cards/slash.png";

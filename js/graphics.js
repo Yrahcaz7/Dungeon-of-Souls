@@ -109,7 +109,10 @@ const draw = {
 		};
 		draw.image(img, x, y, 66, 98);
 		draw.lore(x + 33, y + 90, _card.rarity + "|" + _card.type, "black", "center", true);
-		if (!_card.unplayable) draw.lore(x + 4, y + 2, _card.energyCost);
+		if (!_card.unplayable) {
+			draw.image(card._energy, x, y);
+			draw.lore(x + 4, y + 2, _card.energyCost);
+		};
 	},
 	lore(x, y, string, color = "black", position = "right", small = false) {
 		if ((!x && x !== 0) || (!y && y !== 0) || string === null || string === undefined) return;
