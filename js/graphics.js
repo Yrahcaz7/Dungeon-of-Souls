@@ -129,7 +129,7 @@ const draw = {
 				} else if (position == "left") {
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 3), y + (enters * 5.5), 2.5, 5);
 				} else if (position == "center") {
-					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 3) - (len * 1.5), y + (enters * 5.5), 2.5, 5);
+					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 3) - (len * 1.5) + 1, y + (enters * 5.5), 2.5, 5);
 				};
 			} else {
 				if (position == "right") {
@@ -137,7 +137,7 @@ const draw = {
 				} else if (position == "left") {
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 6), y + (enters * 11), 5, 10);
 				} else if (position == "center") {
-					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (len * 3), y + (enters * 11), 5, 10);
+					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (len * 3) + 2, y + (enters * 11), 5, 10);
 				};
 			};
 			if (enters) {
@@ -310,7 +310,11 @@ function renderCards() {
 		};
 	};
 	if (temp != -1) {
-		draw.image(select.card_normal, game.handPos[temp] - 1, 146 - 1 - Math.floor(cardAnim[temp]));
+		if (game.hand[temp].unplayable) {
+			draw.image(select.card_unplayable, game.handPos[temp] - 1, 146 - 1 - Math.floor(cardAnim[temp]));
+		} else {
+			draw.image(select.card_normal, game.handPos[temp] - 1, 146 - 1 - Math.floor(cardAnim[temp]));
+		};
         draw.card(game.hand[temp].name, temp, 146 - Math.floor(cardAnim[temp]));
         if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
         if (cardAnim[temp] > 44) cardAnim[temp] = 44;
@@ -328,7 +332,7 @@ function renderCards() {
 		if (notif[1] >= 9) color = "fade_2";
 		else if (notif[1] >= 7) color = "fade_1";
 		else if (notif[1] >= 5) color = "fade_0";
-		draw.lore(game.handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1], "not enough energy", color, "center");
+		draw.lore(game.handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1], notif[2], color, "center");
 		notif[1]++;
 		if (notif[1] > 11) notif = [-1, 0];
 	};

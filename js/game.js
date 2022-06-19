@@ -221,8 +221,12 @@ function playerTurn() {
             game.hand.splice(game.select[1], 1);
             actionTimer = 5;
             return;
-        } else if (!selected.unplayable) {
-            notif = [game.select[1], 0];
+        } else if (selected.unplayable) {
+            notif = [game.select[1], 0, "unplayable"];
+            actionTimer = 1;
+            return;
+        } else {
+            notif = [game.select[1], 0, "not enough energy"];
             actionTimer = 1;
             return;
         };

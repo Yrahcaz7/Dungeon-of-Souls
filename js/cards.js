@@ -24,6 +24,7 @@ class Card {
         this.unplayable = false;
         // error
         if (name != "slash" && name != "block" && name != "error") {
+            name = "error";
             this.name = "error";
         };
         // rarity
