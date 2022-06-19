@@ -111,7 +111,7 @@ function bars(x, y, health, maxHealth, shield, maxShield) {
 	} else if (health < 1000 && maxHealth >= 1000) {
 		health = "0" + health;
 	};
-	advDraw(health_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 65, 64, 12);
+	advDraw(bar.health, 0, Math.round(frame) * 11, 64, 12, x, y + 65, 64, 12);
 	drawLore(x + 25, y + 67, health, "black", "left");
 	drawLore(x + 34, y + 67, maxHealth, "black", "right");
 	if (!shield || !maxShield) return;
@@ -129,7 +129,7 @@ function bars(x, y, health, maxHealth, shield, maxShield) {
 	} else if (shield < 1000 && maxShield >= 1000) {
 		shield = "0" + shield;
 	};
-	advDraw(shield_bar, 0, Math.round(frame) * 11, 64, 12, x, y + 76, 64, 12);
+	advDraw(bar.shield, 0, Math.round(frame) * 11, 64, 12, x, y + 76, 64, 12);
 	drawLore(x + 25, y + 78, shield, "black", "left");
 	drawLore(x + 34, y + 78, maxShield, "black", "right");
 };
@@ -175,7 +175,7 @@ function playerGraphics() {
 	if (en < 10 && maxEn >= 10) {
 		en = "0" + en;
 	};
-	advDraw(energy, 0, Math.round(frame) * 31, 32, 32, x, y + 16, 32, 32);
+	advDraw(bar.energy, 0, Math.round(frame) * 31, 32, 32, x, y + 16, 32, 32);
 	drawLore(x + 9, y + 28, en, "black", "left");
 	drawLore(x + 18, y + 28, maxEn, "black", "right");
 };
@@ -210,8 +210,8 @@ function enemies() {
 	if (tempAnim[1] == "slime_small_launch") {
 		if (tempAnim[0] >= 10) {
 			let phase = ((tempAnim[0] - 9) / 10),
-			posX = Math.round(((x - 68) - 64) * phase),
-			posY = Math.round(((y - (50 + 10))) * phase);
+			posX = Math.round(((game.enemyPos[tempAnim[3]][0] - 68) - 64) * phase),
+			posY = Math.round(((game.enemyPos[tempAnim[3]][1] - (50 + 10))) * phase);
 			advDraw(slime.small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
 		} else advDraw(slime.small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
 		if (tempAnim[2] == "normal") tempAnim[0]++;

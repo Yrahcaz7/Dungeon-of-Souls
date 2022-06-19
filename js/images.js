@@ -41,8 +41,11 @@ clock = {
     red: new Image,
     white: new Image,
     fade: [new Image, new Image, new Image],
+}, bar = {
+    health: new Image,
+    shield: new Image,
+    energy: new Image,
 },
-health_bar = new Image, shield_bar = new Image, energy = new Image, // bars
 select = {
     round: new Image,
     card: new Image,
@@ -88,9 +91,9 @@ letters.fade[1].src = "images/letters/fade_1.png";
 letters.fade[2].src = "images/letters/fade_2.png";
 
 // bars
-health_bar.src = "images/health_bar.png";
-shield_bar.src = "images/shield_bar.png";
-energy.src = "images/energy.png";
+bar.health.src = "images/bar/health.png";
+bar.shield.src = "images/bar/shield.png";
+bar.energy.src = "images/bar/energy.png";
 
 // selectors
 select.round.src = "images/select/round.png";
