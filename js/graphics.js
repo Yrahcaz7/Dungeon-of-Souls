@@ -19,49 +19,146 @@
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], invNum = -1;
 
-function drawImage(image, x = 0, y = 0, width = +image.width, height = +image.height) {
-	x = +x;
-	y = +y;
-	width = +width;
-	height = +height;
-	if (!image || (!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
-	ctx.drawImage(image, x * scale, y * scale, width * scale, height * scale);
-};
-
-function drawImageSection(image, sx, sy, sw, sh, dx, dy, dw = sw, dh = sh) {
-	sx = +sx;
-	sy = +sy;
-	sw = +sw;
-	sh = +sh;
-	dx = +dx;
-	dy = +dy;
-	dw = +dw;
-	dh = +dh;
-	if (!image || (!sx && sx !== 0) || (!sy && sy !== 0) || !sw || !sh || (!dx && dx !== 0) || (!dy && dy !== 0) || !dw || !dh) return;
-	ctx.drawImage(image, sx, sy, sw, sh, dx * scale, dy * scale, dw * scale, dh * scale);
-};
-
-function drawRect(color, x = 0, y = 0, width = canvas.width, height = canvas.height) {
-	color = "" + color;
-	x = +x;
-	y = +y;
-	width = +width;
-	height = +height;
-	if (!color || (!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
-	ctx.fillStyle = color;
-	ctx.fillRect(x, y, width, height);
-};
-
-function selectIt(x, y, width, height) {
-	x = +x;
-	y = +y;
-	width = +width;
-	height = +height;
-	if ((!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
-	drawImage(select.selector[0], x - 2, y - 2);
-	drawImage(select.selector[1], x + width - 6, y - 2);
-	drawImage(select.selector[2], x - 2, y + height - 7);
-	drawImage(select.selector[3], x + width - 6, y + height - 7);
+const draw = {
+	// basic
+	image(image, x = 0, y = 0, width = +image.width, height = +image.height) {
+		x = +x;
+		y = +y;
+		width = +width;
+		height = +height;
+		if (!image || (!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
+		ctx.drawImage(image, x * scale, y * scale, width * scale, height * scale);
+	},
+	imageSector(image, sx, sy, sw, sh, dx, dy, dw = sw, dh = sh) {
+		sx = +sx;
+		sy = +sy;
+		sw = +sw;
+		sh = +sh;
+		dx = +dx;
+		dy = +dy;
+		dw = +dw;
+		dh = +dh;
+		if (!image || (!sx && sx !== 0) || (!sy && sy !== 0) || !sw || !sh || (!dx && dx !== 0) || (!dy && dy !== 0) || !dw || !dh) return;
+		ctx.drawImage(image, sx, sy, sw, sh, dx * scale, dy * scale, dw * scale, dh * scale);
+	},
+	rect(color, x = 0, y = 0, width = canvas.width, height = canvas.height) {
+		color = "" + color;
+		x = +x;
+		y = +y;
+		width = +width;
+		height = +height;
+		if (!color || (!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
+		ctx.fillStyle = color;
+		ctx.fillRect(x, y, width, height);
+	},
+	// advanced
+	bars(x, y, health, maxHealth, shield, maxShield) {
+		x = +x; y = +y; health = +health; maxHealth = +maxHealth; shield = +shield; maxShield = +maxShield;
+		if ((!x && x !== 0) || (!y && y !== 0) || (!health && health !== 0) || !maxHealth) return;
+		let frame, percentage = health / maxHealth;
+		if (percentage < 0) frame = 0;
+		else if (percentage > 1) frame = 62;
+		else frame = percentage * 62;
+		if (health < 10 && maxHealth >= 10) {
+			health = "0" + health;
+			if (maxHealth >= 100) health = "0" + health;
+			if (maxHealth >= 1000) health = "0" + health;
+		} else if (health < 100 && maxHealth >= 100) {
+			health = "0" + health;
+			if (maxHealth >= 1000) health = "0" + health;
+		} else if (health < 1000 && maxHealth >= 1000) {
+			health = "0" + health;
+		};
+		draw.imageSector(bar.health, 0, Math.round(frame) * 11, 64, 12, x, y + 65, 64, 12);
+		draw.lore(x + 25, y + 67, health, "black", "left");
+		draw.lore(x + 34, y + 67, maxHealth, "black", "right");
+		if (!shield || !maxShield) return;
+		percentage = shield / maxShield;
+		if (percentage < 0) frame = 0;
+		else if (percentage > 1) frame = 62;
+		else frame = percentage * 62;
+		if (shield < 10 && maxShield >= 10) {
+			shield = "0" + shield;
+			if (maxShield >= 100) shield = "0" + shield;
+			if (maxShield >= 1000) shield = "0" + shield;
+		} else if (shield < 100 && maxShield >= 100) {
+			shield = "0" + shield;
+			if (maxShield >= 1000) shield = "0" + shield;
+		} else if (shield < 1000 && maxShield >= 1000) {
+			shield = "0" + shield;
+		};
+		draw.imageSector(bar.shield, 0, Math.round(frame) * 11, 64, 12, x, y + 76, 64, 12);
+		draw.lore(x + 25, y + 78, shield, "black", "left");
+		draw.lore(x + 34, y + 78, maxShield, "black", "right");
+	},
+	card(type, index, y, overrideX = NaN) {
+		let x = game.handPos[index], img;
+		overrideX = +overrideX;
+		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
+		if (type == "slash") {
+			img = card.slash;
+		} else if (type == "block") {
+			img = card.block;
+		} else {
+			console.error("card " + index + " is invalid type: " + type);
+			console.log("displaying default image... note: this bugged card is unplayable.");
+			img = card.slash;
+		};
+		draw.image(img, x, y, 66, 98);
+	},
+	lore(x, y, string, color = "black", position = "right", small = false) {
+		if ((!x && x !== 0) || (!y && y !== 0) || string === null || string === undefined) return;
+		let img = letters.black, enters = 0, enterIndex = 0;
+		string = "" + string;
+		if (color == "red") img = letters.red;
+		else if (color == "white") img = letters.white;
+		else if (color == "fade_0") img = letters.fade[0];
+		else if (color == "fade_1") img = letters.fade[1];
+		else if (color == "fade_2") img = letters.fade[2];
+		for (let a = 0; a < string.length; a++) {
+			let index = string.charCodeAt(a), len = string.length;
+			if (index == 10) {
+				enters++;
+				enterIndex = a + 1;
+			};
+			if (enters) {
+				a -= enterIndex;
+				len -= enterIndex;
+			};
+			if (small) {
+				if (position == "right") {
+					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 3), y + (enters * 5.5), 2.5, 5);
+				} else if (position == "left") {
+					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 3), y + (enters * 5.5), 2.5, 5);
+				} else if (position == "center") {
+					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 3) - (len * 1.5), y + (enters * 5.5), 2.5, 5);
+				};
+			} else {
+				if (position == "right") {
+					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 6), y + (enters * 11), 5, 10);
+				} else if (position == "left") {
+					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 6), y + (enters * 11), 5, 10);
+				} else if (position == "center") {
+					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (len * 3), y + (enters * 11), 5, 10);
+				};
+			};
+			if (enters) {
+				a += enterIndex;
+				len += enterIndex;
+			};
+		};
+	},
+	selector(x, y, width, height) {
+		x = +x;
+		y = +y;
+		width = +width;
+		height = +height;
+		if ((!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
+		draw.image(select.selector[0], x - 2, y - 2);
+		draw.image(select.selector[1], x + width - 6, y - 2);
+		draw.image(select.selector[2], x - 2, y + height - 7);
+		draw.image(select.selector[3], x + width - 6, y + height - 7);
+	},
 };
 
 function backgrounds() {
@@ -73,14 +170,14 @@ function backgrounds() {
 	time[1] += (time[2] / 60);
 	time[0] += (time[1] / 60);
 	if (time[0] >= 12) time[0] = time[0] - 12;
-	drawImage(cave);
-	drawRect("#10106080");
-	drawImage(background);
-	drawImage(floating_arch, 136, 34 - Math.round(backAnim[0]));
-	drawImage(clock.face, clockX, clockY);
-	drawImageSection(clock.hour_hand, Math.floor((time[0]) * 82 / 12) * 24, 0, 24, 24, clockX + 18, clockY + 18);
-	drawImageSection(clock.min_hand, Math.floor((time[1]) * 80 / 60) * 34, 0, 34, 34, clockX + 13, clockY + 13);
-	drawImage(clock.node, clockX + 26, clockY + 26);
+	draw.image(cave);
+	draw.rect("#10106080");
+	draw.image(background);
+	draw.image(floating_arch, 136, 34 - Math.round(backAnim[0]));
+	draw.image(clock.face, clockX, clockY);
+	draw.imageSector(clock.hour_hand, Math.floor((time[0]) * 82 / 12) * 24, 0, 24, 24, clockX + 18, clockY + 18);
+	draw.imageSector(clock.min_hand, Math.floor((time[1]) * 80 / 60) * 34, 0, 34, 34, clockX + 13, clockY + 13);
+	draw.image(clock.node, clockX + 26, clockY + 26);
 	if (backAnim[0] >= 1) backAnim[1] = "down";
 	else if (backAnim[0] <= -1) backAnim[1] = "up";
 	if (backAnim[1] == "up") backAnim[0] += (Math.random() + 0.5) * 0.075;
@@ -92,57 +189,17 @@ function backgrounds() {
 };
 
 function foregrounds() {
-	drawImage(view);
-	drawImage(help, 381, 3);
-	if (game.select[0] == "help") drawImage(select.round, 380, 2);
-    if (game.select[0] == "looker" && game.select[1] == 1) drawImageSection(looker, 15, 0, 16, 16, 362, 3);
-	else drawImageSection(looker, 0, 0, 16, 16, 362, 3);
-	if (game.select[0] == "looker") drawImage(select.round, 361, 2);
-	drawImage(end, 3, 163);
-	if (game.select[0] == "end") drawImage(select.round, 2, 162);
-	drawImage(deck, 3, 182);
-	if (game.select[0] == "deck") drawImage(select.deck, 2, 162);
-    drawLore(1, 1, "floor: " + game.floor, "red", "right");
-};
-
-function bars(x, y, health, maxHealth, shield, maxShield) {
-	x = +x; y = +y; health = +health; maxHealth = +maxHealth; shield = +shield; maxShield = +maxShield;
-	if ((!x && x !== 0) || (!y && y !== 0) || (!health && health !== 0) || !maxHealth) return;
-	let frame, percentage = health / maxHealth;
-	if (percentage < 0) frame = 0;
-	else if (percentage > 1) frame = 62;
-	else frame = percentage * 62;
-	if (health < 10 && maxHealth >= 10) {
-		health = "0" + health;
-		if (maxHealth >= 100) health = "0" + health;
-		if (maxHealth >= 1000) health = "0" + health;
-	} else if (health < 100 && maxHealth >= 100) {
-		health = "0" + health;
-		if (maxHealth >= 1000) health = "0" + health;
-	} else if (health < 1000 && maxHealth >= 1000) {
-		health = "0" + health;
-	};
-	drawImageSection(bar.health, 0, Math.round(frame) * 11, 64, 12, x, y + 65, 64, 12);
-	drawLore(x + 25, y + 67, health, "black", "left");
-	drawLore(x + 34, y + 67, maxHealth, "black", "right");
-	if (!shield || !maxShield) return;
-	percentage = shield / maxShield;
-	if (percentage < 0) frame = 0;
-	else if (percentage > 1) frame = 62;
-	else frame = percentage * 62;
-	if (shield < 10 && maxShield >= 10) {
-		shield = "0" + shield;
-		if (maxShield >= 100) shield = "0" + shield;
-		if (maxShield >= 1000) shield = "0" + shield;
-	} else if (shield < 100 && maxShield >= 100) {
-		shield = "0" + shield;
-		if (maxShield >= 1000) shield = "0" + shield;
-	} else if (shield < 1000 && maxShield >= 1000) {
-		shield = "0" + shield;
-	};
-	drawImageSection(bar.shield, 0, Math.round(frame) * 11, 64, 12, x, y + 76, 64, 12);
-	drawLore(x + 25, y + 78, shield, "black", "left");
-	drawLore(x + 34, y + 78, maxShield, "black", "right");
+	draw.image(view);
+	draw.image(help, 381, 3);
+	if (game.select[0] == "help") draw.image(select.round, 380, 2);
+    if (game.select[0] == "looker" && game.select[1] == 1) draw.imageSector(looker, 15, 0, 16, 16, 362, 3);
+	else draw.imageSector(looker, 0, 0, 16, 16, 362, 3);
+	if (game.select[0] == "looker") draw.image(select.round, 361, 2);
+	draw.image(end, 3, 163);
+	if (game.select[0] == "end") draw.image(select.round, 2, 162);
+	draw.image(deck, 3, 182);
+	if (game.select[0] == "deck") draw.image(select.deck, 2, 162);
+    draw.lore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
 function startPlayerAnim(type) {
@@ -154,31 +211,31 @@ function startPlayerAnim(type) {
 function playerGraphics() {
 	let x = 15, y = 30;
 	if (playerAnim[1] == "idle") {
-		drawImageSection(player.idle, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		draw.imageSector(player.idle, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 10) playerAnim[0] = 0;
 	};
 	if (playerAnim[1] == "attack") {
-		drawImageSection(player.attack, Math.floor(playerAnim[0]) * 120, 0, 120, 84, x, y, 120, 84);
+		draw.imageSector(player.attack, Math.floor(playerAnim[0]) * 120, 0, 120, 84, x, y, 120, 84);
 		playerAnim[0]++;
 		if (playerAnim[0] >= 4) playerAnim = [0, "idle"];
 	};
 	if (playerAnim[1] == "attack_2") {
-		drawImageSection(player.attack_2, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		draw.imageSector(player.attack_2, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0]++;
 		if (playerAnim[0] >= 6) playerAnim = [0, "idle"];
 	};
 	if (playerAnim[1] == "hit") {
-		drawImageSection(player.hit, 0, 0, 120, 80, x, y, 120, 80);
+		draw.imageSector(player.hit, 0, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.5;
 		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
 	};
 	if (playerAnim[1] == "shield") {
-		drawImageSection(player.shield, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		draw.imageSector(player.shield, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 3) playerAnim[0] = 2;
 	};
-	bars(x + 22, y + 15, game.health, game.maxHealth, game.shield, game.maxShield);
+	draw.bars(x + 22, y + 15, game.health, game.maxHealth, game.shield, game.maxShield);
 	let frame, en = game.energy, maxEn = game.maxEnergy, percentage = en / maxEn;
 	if (percentage < 0) frame = 0;
 	else if (percentage > 1) frame = 30;
@@ -186,9 +243,9 @@ function playerGraphics() {
 	if (en < 10 && maxEn >= 10) {
 		en = "0" + en;
 	};
-	drawImageSection(bar.energy, 0, Math.round(frame) * 31, 32, 32, x, y + 16, 32, 32);
-	drawLore(x + 9, y + 28, en, "black", "left");
-	drawLore(x + 18, y + 28, maxEn, "black", "right");
+	draw.imageSector(bar.energy, 0, Math.round(frame) * 31, 32, 32, x, y + 16, 32, 32);
+	draw.lore(x + 9, y + 28, en, "black", "left");
+	draw.lore(x + 18, y + 28, maxEn, "black", "right");
 };
 
 function startEnemyAnim(index, type) {
@@ -208,13 +265,13 @@ function enemyGraphics() {
         if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
         if (index !== invNum) {
             if (enemy.type == "slime_big") {
-                drawImageSection(slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
+                draw.imageSector(slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
             } else if (enemy.type == "slime_small") {
-                drawImageSection(slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
+                draw.imageSector(slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
             };
         };
         enemyAnim[index] += (Math.random() + 0.5) * 0.1;
-        bars(pos[0], pos[1], enemy.health, enemy.maxHealth, enemy.shield, enemy.maxShield);
+        draw.bars(pos[0], pos[1], enemy.health, enemy.maxHealth, enemy.shield, enemy.maxShield);
     };
     if (tempAnim[3] == -1) return;
 	let pos = game.enemyPos[tempAnim[3]];
@@ -223,8 +280,8 @@ function enemyGraphics() {
 			let phase = ((tempAnim[0] - 9) / 10),
 			posX = Math.round(((game.enemyPos[tempAnim[3]][0] - 68) - 64) * phase),
 			posY = Math.round(((game.enemyPos[tempAnim[3]][1] - (50 + 10))) * phase);
-			drawImageSection(slime.small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
-		} else drawImageSection(slime.small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
+			draw.imageSector(slime.small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
+		} else draw.imageSector(slime.small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
 		if (tempAnim[2] == "normal") tempAnim[0]++;
 		else if (tempAnim[2] == "backwards") tempAnim[0]--;
 		if (tempAnim[0] >= 20) {
@@ -238,26 +295,10 @@ function enemyGraphics() {
 	} else invNum = false;
 };
 
-function showCard(type, index, y, overrideX = NaN) {
-    let x = game.handPos[index], img;
-    overrideX = +overrideX;
-    if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
-	if (type == "slash") {
-		img = card.slash;
-	} else if (type == "block") {
-		img = card.block;
-	} else {
-		console.error("card " + index + " is invalid type: " + type);
-		console.log("displaying default image... note: this bugged card is unplayable.");
-		img = card.slash;
-	};
-	drawImage(img, x, y, 66, 98);
-};
-
 function renderCards() {
     if (game.select[0] == "attack_enemy") {
-        showCard(game.enemyAtt, 0, 52, 104);
-		drawImage(select.card, 103, 52 - 1);
+        draw.card(game.enemyAtt, 0, 52, 104);
+		draw.image(select.card, 103, 52 - 1);
     };
     if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") return;
 	let temp = -1;
@@ -266,12 +307,12 @@ function renderCards() {
 		if (game.select[0] == "hand" && game.select[1] == index) {
 			temp = index;
 		} else {
-			showCard(card, index, 146 - Math.floor(cardAnim[index]));
+			draw.card(card, index, 146 - Math.floor(cardAnim[index]));
 		};
 	};
 	if (temp != -1) {
-		drawImage(select.card, game.handPos[temp] - 1, 146 - 1 - Math.floor(cardAnim[temp]));
-        showCard(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]));
+		draw.image(select.card, game.handPos[temp] - 1, 146 - 1 - Math.floor(cardAnim[temp]));
+        draw.card(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]));
         if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
         if (cardAnim[temp] > 44) cardAnim[temp] = 44;
     };
@@ -288,7 +329,7 @@ function renderCards() {
 		if (notif[1] >= 9) color = "fade_2";
 		else if (notif[1] >= 7) color = "fade_1";
 		else if (notif[1] >= 5) color = "fade_0";
-		drawLore(game.handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1], "not enough energy", color, "center");
+		draw.lore(game.handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1], "not enough energy", color, "center");
 		notif[1]++;
 		if (notif[1] > 11) notif = [-1, 0];
 	};
@@ -299,54 +340,11 @@ function target() {
         enemyType = game.enemies[game.select[1]].type;
         pos = game.enemyPos[game.select[1]];
         if (enemyType == "slime_small") {
-            selectIt(pos[0] + 19, pos[1] + 35, 26, 29);
-            drawLore(pos[0] + 32, pos[1] + 28, "small slime", "white", "center", true);
+            draw.selector(pos[0] + 19, pos[1] + 35, 26, 29);
+            draw.lore(pos[0] + 32, pos[1] + 28, "small slime", "white", "center", true);
         } else if (enemyType == "slime_big") {
-            selectIt(pos[0] + 5, pos[1] + 25, 54, 39);
-            drawLore(pos[0] + 32, pos[1] + 18, "big slime", "white", "center", true);
+            draw.selector(pos[0] + 5, pos[1] + 25, 54, 39);
+            draw.lore(pos[0] + 32, pos[1] + 18, "big slime", "white", "center", true);
         };
     };
-};
-
-function drawLore(x, y, string, color = "black", position = "right", small = false) {
-	if ((!x && x !== 0) || (!y && y !== 0) || string === null || string === undefined) return;
-	let img = letters.black, enters = 0, enterIndex = 0;
-	string = "" + string;
-	if (color == "red") img = letters.red;
-    else if (color == "white") img = letters.white;
-	else if (color == "fade_0") img = letters.fade[0];
-	else if (color == "fade_1") img = letters.fade[1];
-	else if (color == "fade_2") img = letters.fade[2];
-	for (let a = 0; a < string.length; a++) {
-		let index = string.charCodeAt(a), len = string.length;
-		if (index == 10) {
-			enters++;
-			enterIndex = a + 1;
-		};
-		if (enters) {
-			a -= enterIndex;
-			len -= enterIndex;
-		};
-		if (small) {
-			if (position == "right") {
-				drawImageSection(img, (index - 32) * 6, 0, 5, 10, x + (a * 3), y + (enters * 5.5), 2.5, 5);
-			} else if (position == "left") {
-				drawImageSection(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 3), y + (enters * 5.5), 2.5, 5);
-			} else if (position == "center") {
-				drawImageSection(img, (index - 32) * 6, 0, 5, 10, x + (a * 3) - (len * 1.5), y + (enters * 5.5), 2.5, 5);
-			};
-		} else {
-			if (position == "right") {
-				drawImageSection(img, (index - 32) * 6, 0, 5, 10, x + (a * 6), y + (enters * 11), 5, 10);
-			} else if (position == "left") {
-				drawImageSection(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 6), y + (enters * 11), 5, 10);
-			} else if (position == "center") {
-				drawImageSection(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (len * 3), y + (enters * 11), 5, 10);
-			};
-		};
-		if (enters) {
-			a += enterIndex;
-			len += enterIndex;
-		};
-	};
 };

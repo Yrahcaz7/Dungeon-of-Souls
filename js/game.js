@@ -264,14 +264,14 @@ const gameloop = setInterval(function() {
         renderCards();
     };
     if (game.select[0] == "help" && game.select[1]) {
-        drawRect("#000000cc");
-        drawImage(help, 381, 3);
-        drawImage(select.round, 380, 2);
-        drawLore(1, 1, "Dungeon of Souls", "white");
-        drawLore(1, 23, "Storyline:", "white");
-        drawLore(1, 67, "Controls:", "white");
-        drawLore(1, 100, "How to Play:", "white");
-        drawLore(1, 149.5, "An ominous feeling...", "white");
-        drawLore(1, 12, text, "white", "right", true);
+        draw.rect("#000000cc");
+        draw.image(help, 381, 3);
+        draw.image(select.round, 380, 2);
+        draw.lore(1, 1, "Dungeon of Souls", "white");
+        draw.lore(1, 23, "Storyline:", "white");
+        draw.lore(1, 67, "Controls:", "white");
+        draw.lore(1, 100, "How to Play:", "white");
+        draw.lore(1, 149.5, "An ominous feeling...", "white");
+        draw.lore(1, 12, text, "white", "right", true);
 	};
 }, 100);
