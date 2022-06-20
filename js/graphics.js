@@ -91,8 +91,8 @@ const draw = {
 		draw.lore(x + 25, y + 78, shield, "black", "left");
 		draw.lore(x + 34, y + 78, maxShield, "black", "right");
 	},
-	card(_card, index, y, selected = false, overrideX = NaN) {
-		let x = game.handPos[index], img = card.error, name = _card.name, type = _card.type;
+	card(cardObject, index, y, selected = false, overrideX = NaN) {
+		let x = game.handPos[index], img = card.error, name = cardObject.name, type = cardObject.type;
 		overrideX = +overrideX;
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
 		if (name == "slash") img = card.slash;
@@ -100,19 +100,20 @@ const draw = {
 		else console.error("card " + index + " is invalid type: " + name);
 		if (name != "error") draw.image(card.back, x, y, 66, 98);
 		if (type == "attack") draw.image(card._attack, x + 3, y + 3);
-		if (type == "curse") draw.image(card._curse, x + 3, y + 3);
-		if (type == "defense") draw.image(card._defense, x + 3, y + 3);
-		if (type == "magic") draw.image(card._magic, x + 3, y + 3);
+		else if (type == "curse") draw.image(card._curse, x + 3, y + 3);
+		else if (type == "defense") draw.image(card._defense, x + 3, y + 3);
+		else if (type == "magic") draw.image(card._magic, x + 3, y + 3);
 		if (selected) {
-			if (_card.unplayable) draw.image(select.card_unplayable, x + 1, y + 1);
+			if (cardObject.unplayable) draw.image(select.card_unplayable, x + 1, y + 1);
 			else draw.image(select.card_normal, x - 1, y - 1);
 		};
-		if (_card.name == "error") draw.image(img, x, y, 66, 98);
-		else draw.image(img, x + 6, y + 6, 56, 92);
-		draw.lore(x + 33, y + 90, _card.rarity + "|" + _card.type, "black", "center", true);
-		if (!_card.unplayable) {
+		if (cardObject.name == "error") draw.image(img, x, y, 66, 98);
+		else draw.image(img, x + 6, y + 6, 56, 56);
+		draw.lore(x + 4, y + 2, cardObject.energyCost);
+		draw.lore(x + 6, y + 55, cardObject.text, "black", "right", true);
+		if (!cardObject.unplayable) {
 			draw.image(card._energy, x, y);
-			draw.lore(x + 4, y + 2, _card.energyCost);
+			draw.lore(x + 4, y + 2, cardObject.energyCost);
 		};
 	},
 	lore(x, y, string, color = "black", position = "right", small = false) {
