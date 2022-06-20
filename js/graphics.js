@@ -111,6 +111,7 @@ const draw = {
 		else draw.image(img, x + 6, y + 6, 56, 56);
 		draw.lore(x + 4, y + 2, cardObject.energyCost);
 		draw.lore(x + 6, y + 55, cardObject.text, "black", "right", true);
+		draw.lore(x + 33, y + 90, cardObject.rarity + "|" + cardObject.type, "black", "center", true);
 		if (!cardObject.unplayable) {
 			draw.image(card._energy, x, y);
 			draw.lore(x + 4, y + 2, cardObject.energyCost);
