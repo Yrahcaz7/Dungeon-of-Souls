@@ -98,7 +98,7 @@ const draw = {
 		if (name == "slash") img = card.slash;
 		else if (name == "block") img = card.block;
 		else console.error("card " + index + " is invalid type: " + name);
-		if (name != "error") draw.image(card.back, x, y, 66, 98);
+		if (name != "error") draw.image(card.back, x + 2, y + 2);
 		if (type == "attack") draw.image(card._attack, x + 3, y + 3);
 		else if (type == "curse") draw.image(card._curse, x + 3, y + 3);
 		else if (type == "defense") draw.image(card._defense, x + 3, y + 3);
