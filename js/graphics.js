@@ -99,10 +99,10 @@ const draw = {
 		else if (name == "block") img = card.block;
 		else console.error("card " + index + " is invalid type: " + name);
 		if (name != "error") draw.image(card.back, x + 2, y + 2);
-		if (type == "attack") draw.image(card._attack, x + 3, y + 3);
-		else if (type == "curse") draw.image(card._curse, x + 3, y + 3);
-		else if (type == "defense") draw.image(card._defense, x + 3, y + 3);
-		else if (type == "magic") draw.image(card._magic, x + 3, y + 3);
+		if (type == "attack") draw.image(card.outline.attack, x + 3, y + 3);
+		else if (type == "curse") draw.image(card.outline.curse, x + 3, y + 3);
+		else if (type == "defense") draw.image(card.outline.defense, x + 3, y + 3);
+		else if (type == "magic") draw.image(card.outline.magic, x + 3, y + 3);
 		if (selected) {
 			if (cardObject.unplayable) draw.image(select.card_unplayable, x + 1, y + 1);
 			else draw.image(select.card_normal, x - 1, y - 1);

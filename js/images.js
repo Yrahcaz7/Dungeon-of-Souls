@@ -23,15 +23,17 @@ const player = {
     hit: new Image,
     shield: new Image,
 }, card = {
-    _attack: new Image,
-    _curse: new Image,
-    _defense: new Image,
-    _magic: new Image,
     _energy: new Image,
     back: new Image,
     error: new Image,
     slash: new Image,
     block: new Image,
+    outline: {
+        attack: new Image,
+        curse: new Image,
+        defense: new Image,
+        magic: new Image,
+    },
 }, slime = {
     big: new Image,
     small: new Image,
@@ -69,18 +71,18 @@ player.attack_2.src = "images/player/attack_2.png";
 player.hit.src = "images/player/hit.png";
 player.shield.src = "images/player/shield.png";
 
-// _cardStuff
-card._attack.src = "images/cards/_attack.png";
-card._curse.src = "images/cards/_curse.png";
-card._defense.src = "images/cards/_defense.png";
-card._magic.src = "images/cards/_magic.png";
-card._energy.src = "images/cards/_energy.png";
-
 // cards
+card._energy.src = "images/cards/_energy.png";
 card.back.src = "images/cards/back.png";
 card.error.src = "images/cards/error.png";
 card.slash.src = "images/cards/slash.png";
 card.block.src = "images/cards/block.png";
+
+// card outlines
+card.outline.attack.src = "images/cards/outline/attack.png";
+card.outline.curse.src = "images/cards/outline/curse.png";
+card.outline.defense.src = "images/cards/outline/defense.png";
+card.outline.magic.src = "images/cards/outline/magic.png";
 
 // slimes
 slime.big.src = "images/enemies/slime/big.png";
