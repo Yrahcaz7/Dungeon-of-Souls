@@ -21,7 +21,9 @@ class Card {
         this.name = name;
         this.rarity = "";
         this.type = "";
+        this.text = "";
         this.energyCost = 0;
+        this.level = 0;
         this.unplayable = false;
         // error
         if (name != "slash" && name != "block" && name != "error") {
@@ -29,20 +31,17 @@ class Card {
             this.name = "error";
         };
         // rarity
-        if (name == "error") {
-            this.rarity = "error";
-        };
         if (name == "slash" || name == "block") {
             this.rarity = "starter";
+        } else {
+            this.rarity = "error";
         };
         // type
         if (name == "slash") {
             this.type = "attack";
-        };
-        if (name == "block") {
+        } else if (name == "block") {
             this.type = "defense";
-        };
-        if (name == "error") {
+        } else if (name == "error") {
             this.type = "curse";
         };
         // energy cost
@@ -52,6 +51,14 @@ class Card {
         // special
         if (name == "error") {
             this.unplayable = true;
+        };
+        // text
+        if (name == "slash") {
+            this.text = "Deal 5 damage.";
+        } else if (name == "block") {
+            this.text = "Gain 4 shield.";
+        } else if (name == "error") {
+            this.text = "Unplayable.";
         };
     };
 };
