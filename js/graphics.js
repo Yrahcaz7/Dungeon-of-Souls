@@ -107,7 +107,7 @@ const draw = {
 			if (cardObject.unplayable) draw.image(select.card_unplayable, x + 1, y + 1);
 			else draw.image(select.card_normal, x - 1, y - 1);
 		};
-		if (cardObject.name == "error") draw.image(img, x + 2, y + 2);
+		if (img == card.error) draw.image(card.error, x + 2, y + 2);
 		else draw.image(img, x + 7, y + 7);
 		draw.lore(x + 32, y + 42, cardObject.name.charAt(0).toUpperCase() + cardObject.name.slice(1), "black", "center");
 		draw.lore(x + 6, y + 55, cardObject.text, "black", "right", true);
