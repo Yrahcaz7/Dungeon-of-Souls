@@ -108,8 +108,8 @@ const draw = {
 			else draw.image(select.card_normal, x - 1, y - 1);
 		};
 		if (cardObject.name == "error") draw.image(img, x, y, 66, 98);
-		else draw.image(img, x + 6, y + 6, 56, 56);
-		draw.lore(x + 4, y + 2, cardObject.energyCost);
+		else draw.image(img, x + 6, y + 6);
+		draw.lore(x + 32, y + 42, cardObject.name.charAt(0).toUpperCase() + cardObject.name.slice(1), "black", "center");
 		draw.lore(x + 6, y + 55, cardObject.text, "black", "right", true);
 		draw.lore(x + 33, y + 90, cardObject.rarity + "|" + cardObject.type, "black", "center", true);
 		if (!cardObject.unplayable) {
