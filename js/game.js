@@ -279,3 +279,13 @@ const gameloop = setInterval(function() {
         draw.lore(1, 12, text, "white", "right", true);
 	};
 }, 100);
+
+const musicloop = setInterval(function() {
+    let time = document.getElementById("music").currentTime;
+    if (time > 47.99 || time == 0) {
+        if (game.floor < 20) {
+            document.getElementById("music").currentTime = 0;
+            document.getElementById("music").play();
+        };
+    };
+}, 5);
