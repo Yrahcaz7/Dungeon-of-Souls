@@ -37,6 +37,7 @@ var game = {
     handPos: [],
     activeCard: -1,
     discard: [],
+    music: true,
 }, actionTimer = -1, notif = [-1, 0], hide = (game.select[0] == "help" || game.select[0] == "looker") && game.select[1];
 
 function hardReset() {
@@ -98,20 +99,41 @@ function playerTurn() {
     if (game.select[0] == "none") game.select = ["hand", 0];
     // select extras
     if (action == "up" && game.select[0] == "lookat_enemy") {
-        game.select = ["looker", 0];
+        game.select = ["music", 0];
         actionTimer = 1;
         return;
     };
     // activate / deactivate extras
     if (action == "enter" && (game.select[0] == "help" || game.select[0] == "looker")) {
-        if (game.select[1] == 0) game.select[1] = 1;
-        else game.select[1] = 0;
+        if (game.select[1] == 0) {
+            if (game.select[0] == "music") document.getElementById("music").play();
+            game.select[1] = 1;
+        } else game.select[1] = 0;
+        actionTimer = 2;
+        return;
+    };
+    if (action == "enter" && game.select[0] == "music") {
+        if (game.music) {
+            document.getElementById("music").pause();
+            game.music = false;
+        } else {
+            document.getElementById("music").play();
+            game.music = true;
+        };
         actionTimer = 2;
         return;
     };
     // deselect extras
-    if ((game.select[0] == "help" || game.select[0] == "looker") && !game.select[1]) {
-        if (action == "left" && game.select[0] == "help") {
+    if ((game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "music") && !game.select[1]) {
+        if (action == "left" && game.select[0] == "looker") {
+            game.select = ["music", 0];
+            actionTimer = 1;
+            return;
+        } else if (action == "left" && game.select[0] == "help") {
+            game.select = ["looker", 0];
+            actionTimer = 1;
+            return;
+        } else if (action == "right" && game.select[0] == "music") {
             game.select = ["looker", 0];
             actionTimer = 1;
             return;
@@ -282,8 +304,8 @@ const gameloop = setInterval(function() {
 
 const musicloop = setInterval(function() {
     let time = document.getElementById("music").currentTime;
-    if (time > 47.95 || time == 0) {
-        if (game.floor < 20) {
+    if (game.music) {
+        if ((time > 47.95 || time == 0) && game.floor < 20) {
             document.getElementById("music").currentTime = 0;
             document.getElementById("music").play();
         };

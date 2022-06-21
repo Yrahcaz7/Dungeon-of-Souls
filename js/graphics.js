@@ -221,7 +221,7 @@ function foregrounds() {
     if (game.select[0] == "looker" && game.select[1] == 1) draw.imageSector(looker, 15, 0, 16, 16, 362, 3);
 	else draw.imageSector(looker, 0, 0, 16, 16, 362, 3);
 	if (game.select[0] == "looker") draw.image(select.round, 361, 2);
-	if (game.select[0] == "music" && game.select[1] == 1) draw.imageSector(music, 15, 0, 16, 16, 344, 3);
+	if (!game.music) draw.imageSector(music, 15, 0, 16, 16, 344, 3);
 	else draw.imageSector(music, 0, 0, 16, 16, 344, 3);
 	if (game.select[0] == "music") draw.image(select.round, 343, 2);
 	draw.image(end, 3, 163);
