@@ -282,7 +282,7 @@ const gameloop = setInterval(function() {
 
 const musicloop = setInterval(function() {
     let time = document.getElementById("music").currentTime;
-    if (time > 47.99 || time == 0) {
+    if (time > 47.95 || time == 0) {
         if (game.floor < 20) {
             document.getElementById("music").currentTime = 0;
             document.getElementById("music").play();
