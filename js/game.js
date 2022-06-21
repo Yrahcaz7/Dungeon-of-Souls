@@ -300,14 +300,12 @@ const gameloop = setInterval(function() {
         draw.lore(1, 149.5, "An ominous feeling...", "white");
         draw.lore(1, 12, text, "white", "right", true);
 	};
-}, 100);
-
-const musicloop = setInterval(function() {
+}, 100), musicloop = setInterval(function() {
     let time = document.getElementById("music").currentTime;
     if (game.music) {
-        if ((time > 47.95 || time == 0) && game.floor < 20) {
+        if ((time >= 48 || time == 0) && game.floor < 20) {
             document.getElementById("music").currentTime = 0;
             document.getElementById("music").play();
         };
     };
-}, 5);
+}, 2);
