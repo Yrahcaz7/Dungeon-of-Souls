@@ -62,7 +62,7 @@ select = {
     deck: new Image,
     selector: [new Image, new Image, new Image, new Image],
 },
-help = new Image, looker = new Image, end = new Image, deck = new Image, view = new Image; // other
+help = new Image, looker = new Image, music = new Image, end = new Image, deck = new Image, view = new Image; // other
 
 // player
 player.idle.src = "images/player/idle.png";
@@ -126,6 +126,7 @@ select.selector[3].src = "images/select/d_r.png";
 // other
 help.src = "images/help.png";
 looker.src = "images/looker.png";
+music.src = "images/music.png";
 end.src = "images/end.png";
 deck.src = "images/deck.png";
 view.src = "images/view.png";
