@@ -40,6 +40,8 @@ const text = "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-So
 	+ "Else, at the edge of the sky,\n"
 	+ "you shall eternally die."
 
+var bladeFloat = [0, "up", 2.5, "up", 3, "down", 0.5, "down"];
+
 function updateData() {
 	// hide
 	hide = (game.select[0] == "help" || game.select[0] == "looker") && game.select[1];
@@ -65,4 +67,17 @@ function updateData() {
 	else if (number == 10) game.handPos = [198 - 320 + 135, 198 - 256 + 105, 198 - 192 + 75, 198 - 128 + 45, 198 - 64 + 15, 198 - 15, 198 + 64 - 45, 198 + 128 - 75, 198 + 192 - 105, 198 + 256 - 135];
 	else if (number == 11) game.handPos = [198 - 352 + 170, 198 - 288 + 136, 198 - 224 + 102, 198 - 160 + 68, 198 - 96 + 34, 198 - 32, 198 + 32 - 34, 198 + 96 - 68, 198 + 160 - 102, 198 + 224 - 136, 198 + 288 - 170];
 	else if (number == 12) game.handPos = [198 - 384 + 198, 198 - 320 + 162, 198 - 256 + 126, 198 - 192 + 90, 198 - 128 + 54, 198 - 64 + 18, 198 - 18, 198 + 64 - 54, 198 + 128 - 90, 198 + 192 - 126, 198 + 256 - 162, 198 + 320 - 198];
+	// AuraBladePos
+	number = game.auraBlades;
+	if (number == 1) game.auraBladePos = [[65, 10]];
+	else if (number == 2) game.auraBladePos = [[65, 10], [80, 25]];
+	else if (number == 3) game.auraBladePos = [[65, 10], [80, 25], [40, 0]];
+	else game.auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]];
+	for (let num = 0; num < game.auraBladePos.length && num <= 4; num++) {
+		game.auraBladePos[num][1] += Math.round(bladeFloat[num * 2]);
+		if (bladeFloat[num * 2 + 1] == "up") bladeFloat[num * 2] += (Math.random() + 0.5) * 0.05;
+		else bladeFloat[num * 2] -= (Math.random() + 0.5) * 0.05;
+		if (bladeFloat[num * 2] >= 4) bladeFloat[num * 2 + 1] = "down";
+		else if (bladeFloat[num * 2] <= 0) bladeFloat[num * 2 + 1] = "up";
+	};
 };

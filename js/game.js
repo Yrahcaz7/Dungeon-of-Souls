@@ -37,7 +37,8 @@ var game = {
     handPos: [],
     activeCard: -1,
     discard: [],
-    aura_blades: 0,
+    auraBlades: 0,
+    auraBladePos: 0,
     music: true,
 }, actionTimer = -1, notif = [-1, 0], hide = (game.select[0] == "help" || game.select[0] == "looker") && game.select[1];
 
@@ -244,7 +245,7 @@ function playerTurn() {
             actionTimer = 5;
         } else if (selected.name == "aura blade" && game.energy >= selected.energyCost) {
             game.energy -= selected.energyCost;
-            game.aura_blades++;
+            game.auraBlades++;
             game.discard.push(game.hand[game.select[1]]);
             game.hand.splice(game.select[1], 1);
             actionTimer = 5;

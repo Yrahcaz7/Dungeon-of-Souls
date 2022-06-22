@@ -56,8 +56,7 @@ clock = {
     health: new Image,
     shield: new Image,
     energy: new Image,
-},
-select = {
+}, select = {
     round: new Image,
     card_normal: new Image,
     card_unplayable: new Image,
@@ -67,6 +66,8 @@ select = {
     help: new Image,
     looker: new Image,
     music: new Image,
+}, icon = {
+    aura_blade: new Image,
 },
 end = new Image, deck = new Image, view = new Image; // other
 
@@ -135,6 +136,9 @@ select.selector[3].src = "images/select/d_r.png";
 extra.help.src = "images/extras/help.png";
 extra.looker.src = "images/extras/looker.png";
 extra.music.src = "images/extras/music.png";
+
+// icons
+icon.aura_blade.src = "images/icons/aura_blade.png";
 
 // other
 end.src = "images/end.png";
