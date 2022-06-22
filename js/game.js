@@ -231,28 +231,31 @@ function playerTurn() {
     // play card
     if (action == "enter" && game.select[0] == "hand") {
         var selected = game.hand[game.select[1]];
-        if (selected.name == "slash" && game.energy >= 1) {
+        if (selected.name == "slash" && game.energy >= selected.energyCost) {
             game.activeCard = game.select[1];
             game.select = ["attack_enemy", game.enemies.length - 1];
             game.enemyAtt = game.hand[game.activeCard];
             actionTimer = 5;
-            return;
-        } else if (selected.name == "block" && game.energy >= 1) {
-            game.energy--;
+        } else if (selected.name == "block" && game.energy >= selected.energyCost) {
+            game.energy -= selected.energyCost;
             game.shield += 4;
             game.discard.push(game.hand[game.select[1]]);
             game.hand.splice(game.select[1], 1);
             actionTimer = 5;
-            return;
+        } else if (selected.name == "aura blade" && game.energy >= selected.energyCost) {
+            game.energy -= selected.energyCost;
+            game.aura_blades++;
+            game.discard.push(game.hand[game.select[1]]);
+            game.hand.splice(game.select[1], 1);
+            actionTimer = 5;
         } else if (selected.unplayable) {
             notif = [game.select[1], 0, "unplayable"];
             actionTimer = 1;
-            return;
         } else {
             notif = [game.select[1], 0, "not enough energy"];
             actionTimer = 1;
-            return;
         };
+        return;
     };
 };
 
