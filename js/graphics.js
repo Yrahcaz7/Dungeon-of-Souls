@@ -195,11 +195,14 @@ const draw = {
 
 const startAnim = {
 	player(type) {
-		if (!type) return;
 		type = "" + type;
+		if (!type) return;
+		if (game.auraBlades) type += "_aura";
 		playerAnim = [0, type];
 	},
 	enemy(index, type) {
+		index = +index;
+		type = "" + type;
 		if ((!index && index !== 0) || !type) return;
 		tempAnim = [0, type, "normal", index];
 		if (type == "slime_small_launch") {
@@ -276,8 +279,18 @@ function playerGraphics() {
 		playerAnim[0]++;
 		if (playerAnim[0] >= 4) playerAnim = [0, "idle"];
 	};
+	if (playerAnim[1] == "attack_aura") {
+		draw.imageSector(player.attack_aura, Math.floor(playerAnim[0]) * 120, 0, 120, 84, x, y, 120, 84);
+		playerAnim[0]++;
+		if (playerAnim[0] >= 4) playerAnim = [0, "idle"];
+	};
 	if (playerAnim[1] == "attack_2") {
 		draw.imageSector(player.attack_2, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		playerAnim[0]++;
+		if (playerAnim[0] >= 6) playerAnim = [0, "idle"];
+	};
+	if (playerAnim[1] == "attack_2_aura") {
+		draw.imageSector(player.attack_2_aura, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0]++;
 		if (playerAnim[0] >= 6) playerAnim = [0, "idle"];
 	};
