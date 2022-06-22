@@ -19,11 +19,11 @@
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], invNum = -1;
 
-function title(string) {
+String.prototype.title = function() {
 	let result = "";
-	for (let num = 0; num < string.length; num++) {
-		if (num == 0 || string.charAt(num - 1) == " " || string.charAt(num - 1) == "\n") result += string.charAt(num).toUpperCase();
-		else result += string.charAt(num);
+	for (let num = 0; num < this.length; num++) {
+		if (num == 0 || this.charAt(num - 1) == " " || this.charAt(num - 1) == "\n") result += this.charAt(num).toUpperCase();
+		else result += this.charAt(num);
 	};
 	return result;
 };
@@ -120,9 +120,9 @@ const draw = {
 		if (img == card.error) draw.image(card.error, x + 2, y + 2);
 		else draw.image(img, x + 7, y + 7);
 		if (cardObject.name.length >= 11) {
-			draw.lore(x + 32, y + 44, title(cardObject.name), "black", "center", true);
+			draw.lore(x + 32, y + 44, cardObject.name.title(), "black", "center", true);
 		} else {
-			draw.lore(x + 32, y + 42, title(cardObject.name), "black", "center");
+			draw.lore(x + 32, y + 42, cardObject.name.title(), "black", "center");
 		};
 		draw.lore(x + 6, y + 55, cardObject.text, "black", "right", true);
 		draw.lore(x + 33, y + 89.5, cardObject.rarity + "|" + cardObject.type, "black", "center", true);
@@ -197,7 +197,7 @@ const startAnim = {
 		tempAnim = [0, type, "normal", index];
 		if (type == "slime_small_launch") {
 			invNum = index;
-		} else invNum = false;
+		} else invNum = -1;
 	},
 };
 
@@ -333,7 +333,7 @@ function enemyGraphics() {
 			enemyAnim[tempAnim[3]] = 0;
 		};
 		invNum = tempAnim[3];
-	} else invNum = false;
+	} else invNum = -1;
 };
 
 function renderCards() {
