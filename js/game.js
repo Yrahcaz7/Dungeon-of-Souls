@@ -31,12 +31,13 @@ var game = {
     enemies: [],
     enemyPos: [],
     enemyIndex: 0,
-    deck: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block")],
+    deck: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("aura blade")],
     hand: [],
     handSize: 5,
     handPos: [],
     activeCard: -1,
     discard: [],
+    aura_blades: 0,
     music: true,
 }, actionTimer = -1, notif = [-1, 0], hide = (game.select[0] == "help" || game.select[0] == "looker") && game.select[1];
 

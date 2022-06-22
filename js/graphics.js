@@ -97,6 +97,7 @@ const draw = {
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
 		if (name == "slash") img = card.slash;
 		else if (name == "block") img = card.block;
+		else if (name == "aura blade") img = card.aura_blade;
 		else console.error("card " + index + " is invalid type: " + name);
 		if (name != "error") draw.image(card.back, x + 2, y + 2);
 		if (type == "attack") draw.image(card.outline.attack, x + 3, y + 3);
@@ -109,9 +110,13 @@ const draw = {
 		};
 		if (img == card.error) draw.image(card.error, x + 2, y + 2);
 		else draw.image(img, x + 7, y + 7);
-		draw.lore(x + 32, y + 42, cardObject.name.charAt(0).toUpperCase() + cardObject.name.slice(1), "black", "center");
+		if (cardObject.name.length > 9) {
+			draw.lore(x + 32, y + 44, cardObject.name.charAt(0).toUpperCase() + cardObject.name.slice(1), "black", "center", true);
+		} else {
+			draw.lore(x + 32, y + 42, cardObject.name.charAt(0).toUpperCase() + cardObject.name.slice(1), "black", "center");
+		};
 		draw.lore(x + 6, y + 55, cardObject.text, "black", "right", true);
-		draw.lore(x + 33, y + 90, cardObject.rarity + "|" + cardObject.type, "black", "center", true);
+		draw.lore(x + 33, y + 89.5, cardObject.rarity + "|" + cardObject.type, "black", "center", true);
 		if (!cardObject.unplayable) {
 			draw.image(card._energy, x, y);
 			draw.lore(x + 4, y + 2, cardObject.energyCost);
