@@ -41,7 +41,7 @@ const draw = {
 		if (!image || (!sx && sx !== 0) || (!sy && sy !== 0) || !sw || !sh || (!dx && dx !== 0) || (!dy && dy !== 0) || !dw || !dh) return;
 		ctx.drawImage(image, sx, sy, sw, sh, dx * scale, dy * scale, dw * scale, dh * scale);
 	},
-	rect(color, x = 0, y = 0, width = canvas.width, height = canvas.height) {
+	rect(color, x = 0, y = 0, width = canvas.width / scale, height = canvas.height / scale) {
 		color = "" + color;
 		x = +x;
 		y = +y;
@@ -49,7 +49,7 @@ const draw = {
 		height = +height;
 		if (!color || (!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
 		ctx.fillStyle = color;
-		ctx.fillRect(x, y, width, height);
+		ctx.fillRect(x * scale, y * scale, width * scale, height * scale);
 	},
 	// advanced
 	bars(x, y, health, maxHealth, shield, maxShield) {
@@ -376,5 +376,19 @@ function target() {
             draw.selector(pos[0] + 5, pos[1] + 25, 54, 39);
             draw.lore(pos[0] + 32, pos[1] + 18, "big slime", "white", "center", true);
         };
+    };
+	if (game.select[0] == "lookat_you") {
+        draw.selector(60, 72, 20, 39);
+		if (game.auraBlades) {
+			if (game.auraBlades == 1) {
+				draw.rect("#000000", 84, 70, 75, 25);
+				draw.rect("#cccccc", 85, 71, 73, 23);
+				draw.lore(86, 72, "You have 1 aura blade,\nwhich will boost your\nnext attack's damage by\n11.", "black", "right", true);
+			} else {
+				draw.rect("#000000", 84, 70, 75, 42);
+				draw.rect("#cccccc", 85, 71, 73, 40);
+				draw.lore(86, 72, "You have " + game.auraBlades + " aura blades,\nwhich will boost your\nnext "  + game.auraBlades + " attack's damage\nby 10 plus the number\nof aura blades you have.", "black", "right", true);
+			};
+		};
     };
 };

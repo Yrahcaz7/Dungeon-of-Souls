@@ -105,6 +105,17 @@ function playerTurn() {
         actionTimer = 1;
         return;
     };
+    // select / deselect player
+    if (action == "left" && game.select[0] == "hand" && game.select[1] == 0) {
+        game.select = ["lookat_you", 0];
+        actionTimer = 1;
+        return;
+    };
+    if (action == "right" && game.select[0] == "lookat_you") {
+        game.select = ["hand", 0];
+        actionTimer = 1;
+        return;
+    };
     // activate / deactivate extras
     if (action == "enter" && (game.select[0] == "help" || game.select[0] == "looker")) {
         if (game.select[1] == 0) {
@@ -155,12 +166,8 @@ function playerTurn() {
             game.select[1] = -1;
         } else {
             if (action == "left") {
-                if (game.select[1] > 0) {
-                    game.select[1]--;
-                    actionTimer = 1;
-                } else {
-                    game.select[1] = game.hand.length - 1;
-                };
+                game.select[1]--;
+                actionTimer = 1;
                 return;
             } else if (action == "right") {
                 if (game.select[1] < game.hand.length - 1) {
@@ -296,7 +303,7 @@ const gameloop = setInterval(function() {
     };
     if (game.select[0] == "help" && game.select[1]) {
         draw.rect("#000000cc");
-        draw.image(help, 381, 3);
+        draw.image(extra.help, 381, 3);
         draw.image(select.round, 380, 2);
         draw.lore(1, 1, "Dungeon of Souls", "white");
         draw.lore(1, 23, "Storyline:", "white");
