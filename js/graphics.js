@@ -263,7 +263,7 @@ function playerGraphics() {
 			draw.lore(x + 34, y + 101, game.auraBlades, "white", "left");
 		};
 		for (let blade = 1; blade <= game.auraBlades && blade <= 4; blade++) {
-			draw.image(player.aura_blade, x + game.auraBladePos[blade - 1][0], y + game.auraBladePos[blade - 1][1]);
+			draw.image(aura_blade, x + game.auraBladePos[blade - 1][0], y + game.auraBladePos[blade - 1][1]);
 		};
 	};
 	if (playerAnim[1] == "idle") {

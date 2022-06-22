@@ -29,7 +29,6 @@ const player = {
     error: new Image,
     slash: new Image,
     block: new Image,
-    aura_blade: new Image,
     outline: {
         attack: new Image,
         curse: new Image,
@@ -69,7 +68,7 @@ clock = {
 }, icon = {
     aura_blade: new Image,
 },
-end = new Image, deck = new Image, view = new Image; // other
+end = new Image, deck = new Image, view = new Image, aura_blade = new Image; // other
 
 // player
 player.idle.src = "images/player/idle.png";
@@ -77,7 +76,6 @@ player.attack.src = "images/player/attack.png";
 player.attack_2.src = "images/player/attack_2.png";
 player.hit.src = "images/player/hit.png";
 player.shield.src = "images/player/shield.png";
-player.aura_blade.src = "images/player/aura_blade.png";
 
 // cards
 card._energy.src = "images/cards/_energy.png";
@@ -85,7 +83,6 @@ card.back.src = "images/cards/back.png";
 card.error.src = "images/cards/error.png";
 card.slash.src = "images/cards/slash.png";
 card.block.src = "images/cards/block.png";
-card.aura_blade.src = "images/cards/aura_blade.png";
 
 // card outlines
 card.outline.attack.src = "images/cards/outline/attack.png";
@@ -144,3 +141,4 @@ icon.aura_blade.src = "images/icons/aura_blade.png";
 end.src = "images/end.png";
 deck.src = "images/deck.png";
 view.src = "images/view.png";
+aura_blade.src = "images/aura_blade.png";
