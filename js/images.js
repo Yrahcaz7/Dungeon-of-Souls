@@ -61,8 +61,12 @@ select = {
     card_unplayable: new Image,
     deck: new Image,
     selector: [new Image, new Image, new Image, new Image],
+}, extra = {
+    help: new Image,
+    looker: new Image,
+    music: new Image,
 },
-help = new Image, looker = new Image, music = new Image, end = new Image, deck = new Image, view = new Image; // other
+end = new Image, deck = new Image, view = new Image; // other
 
 // player
 player.idle.src = "images/player/idle.png";
@@ -123,10 +127,12 @@ select.selector[1].src = "images/select/u_r.png";
 select.selector[2].src = "images/select/d_l.png";
 select.selector[3].src = "images/select/d_r.png";
 
+// extras
+extra.help.src = "images/extras/help.png";
+extra.looker.src = "images/extras/looker.png";
+extra.music.src = "images/extras/music.png";
+
 // other
-help.src = "images/help.png";
-looker.src = "images/looker.png";
-music.src = "images/music.png";
 end.src = "images/end.png";
 deck.src = "images/deck.png";
 view.src = "images/view.png";

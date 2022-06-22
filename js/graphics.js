@@ -216,13 +216,13 @@ function backgrounds() {
 
 function foregrounds() {
 	draw.image(view);
-	draw.image(help, 381, 3);
+	draw.image(extra.help, 381, 3);
 	if (game.select[0] == "help") draw.image(select.round, 380, 2);
-    if (game.select[0] == "looker" && game.select[1] == 1) draw.imageSector(looker, 15, 0, 16, 16, 362, 3);
-	else draw.imageSector(looker, 0, 0, 16, 16, 362, 3);
+    if (game.select[0] == "looker" && game.select[1] == 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 362, 3);
+	else draw.imageSector(extra.looker, 0, 0, 16, 16, 362, 3);
 	if (game.select[0] == "looker") draw.image(select.round, 361, 2);
-	if (!game.music) draw.imageSector(music, 15, 0, 16, 16, 343, 3);
-	else draw.imageSector(music, 0, 0, 16, 16, 343, 3);
+	if (!game.music) draw.imageSector(extra.music, 15, 0, 16, 16, 343, 3);
+	else draw.imageSector(extra.music, 0, 0, 16, 16, 343, 3);
 	if (game.select[0] == "music") draw.image(select.round, 342, 2);
 	draw.image(end, 3, 163);
 	if (game.select[0] == "end") draw.image(select.round, 2, 162);
