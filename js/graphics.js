@@ -110,7 +110,7 @@ const draw = {
 		};
 		if (img == card.error) draw.image(card.error, x + 2, y + 2);
 		else draw.image(img, x + 7, y + 7);
-		if (cardObject.name.length > 9) {
+		if (cardObject.name.length >= 11) {
 			draw.lore(x + 32, y + 44, cardObject.name.charAt(0).toUpperCase() + cardObject.name.slice(1), "black", "center", true);
 		} else {
 			draw.lore(x + 32, y + 42, cardObject.name.charAt(0).toUpperCase() + cardObject.name.slice(1), "black", "center");
