@@ -303,9 +303,10 @@ const gameloop = setInterval(function() {
 }, 100), musicloop = setInterval(function() {
     let time = document.getElementById("music").currentTime;
     if (game.music) {
-        if ((time > document.getElementById("music").duration - 0.1 || time == 0)) {
-            document.getElementById("music").currentTime = 0;
+        if (time === 0) {
             document.getElementById("music").play();
+        } else if (time > document.getElementById("music").duration - 0.1) {
+            document.getElementById("music").currentTime = 0;
         };
     };
 }, 2);
