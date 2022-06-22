@@ -19,6 +19,15 @@
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], invNum = -1;
 
+function title(string) {
+	let result = "";
+	for (let num = 0; num < string.length; num++) {
+		if (num == 0 || string.charAt(num - 1) == " " || string.charAt(num - 1) == "\n") result += string.charAt(num).toUpperCase();
+		else result += string.charAt(num);
+	};
+	return result;
+};
+
 const draw = {
 	// basic
 	image(image, x = 0, y = 0, width = +image.width, height = +image.height) {
@@ -111,9 +120,9 @@ const draw = {
 		if (img == card.error) draw.image(card.error, x + 2, y + 2);
 		else draw.image(img, x + 7, y + 7);
 		if (cardObject.name.length >= 11) {
-			draw.lore(x + 32, y + 44, cardObject.name.charAt(0).toUpperCase() + cardObject.name.slice(1), "black", "center", true);
+			draw.lore(x + 32, y + 44, title(cardObject.name), "black", "center", true);
 		} else {
-			draw.lore(x + 32, y + 42, cardObject.name.charAt(0).toUpperCase() + cardObject.name.slice(1), "black", "center");
+			draw.lore(x + 32, y + 42, title(cardObject.name), "black", "center");
 		};
 		draw.lore(x + 6, y + 55, cardObject.text, "black", "right", true);
 		draw.lore(x + 33, y + 89.5, cardObject.rarity + "|" + cardObject.type, "black", "center", true);
