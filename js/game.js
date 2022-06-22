@@ -206,7 +206,10 @@ function playerTurn() {
             game.energy--;
             startAnim.player("attack");
         };
-        if (game.auraBlades) game.currentEffect = "aura blade";
+        if (game.auraBlades) {
+            game.auraBlades--;
+            game.currentEffect = "aura blade";
+        };
         game.select[0] = "attack_fin";
         game.discard.push(game.hand[game.activeCard]);
         game.hand.splice(game.activeCard, 1);
@@ -220,7 +223,6 @@ function playerTurn() {
         };
         if (game.currentEffect == "aura blade") {
             damage += 10 + game.auraBlades;
-            game.auraBlades--;
         };
         game.enemies[game.select[1]].health -= damage;
         game.select = ["hand", 0];
