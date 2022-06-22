@@ -39,6 +39,7 @@ var game = {
     discard: [],
     auraBlades: 0,
     auraBladePos: 0,
+    currentEffect: "none",
     music: true,
 }, actionTimer = -1, notif = [-1, ""], hide = (game.select[0] == "help" || game.select[0] == "looker") && game.select[1];
 
@@ -205,6 +206,7 @@ function playerTurn() {
             game.energy--;
             startAnim.player("attack");
         };
+        if (game.auraBlades) game.currentEffect = "aura blade";
         game.select[0] = "attack_fin";
         game.discard.push(game.hand[game.activeCard]);
         game.hand.splice(game.activeCard, 1);
@@ -212,9 +214,15 @@ function playerTurn() {
         return;
     };
     if (game.select[0] == "attack_fin" && actionTimer < 0) {
+        let damage = 0;
         if (game.enemyAtt.name == "slash") {
-            game.enemies[game.select[1]].health -= 5;
+            damage = 5;
         };
+        if (game.currentEffect == "aura blade") {
+            damage += 10 + game.auraBlades;
+            game.auraBlades--;
+        };
+        game.enemies[game.select[1]].health -= damage;
         game.select = ["hand", 0];
         game.enemyAtt = "none";
         actionTimer = 1;
@@ -226,7 +234,7 @@ function playerTurn() {
             game.select[1]++;
             actionTimer = 1;
             return;
-        } else if (action == "right" && game.select[1] > 0) {
+        } else if (action == "right" && game.select[1]) {
             game.select[1]--;
             actionTimer = 1;
             return;

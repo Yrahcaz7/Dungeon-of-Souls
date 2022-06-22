@@ -31,7 +31,7 @@ class Enemy {
     };
     startAction(type) {
         if (type == "attack") {
-            if (game.shield >= 1) startAnim.player("shield");
+            if (game.shield) startAnim.player("shield");
             startAnim.enemy(this.location, "slime_small_launch");
         };
     };

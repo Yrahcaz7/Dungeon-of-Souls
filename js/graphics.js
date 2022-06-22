@@ -247,8 +247,8 @@ function foregrounds() {
 
 function playerGraphics() {
 	let x = 15, y = 30;
-	if (game.auraBlades >= 1) {
-		if (game.shield >= 1) {
+	if (game.auraBlades) {
+		if (game.shield) {
 			draw.image(icon.aura_blade, x + 23, y + 104);
 			draw.lore(x + 34, y + 112, game.auraBlades, "white", "left");
 		} else {
