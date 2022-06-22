@@ -29,7 +29,7 @@ String.prototype.title = function() {
 };
 
 const draw = {
-	// basic
+	// basic - first order
 	image(image, x = 0, y = 0, width = +image.width, height = +image.height) {
 		x = +x;
 		y = +y;
@@ -60,81 +60,11 @@ const draw = {
 		ctx.fillStyle = color;
 		ctx.fillRect(x * scale, y * scale, width * scale, height * scale);
 	},
-	// advanced
-	bars(x, y, health, maxHealth, shield, maxShield) {
-		x = +x; y = +y; health = +health; maxHealth = +maxHealth; shield = +shield; maxShield = +maxShield;
-		if ((!x && x !== 0) || (!y && y !== 0) || (!health && health !== 0) || !maxHealth) return;
-		let frame, percentage = health / maxHealth;
-		if (percentage < 0) frame = 0;
-		else if (percentage > 1) frame = 62;
-		else frame = percentage * 62;
-		if (health < 10 && maxHealth >= 10) {
-			health = "0" + health;
-			if (maxHealth >= 100) health = "0" + health;
-			if (maxHealth >= 1000) health = "0" + health;
-		} else if (health < 100 && maxHealth >= 100) {
-			health = "0" + health;
-			if (maxHealth >= 1000) health = "0" + health;
-		} else if (health < 1000 && maxHealth >= 1000) {
-			health = "0" + health;
-		};
-		draw.imageSector(bar.health, 0, Math.round(frame) * 11, 64, 12, x, y + 65, 64, 12);
-		draw.lore(x + 25, y + 67, health, "black", "left");
-		draw.lore(x + 34, y + 67, maxHealth, "black", "right");
-		if (!shield || !maxShield) return;
-		percentage = shield / maxShield;
-		if (percentage < 0) frame = 0;
-		else if (percentage > 1) frame = 62;
-		else frame = percentage * 62;
-		if (shield < 10 && maxShield >= 10) {
-			shield = "0" + shield;
-			if (maxShield >= 100) shield = "0" + shield;
-			if (maxShield >= 1000) shield = "0" + shield;
-		} else if (shield < 100 && maxShield >= 100) {
-			shield = "0" + shield;
-			if (maxShield >= 1000) shield = "0" + shield;
-		} else if (shield < 1000 && maxShield >= 1000) {
-			shield = "0" + shield;
-		};
-		draw.imageSector(bar.shield, 0, Math.round(frame) * 11, 64, 12, x, y + 76, 64, 12);
-		draw.lore(x + 25, y + 78, shield, "black", "left");
-		draw.lore(x + 34, y + 78, maxShield, "black", "right");
-	},
-	card(cardObject, index, y, selected = false, overrideX = NaN) {
-		let x = game.handPos[index], img = card.error, name = cardObject.name, type = cardObject.type;
-		overrideX = +overrideX;
-		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
-		if (name == "slash") img = card.slash;
-		else if (name == "block") img = card.block;
-		else if (name == "aura blade") img = card.aura_blade;
-		else console.error("card " + index + " is invalid type: " + name);
-		if (name != "error") draw.image(card.back, x + 2, y + 2);
-		if (type == "attack") draw.image(card.outline.attack, x + 3, y + 3);
-		else if (type == "curse") draw.image(card.outline.curse, x + 3, y + 3);
-		else if (type == "defense") draw.image(card.outline.defense, x + 3, y + 3);
-		else if (type == "magic") draw.image(card.outline.magic, x + 3, y + 3);
-		if (selected) {
-			if (cardObject.unplayable) draw.image(select.card_unplayable, x + 1, y + 1);
-			else draw.image(select.card_normal, x - 1, y - 1);
-		};
-		if (img == card.error) draw.image(card.error, x + 2, y + 2);
-		else draw.image(img, x + 7, y + 7);
-		if (cardObject.name.length >= 11) {
-			draw.lore(x + 32, y + 44, cardObject.name.title(), "black", "center", true);
-		} else {
-			draw.lore(x + 32, y + 42, cardObject.name.title(), "black", "center");
-		};
-		draw.lore(x + 6, y + 55, cardObject.text, "black", "right", true);
-		draw.lore(x + 33, y + 89.5, cardObject.rarity + "|" + cardObject.type, "black", "center", true);
-		if (!cardObject.unplayable) {
-			draw.image(card._energy, x, y);
-			draw.lore(x + 4, y + 2, cardObject.energyCost);
-		};
-	},
+	// advanced - second order (uses basic)
 	lore(x, y, string, color = "black", position = "right", small = false) {
-		if ((!x && x !== 0) || (!y && y !== 0) || string === null || string === undefined) return;
-		let img = letters.black, enters = 0, enterIndex = 0;
 		string = "" + string;
+		if ((!x && x !== 0) || (!y && y !== 0) || !string) return;
+		let img = letters.black, enters = 0, enterIndex = 0;
 		if (color == "red") img = letters.red;
 		else if (color == "white") img = letters.white;
 		else if (color == "fade_0") img = letters.fade[0];
@@ -183,6 +113,83 @@ const draw = {
 		draw.image(select.selector[1], x + width - 6, y - 2);
 		draw.image(select.selector[2], x - 2, y + height - 7);
 		draw.image(select.selector[3], x + width - 6, y + height - 7);
+	},
+	// third order (uses advanced and basic)
+	bars(x, y, health, maxHealth, shield, maxShield) {
+		x = +x;
+		y = +y;
+		health = +health;
+		maxHealth = +maxHealth;
+		shield = +shield;
+		maxShield = +maxShield;
+		if ((!x && x !== 0) || (!y && y !== 0) || (!health && health !== 0) || !maxHealth) return;
+		let frame, percentage = health / maxHealth;
+		if (percentage < 0) frame = 0;
+		else if (percentage > 1) frame = 62;
+		else frame = percentage * 62;
+		if (health < 10 && maxHealth >= 10) {
+			health = "0" + health;
+			if (maxHealth >= 100) health = "0" + health;
+			if (maxHealth >= 1000) health = "0" + health;
+		} else if (health < 100 && maxHealth >= 100) {
+			health = "0" + health;
+			if (maxHealth >= 1000) health = "0" + health;
+		} else if (health < 1000 && maxHealth >= 1000) {
+			health = "0" + health;
+		};
+		draw.imageSector(bar.health, 0, Math.round(frame) * 11, 64, 12, x, y + 65, 64, 12);
+		draw.lore(x + 25, y + 67, health, "black", "left");
+		draw.lore(x + 34, y + 67, maxHealth, "black", "right");
+		if (!shield || !maxShield) return;
+		percentage = shield / maxShield;
+		if (percentage < 0) frame = 0;
+		else if (percentage > 1) frame = 62;
+		else frame = percentage * 62;
+		if (shield < 10 && maxShield >= 10) {
+			shield = "0" + shield;
+			if (maxShield >= 100) shield = "0" + shield;
+			if (maxShield >= 1000) shield = "0" + shield;
+		} else if (shield < 100 && maxShield >= 100) {
+			shield = "0" + shield;
+			if (maxShield >= 1000) shield = "0" + shield;
+		} else if (shield < 1000 && maxShield >= 1000) {
+			shield = "0" + shield;
+		};
+		draw.imageSector(bar.shield, 0, Math.round(frame) * 11, 64, 12, x, y + 76, 64, 12);
+		draw.lore(x + 25, y + 78, shield, "black", "left");
+		draw.lore(x + 34, y + 78, maxShield, "black", "right");
+	},
+	card(cardObject, index, y, selected = false, overrideX = NaN) {
+		overrideX = +overrideX;
+		if (!cardObject || (!index && index !== 0) || (!y && y !== 0)) return;
+		let x = game.handPos[index], img = card.error, name = cardObject.name, type = cardObject.type;
+		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
+		if (name == "slash") img = card.slash;
+		else if (name == "block") img = card.block;
+		else if (name == "aura blade") img = card.aura_blade;
+		else console.error("card " + index + " is invalid type: " + name);
+		if (name != "error") draw.image(card.back, x + 2, y + 2);
+		if (type == "attack") draw.image(card.outline.attack, x + 3, y + 3);
+		else if (type == "curse") draw.image(card.outline.curse, x + 3, y + 3);
+		else if (type == "defense") draw.image(card.outline.defense, x + 3, y + 3);
+		else if (type == "magic") draw.image(card.outline.magic, x + 3, y + 3);
+		if (selected) {
+			if (cardObject.unplayable) draw.image(select.card_unplayable, x + 1, y + 1);
+			else draw.image(select.card_normal, x - 1, y - 1);
+		};
+		if (img == card.error) draw.image(card.error, x + 2, y + 2);
+		else draw.image(img, x + 7, y + 7);
+		if (cardObject.name.length >= 11) {
+			draw.lore(x + 32, y + 44, cardObject.name.title(), "black", "center", true);
+		} else {
+			draw.lore(x + 32, y + 42, cardObject.name.title(), "black", "center");
+		};
+		draw.lore(x + 6, y + 55, cardObject.text, "black", "right", true);
+		draw.lore(x + 33, y + 89.5, cardObject.rarity + "|" + cardObject.type, "black", "center", true);
+		if (!cardObject.unplayable) {
+			draw.image(card._energy, x, y);
+			draw.lore(x + 4, y + 2, cardObject.energyCost);
+		};
 	},
 };
 
