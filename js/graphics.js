@@ -374,30 +374,48 @@ function renderCards() {
 	};
 };
 
+function info(type, location = "player") {
+	if (type == "aura blades") {
+		if (location == "card") {
+			let x = game.handPos[game.select[1]], y = 146 - Math.floor(cardAnim[game.select[1]]);
+			draw.rect("#000000", x + 69, y, 75, 37);
+			draw.rect("#cccccc", x + 70, y + 1, 73, 35);
+			draw.lore(x + 71, y + 2, "Every time you attack,\none of your aura blades\nis used up for 10 + X\nextra damage, X being\nthe number of aura\nblades you have.", "black", "right", true);
+		} else {
+			let desc = "You have " + game.auraBlades + " aura blade";
+			if (game.auraBlades >= 2) desc += "s.";
+			else desc += ".";
+			draw.rect("#000000", 84, 70, desc.length * 3 + 3, 9);
+			draw.rect("#cccccc", 85, 71, desc.length * 3 + 1, 7);
+			draw.lore(86, 72, desc, "black", "right", true);
+			draw.rect("#000000", 84, 81, 75, 37);
+			draw.rect("#cccccc", 85, 82, 73, 35);
+			draw.lore(86, 83, "Every time you attack,\none of your aura blades\nis used up for 10 + X\nextra damage, X being\nthe number of aura\nblades you have.", "black", "right", true);
+		};
+	};
+};
+
 function target() {
 	if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") {
-        enemyType = game.enemies[game.select[1]].type;
-        pos = game.enemyPos[game.select[1]];
-        if (enemyType == "slime_small") {
-            draw.selector(pos[0] + 19, pos[1] + 35, 26, 29);
-            draw.lore(pos[0] + 32, pos[1] + 28, "small slime", "white", "center", true);
-        } else if (enemyType == "slime_big") {
-            draw.selector(pos[0] + 5, pos[1] + 25, 54, 39);
-            draw.lore(pos[0] + 32, pos[1] + 18, "big slime", "white", "center", true);
-        };
-    };
-	if (game.select[0] == "lookat_you") {
-        draw.selector(60, 72, 20, 39);
-		if (game.auraBlades) {
-			if (game.auraBlades == 1) {
-				draw.rect("#000000", 84, 70, 75, 25);
-				draw.rect("#cccccc", 85, 71, 73, 23);
-				draw.lore(86, 72, "You have 1 aura blade,\nwhich will boost your\nnext attack's damage by\n11.", "black", "right", true);
-			} else {
-				draw.rect("#000000", 84, 70, 75, 42);
-				draw.rect("#cccccc", 85, 71, 73, 40);
-				draw.lore(86, 72, "You have " + game.auraBlades + " aura blades,\nwhich will boost your\nnext "  + game.auraBlades + " attack's damage\nby 10 plus the number\nof aura blades you have.", "black", "right", true);
-			};
+		enemyType = game.enemies[game.select[1]].type;
+		pos = game.enemyPos[game.select[1]];
+		if (enemyType == "slime_small") {
+			draw.selector(pos[0] + 19, pos[1] + 35, 26, 29);
+			draw.lore(pos[0] + 32, pos[1] + 28, "small slime", "white", "center", true);
+		} else if (enemyType == "slime_big") {
+			draw.selector(pos[0] + 5, pos[1] + 25, 54, 39);
+			draw.lore(pos[0] + 32, pos[1] + 18, "big slime", "white", "center", true);
 		};
-    };
+	};
+	if (game.select[0] == "lookat_you") {
+		draw.selector(60, 72, 20, 39);
+		if (game.auraBlades) {
+			info("aura blades", "player");
+		};
+	};
+	if (game.select[0] == "hand") {
+		if (game.hand[game.select[1]].name == "aura blade") {
+			info("aura blades", "card");
+		};
+	};
 };
