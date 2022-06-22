@@ -25,7 +25,7 @@ var game = {
     state: "enter",
     turn: "none",
     select: ["none", 0],
-    enemyAtt: "none",
+    enemyAtt: new Card(),
     energy: 3,
     maxEnergy: 3,
     enemies: [],
@@ -40,7 +40,7 @@ var game = {
     auraBlades: 0,
     auraBladePos: 0,
     music: true,
-}, actionTimer = -1, notif = [-1, 0], hide = (game.select[0] == "help" || game.select[0] == "looker") && game.select[1];
+}, actionTimer = -1, notif = [-1, ""], hide = (game.select[0] == "help" || game.select[0] == "looker") && game.select[1];
 
 function hardReset() {
     localStorage.removeItem("Yrahcaz7/Dungeon-of-Souls/save");
