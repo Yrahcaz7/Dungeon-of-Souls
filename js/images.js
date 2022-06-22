@@ -113,9 +113,9 @@ letters.fade[1].src = "images/letters/fade_1.png";
 letters.fade[2].src = "images/letters/fade_2.png";
 
 // bars
-bar.health.src = "images/bar/health.png";
-bar.shield.src = "images/bar/shield.png";
-bar.energy.src = "images/bar/energy.png";
+bar.health.src = "images/bars/health.png";
+bar.shield.src = "images/bars/shield.png";
+bar.energy.src = "images/bars/energy.png";
 
 // selectors
 select.round.src = "images/select/round.png";
