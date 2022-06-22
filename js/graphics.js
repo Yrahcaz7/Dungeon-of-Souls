@@ -239,11 +239,16 @@ function foregrounds() {
 function playerGraphics() {
 	let x = 15, y = 30;
 	if (game.auraBlades >= 1) {
-		draw.image(icon.aura_blade, x + 23, y + 93);
+		if (game.shield >= 1) {
+			draw.image(icon.aura_blade, x + 23, y + 104);
+			draw.lore(x + 34, y + 112, game.auraBlades, "white", "left");
+		} else {
+			draw.image(icon.aura_blade, x + 23, y + 93);
+			draw.lore(x + 34, y + 101, game.auraBlades, "white", "left");
+		};
 		for (let blade = 1; blade <= game.auraBlades && blade <= 4; blade++) {
 			draw.image(player.aura_blade, x + game.auraBladePos[blade - 1][0], y + game.auraBladePos[blade - 1][1]);
 		};
-		draw.lore(x + 34, y + 101, game.auraBlades, "white", "left");
 	};
 	if (playerAnim[1] == "idle") {
 		draw.imageSector(player.idle, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
