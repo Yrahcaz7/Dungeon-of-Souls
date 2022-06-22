@@ -398,6 +398,9 @@ function info(type, location = "player") {
 	if (type == "aura blades") {
 		if (location == "card") {
 			let x = game.handPos[game.select[1]], y = 146 - Math.floor(cardAnim[game.select[1]]);
+			if (game.select[1] == game.hand.length - 1) {
+				x -= 146;
+			};
 			draw.rect("#000000", x + 69, y, 75, 37);
 			draw.rect("#cccccc", x + 70, y + 1, 73, 35);
 			draw.lore(x + 71, y + 2, "Every time you attack,\none of your aura blades\nis used up for 10 + X\nextra damage, X being\nthe number of aura\nblades you have.", "black", "right", true);
