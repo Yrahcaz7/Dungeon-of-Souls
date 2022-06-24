@@ -197,7 +197,7 @@ const startAnim = {
 	player(type) {
 		type = "" + type;
 		if (!type) return;
-		if (game.auraBlades) type += "_aura";
+		if (game.auraBlades && (type == "attack" || type == "attack_2")) type += "_aura";
 		playerAnim = [0, type];
 	},
 	enemy(index, type) {
