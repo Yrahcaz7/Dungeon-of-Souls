@@ -38,6 +38,7 @@ var game = {
     hand: [],
     handSize: 5,
     handPos: [],
+    prevCard: -1,
     activeCard: -1,
     discard: [],
     auraBlades: 0,
@@ -131,7 +132,7 @@ function playerTurn() {
     };
     if (action == "right") {
         if (game.select[0] == "lookat_you") {
-            game.select = ["hand", 0];
+            game.select = ["hand", game.prevCard];
             actionTimer = 1;
             return;
         };
@@ -260,6 +261,7 @@ function playerTurn() {
             };
             if (game.select[1] < 0) game.select[1] = 0;
             else if (game.select[1] >= game.hand.length - 1) game.select[1] = game.hand.length - 1;
+            game.prevCard = game.select[1];
         };
     };
     // attack enemy
@@ -287,7 +289,7 @@ function playerTurn() {
             damage += 10 + game.auraBlades;
         };
         game.enemies[game.select[1]].health -= damage;
-        game.select = ["hand", 0];
+        game.select = ["hand", game.prevCard - 1];
         game.enemyAtt = "none";
         actionTimer = 1;
         return;
@@ -303,7 +305,7 @@ function playerTurn() {
             actionTimer = 1;
             return;
         } else if (action == "down" && game.select[0] == "lookat_enemy") {
-            game.select = ["hand", game.hand.length - 1];
+            game.select = ["hand", game.prevCard];
             actionTimer = 1;
             return;
         };
