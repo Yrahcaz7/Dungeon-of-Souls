@@ -141,19 +141,20 @@ function playerTurn() {
     };
     // deck selection
     if (game.select[0] == "deck" && game.select[1]) {
-        if (action == "left" && game.cardSelect[0] > 0) {
+        let coor = game.cardSelect, len = game.deck.length;
+        if (action == "left" && coor[0] > 0) {
             game.cardSelect[0]--;
             actionTimer = 1;
             return;
-        } else if (action == "right" && game.cardSelect[0] < 5) {
+        } else if (action == "right" && coor[0] < 5 && (coor[0] < (len - 1) % 6 || coor[1] < Math.floor(len / 6))) {
             game.cardSelect[0]++;
             actionTimer = 1;
             return;
-        } else if (action == "up" && game.cardSelect[1] > 0) {
+        } else if (action == "up" && coor[1] > 0) {
             game.cardSelect[1]--;
             actionTimer = 1;
             return;
-        } else if (action == "down" && game.cardSelect[1] < Math.floor(game.deck.length / 6)) {
+        } else if (action == "down" && coor[1] < Math.floor(len / 6)) {
             game.cardSelect[1]++;
             actionTimer = 1;
             return;
