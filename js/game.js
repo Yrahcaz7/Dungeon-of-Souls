@@ -41,7 +41,7 @@ var game = {
     auraBladePos: 0,
     currentEffect: "none",
     music: true,
-}, actionTimer = -1, notif = [-1, ""], hide = (game.select[0] == "help" || game.select[0] == "looker") && game.select[1];
+}, actionTimer = -1, notif = [-1, ""], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck") && game.select[1];
 
 function hardReset() {
     localStorage.removeItem("Yrahcaz7/Dungeon-of-Souls/save");
@@ -106,7 +106,7 @@ function playerTurn() {
         actionTimer = 1;
         return;
     };
-    // select / deselect player, end turn, & deck
+    // select / deselect player and more extras
     if (action == "left" && game.select[0] == "hand" && !game.select[1]) {
         game.select = ["lookat_you", 0];
         actionTimer = 1;
@@ -138,11 +138,9 @@ function playerTurn() {
         return;
     };
     // activate / deactivate extras
-    if (action == "enter" && (game.select[0] == "help" || game.select[0] == "looker")) {
-        if (game.select[1] == 0) {
-            if (game.select[0] == "music") document.getElementById("music").play();
-            game.select[1] = 1;
-        } else game.select[1] = 0;
+    if (action == "enter" && (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck")) {
+        if (game.select[1] == 0) game.select[1] = 1;
+        else game.select[1] = 0;
         actionTimer = 2;
         return;
     };
@@ -341,6 +339,17 @@ const gameloop = setInterval(function() {
         draw.lore(1, 100, "How to Play:", "white");
         draw.lore(1, 149.5, "An ominous feeling...", "white");
         draw.lore(1, 12, text, "white", "right", true);
+	} else if (game.select[0] == "deck" && game.select[1]) {
+        draw.rect("#000000cc");
+        draw.lore(200, 1, "Deck", "white", "center");
+        draw.rect("#ffffff", 1, 12, 390, 1);
+        for (let x = 0, y = 0; x + (y * 6) < game.deck.length; x++) {
+            draw.card(game.deck[x + (y * 6)], 0, 15 + (y * 98), false, 2 + (x * 66));
+            if (x > 6) {
+                x = -1;
+                y++;
+            };
+        };
 	};
 }, 100), musicloop = setInterval(function() {
     let time = document.getElementById("music").currentTime;
