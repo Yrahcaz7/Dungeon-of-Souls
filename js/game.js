@@ -106,14 +106,34 @@ function playerTurn() {
         actionTimer = 1;
         return;
     };
-    // select / deselect player
-    if (action == "left" && game.select[0] == "hand" && game.select[1] == 0) {
+    // select / deselect player, end turn, & deck
+    if (action == "left" && game.select[0] == "hand" && !game.select[1]) {
         game.select = ["lookat_you", 0];
+        actionTimer = 1;
+        return;
+    };
+    if (action == "left" && game.select[0] == "lookat_you") {
+        game.select = ["end", 0];
+        actionTimer = 1;
+        return;
+    };
+    if ((action == "left" || action == "down") && game.select[0] == "end") {
+        game.select = ["deck", 0];
         actionTimer = 1;
         return;
     };
     if (action == "right" && game.select[0] == "lookat_you") {
         game.select = ["hand", 0];
+        actionTimer = 1;
+        return;
+    };
+    if (action == "right" && game.select[0] == "end") {
+        game.select = ["lookat_you", 0];
+        actionTimer = 1;
+        return;
+    };
+    if ((action == "right" || action == "up") && game.select[0] == "deck" && !game.select[1]) {
+        game.select = ["end", 0];
         actionTimer = 1;
         return;
     };
@@ -164,7 +184,7 @@ function playerTurn() {
     // select card
     if (game.select[0] == "hand") {
         if (!game.hand) {
-            game.select[1] = -1;
+            game.select = ["end", 0];
         } else {
             if (action == "left") {
                 game.select[1]--;

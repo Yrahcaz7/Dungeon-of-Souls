@@ -248,10 +248,10 @@ function foregrounds() {
 	if (!game.music) draw.imageSector(extra.music, 15, 0, 16, 16, 343, 3);
 	else draw.imageSector(extra.music, 0, 0, 16, 16, 343, 3);
 	if (game.select[0] == "music") draw.image(select.round, 342, 2);
-	draw.image(end, 3, 163);
+	draw.image(extra.end, 3, 163);
 	if (game.select[0] == "end") draw.image(select.round, 2, 162);
-	draw.image(deck, 3, 182);
-	if (game.select[0] == "deck") draw.image(select.deck, 2, 162);
+	draw.image(extra.deck, 3, 182);
+	if (game.select[0] == "deck") draw.image(select.deck, 2, 181);
     draw.lore(1, 1, "floor: " + game.floor, "red", "right");
 };
 

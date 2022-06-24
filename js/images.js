@@ -67,10 +67,12 @@ clock = {
     help: new Image,
     looker: new Image,
     music: new Image,
+    end: new Image,
+    deck: new Image,
 }, icon = {
     aura_blade: new Image,
 },
-end = new Image, deck = new Image, view = new Image, aura_blade = new Image; // other
+view = new Image, aura_blade = new Image; // other
 
 // player
 player.idle.src = "images/player/idle.png";
@@ -138,12 +140,12 @@ select.selector[3].src = "images/select/d_r.png";
 extra.help.src = "images/extras/help.png";
 extra.looker.src = "images/extras/looker.png";
 extra.music.src = "images/extras/music.png";
+extra.end.src = "images/extras/end.png";
+extra.deck.src = "images/extras/deck.png";
 
 // icons
 icon.aura_blade.src = "images/icons/aura_blade.png";
 
 // other
-end.src = "images/end.png";
-deck.src = "images/deck.png";
 view.src = "images/view.png";
 aura_blade.src = "images/aura_blade.png";
