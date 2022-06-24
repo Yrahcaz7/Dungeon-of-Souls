@@ -145,12 +145,24 @@ function playerTurn() {
     // deck selection
     if (game.select[0] == "deck" && game.select[1]) {
         let coor = game.cardSelect, len = game.deck.length;
-        if (action == "left" && coor[0] > 0) {
-            game.cardSelect[0]--;
+        if (action == "left") {
+            if (coor[0] > 0) {
+                game.cardSelect[0]--;
+            } else if (coor[1] > 0) {
+                game.cardSelect[0] = 5;
+                game.cardSelect[1]--;
+                game.deckMove = "up";
+            };
             actionTimer = 1;
             return;
-        } else if (action == "right" && coor[0] < 5 && (coor[0] < (len - 1) % 6 || coor[1] < Math.floor(len / 6))) {
-            game.cardSelect[0]++;
+        } else if (action == "right" && (coor[0] < (len - 1) % 6 || coor[1] < Math.floor(len / 6))) {
+            if (coor[0] < 5) {
+                game.cardSelect[0]++;
+            } else {
+                game.cardSelect[0] = 0;
+                game.cardSelect[1]++;
+                game.deckMove = "down";
+            };
             actionTimer = 1;
             return;
         } else if (action == "up" && coor[1] > 0) {
@@ -386,12 +398,12 @@ const gameloop = setInterval(function() {
             draw.card(cards[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66));
         };
         if (game.deckMove == "up") {
-            let speed = Math.round(((98 * selected[1]) - game.deckPos) / 20) - 5;
-            if (game.deckPos <= (98 * selected[1]) - 5) game.deckPos -= speed;
-            else if (game.deckPos >= (98 * selected[1]) + 5) game.deckPos += speed;
+            let speed = Math.abs(Math.round(((98 * selected[1]) - game.deckPos) / 20) - 5);
+            if (game.deckPos <= (98 * selected[1]) - 5) game.deckPos += speed;
+            else if (game.deckPos >= (98 * selected[1]) + 5) game.deckPos -= speed;
             else game.deckPos = (98 * selected[1]);
         } else if (game.deckMove == "down") {
-            let speed = Math.round(((98 * (selected[1] - 1)) + 11 - game.deckPos) / 20) + 5;
+            let speed = Math.abs(Math.round(((98 * (selected[1] - 1)) + 11 - game.deckPos) / 20) + 5);
             if (game.deckPos <= (98 * (selected[1] - 1)) + 11 - 5) game.deckPos += speed;
             else if (game.deckPos >= (98 * (selected[1] - 1)) + 12 + 5) game.deckPos -= speed;
             else game.deckPos = (98 * (selected[1] - 1)) + 11;
