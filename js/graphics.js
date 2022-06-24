@@ -356,6 +356,52 @@ function enemyGraphics() {
 	} else invNum = -1;
 };
 
+function helpGraphics() {
+	draw.rect("#000000cc");
+	draw.image(extra.help, 381, 3);
+	draw.image(select.round, 380, 2);
+	draw.lore(1, 1, "Dungeon of Souls", "white");
+	draw.lore(1, 23, "Storyline:", "white");
+	draw.lore(1, 67, "Controls:", "white");
+	draw.lore(1, 100, "How to Play:", "white");
+	draw.lore(1, 149.5, "An ominous feeling...", "white");
+	draw.lore(1, 12, text, "white", "right", true);
+};
+
+function deckGraphics() {
+	draw.rect("#000000cc");
+	let cards = game.deck, selected;
+	cards.cardSort();
+	for (let x = 0, y = 0; x + (y * 6) < cards.length; x++) {
+		if (x == game.cardSelect[0] && y == game.cardSelect[1]) {
+			selected = [x, y];
+		} else {
+			draw.card(cards[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66));
+		};
+		if (x >= 5) {
+			x = -1;
+			y++;
+		};
+	};
+	if (selected) {
+		draw.card(cards[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66));
+	};
+	if (game.deckMove == "up") {
+		let speed = Math.abs(Math.round(((98 * selected[1]) - game.deckPos) / 20) - 5);
+		if (game.deckPos <= (98 * selected[1]) - 5) game.deckPos += speed;
+		else if (game.deckPos >= (98 * selected[1]) + 5) game.deckPos -= speed;
+		else game.deckPos = (98 * selected[1]);
+	} else if (game.deckMove == "down") {
+		let speed = Math.abs(Math.round(((98 * (selected[1] - 1)) + 11 - game.deckPos) / 20) + 5);
+		if (game.deckPos <= (98 * (selected[1] - 1)) + 11 - 5) game.deckPos += speed;
+		else if (game.deckPos >= (98 * (selected[1] - 1)) + 12 + 5) game.deckPos -= speed;
+		else game.deckPos = (98 * (selected[1] - 1)) + 11;
+	};
+	draw.rect("#00000044", 0, 0, 400, 13);
+	draw.lore(200, 1, "Deck", "white", "center");
+	draw.rect("#ffffff", 1, 12, 398, 1);
+};
+
 function renderCards() {
     if (game.select[0] == "attack_enemy") {
         draw.card(game.enemyAtt, 0, 52, true, 104);
