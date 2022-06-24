@@ -154,7 +154,7 @@ function playerTurn() {
             game.cardSelect[1]--;
             actionTimer = 1;
             return;
-        } else if (action == "down" && coor[1] < Math.floor(len / 6)) {
+        } else if (action == "down" && coor[1] < Math.floor(len / 6) && (coor[0] < len % 6 || coor[1] < Math.floor(len / 6) - 1)) {
             game.cardSelect[1]++;
             actionTimer = 1;
             return;
@@ -257,7 +257,7 @@ function playerTurn() {
         actionTimer = 4;
         return;
     };
-    if (game.select[0] == "attack_fin" && actionTimer < 0) {
+    if (game.select[0] == "attack_fin") {
         let damage = 0;
         if (game.enemyAtt.name == "slash") {
             damage = 5;
