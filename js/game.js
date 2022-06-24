@@ -355,6 +355,12 @@ const gameloop = setInterval(function() {
             if (a.order > b.order) {
                 return 1;
             };
+            if (a.type < b.type) {
+                return -1;
+            };
+            if (a.type > b.type) {
+                return 1;
+            };
             if (a.name < b.name) {
                 return -1;
             };
