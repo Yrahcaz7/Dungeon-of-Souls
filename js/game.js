@@ -34,6 +34,7 @@ var game = {
     enemyIndex: 0,
     deck: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("aura blade")],
     deckPos: 0,
+    deckMove: "none",
     hand: [],
     handSize: 5,
     handPos: [],
@@ -152,10 +153,12 @@ function playerTurn() {
             return;
         } else if (action == "up" && coor[1] > 0) {
             game.cardSelect[1]--;
+            game.deckMove = "up";
             actionTimer = 1;
             return;
         } else if (action == "down" && coor[1] < Math.floor(len / 6) && (coor[0] < len % 6 || coor[1] < Math.floor(len / 6) - 1)) {
             game.cardSelect[1]++;
+            game.deckMove = "down";
             actionTimer = 1;
             return;
         };
@@ -394,7 +397,7 @@ const gameloop = setInterval(function() {
             if (x == game.cardSelect[0] && y == game.cardSelect[1]) {
                 selected = [x, y];
             } else {
-                draw.card(cards[x + (y * 6)], -1, 15 + (y * 98) - game.deckPos, false, 2 + (x * 66));
+                draw.card(cards[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66));
             };
             if (x >= 5) {
                 x = -1;
@@ -402,16 +405,18 @@ const gameloop = setInterval(function() {
             };
         };
         if (selected) {
-            draw.card(cards[selected[0] + (selected[1] * 6)], -1, 15 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66));
+            draw.card(cards[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66));
         };
-        if (selected[1] == 0) {
-            if (game.deckPos <= 0 - 5) game.deckPos += 5;
-            else if (game.deckPos >= 0 + 5) game.deckPos -= 5;
-            else game.deckPos = 0;
-        } else if (selected[1] >= 1) {
-            if (game.deckPos <= (98 * (selected[1] - 1)) + 12 - 5) game.deckPos += 5;
-            else if (game.deckPos >= (98 * (selected[1] - 1)) + 12 + 5) game.deckPos -= 5;
-            else game.deckPos = (98 * (selected[1] - 1)) + 12;
+        if (game.deckMove == "up") {
+            let speed = Math.round(((98 * selected[1]) - game.deckPos) / 20) - 5;
+            if (game.deckPos <= (98 * selected[1]) - 5) game.deckPos -= speed;
+            else if (game.deckPos >= (98 * selected[1]) + 5) game.deckPos += speed;
+            else game.deckPos = (98 * selected[1]);
+        } else if (game.deckMove == "down") {
+            let speed = Math.round(((98 * (selected[1] - 1)) + 11 - game.deckPos) / 20) + 5;
+            if (game.deckPos <= (98 * (selected[1] - 1)) + 11 - 5) game.deckPos += speed;
+            else if (game.deckPos >= (98 * (selected[1] - 1)) + 12 + 5) game.deckPos -= speed;
+            else game.deckPos = (98 * (selected[1] - 1)) + 11;
         };
         draw.rect("#00000044", 0, 0, 400, 13);
         draw.lore(200, 1, "Deck", "white", "center");
