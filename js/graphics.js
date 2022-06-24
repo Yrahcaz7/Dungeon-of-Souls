@@ -367,21 +367,15 @@ function renderCards() {
 		if (game.select[0] == "hand" && game.select[1] == index) {
 			temp = index;
 		} else {
+			if (cardAnim[index] > 0) cardAnim[index] -= 6 + Math.random();
+            if (cardAnim[index] < 0) cardAnim[index] = 0;
 			draw.card(card, index, 146 - Math.floor(cardAnim[index]));
 		};
 	};
 	if (temp != -1) {
-        draw.card(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]), true);
-        if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
+		if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
         if (cardAnim[temp] > 44) cardAnim[temp] = 44;
-    };
-    for (let index = 0; index < game.hand.length; index++) {
-        if (index == temp) {
-            continue;
-        } else {
-            if (cardAnim[index] > 0) cardAnim[index] -= 6 + Math.random();
-            if (cardAnim[index] < 0) cardAnim[index] = 0;
-        };
+        draw.card(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]), true);
     };
 	if (notif[0] != -1) {
 		let color = "red";

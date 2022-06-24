@@ -305,11 +305,11 @@ const gameloop = setInterval(function() {
     if (!hide) {
         playerGraphics();
         enemyGraphics();
-        target();
     };
     foregrounds();
     if (!hide) {
         renderCards();
+        target();
     };
     if (game.select[0] == "help" && game.select[1]) {
         draw.rect("#000000cc");
