@@ -25,6 +25,7 @@ var game = {
     state: "enter",
     turn: "none",
     select: ["none", 0],
+    cardSelect: [0, 0],
     enemyAtt: new Card(),
     energy: 3,
     maxEnergy: 3,
@@ -32,6 +33,7 @@ var game = {
     enemyPos: [],
     enemyIndex: 0,
     deck: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("aura blade")],
+    deckPos: 0,
     hand: [],
     handSize: 5,
     handPos: [],
@@ -136,6 +138,26 @@ function playerTurn() {
         game.select = ["end", 0];
         actionTimer = 1;
         return;
+    };
+    // deck selection
+    if (game.select[0] == "deck" && game.select[1]) {
+        if (action == "left" && game.cardSelect[0] > 0) {
+            game.cardSelect[0]--;
+            actionTimer = 1;
+            return;
+        } else if (action == "right" && game.cardSelect[0] < 5) {
+            game.cardSelect[0]++;
+            actionTimer = 1;
+            return;
+        } else if (action == "up" && game.cardSelect[1] > 0) {
+            game.cardSelect[1]--;
+            actionTimer = 1;
+            return;
+        } else if (action == "down" && game.cardSelect[1] < Math.floor(game.deck.length / 6)) {
+            game.cardSelect[1]++;
+            actionTimer = 1;
+            return;
+        };
     };
     // activate / deactivate extras
     if (action == "enter" && (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck")) {
@@ -341,9 +363,7 @@ const gameloop = setInterval(function() {
         draw.lore(1, 12, text, "white", "right", true);
 	} else if (game.select[0] == "deck" && game.select[1]) {
         draw.rect("#000000cc");
-        draw.lore(200, 1, "Deck", "white", "center");
-        draw.rect("#ffffff", 1, 12, 398, 1);
-        let cards = game.deck;
+        let cards = game.deck, selected;
         cards.sort(function compareFn(a, b) {
             if (a.rarity == "error") a.order = -1;
             if (b.rarity == "error") b.order = -1;
@@ -370,12 +390,31 @@ const gameloop = setInterval(function() {
             return 0;
         });
         for (let x = 0, y = 0; x + (y * 6) < cards.length; x++) {
-            draw.card(cards[x + (y * 6)], -1, 15 + (y * 98), false, 2 + (x * 66));
+            if (x == game.cardSelect[0] && y == game.cardSelect[1]) {
+                selected = [x, y];
+            } else {
+                draw.card(cards[x + (y * 6)], -1, 15 + (y * 98) - game.deckPos, false, 2 + (x * 66));
+            };
             if (x >= 5) {
                 x = -1;
                 y++;
             };
         };
+        if (selected) {
+            draw.card(cards[selected[0] + (selected[1] * 6)], -1, 15 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66));
+        };
+        if (selected[1] == 0) {
+            if (game.deckPos <= 0 - 5) game.deckPos += 5;
+            else if (game.deckPos >= 0 + 5) game.deckPos -= 5;
+            else game.deckPos = 0;
+        } else if (selected[1] >= 1) {
+            if (game.deckPos <= (98 * (selected[1] - 1)) + 12 - 5) game.deckPos += 5;
+            else if (game.deckPos >= (98 * (selected[1] - 1)) + 12 + 5) game.deckPos -= 5;
+            else game.deckPos = (98 * (selected[1] - 1)) + 12;
+        };
+        draw.rect("#00000044", 0, 0, 400, 13);
+        draw.lore(200, 1, "Deck", "white", "center");
+        draw.rect("#ffffff", 1, 12, 398, 1);
 	};
 }, 100), musicloop = setInterval(function() {
     let time = document.getElementById("music").currentTime;
