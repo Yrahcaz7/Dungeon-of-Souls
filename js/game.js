@@ -371,7 +371,7 @@ const gameloop = setInterval(function() {
     foregrounds();
     if (!hide) {
         renderCards();
-        target();
+        if (game.select[0] != "deck" || !game.select[1]) target();
     };
     if (game.select[0] == "help" && game.select[1]) {
         helpGraphics();

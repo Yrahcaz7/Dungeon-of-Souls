@@ -386,6 +386,7 @@ function deckGraphics() {
 	if (selected) {
 		draw.card(cards[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66));
 	};
+	target();
 	if (game.deckMove == "up") {
 		let speed = Math.abs(Math.round(((98 * selected[1]) - game.deckPos) / 20) - 5);
 		if (game.deckPos <= (98 * selected[1]) - 5) game.deckPos += speed;
@@ -444,7 +445,7 @@ function info(type, location = "player") {
 			draw.rect("#000000", x + 69, y, 75, 37);
 			draw.rect("#cccccc", x + 70, y + 1, 73, 35);
 			draw.lore(x + 71, y + 2, "Every time you attack,\none of your aura blades\nis used up for 10 + X\nextra damage, X being\nthe number of aura\nblades you have.", "black", "right", true);
-		} else {
+		} else if (location == "player") {
 			let desc = "You have " + game.auraBlades + " aura blade";
 			if (game.auraBlades >= 2) desc += "s.";
 			else desc += ".";
@@ -454,6 +455,14 @@ function info(type, location = "player") {
 			draw.rect("#000000", 84, 81, 75, 37);
 			draw.rect("#cccccc", 85, 82, 73, 35);
 			draw.lore(86, 83, "Every time you attack,\none of your aura blades\nis used up for 10 + X\nextra damage, X being\nthe number of aura\nblades you have.", "black", "right", true);
+		} else if (location == "deck") {
+			let x = 2 + (game.cardSelect[0] * 66), y = 14 + (game.cardSelect[1] * 98) - game.deckPos;
+			if (game.cardSelect[0] >= 4) {
+				x -= 146;
+			};
+			draw.rect("#000000", x + 69, y, 75, 37);
+			draw.rect("#cccccc", x + 70, y + 1, 73, 35);
+			draw.lore(x + 71, y + 2, "Every time you attack,\none of your aura blades\nis used up for 10 + X\nextra damage, X being\nthe number of aura\nblades you have.", "black", "right", true);
 		};
 	};
 };
@@ -479,6 +488,11 @@ function target() {
 	if (game.select[0] == "hand") {
 		if (game.hand[game.select[1]].name == "aura blade") {
 			info("aura blades", "card");
+		};
+	};
+	if (game.select[0] == "deck") {
+		if (game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)].name == "aura blade") {
+			info("aura blades", "deck");
 		};
 	};
 };
