@@ -158,7 +158,7 @@ function playerTurn() {
         } else if (action == "right" && (coor[0] < (len - 1) % 6 || coor[1] < Math.floor(len / 6))) {
             if (coor[0] < 5) {
                 game.cardSelect[0]++;
-            } else {
+            } else if (coor[0] + (coor[1] * 6) < len - 1) {
                 game.cardSelect[0] = 0;
                 game.cardSelect[1]++;
                 game.deckMove = "down";
