@@ -368,31 +368,7 @@ const gameloop = setInterval(function() {
 	} else if (game.select[0] == "deck" && game.select[1]) {
         draw.rect("#000000cc");
         let cards = game.deck, selected;
-        cards.sort(function compareFn(a, b) {
-            if (a.rarity == "error") a.order = -1;
-            if (b.rarity == "error") b.order = -1;
-            if (a.rarity == "starter") a.order = 0;
-            if (b.rarity == "starter") b.order = 0;
-            if (a.order < b.order) {
-                return -1;
-            };
-            if (a.order > b.order) {
-                return 1;
-            };
-            if (a.type < b.type) {
-                return -1;
-            };
-            if (a.type > b.type) {
-                return 1;
-            };
-            if (a.name < b.name) {
-                return -1;
-            };
-            if (a.name > b.name) {
-                return 1;
-            };
-            return 0;
-        });
+        cards.cardSort();
         for (let x = 0, y = 0; x + (y * 6) < cards.length; x++) {
             if (x == game.cardSelect[0] && y == game.cardSelect[1]) {
                 selected = [x, y];

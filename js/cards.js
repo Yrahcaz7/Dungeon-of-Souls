@@ -69,3 +69,35 @@ class Card {
         };
     };
 };
+
+Array.prototype.cardSort = function() {
+    for (let item in this) {
+        if (item instanceof Card) continue;
+        else return;
+    };
+    this.sort(function compareFn(a, b) {
+        if (a.rarity == "error") a.order = -1;
+        if (b.rarity == "error") b.order = -1;
+        if (a.rarity == "starter") a.order = 0;
+        if (b.rarity == "starter") b.order = 0;
+        if (a.order < b.order) {
+            return -1;
+        };
+        if (a.order > b.order) {
+            return 1;
+        };
+        if (a.type < b.type) {
+            return -1;
+        };
+        if (a.type > b.type) {
+            return 1;
+        };
+        if (a.name < b.name) {
+            return -1;
+        };
+        if (a.name > b.name) {
+            return 1;
+        };
+        return 0;
+    });
+};
