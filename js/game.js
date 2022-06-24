@@ -342,10 +342,30 @@ const gameloop = setInterval(function() {
 	} else if (game.select[0] == "deck" && game.select[1]) {
         draw.rect("#000000cc");
         draw.lore(200, 1, "Deck", "white", "center");
-        draw.rect("#ffffff", 1, 12, 390, 1);
-        for (let x = 0, y = 0; x + (y * 6) < game.deck.length; x++) {
-            draw.card(game.deck[x + (y * 6)], 0, 15 + (y * 98), false, 2 + (x * 66));
-            if (x > 6) {
+        draw.rect("#ffffff", 1, 12, 398, 1);
+        let cards = game.deck;
+        cards.sort(function compareFn(a, b) {
+            if (a.rarity == "error") a.order = -1;
+            if (b.rarity == "error") b.order = -1;
+            if (a.rarity == "starter") a.order = 0;
+            if (b.rarity == "starter") b.order = 0;
+            if (a.order < b.order) {
+                return -1;
+            };
+            if (a.order > b.order) {
+                return 1;
+            };
+            if (a.name < b.name) {
+                return -1;
+            };
+            if (a.name > b.name) {
+                return 1;
+            };
+            return 0;
+        });
+        for (let x = 0, y = 0; x + (y * 6) < cards.length; x++) {
+            draw.card(cards[x + (y * 6)], -1, 15 + (y * 98), false, 2 + (x * 66));
+            if (x >= 5) {
                 x = -1;
                 y++;
             };

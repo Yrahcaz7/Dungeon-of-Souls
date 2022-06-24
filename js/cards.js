@@ -25,6 +25,7 @@ class Card {
         this.energyCost = 0;
         this.level = 0;
         this.unplayable = false;
+        this.order = -1;
         // error
         if (name != "slash" && name != "block" && name != "aura blade" && name != "error") {
             name = "error";
