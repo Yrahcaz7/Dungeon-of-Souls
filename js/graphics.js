@@ -370,13 +370,12 @@ function helpGraphics() {
 
 function deckGraphics() {
 	draw.rect("#000000cc");
-	let cards = game.deck, selected;
-	cards.cardSort();
-	for (let x = 0, y = 0; x + (y * 6) < cards.length; x++) {
+	let theCards = randomize(game.deck), selected;
+	for (let x = 0, y = 0; x + (y * 6) < theCards.length; x++) {
 		if (x == game.cardSelect[0] && y == game.cardSelect[1]) {
 			selected = [x, y];
 		} else {
-			draw.card(cards[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66));
+			draw.card(theCards[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66));
 		};
 		if (x >= 5) {
 			x = -1;
@@ -384,7 +383,7 @@ function deckGraphics() {
 		};
 	};
 	if (selected) {
-		draw.card(cards[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66));
+		draw.card(theCards[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66));
 	};
 	target();
 	if (game.deckMove == "up") {
@@ -490,7 +489,7 @@ function target() {
 			info("aura blades", "card");
 		};
 	};
-	if (game.select[0] == "deck") {
+	if (game.select[0] == "deck" && game.select[1] == 1) {
 		if (game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)].name == "aura blade") {
 			info("aura blades", "deck");
 		};

@@ -71,10 +71,7 @@ class Card {
 };
 
 Array.prototype.cardSort = function() {
-    for (let item in this) {
-        if (!item.name || !item.rarity || !item.type) return;
-    };
-    this.sort(function compareFn(a, b) {
+    return this.sort(function compareFn(a, b) {
         if (a.rarity == "error") a.order = -1;
         if (b.rarity == "error") b.order = -1;
         if (a.rarity == "starter") a.order = 0;

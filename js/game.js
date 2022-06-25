@@ -66,7 +66,8 @@ function randomize(array) {
 function shuffleDeck(...newCards) {
     if (newCards) {
         for (let card of newCards) {
-            game.deck.push(new Card("" + card));
+            if (card instanceof Object) game.deck.push(card);
+            else game.deck.push(new Card("" + card));
         };
     };
     game.deck = randomize(game.deck);
