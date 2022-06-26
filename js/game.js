@@ -385,7 +385,13 @@ const gameloop = setInterval(function() {
         helpGraphics();
 	} else if (game.select[0] == "deck" && game.select[1]) {
         deckGraphics();
-	};
+	} else if (game.select[0] == "discard" && game.select[1]) {
+        deckGraphics("discard");
+	} else {
+        game.cardSelect = [0, 0];
+        deckPos = 0;
+        deckMove = "none";
+    };
 }, 100), musicloop = setInterval(function() {
     let time = document.getElementById("music").currentTime;
     if (game.music) {

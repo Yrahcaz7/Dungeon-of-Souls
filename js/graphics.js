@@ -370,9 +370,10 @@ function helpGraphics() {
 	draw.lore(1, 12, text, "white", "right", true);
 };
 
-function deckGraphics() {
+function deckGraphics(overrideName = "deck") {
 	draw.rect("#000000cc");
 	let tempDeck = JSON.parse(game.deckProxy).cardSort(), selected;
+	if (overrideName == "discard") tempDeck = JSON.parse(game.discardProxy).cardSort();
 	for (let x = 0, y = 0; x + (y * 6) < tempDeck.length; x++) {
 		if (x == game.cardSelect[0] && y == game.cardSelect[1]) {
 			selected = [x, y];
@@ -400,7 +401,7 @@ function deckGraphics() {
 		else game.deckPos = (98 * (selected[1] - 1)) + 11;
 	};
 	draw.rect("#00000044", 0, 0, 400, 13);
-	draw.lore(200, 1, "Deck", "white", "center");
+	draw.lore(200, 1, overrideName.title(), "white", "center");
 	draw.rect("#ffffff", 1, 12, 398, 1);
 };
 
