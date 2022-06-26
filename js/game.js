@@ -448,7 +448,14 @@ const gameloop = setInterval(function() {
 	} else if (game.select[0] == "help" && game.select[1]) {
         infoGraphics();
 	} else if (game.select[0] == "deck" && game.select[1]) {
-        deckGraphics();
+        if (game.deckProxy != "[]") {
+            deckGraphics();
+        } else {
+            draw.rect("#000000cc");
+            draw.rect("#00000044", 0, 0, 400, 13);
+	        draw.lore(200, 1, "Deck", "white", "center");
+	        draw.rect("#ffffff", 1, 12, 398, 1);
+        };
 	} else if (game.select[0] == "discard" && game.select[1]) {
         if (game.discardProxy != "[]") {
             deckGraphics("discard");
