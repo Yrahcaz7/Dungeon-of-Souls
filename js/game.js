@@ -211,6 +211,12 @@ function selection() {
         return;
     };
     // select / deselect player and more extras
+    if (action == "up" && game.select[0] == "discard" && !game.select[1]) {
+        if (!game.hand[0]) game.select = ["lookat_enemy", 0];
+        else game.select = ["hand", game.prevCard];
+        actionTimer = 1;
+        return;
+    };
     if (action == "left") {
         if (game.select[0] == "hand" && !game.select[1]) {
             game.select = ["lookat_you", 0];
@@ -223,7 +229,8 @@ function selection() {
             return;
         };
         if (game.select[0] == "discard" && !game.select[1]) {
-            game.select = ["hand", game.prevCard];
+            if (!game.hand[0]) game.select = ["lookat_enemy", 0];
+            else game.select = ["hand", game.prevCard];
             actionTimer = 1;
             return;
         };
@@ -235,7 +242,8 @@ function selection() {
     };
     if (action == "right") {
         if (game.select[0] == "lookat_you") {
-            game.select = ["hand", game.prevCard];
+            if (!game.hand[0]) game.select = ["lookat_enemy", game.enemies.length - 1];
+            else game.select = ["hand", game.prevCard];
             actionTimer = 1;
             return;
         };
@@ -382,16 +390,19 @@ function selection() {
     };
     // select enemy
     if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") {
-        if (action == "left" && game.select[1] < game.enemies.length - 1) {
-            game.select[1]++;
+        if (action == "left") {
+            if (game.select[1] < game.enemies.length - 1) game.select[1]++;
+            else game.select = ["lookat_you", 0];
             actionTimer = 1;
             return;
-        } else if (action == "right" && game.select[1]) {
-            game.select[1]--;
+        } else if (action == "right") {
+            if (game.select[1]) game.select[1]--;
+            else game.select = ["discard", 0];
             actionTimer = 1;
             return;
         } else if (action == "down" && game.select[0] == "lookat_enemy") {
-            game.select = ["hand", game.prevCard];
+            if (!game.hand[0]) game.select = ["discard", 0];
+            else game.select = ["hand", game.prevCard];
             actionTimer = 1;
             return;
         };
