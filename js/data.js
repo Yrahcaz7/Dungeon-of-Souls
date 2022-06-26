@@ -38,7 +38,7 @@ const text = ""
 	+ "find the fragment of time.\n"
 	+ "Else, at the edge of the sky,\n"
 	+ "you shall eternally die.",
-logTitles = ["Version 1.1 - Manifestation - (in progress)", "Version 1.0 - Realization - (302 total commits)", "Version 0.1 - Desolation - (107 commits)"],
+logTitles = ["Version 0.3 - Manifestation - (in progress)", "Version 0.2 - Realization - (302 total commits)", "Version 0.1 - Desolation - (107 commits)"],
 changelog = ""
 	+ " - you can now end your turn (you couldn't before)\n"
 	+ " - added the changelog to the game info\n"
@@ -62,33 +62,30 @@ function updateData() {
 	// hide
 	hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "discard") && game.select[1];
 	// enemyPos
-	let number = game.enemies.length;
-	if (number == 1) game.enemyPos = [[400 - 105, 50]];
-	else if (number == 2) game.enemyPos = [[400 - 70, 50 - 5], [400 - 140, 50 + 20]];
-	else if (number == 3) game.enemyPos = [[400 - 70, 50], [400 - 140, 50 + 32], [400 - 140, 50 - 32]];
-	else if (number == 4) game.enemyPos = [[400 - 70, 50], [400 - 140, 50 + 32], [400 - 140, 50 - 32], [400 - 210, 50]];
-	else if (number == 5) game.enemyPos = [[400 - 70, 50], [400 - 140, 50 + 32], [400 - 140, 50 - 32], [400 - 210, 50 + 32], [400 - 210, 50 - 32]];
-	else if (number == 6) game.enemyPos = [[400 - 70, 50], [400 - 140, 50 + 32], [400 - 140, 50 - 32], [400 - 210, 50 + 64], [400 - 210, 50], [400 - 210, 50 - 64]];
+	let number = game.enemies.length, x = 400, y = 50;
+	if (number == 1) game.enemyPos = [[x - 105, y]];
+	else if (number == 2) game.enemyPos = [[x - 70, y - 5], [x - 140, y + 20]];
+	else if (number == 3) game.enemyPos = [[x - 70, y], [x - 140, y + 32], [x - 140, y - 32]];
+	else if (number == 4) game.enemyPos = [[x - 70, y], [x - 140, y + 32], [x - 140, y - 32], [x - 210, y]];
+	else if (number == 5) game.enemyPos = [[x - 70, y], [x - 140, y + 32], [x - 140, y - 32], [x - 210, y + 32], [x - 210, y - 32]];
+	else if (number == 6) game.enemyPos = [[x - 70, y], [x - 140, y + 32], [x - 140, y - 32], [x - 210, y + 64], [x - 210, y], [x - 210, y - 64]];
 	// handPos
 	number = game.hand.length;
-	if (number == 1) game.handPos = [198 - 32];
-	else if (number == 2) game.handPos = [198 - 64 - 1, 198 + 1];
-	else if (number == 3) game.handPos = [198 - 96 - 2, 198 - 32, 198 + 32 + 2];
-	else if (number == 4) game.handPos = [198 - 128 - 3, 198 - 64 - 1, 198 + 1, 198 + 64 + 3];
-	else if (number == 5) game.handPos = [198 - 160 - 4, 198 - 96 - 2, 198 - 32, 198 + 32 + 2, 198 + 96 + 4];
-	else if (number == 6) game.handPos = [198 - 192 + 10, 198 - 128 + 6, 198 - 64 + 2, 198 - 2, 198 + 64 - 6, 198 + 128 - 10];
-	else if (number == 7) game.handPos = [198 - 224 + 42, 198 - 160 + 28, 198 - 96 + 14, 198 - 32, 198 + 32 - 14, 198 + 96 - 28, 198 + 160 - 42];
-	else if (number == 8) game.handPos = [198 - 256 + 77, 198 - 192 + 55, 198 - 128 + 33, 198 - 64 + 11, 198 - 11, 198 + 64 - 33, 198 + 128 - 55, 198 + 192 - 77];
-	else if (number == 9) game.handPos = [198 - 288 + 104, 198 - 224 + 78, 198 - 160 + 52, 198 - 96 + 26, 198 - 32, 198 + 32 - 26, 198 + 96 - 52, 198 + 160 - 78, 198 + 224 - 104];
-	else if (number == 10) game.handPos = [198 - 320 + 135, 198 - 256 + 105, 198 - 192 + 75, 198 - 128 + 45, 198 - 64 + 15, 198 - 15, 198 + 64 - 45, 198 + 128 - 75, 198 + 192 - 105, 198 + 256 - 135];
-	else if (number == 11) game.handPos = [198 - 352 + 170, 198 - 288 + 136, 198 - 224 + 102, 198 - 160 + 68, 198 - 96 + 34, 198 - 32, 198 + 32 - 34, 198 + 96 - 68, 198 + 160 - 102, 198 + 224 - 136, 198 + 288 - 170];
-	else if (number == 12) game.handPos = [198 - 384 + 198, 198 - 320 + 162, 198 - 256 + 126, 198 - 192 + 90, 198 - 128 + 54, 198 - 64 + 18, 198 - 18, 198 + 64 - 54, 198 + 128 - 90, 198 + 192 - 126, 198 + 256 - 162, 198 + 320 - 198];
+	x = 198;
+	if (number == 1) game.handPos = [x - 32];
+	else if (number == 2) game.handPos = [x - 64 - 1, x + 1];
+	else if (number == 3) game.handPos = [x - 96 - 2, x - 32, x + 32 + 2];
+	else if (number == 4) game.handPos = [x - 128 - 3, x - 64 - 1, x + 1, x + 64 + 3];
+	else if (number == 5) game.handPos = [x - 160 - 4, x - 96 - 2, x - 32, x + 32 + 2, x + 96 + 4];
+	else if (number == 6) game.handPos = [x - 192 + 10, x - 128 + 6, x - 64 + 2, x - 2, x + 64 - 6, x + 128 - 10];
+	else if (number == 7) game.handPos = [x - 224 + 42, x - 160 + 28, x - 96 + 14, x - 32, x + 32 - 14, x + 96 - 28, x + 160 - 42];
+	else if (number == 8) game.handPos = [x - 256 + 77, x - 192 + 55, x - 128 + 33, x - 64 + 11, x - 11, x + 64 - 33, x + 128 - 55, x + 192 - 77];
+	else if (number == 9) game.handPos = [x - 288 + 104, x - 224 + 78, x - 160 + 52, x - 96 + 26, x - 32, x + 32 - 26, x + 96 - 52, x + 160 - 78, x + 224 - 104];
+	else if (number == 10) game.handPos = [x - 320 + 135, x - 256 + 105, x - 192 + 75, x - 128 + 45, x - 64 + 15, x - 15, x + 64 - 45, x + 128 - 75, x + 192 - 105, x + 256 - 135];
+	else if (number == 11) game.handPos = [x - 352 + 170, x - 288 + 136, x - 224 + 102, x - 160 + 68, x - 96 + 34, x - 32, x + 32 - 34, x + 96 - 68, x + 160 - 102, x + 224 - 136, x + 288 - 170];
+	else if (number == 12) game.handPos = [x - 384 + 198, x - 320 + 162, x - 256 + 126, x - 192 + 90, x - 128 + 54, x - 64 + 18, x - 18, x + 64 - 54, x + 128 - 90, x + 192 - 126, x + 256 - 162, x + 320 - 198];
 	// AuraBladePos
-	number = game.auraBlades;
-	if (number == 1) game.auraBladePos = [[65, 10]];
-	else if (number == 2) game.auraBladePos = [[65, 10], [80, 25]];
-	else if (number == 3) game.auraBladePos = [[65, 10], [80, 25], [40, 0]];
-	else game.auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]];
+	game.auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]];
 	for (let num = 0; num < game.auraBladePos.length && num <= 4; num++) {
 		game.auraBladePos[num][1] += Math.round(bladeFloat[num * 2]);
 		if (bladeFloat[num * 2 + 1] == "up") bladeFloat[num * 2] += (Math.random() + 0.5) * 0.05;

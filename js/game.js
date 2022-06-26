@@ -44,7 +44,7 @@ var game = {
     discard: [],
     discardProxy: "",
     auraBlades: 0,
-    auraBladePos: 0,
+    auraBladePos: [[65, 10], [80, 25], [40, 0], [25, 35]],
     currentEffect: "none",
     music: true,
 }, actionTimer = -1, notif = [-1, ""], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck") && game.select[1];
