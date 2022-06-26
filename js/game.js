@@ -159,8 +159,9 @@ function playerTurn() {
         return;
     };
     // deck selection
-    if (game.select[0] == "deck" && game.select[1]) {
+    if ((game.select[0] == "deck" || game.select[0] == "discard") && game.select[1]) {
         let coor = game.cardSelect, len = game.deck.length;
+        if (game.select[0] == "discard") len = game.discard.length;
         if (action == "left") {
             if (coor[0] > 0) {
                 game.cardSelect[0]--;
