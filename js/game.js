@@ -95,9 +95,13 @@ function drawHand() {
 function enterBattle() {
     game.state = "battle";
     shuffleDeck();
+    startTurn();
+};
+
+function startTurn() {
     drawHand();
-    game.energy = game.maxEnergy;
     game.turn = "player";
+    game.energy = game.maxEnergy;
 };
 
 function playerTurn() {

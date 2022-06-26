@@ -39,7 +39,7 @@ const text = "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-So
 	+ "find the fragment of time.\n"
 	+ "Else, at the edge of the sky,\n"
 	+ "you shall eternally die.",
-logTitles = ["Version 1.0 - 302 total commits", "Version 0.1 - 107 total commits"],
+logTitles = ["Version 1.0 - 305 total commits", "Version 0.1 - 107 total commits"],
 changelog = ""
 	+ " - many optimizations including 2 new classes\n"
 	+ " - a lot more cool visuals and animations\n"
