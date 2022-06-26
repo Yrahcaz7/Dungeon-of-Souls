@@ -496,4 +496,9 @@ function target() {
 			info("aura blades", "deck");
 		};
 	};
+	if (game.select[0] == "discard" && game.select[1] == 1) {
+		if (JSON.parse(game.discardProxy).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].name == "aura blade") {
+			info("aura blades", "deck");
+		};
+	};
 };

@@ -44,7 +44,7 @@ var bladeFloat = [0, "up", 2.5, "up", 3, "down", 0.5, "down"];
 
 function updateData() {
 	// hide
-	hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck") && game.select[1];
+	hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "discard") && game.select[1];
     // enemyPos
 	let number = game.enemies.length;
 	if (number == 1) game.enemyPos = [[400 - 105, 50]];
@@ -80,6 +80,9 @@ function updateData() {
 		if (bladeFloat[num * 2] >= 4) bladeFloat[num * 2 + 1] = "down";
 		else if (bladeFloat[num * 2] <= 0) bladeFloat[num * 2 + 1] = "up";
 	};
-	// other
+	// proxies
 	game.deckProxy = JSON.stringify(game.deck);
+	game.discardProxy = JSON.stringify(game.discard);
+	// other
+	if (game.select[0] == "hand") game.prevCard = game.select[1];
 };

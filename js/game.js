@@ -42,6 +42,7 @@ var game = {
     prevCard: -1,
     activeCard: -1,
     discard: [],
+    discardProxy: "",
     auraBlades: 0,
     auraBladePos: 0,
     currentEffect: "none",
@@ -124,6 +125,11 @@ function playerTurn() {
             actionTimer = 1;
             return;
         };
+        if (game.select[0] == "discard" && !game.select[1]) {
+            game.select = ["hand", game.prevCard];
+            actionTimer = 1;
+            return;
+        };
     };
     if ((action == "left" || action == "down") && game.select[0] == "end") {
         game.select = ["deck", 0];
@@ -138,6 +144,11 @@ function playerTurn() {
         };
         if (game.select[0] == "end") {
             game.select = ["lookat_you", 0];
+            actionTimer = 1;
+            return;
+        };
+        if (game.select[0] == "hand" && game.select[1] == game.hand.length - 1) {
+            game.select = ["discard", 0];
             actionTimer = 1;
             return;
         };
@@ -183,7 +194,7 @@ function playerTurn() {
         };
     };
     // activate / deactivate extras
-    if (action == "enter" && (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck")) {
+    if (action == "enter" && (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "discard")) {
         if (game.select[1] == 0) game.select[1] = 1;
         else game.select[1] = 0;
         actionTimer = 2;
@@ -234,12 +245,8 @@ function playerTurn() {
                 actionTimer = 1;
                 return;
             } else if (action == "right") {
-                if (game.select[1] < game.hand.length - 1) {
-                    game.select[1]++;
-                    actionTimer = 1;
-                } else {
-                    game.select[1] = 0;
-                };
+                game.select[1]++;
+                actionTimer = 1;
                 return;
             } else if (action == "up") {
                 let to = -1, distance = -1;
@@ -261,7 +268,6 @@ function playerTurn() {
             };
             if (game.select[1] < 0) game.select[1] = 0;
             else if (game.select[1] >= game.hand.length - 1) game.select[1] = game.hand.length - 1;
-            game.prevCard = game.select[1];
         };
     };
     // attack enemy
