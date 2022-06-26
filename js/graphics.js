@@ -1,19 +1,19 @@
 /*
-    Dungeon of Souls
-    Copyright (C) 2022 Yrahcaz7
+	Dungeon of Souls
+	Copyright (C) 2022 Yrahcaz7
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <https://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -242,7 +242,7 @@ function foregrounds() {
 	draw.image(view);
 	draw.image(extra.help, 381, 3);
 	if (game.select[0] == "help") draw.image(select.round, 380, 2);
-    if (game.select[0] == "looker" && game.select[1] == 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 362, 3);
+	if (game.select[0] == "looker" && game.select[1] == 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 362, 3);
 	else draw.imageSector(extra.looker, 0, 0, 16, 16, 362, 3);
 	if (game.select[0] == "looker") draw.image(select.round, 361, 2);
 	if (!game.music) draw.imageSector(extra.music, 15, 0, 16, 16, 343, 3);
@@ -254,7 +254,7 @@ function foregrounds() {
 	if (game.select[0] == "deck") draw.image(select.deck, 2, 181);
 	draw.image(extra.discard, 383, 182);
 	if (game.select[0] == "discard") draw.image(select.discard, 382, 181);
-    draw.lore(1, 1, "floor: " + game.floor, "red", "right");
+	draw.lore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
 function playerGraphics() {
@@ -324,19 +324,19 @@ function enemyGraphics() {
 		game.enemies.splice(6);
 	};
 	for (let index = 0; index < game.enemies.length; index++) {
-        let enemy = game.enemies[index], pos = game.enemyPos[index];
-        if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
-        if (index !== invNum) {
-            if (enemy.type == "slime_big") {
-                draw.imageSector(slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
-            } else if (enemy.type == "slime_small") {
-                draw.imageSector(slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
-            };
-        };
-        enemyAnim[index] += (Math.random() + 0.5) * 0.1;
-        draw.bars(pos[0], pos[1], enemy.health, enemy.maxHealth, enemy.shield, enemy.maxShield);
-    };
-    if (tempAnim[3] == -1) return;
+		let enemy = game.enemies[index], pos = game.enemyPos[index];
+		if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
+		if (index !== invNum) {
+			if (enemy.type == "slime_big") {
+				draw.imageSector(slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
+			} else if (enemy.type == "slime_small") {
+				draw.imageSector(slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
+			};
+		};
+		enemyAnim[index] += (Math.random() + 0.5) * 0.1;
+		draw.bars(pos[0], pos[1], enemy.health, enemy.maxHealth, enemy.shield, enemy.maxShield);
+	};
+	if (tempAnim[3] == -1) return;
 	let pos = game.enemyPos[tempAnim[3]];
 	if (tempAnim[1] == "slime_small_launch") {
 		if (tempAnim[0] >= 10) {
@@ -415,10 +415,10 @@ function deckGraphics(overrideName = "deck") {
 };
 
 function renderCards() {
-    if (game.select[0] == "attack_enemy") {
-        draw.card(game.enemyAtt, 0, 52, true, 104);
-    };
-    if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") return;
+	if (game.select[0] == "attack_enemy") {
+		draw.card(game.enemyAtt, 0, 52, true, 104);
+	};
+	if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") return;
 	let temp = -1;
 	for (let index = 0; index < game.hand.length; index++) {
 		let card = game.hand[index];
@@ -426,15 +426,15 @@ function renderCards() {
 			temp = index;
 		} else {
 			if (cardAnim[index] > 0) cardAnim[index] -= 6 + Math.random();
-            if (cardAnim[index] < 0) cardAnim[index] = 0;
+			if (cardAnim[index] < 0) cardAnim[index] = 0;
 			draw.card(card, index, 146 - Math.floor(cardAnim[index]));
 		};
 	};
 	if (temp != -1) {
 		if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
-        if (cardAnim[temp] > 44) cardAnim[temp] = 44;
-        draw.card(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]), true);
-    };
+		if (cardAnim[temp] > 44) cardAnim[temp] = 44;
+		draw.card(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]), true);
+	};
 	if (notif[0] != -1) {
 		let color = "red";
 		if (notif[1] >= 9) color = "fade_2";
