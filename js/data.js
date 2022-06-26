@@ -80,4 +80,6 @@ function updateData() {
 		if (bladeFloat[num * 2] >= 4) bladeFloat[num * 2 + 1] = "down";
 		else if (bladeFloat[num * 2] <= 0) bladeFloat[num * 2 + 1] = "up";
 	};
+	// other
+	game.deckProxy = JSON.stringify(game.deck);
 };

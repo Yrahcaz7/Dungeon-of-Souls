@@ -370,12 +370,12 @@ function helpGraphics() {
 
 function deckGraphics() {
 	draw.rect("#000000cc");
-	let theCards = randomize(game.deck), selected;
-	for (let x = 0, y = 0; x + (y * 6) < theCards.length; x++) {
+	let tempDeck = JSON.parse(game.deckProxy).cardSort(), selected;
+	for (let x = 0, y = 0; x + (y * 6) < tempDeck.length; x++) {
 		if (x == game.cardSelect[0] && y == game.cardSelect[1]) {
 			selected = [x, y];
 		} else {
-			draw.card(theCards[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66));
+			draw.card(tempDeck[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66));
 		};
 		if (x >= 5) {
 			x = -1;
@@ -383,7 +383,7 @@ function deckGraphics() {
 		};
 	};
 	if (selected) {
-		draw.card(theCards[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66));
+		draw.card(tempDeck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66));
 	};
 	target();
 	if (game.deckMove == "up") {

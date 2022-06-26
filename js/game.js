@@ -33,6 +33,7 @@ var game = {
     enemyPos: [],
     enemyIndex: 0,
     deck: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("aura blade")],
+    deckProxy: "",
     deckPos: 0,
     deckMove: "none",
     hand: [],
