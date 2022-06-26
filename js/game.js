@@ -195,8 +195,14 @@ function playerTurn() {
         };
     };
     // activate / deactivate extras
-    if (action == "enter" && (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "discard")) {
+    if (action == "enter" && (game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "discard")) {
         if (game.select[1] == 0) game.select[1] = 1;
+        else game.select[1] = 0;
+        actionTimer = 2;
+        return;
+    };
+    if (action == "enter" && game.select[0] == "help") {
+        if (game.select[1] <= 1) game.select[1]++;
         else game.select[1] = 0;
         actionTimer = 2;
         return;

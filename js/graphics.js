@@ -360,14 +360,21 @@ function enemyGraphics() {
 
 function helpGraphics() {
 	draw.rect("#000000cc");
-	draw.image(extra.help, 381, 3);
-	draw.image(select.round, 380, 2);
-	draw.lore(1, 1, "Dungeon of Souls", "white");
-	draw.lore(1, 23, "Storyline:", "white");
-	draw.lore(1, 67, "Controls:", "white");
-	draw.lore(1, 100, "How to Play:", "white");
-	draw.lore(1, 149.5, "An ominous feeling...", "white");
-	draw.lore(1, 12, text, "white", "right", true);
+		draw.image(extra.help, 381, 3);
+		draw.image(select.round, 380, 2);
+	if (game.select[1] == 2) {
+		draw.lore(1, 1, "Dungeon of Souls - Changelog", "white");
+		draw.lore(1, 17.5, logTitles[0], "white");
+		draw.lore(1, 72.5, logTitles[1], "white");
+		draw.lore(1, 28.5, changelog, "white", "right", true);
+	} else {
+		draw.lore(1, 1, "Dungeon of Souls - Overview", "white");
+		draw.lore(1, 23, "Storyline:", "white");
+		draw.lore(1, 67, "Controls:", "white");
+		draw.lore(1, 100, "How to Play:", "white");
+		draw.lore(1, 149.5, "An ominous feeling...", "white");
+		draw.lore(1, 12, text, "white", "right", true);
+	};
 };
 
 function deckGraphics(overrideName = "deck") {
