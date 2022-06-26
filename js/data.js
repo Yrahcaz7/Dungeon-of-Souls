@@ -1,19 +1,19 @@
 /*
-    Dungeon of Souls
-    Copyright (C) 2022 Yrahcaz7
+	Dungeon of Souls
+	Copyright (C) 2022 Yrahcaz7
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <https://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 const text = "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-Souls\".\n"
@@ -38,14 +38,27 @@ const text = "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-So
 	+ "When the hands align,\n"
 	+ "find the fragment of time.\n"
 	+ "Else, at the edge of the sky,\n"
-	+ "you shall eternally die."
+	+ "you shall eternally die.",
+logTitles = ["Version 1.0 - 302 total commits", "Version 0.1 - 107 total commits"],
+changelog = ""
+	+ " - many optimizations including 2 new classes\n"
+	+ " - a lot more cool visuals and animations\n"
+	+ " - some new options and a help page\n"
+	+ " - added custom music, made by myself\n"
+	+ " - you can now view your deck and discard\n"
+	+ " - a new card, with a totally new effect\n"
+	+ " - even more things that I didn't list here\n"
+	+ "\n\n\n"
+	+ " - started making the game in my spare time\n"
+	+ " - still needs a lot of polishing and such\n"
+	+ " - next update will probably make it more playable";
 
 var bladeFloat = [0, "up", 2.5, "up", 3, "down", 0.5, "down"];
 
 function updateData() {
 	// hide
 	hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "discard") && game.select[1];
-    // enemyPos
+	// enemyPos
 	let number = game.enemies.length;
 	if (number == 1) game.enemyPos = [[400 - 105, 50]];
 	else if (number == 2) game.enemyPos = [[400 - 70, 50 - 5], [400 - 140, 50 + 20]];
@@ -54,7 +67,7 @@ function updateData() {
 	else if (number == 5) game.enemyPos = [[400 - 70, 50], [400 - 140, 50 + 32], [400 - 140, 50 - 32], [400 - 210, 50 + 32], [400 - 210, 50 - 32]];
 	else if (number == 6) game.enemyPos = [[400 - 70, 50], [400 - 140, 50 + 32], [400 - 140, 50 - 32], [400 - 210, 50 + 64], [400 - 210, 50], [400 - 210, 50 - 64]];
 	// handPos
-    number = game.hand.length;
+	number = game.hand.length;
 	if (number == 1) game.handPos = [198 - 32];
 	else if (number == 2) game.handPos = [198 - 64 - 1, 198 + 1];
 	else if (number == 3) game.handPos = [198 - 96 - 2, 198 - 32, 198 + 32 + 2];
