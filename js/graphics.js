@@ -360,21 +360,22 @@ function enemyGraphics() {
 
 function infoGraphics() {
 	draw.rect("#000000cc");
-		draw.image(extra.help, 381, 3);
-		draw.image(select.round, 380, 2);
+	draw.image(extra.help, 381, 3);
+	draw.image(select.round, 380, 2);
+	draw.lore(1, 12, "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-Souls\"", "red", "right", true);
 	if (game.select[1] == 2) {
-		draw.lore(1, 1, "Dungeon of Souls - Changelog", "white");
-		draw.lore(1, 17.5, logTitles[0], "white");
-		draw.lore(1, 50.5, logTitles[1], "white");
-		draw.lore(1, 105.5, logTitles[2], "white");
-		draw.lore(1, 28.5, changelog, "white", "right", true);
+		draw.lore(1, 1, "Dungeon of Souls - Changelog", "red");
+		draw.lore(1, 23, logTitles[0], "white");
+		draw.lore(1, 56, logTitles[1], "white");
+		draw.lore(1, 111, logTitles[2], "white");
+		draw.lore(1, 34, changelog, "white", "right", true);
 	} else {
-		draw.lore(1, 1, "Dungeon of Souls - Overview", "white");
+		draw.lore(1, 1, "Dungeon of Souls - Overview", "red");
 		draw.lore(1, 23, "Storyline:", "white");
 		draw.lore(1, 67, "Controls:", "white");
 		draw.lore(1, 100, "How to Play:", "white");
 		draw.lore(1, 149.5, "An ominous feeling...", "white");
-		draw.lore(1, 12, text, "white", "right", true);
+		draw.lore(1, 34, text, "white", "right", true);
 	};
 };
 

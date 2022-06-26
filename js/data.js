@@ -16,8 +16,7 @@
 	along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const text = "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-Souls\".\n"
-	+ "\n\n\n"
+const text = ""
 	+ "You have been trapped in this dungeon as long as you can remember.\n"
 	+ "You are determined to get out, so you pick up some armour and start climbing up the floors.\n"
 	+ "As you go higher, you get closer to the exit, but the monsters get stronger.\n"
