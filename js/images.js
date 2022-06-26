@@ -62,6 +62,7 @@ clock = {
     card_normal: new Image,
     card_unplayable: new Image,
     deck: new Image,
+    discard: new Image,
     selector: [new Image, new Image, new Image, new Image],
 }, extra = {
     help: new Image,
@@ -69,6 +70,7 @@ clock = {
     music: new Image,
     end: new Image,
     deck: new Image,
+    discard: new Image,
 }, icon = {
     aura_blade: new Image,
 },
@@ -131,6 +133,7 @@ select.round.src = "images/select/round.png";
 select.card_normal.src = "images/select/card_normal.png";
 select.card_unplayable.src = "images/select/card_unplayable.png";
 select.deck.src = "images/select/deck.png";
+select.discard.src = "images/select/discard.png";
 select.selector[0].src = "images/select/u_l.png";
 select.selector[1].src = "images/select/u_r.png";
 select.selector[2].src = "images/select/d_l.png";
@@ -142,6 +145,7 @@ extra.looker.src = "images/extras/looker.png";
 extra.music.src = "images/extras/music.png";
 extra.end.src = "images/extras/end.png";
 extra.deck.src = "images/extras/deck.png";
+extra.discard.src = "images/extras/discard.png";
 
 // icons
 icon.aura_blade.src = "images/icons/aura_blade.png";

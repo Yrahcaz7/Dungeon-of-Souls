@@ -252,6 +252,8 @@ function foregrounds() {
 	if (game.select[0] == "end") draw.image(select.round, 2, 162);
 	draw.image(extra.deck, 3, 182);
 	if (game.select[0] == "deck") draw.image(select.deck, 2, 181);
+	draw.image(extra.discard, 383, 182);
+	if (game.select[0] == "discard") draw.image(select.discard, 382, 181);
     draw.lore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
