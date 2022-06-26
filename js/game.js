@@ -442,37 +442,37 @@ const gameloop = setInterval(function() {
         let x = 140, y = 86;
         draw.rect("#00000088");
         draw.rect("#000000", x, y, 120, 22);
-		draw.rect("#cccccc", x + 1, y + 1, 120 - 2, 22 - 2);
-		draw.lore(x + 2, y + 2, "Are you sure you want to end your turn?", "black", "right", true);
+        draw.rect("#cccccc", x + 1, y + 1, 120 - 2, 22 - 2);
+        draw.lore(x + 2, y + 2, "Are you sure you want to end your turn?", "black", "right", true);
         if (!game.select[1]) draw.rect("#ffffff", x + 1, y + 7, 23, 14);
         else draw.rect("#ffffff", x + 23, y + 7, 17, 14);
         draw.rect("#000000", x + 2, y + 8, 21, 12);
-		draw.rect("#cccccc", x + 3, y + 9, 21 - 2, 12 - 2);
-		draw.lore(x + 4, y + 10, "YES");
+        draw.rect("#cccccc", x + 3, y + 9, 21 - 2, 12 - 2);
+        draw.lore(x + 4, y + 10, "YES");
         draw.rect("#000000", x + 24, y + 8, 15, 12);
-		draw.rect("#cccccc", x + 25, y + 9, 15 - 2, 12 - 2);
-		draw.lore(x + 26, y + 10, "NO");
-	} else if (game.select[0] == "help" && game.select[1]) {
+        draw.rect("#cccccc", x + 25, y + 9, 15 - 2, 12 - 2);
+        draw.lore(x + 26, y + 10, "NO");
+    } else if (game.select[0] == "help" && game.select[1]) {
         infoGraphics();
-	} else if (game.select[0] == "deck" && game.select[1]) {
+    } else if (game.select[0] == "deck" && game.select[1]) {
         if (game.deckProxy != "[]") {
             deckGraphics();
         } else {
             draw.rect("#000000cc");
             draw.rect("#00000044", 0, 0, 400, 13);
-	        draw.lore(200, 1, "Deck", "white", "center");
-	        draw.rect("#ffffff", 1, 12, 398, 1);
+            draw.lore(200, 1, "Deck", "white", "center");
+            draw.rect("#ffffff", 1, 12, 398, 1);
         };
-	} else if (game.select[0] == "discard" && game.select[1]) {
+    } else if (game.select[0] == "discard" && game.select[1]) {
         if (game.discardProxy != "[]") {
             deckGraphics("discard");
         } else {
             draw.rect("#000000cc");
             draw.rect("#00000044", 0, 0, 400, 13);
-	        draw.lore(200, 1, "Discard", "white", "center");
-	        draw.rect("#ffffff", 1, 12, 398, 1);
+            draw.lore(200, 1, "Discard", "white", "center");
+            draw.rect("#ffffff", 1, 12, 398, 1);
         };
-	} else {
+    } else {
         game.cardSelect = [0, 0];
         deckPos = 0;
         deckMove = "none";
