@@ -102,6 +102,19 @@ function startTurn() {
     drawHand();
     game.turn = "player";
     game.energy = game.maxEnergy;
+    game.select = ["hand", 0];
+};
+
+function endTurn() {
+    if (game.hand.length >= 1) {
+        let iteration = 0;
+        for (let index = 0; index < game.hand.length; iteration++) {
+            game.discard.push(game.hand[index]);
+            game.hand.splice(index, 1);
+            if (iteration >= 100) break;
+        };
+    };
+    game.turn = "enemy";
 };
 
 function playerTurn() {
@@ -109,6 +122,21 @@ function playerTurn() {
     actionTimer--;
     if (actionTimer > -1) return;
     if (!actionTimer || actionTimer < -1) actionTimer = -1;
+    // confirmation
+    if (game.select[0] == "confirm_end") {
+        if (action == "left" && game.select[1]) {
+            game.select[1] = 0;
+            actionTimer = 1;
+        } else if (action == "right" && !game.select[1]) {
+            game.select[1] = 1;
+            actionTimer = 1;
+        } else if (action == "enter") {
+            if (!game.select[1]) endTurn();
+            game.select = ["end", 0];
+            actionTimer = 2;
+        };
+        return;
+    };
     // select hand
     if (game.select[0] == "none") game.select = ["hand", 0];
     // select extras
@@ -219,6 +247,12 @@ function playerTurn() {
             document.getElementById("music").play();
             game.music = true;
         };
+        actionTimer = 2;
+        return;
+    };
+    if (action == "enter" && game.select[0] == "end") {
+        if (game.energy >= 1 && game.hand.length >= 1) game.select = ["confirm_end", 0];
+        else endTurn();
         actionTimer = 2;
         return;
     };
@@ -397,7 +431,21 @@ const gameloop = setInterval(function() {
         renderCards();
         if (game.select[0] != "deck" || !game.select[1]) target();
     };
-    if (game.select[0] == "help" && game.select[1]) {
+    if (game.select[0] == "confirm_end") {
+        let x = 140, y = 86;
+        draw.rect("#00000088");
+        draw.rect("#000000", x, y, 120, 22);
+		draw.rect("#cccccc", x + 1, y + 1, 120 - 2, 22 - 2);
+		draw.lore(x + 2, y + 2, "Are you sure you want to end your turn?", "black", "right", true);
+        if (!game.select[1]) draw.rect("#ffffff", x + 1, y + 7, 23, 14);
+        else draw.rect("#ffffff", x + 23, y + 7, 17, 14);
+        draw.rect("#000000", x + 2, y + 8, 21, 12);
+		draw.rect("#cccccc", x + 3, y + 9, 21 - 2, 12 - 2);
+		draw.lore(x + 4, y + 10, "YES");
+        draw.rect("#000000", x + 24, y + 8, 15, 12);
+		draw.rect("#cccccc", x + 25, y + 9, 15 - 2, 12 - 2);
+		draw.lore(x + 26, y + 10, "NO");
+	} else if (game.select[0] == "help" && game.select[1]) {
         helpGraphics();
 	} else if (game.select[0] == "deck" && game.select[1]) {
         deckGraphics();
