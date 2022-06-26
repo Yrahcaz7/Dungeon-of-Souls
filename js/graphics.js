@@ -490,7 +490,7 @@ function target() {
 		};
 	};
 	if (game.select[0] == "deck" && game.select[1] == 1) {
-		if (game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)].name == "aura blade") {
+		if (JSON.parse(game.deckProxy).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].name == "aura blade") {
 			info("aura blades", "deck");
 		};
 	};
