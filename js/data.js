@@ -39,8 +39,12 @@ const text = "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-So
 	+ "find the fragment of time.\n"
 	+ "Else, at the edge of the sky,\n"
 	+ "you shall eternally die.",
-logTitles = ["Version 1.0 - 305 total commits", "Version 0.1 - 107 total commits"],
+logTitles = ["Version 1.1 - in progress", "Version 1.0 - 302 total commits", "Version 0.1 - 107 total commits"],
 changelog = ""
+	+ " - you can now end your turn (you couldn't before)\n"
+	+ " - added the changelog to the game info\n"
+	+ " - and more things coming soon!\n"
+	+ "\n\n\n"
 	+ " - many optimizations including 2 new classes\n"
 	+ " - a lot more cool visuals and animations\n"
 	+ " - some new options and a help page\n"

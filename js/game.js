@@ -446,7 +446,7 @@ const gameloop = setInterval(function() {
 		draw.rect("#cccccc", x + 25, y + 9, 15 - 2, 12 - 2);
 		draw.lore(x + 26, y + 10, "NO");
 	} else if (game.select[0] == "help" && game.select[1]) {
-        helpGraphics();
+        infoGraphics();
 	} else if (game.select[0] == "deck" && game.select[1]) {
         deckGraphics();
 	} else if (game.select[0] == "discard" && game.select[1]) {
