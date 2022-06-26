@@ -349,6 +349,11 @@ function playerTurn() {
 };
 
 const gameloop = setInterval(function() {
+    // bugs
+    if (!canvas || !ctx) {
+        console.error("Canvas not loaded properly. Please reload page if problem persists.");
+        return;
+    };
     // clear
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     // update data
@@ -387,7 +392,14 @@ const gameloop = setInterval(function() {
 	} else if (game.select[0] == "deck" && game.select[1]) {
         deckGraphics();
 	} else if (game.select[0] == "discard" && game.select[1]) {
-        deckGraphics("discard");
+        if (game.discardProxy != "[]") {
+            deckGraphics("discard");
+        } else {
+            draw.rect("#000000cc");
+            draw.rect("#00000044", 0, 0, 400, 13);
+	        draw.lore(200, 1, "Discard", "white", "center");
+	        draw.rect("#ffffff", 1, 12, 398, 1);
+        };
 	} else {
         game.cardSelect = [0, 0];
         deckPos = 0;
