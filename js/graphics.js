@@ -241,19 +241,19 @@ function backgrounds() {
 function foregrounds() {
 	draw.image(view);
 	draw.image(extra.help, 381, 3);
-	if (game.select[0] == "help") draw.image(select.round, 380, 2);
 	if (game.select[0] == "looker" && game.select[1] == 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 362, 3);
 	else draw.imageSector(extra.looker, 0, 0, 16, 16, 362, 3);
-	if (game.select[0] == "looker") draw.image(select.round, 361, 2);
 	if (!game.music) draw.imageSector(extra.music, 15, 0, 16, 16, 343, 3);
 	else draw.imageSector(extra.music, 0, 0, 16, 16, 343, 3);
-	if (game.select[0] == "music") draw.image(select.round, 342, 2);
 	draw.image(extra.end, 3, 163);
-	if (game.select[0] == "end") draw.image(select.round, 2, 162);
 	draw.image(extra.deck, 3, 182);
-	if (game.select[0] == "deck") draw.image(select.deck, 2, 181);
 	draw.image(extra.discard, 383, 182);
-	if (game.select[0] == "discard") draw.image(select.discard, 382, 181);
+	if (game.select[0] == "help") draw.image(select.round, 380, 2);
+	else if (game.select[0] == "looker") draw.image(select.round, 361, 2);
+	else if (game.select[0] == "music") draw.image(select.round, 342, 2);
+	else if (game.select[0] == "end") draw.image(select.round, 2, 162);
+	else if (game.select[0] == "deck") draw.image(select.deck, 2, 181);
+	else if (game.select[0] == "discard") draw.image(select.discard, 382, 181);
 	draw.lore(1, 1, "floor: " + game.floor, "red", "right");
 };
 
@@ -275,33 +275,27 @@ function playerGraphics() {
 		draw.imageSector(player.idle, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 10) playerAnim[0] = 0;
-	};
-	if (playerAnim[1] == "attack") {
+	} else if (playerAnim[1] == "attack") {
 		draw.imageSector(player.attack, Math.floor(playerAnim[0]) * 120, 0, 120, 84, x, y, 120, 84);
 		playerAnim[0]++;
 		if (playerAnim[0] >= 4) playerAnim = [0, "idle"];
-	};
-	if (playerAnim[1] == "attack_aura") {
+	} else if (playerAnim[1] == "attack_aura") {
 		draw.imageSector(player.attack_aura, Math.floor(playerAnim[0]) * 120, 0, 120, 84, x, y, 120, 84);
 		playerAnim[0]++;
 		if (playerAnim[0] >= 4) playerAnim = [0, "idle"];
-	};
-	if (playerAnim[1] == "attack_2") {
+	} else if (playerAnim[1] == "attack_2") {
 		draw.imageSector(player.attack_2, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0]++;
 		if (playerAnim[0] >= 6) playerAnim = [0, "idle"];
-	};
-	if (playerAnim[1] == "attack_2_aura") {
+	} else if (playerAnim[1] == "attack_2_aura") {
 		draw.imageSector(player.attack_2_aura, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0]++;
 		if (playerAnim[0] >= 6) playerAnim = [0, "idle"];
-	};
-	if (playerAnim[1] == "hit") {
+	} else if (playerAnim[1] == "hit") {
 		draw.imageSector(player.hit, 0, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.5;
 		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
-	};
-	if (playerAnim[1] == "shield") {
+	} else if (playerAnim[1] == "shield") {
 		draw.imageSector(player.shield, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 3) playerAnim[0] = 2;
@@ -489,24 +483,20 @@ function target() {
 			draw.selector(pos[0] + 5, pos[1] + 25, 54, 39);
 			draw.lore(pos[0] + 32, pos[1] + 18, "big slime", "white", "center", true);
 		};
-	};
-	if (game.select[0] == "lookat_you") {
+	} else if (game.select[0] == "lookat_you") {
 		draw.selector(60, 72, 20, 39);
 		if (game.auraBlades) {
 			info("aura blades", "player");
 		};
-	};
-	if (game.select[0] == "hand") {
+	} else if (game.select[0] == "hand") {
 		if (game.hand[game.select[1]].name == "aura blade") {
 			info("aura blades", "card");
 		};
-	};
-	if (game.select[0] == "deck" && game.select[1] == 1) {
+	} else if (game.select[0] == "deck" && game.select[1] == 1) {
 		if (JSON.parse(game.deckProxy).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].name == "aura blade") {
 			info("aura blades", "deck");
 		};
-	};
-	if (game.select[0] == "discard" && game.select[1] == 1) {
+	} else if (game.select[0] == "discard" && game.select[1] == 1) {
 		if (JSON.parse(game.discardProxy).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].name == "aura blade") {
 			info("aura blades", "deck");
 		};
