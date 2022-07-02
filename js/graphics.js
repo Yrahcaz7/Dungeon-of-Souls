@@ -62,6 +62,8 @@ const draw = {
 	},
 	// advanced - second order (uses basic)
 	lore(x, y, string, color = "black", position = "right", small = false) {
+		x = +x;
+		y = +y;
 		string = "" + string;
 		if ((!x && x !== 0) || (!y && y !== 0) || !string) return;
 		let img = letters.black, enters = 0, enterIndex = 0;
@@ -160,6 +162,10 @@ const draw = {
 		draw.lore(x + 34, y + 78, maxShield, "black", "right");
 	},
 	card(cardObject, index, y, selected = false, overrideX = NaN) {
+		if (!(cardObject instanceof Object)) cardObject = new Card("" + cardObject);
+		index = +index;
+		y = +y;
+		selected = !!selected;
 		overrideX = +overrideX;
 		if (!cardObject || (!index && index !== 0) || (!y && y !== 0)) return;
 		let x = game.handPos[index], img = card.error, name = cardObject.name, type = cardObject.type;
@@ -478,13 +484,17 @@ function target() {
 		pos = game.enemyPos[game.select[1]];
 		if (enemyType == "slime_small") {
 			draw.selector(pos[0] + 19, pos[1] + 35, 26, 29);
-			draw.lore(pos[0] + 32, pos[1] + 28, "small slime", "white", "center", true);
+			draw.lore(pos[0] + 32, pos[1] + 27.5, "small slime", "white", "center", true);
 		} else if (enemyType == "slime_big") {
 			draw.selector(pos[0] + 5, pos[1] + 25, 54, 39);
-			draw.lore(pos[0] + 32, pos[1] + 18, "big slime", "white", "center", true);
+			draw.lore(pos[0] + 32, pos[1] + 17.5, "big slime", "white", "center", true);
 		};
 	} else if (game.select[0] == "lookat_you") {
 		draw.selector(60, 72, 20, 39);
+		if (game.character == "knight") {
+			if (game.unlockedCharStage == 0) draw.lore(70, 64.5, "the forgotten one", "white", "center", true);
+			else if (game.unlockedCharStage == 1) draw.lore(70, 64.5, "the true knight", "white", "center", true);
+		};
 		if (game.auraBlades) {
 			info("aura blades", "player");
 		};

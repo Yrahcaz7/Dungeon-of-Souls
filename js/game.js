@@ -17,6 +17,8 @@
 */
 
 var game = {
+    character: "knight",
+    unlockedCharStage: 0,
     health: 60,
     maxHealth: 60,
     shield: 0,
@@ -324,7 +326,7 @@ function selection() {
         actionTimer = 2;
         return;
     };
-    if (action == "enter" && game.select[0] == "end") {
+    if (action == "enter" && game.select[0] == "end" && game.turn == "player") {
         let confirm = false;
         if (game.hand.length >= 1) {
             for (let i = 0; i < game.hand.length; i++) {
