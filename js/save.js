@@ -19,13 +19,19 @@
 const id = "Yrahcaz7/Dungeon-of-Souls/save";
 
 function save() {
-	localStorage.setItem(id, btoa(JSON.stringify(game)));
+	let proxy = btoa(JSON.stringify(game));
+	localStorage.setItem(id + "/" + game.saveNum, proxy);
 };
 
-function load() {
-	let get = localStorage.getItem(id);
-	if (get !== null || get !== undefined) {
+function load(saveNum = 0) {
+	let get = localStorage.getItem(id + "/" + saveNum);
+	if (get) {
 		Object.assign(game, JSON.parse(atob(get)));
+		if (saveNum !== 0) {
+			localStorage.setItem(id + "/" + game.saveNum, localStorage.getItem(id + "/0"));
+			game.saveNum = 0;
+			save();
+		};
 	};
 };
 
@@ -46,4 +52,6 @@ function importSave() {
 	window.location.reload();
 };
 
-window.onbeforeunload = () => {save()};
+window.onbeforeunload = () => {
+	save();
+};
