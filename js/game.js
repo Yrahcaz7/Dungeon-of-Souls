@@ -325,7 +325,16 @@ function selection() {
         return;
     };
     if (action == "enter" && game.select[0] == "end") {
-        if (game.energy >= 1 && game.hand.length >= 1) game.select = ["confirm_end", 0];
+        let confirm = false;
+        if (game.hand.length >= 1) {
+            for (let i = 0; i < game.hand.length; i++) {
+                if (game.hand[i].energyCost <= game.energy) {
+                    confirm = true;
+                    break;
+                };
+            };
+        };
+        if (confirm) game.select = ["confirm_end", 0];
         else endTurn();
         actionTimer = 2;
         return;
