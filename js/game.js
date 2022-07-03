@@ -225,8 +225,8 @@ function selection() {
     };
     // select / deselect player and more extras
     if (action == "up" && game.select[0] == "discard" && !game.select[1]) {
-        if (!game.hand[0]) game.select = ["lookat_enemy", 0];
-        else game.select = ["hand", game.prevCard];
+        if (popups[0]) game.select = ["popups", 0];
+        else game.select = ["lookat_enemy", 0];
         actionTimer = 1;
         return;
     };
@@ -266,7 +266,7 @@ function selection() {
             return;
         };
         if (game.select[0] == "hand" && game.select[1] == game.hand.length - 1) {
-            if (popups.length >= 1) {
+            if (popups[0]) {
                 game.select = ["popups", 0];
             } else {
                 game.select = ["discard", 0];
@@ -297,7 +297,7 @@ function selection() {
             actionTimer = 1;
             return;
         } else if (action == "down") {
-            if (game.select[1] >= popups.length - 1) {
+            if (!game.select[1]) {
                 game.select = ["discard", 0];
             } else {
                 game.select[1]--;
