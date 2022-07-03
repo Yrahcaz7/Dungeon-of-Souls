@@ -265,7 +265,11 @@ function selection() {
             return;
         };
         if (game.select[0] == "hand" && game.select[1] == game.hand.length - 1) {
-            game.select = ["discard", 0];
+            if (popups.length >= 1) {
+                game.select = ["popups", 0];
+            } else {
+                game.select = ["discard", 0];
+            };
             actionTimer = 1;
             return;
         };
@@ -274,6 +278,45 @@ function selection() {
         game.select = ["end", 0];
         actionTimer = 1;
         return;
+    };
+    // popup selection
+    if (game.select[0] == "popups") {
+        if (popups.length == 0) {
+            game.select = ["hand", game.prevCard];
+            return;
+        } else if (game.select[1] >= popups.length) {
+            game.select[1] = popups.length - 1;
+            return;
+        } else if (action == "up") {
+            if (game.select[1] >= popups.length - 1) {
+                game.select = ["music", 0];
+            } else {
+                game.select[1]++;
+            };
+            actionTimer = 1;
+            return;
+        } else if (action == "down") {
+            if (game.select[1] >= popups.length - 1) {
+                game.select = ["discard", 0];
+            } else {
+                game.select[1]--;
+            };
+            actionTimer = 1;
+            return;
+        } else if (action == "left") {
+            game.select = ["hand", game.prevCard];
+            actionTimer = 1;
+            return;
+        } else if (action == "enter") {
+            popups.splice(game.select[1], 1);
+            if (popups.length == 0) {
+                game.select = ["hand", game.prevCard];
+            } else if (game.select[1] > 0) {
+                game.select[1]--;
+            };
+            actionTimer = 1;
+            return;
+        };
     };
     // deck selection
     if ((game.select[0] == "deck" || game.select[0] == "discard") && game.select[1]) {

@@ -535,6 +535,9 @@ function popupGraphics() {
 			draw.image(popup.back, popups[i][2], 150 - (i * 21));
 			if (popups[i][0] == "music") draw.image(popup.music, popups[i][2] + 4, 150 - (i * 21) + 3);
 			draw.lore(popups[i][2] + 13, 150 - (i * 21) + 8, popups[i][1]);
+			if (game.select[0] == "popups" && game.select[1] == i) {
+				draw.image(select.popup, popups[i][2] - 1, 150 - (i * 21) - 1);
+			};
 		};
 	};
 };
