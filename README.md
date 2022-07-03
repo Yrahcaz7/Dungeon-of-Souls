@@ -44,7 +44,7 @@ However, you can use your new knowledge to reach higher heights next time.
 
 Inspired by ***Slay the Spire*** and ***Die in the Dungeon***.
 
-Most player sprites taken from [**here**](https://aamatniekss.itch.io/fantasy-knight-free-pixelart-animated-character) and modified slightly.
+Most player sprites taken from or based off of the ones found [**here**](https://aamatniekss.itch.io/fantasy-knight-free-pixelart-animated-character).
 
 ## An ominous feeling...
 
