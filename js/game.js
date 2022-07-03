@@ -113,6 +113,7 @@ function enterBattle() {
 function startTurn() {
     drawHand();
     game.turn = "player";
+    game.shield = 0;
     game.energy = game.maxEnergy;
     game.select = ["hand", 0];
 };
