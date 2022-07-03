@@ -58,6 +58,15 @@ function hardReset() {
     location.reload();
 };
 
+function musicPopups() {
+    let src = document.getElementById("music").src;
+    if (!game.music) {
+        showPopup("music", "music is off");
+    } else if (src.includes("Ruins_of_Caelum.mp3")) {
+        showPopup("music", "Ruins of Caelum");
+    };
+};
+
 function randomize(array) {
     let index = array.length, randomIndex;
     while (index != 0) {
@@ -323,6 +332,7 @@ function selection() {
             document.getElementById("music").play();
             game.music = true;
         };
+        musicPopups();
         actionTimer = 2;
         return;
     };
@@ -459,8 +469,8 @@ const gameloop = setInterval(function() {
     foregrounds();
     if (!hide) {
         renderCards();
-        popupGraphics();
         if (game.select[0] != "deck" || !game.select[1]) target();
+        popupGraphics();
     };
     if (game.select[0] == "confirm_end") {
         let x = 140, y = 86;
