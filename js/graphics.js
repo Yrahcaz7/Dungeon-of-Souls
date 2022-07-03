@@ -495,8 +495,8 @@ function target() {
 	} else if (game.select[0] == "lookat_you") {
 		draw.selector(60, 72, 20, 39);
 		if (game.character == "knight") {
-			if (game.unlockedCharStage == 0) draw.lore(69, 64.5, "the forgotten one", "white", "center", true);
-			else if (game.unlockedCharStage == 1) draw.lore(69, 64.5, "the true knight", "white", "center", true);
+			if (global.charStage.knight == 0) draw.lore(69, 64.5, "the forgotten one", "white", "center", true);
+			else if (global.charStage.knight == 1) draw.lore(69, 64.5, "the true knight", "white", "center", true);
 		};
 		if (game.auraBlades) {
 			info("aura blades", "player");

@@ -19,8 +19,9 @@
 const id = "Yrahcaz7/Dungeon-of-Souls/save";
 
 function save() {
-	let proxy = btoa(JSON.stringify(game));
+	let proxy = btoa(JSON.stringify(game)), globalProxy = btoa(JSON.stringify(global));
 	localStorage.setItem(id + "/" + game.saveNum, proxy);
+	localStorage.setItem(id + "/master", globalProxy);
 };
 
 function load(saveNum = 0) {
@@ -32,6 +33,10 @@ function load(saveNum = 0) {
 			game.saveNum = 0;
 			save();
 		};
+	};
+	get = localStorage.getItem(id + "/master");
+	if (get) {
+		Object.assign(global, JSON.parse(atob(get)));
 	};
 };
 

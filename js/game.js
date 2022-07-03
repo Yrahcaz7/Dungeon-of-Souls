@@ -16,9 +16,12 @@
     along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-var game = {
+var global = {
+    charStage: {
+        knight: 0,
+    },
+}, game = {
     character: "knight",
-    unlockedCharStage: 0,
     health: 60,
     maxHealth: 60,
     shield: 0,
