@@ -17,7 +17,7 @@
 */
 
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], invNum = -1;
+tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], invNum = -1, popups = [["", "", 400]];
 
 String.prototype.title = function() {
 	let result = "";
@@ -513,5 +513,23 @@ function target() {
 		if (JSON.parse(game.discardProxy).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].name == "aura blade") {
 			info("aura blades", "deck");
 		};
+	};
+};
+
+function showPopup(type, description) {
+	type = "" + type;
+	description = "" + description;
+	if (!type || !description) return;
+	popups.push([type, description, 400]);
+};
+
+function popupGraphics() {
+	for (let i = 0; i < popups.length; i++) {
+		let stopPoint = 400 - (popups[i][1].length * 6) - 13;
+		if (popups[i][2] > stopPoint) popups[i][2] -= 5;
+		if (popups[i][2] < stopPoint) popups[i][2] = stopPoint;
+		draw.image(popup.back, popups[i][2], 150 - (i * 21));
+		if (popups[i][0] == "music") draw.image(popup.music, popups[i][2] + 4, 150 - (i * 21) + 3);
+		draw.lore(popups[i][2] + 13, 150 - (i * 21) + 8, popups[i][1]);
 	};
 };

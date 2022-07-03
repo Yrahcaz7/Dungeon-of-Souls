@@ -73,6 +73,9 @@ clock = {
     discard: new Image,
 }, icon = {
     aura_blade: new Image,
+}, popup = {
+    back: new Image,
+    music: new Image,
 },
 view = new Image, aura_blade = new Image; // other
 
@@ -149,6 +152,10 @@ extra.discard.src = "images/extras/discard.png";
 
 // icons
 icon.aura_blade.src = "images/icons/aura_blade.png";
+
+// popups
+popup.back.src = "images/popup/back.png";
+popup.music.src = "images/popup/music.png";
 
 // other
 view.src = "images/view.png";

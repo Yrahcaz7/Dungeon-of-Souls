@@ -459,6 +459,7 @@ const gameloop = setInterval(function() {
     foregrounds();
     if (!hide) {
         renderCards();
+        popupGraphics();
         if (game.select[0] != "deck" || !game.select[1]) target();
     };
     if (game.select[0] == "confirm_end") {
