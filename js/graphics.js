@@ -60,7 +60,7 @@ const draw = {
 		ctx.fillStyle = color;
 		ctx.fillRect(x * scale, y * scale, width * scale, height * scale);
 	},
-	// advanced - second order (uses basic)
+	// complex - second order (uses basic)
 	lore(x, y, string, color = "black", position = "right", small = false) {
 		x = +x;
 		y = +y;
@@ -119,7 +119,7 @@ const draw = {
 		draw.image(select.selector[2], x - 2, y + height - 7);
 		draw.image(select.selector[3], x + width - 6, y + height - 7);
 	},
-	// third order (uses advanced and basic)
+	// fractal - third order (uses complex and basic)
 	bars(x, y, health, maxHealth, shield, maxShield) {
 		x = +x;
 		y = +y;
@@ -200,6 +200,24 @@ const draw = {
 			draw.image(card._energy, x, y);
 			draw.lore(x + 4, y + 2, cardObject.energyCost);
 		};
+	},
+	textBox(x, y, width, string, textColor = "black", position = "right", small = false, boxColor = "#cccccc", outlineColor = "#000000") {
+		x = +x;
+		y = +y;
+		width = +width;
+		string = "" + string;
+		if ((!x && x !== 0) || (!y && y !== 0) || !width || !string) return;
+		var lines = (string.match(/\n/g) || []).length, height = small?7:12;
+		if (small) {
+			width = Math.ceil(width * 3 + 0.5);
+			height = Math.ceil(lines * 5.5 + 7);
+		} else {
+			width = width * 6;
+			height = lines * 11 + 12;
+		};
+		draw.rect(outlineColor, x, y, width + 3, height + 2);
+		draw.rect(boxColor, x + 1, y + 1, width + 1, height);
+		draw.lore(x + 2, y + 2, string, textColor, position, small);
 	},
 };
 
@@ -468,27 +486,19 @@ function info(type, location = "player") {
 			if (game.select[1] == game.hand.length - 1) {
 				x -= 146;
 			};
-			draw.rect("#000000", x + 69, y, 75, 31);
-			draw.rect("#cccccc", x + 70, y + 1, 73, 29);
-			draw.lore(x + 71, y + 2, infoText.reinforce, "black", "right", true);
+			draw.textBox(x + 69, y, 24, infoText.reinforce, "black", "right", true);
 		} else if (location == "player") {
 			let pos = 70, desc = "You have " + game.reinforces + " reinforce";
 			if (game.reinforces >= 2) desc += "s.";
 			else desc += ".";
-			draw.rect("#000000", 84, pos, desc.length * 3 + 3, 9);
-			draw.rect("#cccccc", 85, pos + 1, desc.length * 3 + 1, 7);
-			draw.lore(86, pos + 2, desc, "black", "right", true);
-			draw.rect("#000000", 84, pos + 11, 75, 31);
-			draw.rect("#cccccc", 85, pos + 12, 73, 29);
-			draw.lore(86, pos + 13, infoText.reinforce, "black", "right", true);
+			draw.textBox(84, pos, desc.length, desc, "black", "right", true);
+			draw.textBox(84, pos + 11, 24, infoText.reinforce, "black", "right", true);
 		} else if (location == "deck") {
 			let x = 2 + (game.cardSelect[0] * 66), y = 14 + (game.cardSelect[1] * 98) - game.deckPos;
 			if (game.cardSelect[0] >= 4) {
 				x -= 146;
 			};
-			draw.rect("#000000", x + 69, y, 75, 31);
-			draw.rect("#cccccc", x + 70, y + 1, 73, 29);
-			draw.lore(x + 71, y + 2, infoText.reinforce, "black", "right", true);
+			draw.textBox(x + 69, y, 24, infoText.reinforce, "black", "right", true);
 		};
 	} else if (type == "aura blades") {
 		if (location == "card") {
@@ -496,28 +506,20 @@ function info(type, location = "player") {
 			if (game.select[1] == game.hand.length - 1) {
 				x -= 146;
 			};
-			draw.rect("#000000", x + 69, y, 75, 37);
-			draw.rect("#cccccc", x + 70, y + 1, 73, 35);
-			draw.lore(x + 71, y + 2, infoText.aura_blade, "black", "right", true);
+			draw.textBox(x + 69, y, 24, infoText.aura_blade, "black", "right", true);
 		} else if (location == "player") {
 			let pos = 70, desc = "You have " + game.auraBlades + " aura blade";
 			if (game.reinforces) pos += 44;
 			if (game.auraBlades >= 2) desc += "s.";
 			else desc += ".";
-			draw.rect("#000000", 84, pos, desc.length * 3 + 3, 9);
-			draw.rect("#cccccc", 85, pos + 1, desc.length * 3 + 1, 7);
-			draw.lore(86, pos + 2, desc, "black", "right", true);
-			draw.rect("#000000", 84, pos + 11, 75, 37);
-			draw.rect("#cccccc", 85, pos + 12, 73, 35);
-			draw.lore(86, pos + 13, infoText.aura_blade, "black", "right", true);
+			draw.textBox(84, pos, desc.length, desc, "black", "right", true);
+			draw.textBox(84, pos + 11, 24, infoText.aura_blade, "black", "right", true);
 		} else if (location == "deck") {
 			let x = 2 + (game.cardSelect[0] * 66), y = 14 + (game.cardSelect[1] * 98) - game.deckPos;
 			if (game.cardSelect[0] >= 4) {
 				x -= 146;
 			};
-			draw.rect("#000000", x + 69, y, 75, 37);
-			draw.rect("#cccccc", x + 70, y + 1, 73, 35);
-			draw.lore(x + 71, y + 2, infoText.aura_blade, "black", "right", true);
+			draw.textBox(x + 69, y, 24, infoText.aura_blade, "black", "right", true);
 		};
 	};
 };
