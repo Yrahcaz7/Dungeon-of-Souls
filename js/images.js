@@ -1,82 +1,82 @@
 /*
-    Dungeon of Souls
-    Copyright (C) 2022 Yrahcaz7
+	Dungeon of Souls
+	Copyright (C) 2022 Yrahcaz7
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-    GNU General Public License for more details.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+	GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program. If not, see <https://www.gnu.org/licenses/>.
+	You should have received a copy of the GNU General Public License
+	along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 const player = {
-    idle: new Image,
-    attack: new Image,
-    attack_aura: new Image,
-    attack_2: new Image,
-    attack_2_aura: new Image,
-    hit: new Image,
-    shield: new Image,
+	idle: new Image,
+	attack: new Image,
+	attack_aura: new Image,
+	attack_2: new Image,
+	attack_2_aura: new Image,
+	hit: new Image,
+	shield: new Image,
 }, card = {
-    _energy: new Image,
-    back: new Image,
-    error: new Image,
-    slash: new Image,
-    block: new Image,
-    aura_blade: new Image,
-    outline: {
-        attack: new Image,
-        curse: new Image,
-        defense: new Image,
-        magic: new Image,
-    },
+	_energy: new Image,
+	back: new Image,
+	error: new Image,
+	slash: new Image,
+	block: new Image,
+	aura_blade: new Image,
+	outline: {
+		attack: new Image,
+		curse: new Image,
+		defense: new Image,
+		magic: new Image,
+	},
 }, slime = {
-    big: new Image,
-    small: new Image,
-    small_launch: new Image,
+	big: new Image,
+	small: new Image,
+	small_launch: new Image,
 },
 cave = new Image, background = new Image, floating_arch = new Image, // backrounds
 clock = {
-    face: new Image,
-    hour_hand: new Image,
-    min_hand: new Image,
-    node: new Image,
+	face: new Image,
+	hour_hand: new Image,
+	min_hand: new Image,
+	node: new Image,
 }, letters = {
-    black: new Image,
-    red: new Image,
-    white: new Image,
-    fade: [new Image, new Image, new Image],
+	black: new Image,
+	red: new Image,
+	white: new Image,
+	fade: [new Image, new Image, new Image],
 }, bar = {
-    health: new Image,
-    shield: new Image,
-    energy: new Image,
+	health: new Image,
+	shield: new Image,
+	energy: new Image,
 }, select = {
-    round: new Image,
-    card_normal: new Image,
-    card_unplayable: new Image,
-    deck: new Image,
-    discard: new Image,
-    popup: new Image,
-    selector: [new Image, new Image, new Image, new Image],
+	round: new Image,
+	card_normal: new Image,
+	card_unplayable: new Image,
+	deck: new Image,
+	discard: new Image,
+	popup: new Image,
+	selector: [new Image, new Image, new Image, new Image],
 }, extra = {
-    help: new Image,
-    looker: new Image,
-    music: new Image,
-    end: new Image,
-    deck: new Image,
-    discard: new Image,
+	help: new Image,
+	looker: new Image,
+	music: new Image,
+	end: new Image,
+	deck: new Image,
+	discard: new Image,
 }, icon = {
-    aura_blade: new Image,
+	aura_blade: new Image,
 }, popup = {
-    back: new Image,
-    music: new Image,
+	back: new Image,
+	music: new Image,
 },
 view = new Image, aura_blade = new Image; // other
 
