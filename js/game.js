@@ -117,7 +117,11 @@ function enterBattle() {
 function startTurn() {
 	drawHand();
 	game.turn = "player";
-	game.shield = 0;
+	if (game.reinforces) {
+		game.reinforces--;
+	} else {
+		game.shield = 0;
+	};
 	game.energy = game.maxEnergy;
 	game.select = ["hand", 0];
 };
