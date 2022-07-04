@@ -17,13 +17,13 @@
 */
 
 class Card {
-	constructor(name) {
+	constructor(name, level = 0) {
 		this.name = name;
 		this.rarity = "";
 		this.type = "";
 		this.text = "";
 		this.energyCost = 0;
-		this.level = 0;
+		this.level = level;
 		this.unplayable = false;
 		this.order = -1;
 		// error
