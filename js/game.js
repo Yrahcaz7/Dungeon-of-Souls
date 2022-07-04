@@ -17,6 +17,7 @@
 */
 
 var global = {
+	unlockedCards: ["reinforce", "aura blade"],
 	charStage: {
 		knight: 0,
 	},
@@ -38,6 +39,7 @@ var global = {
 	enemyPos: [],
 	enemyIndex: 0,
 	deck: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("reinforce"), new Card("aura blade")],
+	deckLocal: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("reinforce"), new Card("aura blade")],
 	deckProxy: "",
 	deckPos: 0,
 	deckMove: "none",
@@ -84,27 +86,27 @@ function randomize(array) {
 function shuffleDeck(...newCards) {
 	if (newCards) {
 		for (let card of newCards) {
-			if (card instanceof Object) game.deck.push(card);
-			else game.deck.push(new Card("" + card));
+			if (card instanceof Object) game.deckLocal.push(card);
+			else game.deckLocal.push(new Card("" + card));
 		};
 	};
-	game.deck = randomize(game.deck);
+	game.deckLocal = randomize(game.deckLocal);
 };
 
 function drawHand() {
 	let index = 0;
-	for (; index < game.handSize && index < game.deck.length; index++) {
-		game.hand.push(game.deck[index]);
+	for (; index < game.handSize && index < game.deckLocal.length; index++) {
+		game.hand.push(game.deckLocal[index]);
 	};
 	if (index != game.handSize) {
-		game.deck.push(game.discard);
+		game.deckLocal.push(game.discard);
 		shuffleDeck();
-		for (; index < game.handSize && index < game.deck.length; index++) {
-			game.hand.push(game.deck[index]);
+		for (; index < game.handSize && index < game.deckLocal.length; index++) {
+			game.hand.push(game.deckLocal[index]);
 		};
 	};
 	for (index--; index >= 0; index--) {
-		game.deck.splice(index, 1);
+		game.deckLocal.splice(index, 1);
 	};
 };
 
@@ -338,7 +340,7 @@ function selection() {
 	};
 	// deck selection
 	if ((game.select[0] == "deck" || game.select[0] == "discard") && game.select[1]) {
-		let coor = game.cardSelect, len = game.deck.length;
+		let coor = game.cardSelect, len = game.deckLocal.length;
 		if (game.select[0] == "discard") len = game.discard.length;
 		if (action == "left") {
 			if (coor[0] > 0) {

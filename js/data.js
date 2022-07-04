@@ -97,7 +97,7 @@ function updateData() {
 		else if (bladeFloat[num * 2] <= 0) bladeFloat[num * 2 + 1] = "up";
 	};
 	// proxies
-	game.deckProxy = JSON.stringify(game.deck);
+	game.deckProxy = JSON.stringify(game.deckLocal);
 	game.discardProxy = JSON.stringify(game.discard);
 	// other
 	if (game.select[0] == "hand") game.prevCard = game.select[1];

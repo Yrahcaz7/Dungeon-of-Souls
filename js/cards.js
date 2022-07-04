@@ -71,15 +71,15 @@ class Card {
 		} else if (name == "error") {
 			this.text = "Unplayable.";
 		};
+		// order
+		if (this.rarity == "starter") this.order = 1;
+		else if (this.rarity == "common") this.order = 0;
+		else this.order = -1;
 	};
 };
 
 Array.prototype.cardSort = function() {
 	return this.sort(function compareFn(a, b) {
-		if (a.rarity == "error") a.order = -1;
-		if (b.rarity == "error") b.order = -1;
-		if (a.rarity == "starter") a.order = 0;
-		if (b.rarity == "starter") b.order = 0;
 		if (a.order < b.order) {
 			return -1;
 		};
