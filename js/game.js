@@ -37,7 +37,7 @@ var global = {
 	enemies: [],
 	enemyPos: [],
 	enemyIndex: 0,
-	deck: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("aura blade")],
+	deck: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("reinforce"), new Card("aura blade")],
 	deckProxy: "",
 	deckPos: 0,
 	deckMove: "none",
@@ -171,26 +171,35 @@ function playerTurn() {
 	// play card
 	if (action == "enter" && game.select[0] == "hand") {
 		var selected = game.hand[game.select[1]];
-		if (selected.name == "slash" && game.energy >= selected.energyCost) {
-			game.activeCard = game.select[1];
-			game.select = ["attack_enemy", game.enemies.length - 1];
-			game.enemyAtt = game.hand[game.activeCard];
-			actionTimer = 5;
-		} else if (selected.name == "block" && game.energy >= selected.energyCost) {
-			game.energy -= selected.energyCost;
-			game.shield += 4;
-			game.discard.push(game.hand[game.select[1]]);
-			game.hand.splice(game.select[1], 1);
-			actionTimer = 5;
-		} else if (selected.name == "aura blade" && game.energy >= selected.energyCost) {
-			game.energy -= selected.energyCost;
-			game.auraBlades++;
-			game.discard.push(game.hand[game.select[1]]);
-			game.hand.splice(game.select[1], 1);
-			actionTimer = 5;
-		} else if (selected.unplayable) {
+		if (selected.unplayable) {
 			notif = [game.select[1], 0, "unplayable"];
 			actionTimer = 1;
+		} else if (game.energy >= selected.energyCost) {
+			if (selected.name == "slash") {
+				game.activeCard = game.select[1];
+				game.select = ["attack_enemy", game.enemies.length - 1];
+				game.enemyAtt = game.hand[game.activeCard];
+				actionTimer = 5;
+			} else if (selected.name == "block") {
+				game.energy -= selected.energyCost;
+				game.shield += 4;
+				game.discard.push(game.hand[game.select[1]]);
+				game.hand.splice(game.select[1], 1);
+				actionTimer = 5;
+			} else if (selected.name == "reinforce") {
+				game.energy -= selected.energyCost;
+				game.shield += 1;
+				game.reinforces++;
+				game.discard.push(game.hand[game.select[1]]);
+				game.hand.splice(game.select[1], 1);
+				actionTimer = 5;
+			} else if (selected.name == "aura blade") {
+				game.energy -= selected.energyCost;
+				game.auraBlades++;
+				game.discard.push(game.hand[game.select[1]]);
+				game.hand.splice(game.select[1], 1);
+				actionTimer = 5;
+			};
 		} else {
 			notif = [game.select[1], 0, "not enough energy"];
 			actionTimer = 1;

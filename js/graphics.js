@@ -175,6 +175,7 @@ const draw = {
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
 		if (name == "slash") img = card.slash;
 		else if (name == "block") img = card.block;
+		else if (name == "reinforce") img = card.reinforce;
 		else if (name == "aura blade") img = card.aura_blade;
 		else console.error("card " + index + " is invalid type: " + name);
 		if (name != "error") draw.image(card.back, x + 2, y + 2);
@@ -268,7 +269,17 @@ function foregrounds() {
 
 function playerGraphics() {
 	let x = 15, y = 30;
+	if (game.reinforces) {
+		if (game.shield) {
+			draw.image(icon.reinforce, x + 23, y + 104);
+			draw.lore(x + 34, y + 112, game.reinforces, "white", "left");
+		} else {
+			draw.image(icon.reinforce, x + 23, y + 93);
+			draw.lore(x + 34, y + 101, game.reinforces, "white", "left");
+		};
+	};
 	if (game.auraBlades) {
+		if (game.reinforces) x += 17;
 		if (game.shield) {
 			draw.image(icon.aura_blade, x + 23, y + 104);
 			draw.lore(x + 34, y + 112, game.auraBlades, "white", "left");
@@ -276,6 +287,7 @@ function playerGraphics() {
 			draw.image(icon.aura_blade, x + 23, y + 93);
 			draw.lore(x + 34, y + 101, game.auraBlades, "white", "left");
 		};
+		if (game.reinforces) x -= 17;
 		for (let blade = 1; blade <= game.auraBlades && blade <= 4; blade++) {
 			draw.image(aura_blade, x + game.auraBladePos[blade - 1][0], y + game.auraBladePos[blade - 1][1]);
 		};

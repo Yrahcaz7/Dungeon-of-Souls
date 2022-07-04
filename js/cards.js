@@ -27,20 +27,22 @@ class Card {
 		this.unplayable = false;
 		this.order = -1;
 		// error
-		if (name != "slash" && name != "block" && name != "aura blade" && name != "error") {
+		if (name != "slash" && name != "block" && name != "reinforce" && name != "aura blade" && name != "error") {
 			name = "error";
 			this.name = "error";
 		};
 		// rarity
-		if (name == "slash" || name == "block" || name == "aura blade") {
+		if (name == "slash" || name == "block") {
 			this.rarity = "starter";
+		} else if (name == "reinforce" || name == "aura blade") {
+			this.rarity = "common";
 		} else {
 			this.rarity = "error";
 		};
 		// type
 		if (name == "slash") {
 			this.type = "attack";
-		} else if (name == "block") {
+		} else if (name == "block" || name == "reinforce") {
 			this.type = "defense";
 		} else if (name == "aura blade") {
 			this.type = "magic";
@@ -48,7 +50,7 @@ class Card {
 			this.type = "curse";
 		};
 		// energy cost
-		if (name == "slash" || name == "block") {
+		if (name == "slash" || name == "block" || name == "reinforce") {
 			this.energyCost = 1;
 		} else if (name == "aura blade") {
 			this.energyCost = 2;
@@ -62,6 +64,8 @@ class Card {
 			this.text = "Deal 5 damage.";
 		} else if (name == "block") {
 			this.text = "Gain 4 shield.";
+		} else if (name == "reinforce") {
+			this.text = "Gain 1 shield and\n1 reinforce.";
 		} else if (name == "aura blade") {
 			this.text = "Gain 1 aura blade.";
 		} else if (name == "error") {
