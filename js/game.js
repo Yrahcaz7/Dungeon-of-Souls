@@ -50,7 +50,8 @@ var global = {
 	discardProxy: "",
 	auraBlades: 0,
 	auraBladePos: [[65, 10], [80, 25], [40, 0], [25, 35]],
-	currentEffect: "none",
+	reinforces: 0,
+	attackEffect: "none",
 	music: true,
 	saveNum: 0,
 }, actionTimer = -1, notif = [-1, ""], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck") && game.select[1];
@@ -145,7 +146,7 @@ function playerTurn() {
 		};
 		if (game.auraBlades) {
 			game.auraBlades--;
-			game.currentEffect = "aura blade";
+			game.attackEffect = "aura blade";
 		};
 		game.select[0] = "attack_fin";
 		game.discard.push(game.hand[game.activeCard]);
@@ -158,7 +159,7 @@ function playerTurn() {
 		if (game.enemyAtt.name == "slash") {
 			damage = 5;
 		};
-		if (game.currentEffect == "aura blade") {
+		if (game.attackEffect == "aura blade") {
 			damage += 10 + game.auraBlades;
 		};
 		game.enemies[game.select[1]].health -= damage;

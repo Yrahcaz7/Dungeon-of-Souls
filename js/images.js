@@ -30,6 +30,7 @@ const player = {
 	error: new Image,
 	slash: new Image,
 	block: new Image,
+	reinforce: new Image,
 	aura_blade: new Image,
 	outline: {
 		attack: new Image,
@@ -73,6 +74,7 @@ clock = {
 	deck: new Image,
 	discard: new Image,
 }, icon = {
+	reinforce: new Image,
 	aura_blade: new Image,
 }, popup = {
 	back: new Image,
@@ -95,6 +97,7 @@ card.back.src = "images/cards/back.png";
 card.error.src = "images/cards/error.png";
 card.slash.src = "images/cards/slash.png";
 card.block.src = "images/cards/block.png";
+card.reinforce.src = "images/cards/reinforce.png";
 card.aura_blade.src = "images/cards/aura_blade.png";
 
 // card outlines
@@ -153,6 +156,7 @@ extra.deck.src = "images/extras/deck.png";
 extra.discard.src = "images/extras/discard.png";
 
 // icons
+icon.reinforce.src = "images/icons/reinforce.png";
 icon.aura_blade.src = "images/icons/aura_blade.png";
 
 // popups
