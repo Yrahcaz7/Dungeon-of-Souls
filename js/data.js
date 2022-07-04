@@ -100,5 +100,6 @@ function updateData() {
 	game.deckProxy = JSON.stringify(game.deckLocal);
 	game.discardProxy = JSON.stringify(game.discard);
 	// other
+	game.deck.cardSort();
 	if (game.select[0] == "hand") game.prevCard = game.select[1];
 };
