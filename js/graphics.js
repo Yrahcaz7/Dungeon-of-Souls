@@ -468,9 +468,9 @@ function info(type, location = "player") {
 			if (game.select[1] == game.hand.length - 1) {
 				x -= 146;
 			};
-			draw.rect("#000000", x + 69, y, 75, 25);
-			draw.rect("#cccccc", x + 70, y + 1, 73, 23);
-			draw.lore(x + 71, y + 2, "At the start of each\nturn, one reinforce is\nused up to retain your\nblock.", "black", "right", true);
+			draw.rect("#000000", x + 69, y, 75, 31);
+			draw.rect("#cccccc", x + 70, y + 1, 73, 29);
+			draw.lore(x + 71, y + 2, infoText.reinforce, "black", "right", true);
 		} else if (location == "player") {
 			let pos = 70, desc = "You have " + game.reinforces + " reinforce";
 			if (game.reinforces >= 2) desc += "s.";
@@ -478,17 +478,17 @@ function info(type, location = "player") {
 			draw.rect("#000000", 84, pos, desc.length * 3 + 3, 9);
 			draw.rect("#cccccc", 85, pos + 1, desc.length * 3 + 1, 7);
 			draw.lore(86, pos + 2, desc, "black", "right", true);
-			draw.rect("#000000", 84, pos + 11, 75, 25);
-			draw.rect("#cccccc", 85, pos + 12, 73, 23);
-			draw.lore(86, pos + 13, "At the start of each\nturn, one reinforce is\nused up to retain your\nblock.", "black", "right", true);
+			draw.rect("#000000", 84, pos + 11, 75, 31);
+			draw.rect("#cccccc", 85, pos + 12, 73, 29);
+			draw.lore(86, pos + 13, infoText.reinforce, "black", "right", true);
 		} else if (location == "deck") {
 			let x = 2 + (game.cardSelect[0] * 66), y = 14 + (game.cardSelect[1] * 98) - game.deckPos;
 			if (game.cardSelect[0] >= 4) {
 				x -= 146;
 			};
-			draw.rect("#000000", x + 69, y, 75, 25);
-			draw.rect("#cccccc", x + 70, y + 1, 73, 23);
-			draw.lore(x + 71, y + 2, "At the start of each\nturn, one reinforce is\nused up to retain your\nblock.", "black", "right", true);
+			draw.rect("#000000", x + 69, y, 75, 31);
+			draw.rect("#cccccc", x + 70, y + 1, 73, 29);
+			draw.lore(x + 71, y + 2, infoText.reinforce, "black", "right", true);
 		};
 	} else if (type == "aura blades") {
 		if (location == "card") {
@@ -498,10 +498,10 @@ function info(type, location = "player") {
 			};
 			draw.rect("#000000", x + 69, y, 75, 37);
 			draw.rect("#cccccc", x + 70, y + 1, 73, 35);
-			draw.lore(x + 71, y + 2, "Every time you attack,\none of your aura blades\nis used up for 10 + X\nextra damage, X being\nthe number of aura\nblades you have.", "black", "right", true);
+			draw.lore(x + 71, y + 2, infoText.aura_blade, "black", "right", true);
 		} else if (location == "player") {
 			let pos = 70, desc = "You have " + game.auraBlades + " aura blade";
-			if (game.reinforces) pos += 38;
+			if (game.reinforces) pos += 44;
 			if (game.auraBlades >= 2) desc += "s.";
 			else desc += ".";
 			draw.rect("#000000", 84, pos, desc.length * 3 + 3, 9);
@@ -509,7 +509,7 @@ function info(type, location = "player") {
 			draw.lore(86, pos + 2, desc, "black", "right", true);
 			draw.rect("#000000", 84, pos + 11, 75, 37);
 			draw.rect("#cccccc", 85, pos + 12, 73, 35);
-			draw.lore(86, pos + 13, "Every time you attack,\none of your aura blades\nis used up for 10 + X\nextra damage, X being\nthe number of aura\nblades you have.", "black", "right", true);
+			draw.lore(86, pos + 13, infoText.aura_blade, "black", "right", true);
 		} else if (location == "deck") {
 			let x = 2 + (game.cardSelect[0] * 66), y = 14 + (game.cardSelect[1] * 98) - game.deckPos;
 			if (game.cardSelect[0] >= 4) {
@@ -517,7 +517,7 @@ function info(type, location = "player") {
 			};
 			draw.rect("#000000", x + 69, y, 75, 37);
 			draw.rect("#cccccc", x + 70, y + 1, 73, 35);
-			draw.lore(x + 71, y + 2, "Every time you attack,\none of your aura blades\nis used up for 10 + X\nextra damage, X being\nthe number of aura\nblades you have.", "black", "right", true);
+			draw.lore(x + 71, y + 2, infoText.aura_blade, "black", "right", true);
 		};
 	};
 };
