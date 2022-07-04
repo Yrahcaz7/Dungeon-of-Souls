@@ -45,6 +45,8 @@ logTitles = ["Version 0.3 - Manifestation - (in progress)", "Version 0.2 - Reali
 changelog = ""
 	+ " - you can now end your turn (you couldn't before)\n"
 	+ " - added the changelog to the game info\n"
+	+ " - added notifications (currently only music change ones)\n"
+	+ " - a new card, with a totally new effect\n"
 	+ " - and more things coming soon!\n"
 	+ "\n\n\n"
 	+ " - many optimizations including 2 new classes\n"
