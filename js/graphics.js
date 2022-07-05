@@ -388,9 +388,9 @@ function enemyGraphics() {
 		if (index !== tempAnim[3] && game.enemies[index].intent == "attack") {
 			let y = Math.round(pos[1] + Math.abs(starAnim[index] - 2));
 			if (enemy.type == "slime_big") {
-				y -= 16;
+				y -= 17;
 			} else if (enemy.type == "slime_small") {
-				y -= 5;
+				y -= 7;
 			};
 			draw.star(pos[0] + 16, y, game.enemies[index].attackPower);
 			draw.lore(pos[0] + 30, y + 12, game.enemies[index].attackPower, "white", "center");
