@@ -17,7 +17,7 @@
 */
 
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], invNum = -1, popups = [];
+tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], invNum = -1, popups = [];
 
 String.prototype.title = function() {
 	let result = "";
@@ -121,6 +121,15 @@ const draw = {
 		draw.image(select.selector[1], x + width - 6, y - 2);
 		draw.image(select.selector[2], x - 2, y + height - 7);
 		draw.image(select.selector[3], x + width - 6, y + height - 7);
+	},
+	star(x, y, effect) {
+		if (effect <= 2) draw.image(icon.star[0], x, y);
+		else if (effect <= 5) draw.image(icon.star[1], x, y);
+		else if (effect <= 10) draw.image(icon.star[2], x, y);
+		else if (effect <= 15) draw.image(icon.star[3], x, y);
+		else if (effect <= 20) draw.image(icon.star[4], x, y);
+		else if (effect <= 30) draw.image(icon.star[5], x, y);
+		else if (effect <= 40) draw.image(icon.star[6], x, y);
 	},
 	// fractal - third order (uses complex and basic)
 	bars(x, y, health, maxHealth, shield, maxShield) {
@@ -366,6 +375,7 @@ function enemyGraphics() {
 	for (let index = 0; index < game.enemies.length; index++) {
 		let enemy = game.enemies[index], pos = game.enemyPos[index];
 		if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
+		if (starAnim[index] >= 4) starAnim[index] = 0;
 		if (index !== invNum) {
 			if (enemy.type == "slime_big") {
 				draw.imageSector(slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
@@ -373,7 +383,18 @@ function enemyGraphics() {
 				draw.imageSector(slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
 			};
 		};
+		if (index !== tempAnim[3] && game.enemies[index].intent == "attack") {
+			let y = Math.round(pos[1] + Math.abs(starAnim[index] - 2));
+			if (enemy.type == "slime_big") {
+				y -= 16;
+			} else if (enemy.type == "slime_small") {
+				y -= 5;
+			};
+			draw.star(pos[0] + 16, y, game.enemies[index].attackPower);
+			draw.lore(pos[0] + 30, y + 12, game.enemies[index].attackPower, "white", "center");
+		};
 		enemyAnim[index] += (Math.random() + 0.5) * 0.1;
+		starAnim[index] += (Math.random() + 0.5) * 0.15;
 		draw.bars(pos[0], pos[1], enemy.health, enemy.maxHealth, enemy.shield, enemy.maxShield);
 	};
 	if (tempAnim[3] == -1) return;
