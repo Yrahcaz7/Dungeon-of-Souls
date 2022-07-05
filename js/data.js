@@ -44,6 +44,7 @@ const infoText = {
 logTitles = ["Version 0.3 - Manifestation - (in progress)", "Version 0.2 - Realization - (302 total commits)", "Version 0.1 - Desolation - (107 commits)"],
 changelog = ""
 	+ " - you can now end your turn (you couldn't before)\n"
+	+ " - enemies can now take their turn and attack\n"
 	+ " - added the changelog to the game info\n"
 	+ " - added notifications (currently only music change ones)\n"
 	+ " - a new card, with a totally new effect\n"
