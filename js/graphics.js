@@ -69,9 +69,9 @@ const draw = {
 		let img = letters.black, enters = 0, enterIndex = 0, len = string.length;
 		if (color == "red") img = letters.red;
 		else if (color == "white") img = letters.white;
-		else if (color == "fade_0") img = letters.fade[0];
-		else if (color == "fade_1") img = letters.fade[1];
-		else if (color == "fade_2") img = letters.fade[2];
+		else if (color == "red_fade_0") img = letters.red_fade[0];
+		else if (color == "red_fade_1") img = letters.red_fade[1];
+		else if (color == "red_fade_2") img = letters.red_fade[2];
 		for (let a = 0; a < string.length; a++) {
 			let index = string.charCodeAt(a);
 			if (string.includes("\n", enterIndex + 1)) {
@@ -478,9 +478,9 @@ function renderCards() {
 	};
 	if (notif[0] != -1) {
 		let color = "red";
-		if (notif[1] >= 9) color = "fade_2";
-		else if (notif[1] >= 7) color = "fade_1";
-		else if (notif[1] >= 5) color = "fade_0";
+		if (notif[1] >= 9) color = "red_fade_2";
+		else if (notif[1] >= 7) color = "red_fade_1";
+		else if (notif[1] >= 5) color = "red_fade_0";
 		draw.lore(game.handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1], notif[2], color, "center");
 		notif[1]++;
 		if (notif[1] > 11) notif = [-1, 0];
