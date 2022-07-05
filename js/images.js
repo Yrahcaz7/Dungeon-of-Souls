@@ -80,6 +80,7 @@ clock = {
 	aura_blade: new Image,
 }, popup = {
 	back: new Image,
+	back_fade: [new Image, new Image, new Image],
 	music: new Image,
 },
 view = new Image, aura_blade = new Image; // other
@@ -167,6 +168,9 @@ icon.aura_blade.src = "images/icons/aura_blade.png";
 
 // popups
 popup.back.src = "images/popup/back.png";
+popup.back_fade[0].src = "images/popup/back_fade_0.png";
+popup.back_fade[1].src = "images/popup/back_fade_1.png";
+popup.back_fade[2].src = "images/popup/back_fade_2.png";
 popup.music.src = "images/popup/music.png";
 
 // other
