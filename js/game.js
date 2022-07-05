@@ -165,6 +165,8 @@ function playerTurn() {
 		if (game.auraBlades) {
 			game.auraBlades--;
 			game.attackEffect = "aura blade";
+		} else {
+			game.attackEffect = "none";
 		};
 		game.enemyAttFin = true;
 		game.discard.push(game.hand[game.activeCard]);
@@ -176,12 +178,19 @@ function playerTurn() {
 		return;
 	};
 	if (game.enemyAttFin) {
-		let damage = 0;
+		let damage = 0, shield = game.enemies[game.enemyAttSel].shield;
 		if (game.enemyAtt.name == "slash") {
 			damage = 5;
 		};
 		if (game.attackEffect == "aura blade") {
 			damage += 10 + game.auraBlades;
+		};
+		if (shield > damage) {
+			game.enemies[game.enemyAttSel].shield -= damage;
+			damage = 0;
+		} else if (shield) {
+			game.enemies[game.enemyAttSel].shield = 0;
+			damage -= shield;
 		};
 		game.enemies[game.enemyAttSel].health -= damage;
 		game.enemyAtt = "none";

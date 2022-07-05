@@ -109,8 +109,8 @@ function updateData() {
 	for (let a = 0; a < game.enemies.length; a++) {
 		let enemy = game.enemies[a];
 		if (enemy.health < 0) game.enemies[a].health = 0;
-		if (enemy.health > enemy.maxHealth) game.enemies[index].health = enemy.maxHealth;
-		if (enemy.shield > enemy.maxShield) game.enemies[index].shield = enemy.maxShield;
+		if (enemy.health > enemy.maxHealth) game.enemies[a].health = enemy.maxHealth;
+		if (enemy.shield > enemy.maxShield) game.enemies[a].shield = enemy.maxShield;
 	};
 	// other
 	game.deck.cardSort();
