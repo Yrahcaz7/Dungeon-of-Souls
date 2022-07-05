@@ -130,6 +130,8 @@ const draw = {
 		else if (effect <= 20) draw.image(icon.star[4], x, y);
 		else if (effect <= 30) draw.image(icon.star[5], x, y);
 		else if (effect <= 40) draw.image(icon.star[6], x, y);
+		else if (effect <= 55) draw.image(icon.star[7], x, y);
+		else if (effect <= 75) draw.image(icon.star[8], x, y);
 	},
 	// fractal - third order (uses complex and basic)
 	bars(x, y, health, maxHealth, shield, maxShield) {
