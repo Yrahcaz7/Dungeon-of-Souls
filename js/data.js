@@ -104,6 +104,8 @@ function updateData() {
 	game.deckProxy = JSON.stringify(game.deckLocal);
 	game.discardProxy = JSON.stringify(game.discard);
 	// fixes
+	if (game.health < 0) game.health = 0;
+	else if (game.health > game.maxHealth) game.health = game.maxHealth;
 	for (let a = 0; a < game.enemies.length; a++) {
 		let enemy = game.enemies[a];
 		if (enemy.health < 0) game.enemies[a].health = 0;
