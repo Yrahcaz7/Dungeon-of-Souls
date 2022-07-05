@@ -33,6 +33,8 @@ var global = {
 	select: ["none", 0],
 	cardSelect: [0, 0],
 	enemyAtt: new Card(),
+	enemyAttSel: 0,
+	enemyAttFin: false,
 	energy: 3,
 	maxEnergy: 3,
 	enemies: [],
@@ -161,13 +163,16 @@ function playerTurn() {
 			game.auraBlades--;
 			game.attackEffect = "aura blade";
 		};
-		game.select[0] = "attack_fin";
+		game.enemyAttFin = true;
 		game.discard.push(game.hand[game.activeCard]);
 		game.hand.splice(game.activeCard, 1);
+		game.enemyAttSel = game.select[1];
+		if (game.prevCard) game.select = ["hand", game.prevCard - 1];
+		else game.select = ["hand", 0];
 		actionTimer = 4;
 		return;
 	};
-	if (game.select[0] == "attack_fin") {
+	if (game.enemyAttFin) {
 		let damage = 0;
 		if (game.enemyAtt.name == "slash") {
 			damage = 5;
@@ -175,42 +180,42 @@ function playerTurn() {
 		if (game.attackEffect == "aura blade") {
 			damage += 10 + game.auraBlades;
 		};
-		game.enemies[game.select[1]].health -= damage;
-		game.select = ["hand", game.prevCard - 1];
+		game.enemies[game.enemyAttSel].health -= damage;
 		game.enemyAtt = "none";
+		game.enemyAttFin = false;
 		actionTimer = 1;
 		return;
 	};
 	// play card
 	if (action == "enter" && game.select[0] == "hand") {
-		var selected = game.hand[game.select[1]];
+		let selected = game.hand[game.select[1]], name = selected.name;
 		if (selected.unplayable) {
 			notif = [game.select[1], 0, "unplayable"];
 			actionTimer = 1;
 		} else if (game.energy >= selected.energyCost) {
-			if (selected.name == "slash") {
+			let activate = true;
+			// effects of cards that activate right away
+			if (name == "block") {
+				game.shield += 4;
+			} else if (name == "reinforce") {
+				game.shield += 1;
+				game.reinforces++;
+			} else if (name == "aura blade") {
+				game.auraBlades++;
+			} else {
+				activate = false;
+			};
+			if (activate) {
+				game.energy -= selected.energyCost;
+				game.discard.push(game.hand[game.select[1]]);
+				game.hand.splice(game.select[1], 1);
+				if (game.prevCard) game.select = ["hand", game.prevCard - 1];
+				else game.select = ["hand", 0];
+				actionTimer = 2;
+			} else if (selected.type == "attack") {
 				game.activeCard = game.select[1];
 				game.select = ["attack_enemy", game.enemies.length - 1];
 				game.enemyAtt = game.hand[game.activeCard];
-				actionTimer = 5;
-			} else if (selected.name == "block") {
-				game.energy -= selected.energyCost;
-				game.shield += 4;
-				game.discard.push(game.hand[game.select[1]]);
-				game.hand.splice(game.select[1], 1);
-				actionTimer = 5;
-			} else if (selected.name == "reinforce") {
-				game.energy -= selected.energyCost;
-				game.shield += 1;
-				game.reinforces++;
-				game.discard.push(game.hand[game.select[1]]);
-				game.hand.splice(game.select[1], 1);
-				actionTimer = 5;
-			} else if (selected.name == "aura blade") {
-				game.energy -= selected.energyCost;
-				game.auraBlades++;
-				game.discard.push(game.hand[game.select[1]]);
-				game.hand.splice(game.select[1], 1);
 				actionTimer = 5;
 			};
 		} else {
