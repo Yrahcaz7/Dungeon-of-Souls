@@ -138,6 +138,9 @@ function startTurn() {
 	};
 	game.energy = game.maxEnergy;
 	game.select = ["hand", 0];
+	if (playerAnim[1] != "idle") {
+		startAnim.player("idle");
+	};
 };
 
 function endTurn() {
