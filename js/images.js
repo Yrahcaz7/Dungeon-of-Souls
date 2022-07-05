@@ -54,6 +54,7 @@ clock = {
 	black: new Image,
 	red: new Image,
 	white: new Image,
+	black_fade: [new Image, new Image, new Image],
 	red_fade: [new Image, new Image, new Image],
 }, bar = {
 	health: new Image,
@@ -128,6 +129,9 @@ clock.node.src = "images/clock/node.png";
 letters.black.src = "images/letters/black.png";
 letters.red.src = "images/letters/red.png";
 letters.white.src = "images/letters/white.png";
+letters.black_fade[0].src = "images/letters/black_fade_0.png";
+letters.black_fade[1].src = "images/letters/black_fade_1.png";
+letters.black_fade[2].src = "images/letters/black_fade_2.png";
 letters.red_fade[0].src = "images/letters/red_fade_0.png";
 letters.red_fade[1].src = "images/letters/red_fade_1.png";
 letters.red_fade[2].src = "images/letters/red_fade_2.png";

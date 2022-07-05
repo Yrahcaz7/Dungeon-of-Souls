@@ -69,6 +69,9 @@ const draw = {
 		let img = letters.black, enters = 0, enterIndex = 0, len = string.length;
 		if (color == "red") img = letters.red;
 		else if (color == "white") img = letters.white;
+		else if (color == "black_fade_0") img = letters.black_fade[0];
+		else if (color == "black_fade_1") img = letters.black_fade[1];
+		else if (color == "black_fade_2") img = letters.black_fade[2];
 		else if (color == "red_fade_0") img = letters.red_fade[0];
 		else if (color == "red_fade_1") img = letters.red_fade[1];
 		else if (color == "red_fade_2") img = letters.red_fade[2];
