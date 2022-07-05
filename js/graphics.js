@@ -122,18 +122,21 @@ const draw = {
 		draw.image(select.selector[2], x - 2, y + height - 7);
 		draw.image(select.selector[3], x + width - 6, y + height - 7);
 	},
-	star(x, y, effect) {
-		if (effect >= 125) draw.image(icon.star[10], x, y);
-		else if (effect >= 100) draw.image(icon.star[9], x, y);
-		else if (effect >= 75) draw.image(icon.star[8], x, y);
-		else if (effect >= 55) draw.image(icon.star[7], x, y);
-		else if (effect >= 40) draw.image(icon.star[6], x, y);
-		else if (effect >= 30) draw.image(icon.star[5], x, y);
-		else if (effect >= 20) draw.image(icon.star[4], x, y);
-		else if (effect >= 15) draw.image(icon.star[3], x, y);
-		else if (effect >= 10) draw.image(icon.star[2], x, y);
-		else if (effect >= 5) draw.image(icon.star[1], x, y);
-		else draw.image(icon.star[0], x, y);
+	intent(x, y, effect, type) {
+		let stage = 0;
+		if (effect >= 125) stage = 10;
+		else if (effect >= 100) stage = 9;
+		else if (effect >= 75) stage = 8;
+		else if (effect >= 55) stage = 7;
+		else if (effect >= 40) stage = 6;
+		else if (effect >= 30) stage = 5;
+		else if (effect >= 20) stage = 4;
+		else if (effect >= 15) stage = 3;
+		else if (effect >= 10) stage = 2;
+		else if (effect >= 5) stage = 1;
+		else stage = 0;
+		if (type == "attack") draw.image(icon.star[stage], x, y);
+		else if (type == "defend") draw.image(icon.shield[stage], x, y + 1);
 	},
 	// fractal - third order (uses complex and basic)
 	bars(x, y, health, maxHealth, shield, maxShield) {
@@ -387,15 +390,20 @@ function enemyGraphics() {
 				draw.imageSector(slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
 			};
 		};
-		if (index !== tempAnim[3] && game.enemies[index].intent == "attack") {
+		if (index !== tempAnim[3] && (game.turn == "player" || game.enemyNum !== index)) {
 			let y = Math.round(pos[1] + Math.abs(starAnim[index] - 2));
 			if (enemy.type == "slime_big") {
 				y -= 17;
 			} else if (enemy.type == "slime_small") {
 				y -= 7;
 			};
-			draw.star(pos[0] + 16, y, game.enemies[index].attackPower);
-			draw.lore(pos[0] + 30, y + 12, game.enemies[index].attackPower, "white", "center");
+			if (game.enemies[index].intent == "defend") {
+				draw.intent(pos[0] + 16, y, game.enemies[index].defendPower, "defend");
+				draw.lore(pos[0] + 30, y + 12, game.enemies[index].defendPower, "white", "center");
+			} else if (game.enemies[index].intent == "attack") {
+				draw.intent(pos[0] + 16, y, game.enemies[index].attackPower, "attack");
+				draw.lore(pos[0] + 30, y + 12, game.enemies[index].attackPower, "white", "center");
+			};
 		};
 		enemyAnim[index] += (Math.random() + 0.5) * 0.1;
 		starAnim[index] += (Math.random() + 0.5) * 0.15;

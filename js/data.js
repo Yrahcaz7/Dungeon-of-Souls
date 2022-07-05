@@ -105,7 +105,10 @@ function updateData() {
 	game.discardProxy = JSON.stringify(game.discard);
 	// fixes
 	for (let a = 0; a < game.enemies.length; a++) {
-		if (game.enemies[a].health < 0) game.enemies[a].health = 0;
+		let enemy = game.enemies[a];
+		if (enemy.health < 0) game.enemies[a].health = 0;
+		if (enemy.health > enemy.maxHealth) game.enemies[index].health = enemy.maxHealth;
+		if (enemy.shield > enemy.maxShield) game.enemies[index].shield = enemy.maxShield;
 	};
 	// other
 	game.deck.cardSort();

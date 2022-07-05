@@ -78,6 +78,7 @@ clock = {
 }, icon = {
 	reinforce: new Image,
 	aura_blade: new Image,
+	shield: [new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image],
 	star: [new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image],
 }, popup = {
 	back: new Image,
@@ -165,6 +166,21 @@ extra.discard.src = "images/extras/discard.png";
 // icons
 icon.reinforce.src = "images/icons/reinforce.png";
 icon.aura_blade.src = "images/icons/aura_blade.png";
+
+// intent - guard
+icon.shield[0].src = "images/icons/shield/1.png";
+icon.shield[1].src = "images/icons/shield/2.png";
+icon.shield[2].src = "images/icons/shield/3.png";
+icon.shield[3].src = "images/icons/shield/4.png";
+icon.shield[4].src = "images/icons/shield/5.png";
+icon.shield[5].src = "images/icons/shield/6.png";
+icon.shield[6].src = "images/icons/shield/7.png";
+icon.shield[7].src = "images/icons/shield/E.png";
+icon.shield[8].src = "images/icons/shield/I.png";
+icon.shield[9].src = "images/icons/shield/V.png";
+icon.shield[10].src = "images/icons/shield/Z.png";
+
+// intent - attack
 icon.star[0].src = "images/icons/star/1.png";
 icon.star[1].src = "images/icons/star/2.png";
 icon.star[2].src = "images/icons/star/3.png";

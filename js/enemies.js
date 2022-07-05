@@ -37,7 +37,8 @@ class Enemy {
 		this.maxShield = Math.round(((Math.random() / 5) + 0.9) * ((power * 5) + 10));
 		this.shield = 0;
 		this.attackPower = Math.round(((power / 2) + 1) * 5 - 0.25);
-		this.intent = "attack" /*(Math.random()>=0.5)?"attack":"defend"*/;
+		this.defendPower = Math.round(((power / 2) + 1) * 5 - 1);
+		this.intent = (Math.random()>=0.4)?"attack":"defend";
 		this.location = game.enemyIndex;
 		game.enemyIndex++;
 	};
@@ -48,6 +49,8 @@ class Enemy {
 				else startAnim.player("shield");
 			};
 			if (this.type == "slime_small") startAnim.enemy(this.location, "slime_small_launch");
+		} else if (this.intent == "defend") {
+			this.middleAction(); // teporary
 		};
 	};
 	middleAction() {
@@ -61,6 +64,9 @@ class Enemy {
 				game.shield -= damage;
 			};
 			if (game.shield < 1) startAnim.player("hit");
+		} else if (this.intent == "defend") {
+			this.shield += this.defendPower;
+			this.finishAction(); // teporary
 		};
 	};
 	finishAction() {
@@ -70,6 +76,7 @@ class Enemy {
 		} else {
 			game.enemyNum++;
 		};
+		this.intent = (Math.random()>=0.4)?"attack":"defend";
 		game.enemyStage = "none";
 	};
 };
