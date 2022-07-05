@@ -78,6 +78,7 @@ clock = {
 }, icon = {
 	reinforce: new Image,
 	aura_blade: new Image,
+	star: [new Image, new Image, new Image, new Image, new Image],
 }, popup = {
 	back: new Image,
 	music: new Image,
@@ -164,6 +165,11 @@ extra.discard.src = "images/extras/discard.png";
 // icons
 icon.reinforce.src = "images/icons/reinforce.png";
 icon.aura_blade.src = "images/icons/aura_blade.png";
+icon.star[0].src = "images/icons/star-3.png";
+icon.star[1].src = "images/icons/star-4.png";
+icon.star[2].src = "images/icons/star-5.png";
+icon.star[3].src = "images/icons/star-6.png";
+icon.star[4].src = "images/icons/star-8.png";
 
 // popups
 popup.back.src = "images/popup/back.png";
