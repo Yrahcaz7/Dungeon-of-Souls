@@ -25,7 +25,9 @@ class Enemy {
 			this.maxShield = override.maxShield;
 			this.shield = override.shield;
 			this.attackPower = override.attackPower;
+			this.defendPower = override.defendPower;
 			this.intent = override.intent;
+			this.intentHistory = override.intentHistory;
 			this.location = override.location;
 			return;
 		};
@@ -39,6 +41,7 @@ class Enemy {
 		this.attackPower = Math.round(((power / 2) + 1) * 5 - 0.25);
 		this.defendPower = Math.round(((power / 2) + 1) * 5 - 1);
 		this.intent = (Math.random()>=0.4)?"attack":"defend";
+		this.intentHistory = [this.intent];
 		this.location = game.enemyIndex;
 		game.enemyIndex++;
 	};
@@ -77,6 +80,28 @@ class Enemy {
 			game.enemyNum++;
 		};
 		this.intent = (Math.random()>=0.4)?"attack":"defend";
+		this.intentHistory.push(this.intent);
+		if (overrideIntent("attack", this.intentHistory, this.location)) {
+			this.intent = "defend";
+		} else if (overrideIntent("defend", this.intentHistory, this.location)) {
+			this.intent = "attack";
+		};
 		game.enemyStage = "none";
 	};
+};
+
+function overrideIntent(type, history, location) {
+	if (!type || !history) return false;
+	let location0 = history.indexOf(type), location1, location2;
+	if (location0 !== -1) {
+		location1 = history.indexOf(type, location0 + 1);
+		if (location1 - 1 === location0) {
+			location2 = history.indexOf(type, location0 + 1);
+			if (location2 - 1 === location1) {
+				game.enemies[location].intentHistory = [];
+				return true;
+			};
+		};
+	};
+	return false;
 };
