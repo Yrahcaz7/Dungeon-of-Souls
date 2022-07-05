@@ -424,8 +424,8 @@ function selection() {
 	if (action == "enter" && game.select[0] == "end" && game.turn == "player") {
 		let confirm = false;
 		if (game.hand.length >= 1) {
-			for (let i = 0; i < game.hand.length; i++) {
-				if (game.hand[i].energyCost <= game.energy) {
+			for (let a = 0; a < game.hand.length; a++) {
+				if (game.hand[a].energyCost <= game.energy) {
 					confirm = true;
 					break;
 				};

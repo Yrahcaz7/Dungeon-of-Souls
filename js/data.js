@@ -101,6 +101,10 @@ function updateData() {
 	// proxies
 	game.deckProxy = JSON.stringify(game.deckLocal);
 	game.discardProxy = JSON.stringify(game.discard);
+	// fixes
+	for (let a = 0; a < game.enemies.length; a++) {
+		if (game.enemies[a].health < 0) game.enemies[a].health = 0;
+	};
 	// other
 	game.deck.cardSort();
 	if (game.select[0] == "hand") game.prevCard = game.select[1];

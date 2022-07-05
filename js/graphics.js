@@ -594,15 +594,15 @@ function popupGraphics() {
 		popups.splice(0, 1);
 	};
 	if (popups.length >= 1) {
-		for (let i = 0; i < popups.length; i++) {
-			let stopPoint = 400 - (popups[i][1].length * 6) - 13;
-			if (popups[i][2] > stopPoint) popups[i][2] -= 5;
-			if (popups[i][2] < stopPoint) popups[i][2] = stopPoint;
-			draw.image(popup.back, popups[i][2], 150 - (i * 21));
-			if (popups[i][0] == "music") draw.image(popup.music, popups[i][2] + 4, 150 - (i * 21) + 3);
-			draw.lore(popups[i][2] + 13, 150 - (i * 21) + 8, popups[i][1]);
-			if (game.select[0] == "popups" && game.select[1] == i) {
-				draw.image(select.popup, popups[i][2] - 1, 150 - (i * 21) - 1);
+		for (let a = 0; a < popups.length; a++) {
+			let stopPoint = 400 - (popups[a][1].length * 6) - 13;
+			if (popups[a][2] > stopPoint) popups[a][2] -= 5;
+			if (popups[a][2] < stopPoint) popups[a][2] = stopPoint;
+			draw.image(popup.back, popups[a][2], 150 - (a * 21));
+			if (popups[a][0] == "music") draw.image(popup.music, popups[a][2] + 4, 150 - (a * 21) + 3);
+			draw.lore(popups[a][2] + 13, 150 - (a * 21) + 8, popups[a][1]);
+			if (game.select[0] == "popups" && game.select[1] == a) {
+				draw.image(select.popup, popups[a][2] - 1, 150 - (a * 21) - 1);
 			};
 		};
 	};
