@@ -41,14 +41,15 @@ const infoText = {
 	+ "find the fragment of time.\n"
 	+ "Else, at the edge of the sky,\n"
 	+ "you shall eternally die.",
-logTitles = ["Version 0.3 - Manifestation - (in progress)", "Version 0.2 - Realization - (302 total commits)", "Version 0.1 - Desolation - (107 commits)"],
+logTitles = ["Version 1.0 - Manifestation - (in progress)", "Version 0.2 - Realization - (302 total commits)", "Version 0.1 - Desolation - (107 commits)"],
 changelog = ""
 	+ " - you can now end your turn (you couldn't before)\n"
 	+ " - enemies can now take their turn and attack\n"
 	+ " - added the changelog to the game info\n"
 	+ " - added notifications (currently only music change ones)\n"
+	+ " - some new visuals and animations\n"
 	+ " - a new card, with a totally new effect\n"
-	+ " - and more things coming soon!\n"
+	+ " - lots and lots of bugfixes\n"
 	+ "\n\n\n"
 	+ " - many optimizations including 2 new classes\n"
 	+ " - a lot more cool visuals and animations\n"
