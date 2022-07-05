@@ -601,10 +601,10 @@ function popupGraphics() {
 				continue;
 			};
 			stopPoint = 400 - stopPoint;
-			if (popups[a][3] >= 50) popups[a][2] += 5 * ((popups[a][1].length + 1) / 15);
+			if (popups[a][3] >= 1) popups[a][2] += 5 * ((popups[a][1].length + 1) / 15);
 			else if (popups[a][2] > stopPoint) popups[a][2] -= 5 * ((popups[a][1].length + 1) / 15);
 			if (popups[a][2] < stopPoint) popups[a][2] = stopPoint;
-			if (popups[a][2] == stopPoint) popups[a][3]++;
+			if (popups[a][2] == stopPoint) popups[a][3] += 0.025;
 			draw.image(popup.back, popups[a][2], 150 - (a * 21));
 			draw.lore(popups[a][2] + 13, 150 - (a * 21) + 8, popups[a][1]);
 			if (popups[a][0] == "music") draw.image(popup.music, popups[a][2] + 4, 150 - (a * 21) + 3);
