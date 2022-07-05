@@ -123,7 +123,8 @@ const draw = {
 		draw.image(select.selector[3], x + width - 6, y + height - 7);
 	},
 	star(x, y, effect) {
-		if (effect >= 100) draw.image(icon.star[9], x, y);
+		if (effect >= 125) draw.image(icon.star[10], x, y);
+		else if (effect >= 100) draw.image(icon.star[9], x, y);
 		else if (effect >= 75) draw.image(icon.star[8], x, y);
 		else if (effect >= 55) draw.image(icon.star[7], x, y);
 		else if (effect >= 40) draw.image(icon.star[6], x, y);
