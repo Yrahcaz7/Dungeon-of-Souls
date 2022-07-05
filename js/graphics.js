@@ -491,7 +491,7 @@ function info(type, location = "player") {
 	if (type == "reinforce") {
 		if (location == "card") {
 			let x = game.handPos[game.select[1]], y = 146 - Math.floor(cardAnim[game.select[1]]);
-			if (game.select[1] == game.hand.length - 1) {
+			if (game.select[1] == game.hand.length - 1 && game.hand.length >= 4) {
 				x -= 146;
 			};
 			draw.textBox(x + 69, y, 24, infoText.reinforce, "black", "right", true);
@@ -511,7 +511,7 @@ function info(type, location = "player") {
 	} else if (type == "aura blades") {
 		if (location == "card") {
 			let x = game.handPos[game.select[1]], y = 146 - Math.floor(cardAnim[game.select[1]]);
-			if (game.select[1] == game.hand.length - 1) {
+			if (game.select[1] == game.hand.length - 1 && game.hand.length >= 4) {
 				x -= 146;
 			};
 			draw.textBox(x + 69, y, 24, infoText.aura_blade, "black", "right", true);
