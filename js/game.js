@@ -38,6 +38,8 @@ var global = {
 	enemies: [],
 	enemyPos: [],
 	enemyIndex: 0,
+	enemyNum: 0,
+	enemyStage: "none",
 	deck: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("reinforce"), new Card("aura blade")],
 	deckLocal: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("reinforce"), new Card("aura blade")],
 	deckProxy: "",
@@ -95,11 +97,16 @@ function shuffleDeck(...newCards) {
 
 function drawHand() {
 	let index = 0;
-	for (; index < game.handSize && index < game.deckLocal.length; index++) {
-		game.hand.push(game.deckLocal[index]);
+	if (game.deckLocal.length) {
+		for (; index < game.handSize && index < game.deckLocal.length; index++) {
+			game.hand.push(game.deckLocal[index]);
+		};
 	};
 	if (index != game.handSize) {
-		game.deckLocal.push(game.discard);
+		for (let a = 0; a < game.discard.length; a++) {
+			game.deckLocal.push(game.discard[a]);
+		};
+		game.discard.splice(0);
 		shuffleDeck();
 		for (; index < game.handSize && index < game.deckLocal.length; index++) {
 			game.hand.push(game.deckLocal[index]);
@@ -212,6 +219,21 @@ function playerTurn() {
 		};
 		return;
 	};
+};
+
+function enemyTurn() {
+	let num = game.enemyNum;
+	for (let a = 0; a < game.enemies.length; a++) {
+		let ref = game.enemies[a];
+		if (ref instanceof Enemy) continue;
+		else {
+			game.enemies[a] = new Enemy(undefined, undefined, ref);
+			console.log("refresh enemy " + a);
+		};
+	};
+	if (game.enemyStage == "end") game.enemies[num].finishAction();
+	else if (game.enemyStage == "middle") game.enemies[num].middleAction();
+	else if (game.enemyStage != "pending") game.enemies[num].startAction();
 };
 
 function selection() {
@@ -574,6 +596,8 @@ const gameloop = setInterval(function() {
 		deckPos = 0;
 		deckMove = "none";
 	};
+	// enemy actions
+	if (game.turn == "enemy") enemyTurn();
 }, 100), musicloop = setInterval(function() {
 	let time = document.getElementById("music").currentTime;
 	if (game.music) {

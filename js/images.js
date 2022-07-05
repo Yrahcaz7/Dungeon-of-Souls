@@ -24,6 +24,7 @@ const player = {
 	attack_2_aura: new Image,
 	hit: new Image,
 	shield: new Image,
+	shield_reinforced: new Image,
 }, card = {
 	_energy: new Image,
 	back: new Image,
@@ -90,6 +91,7 @@ player.attack_2.src = "images/player/attack_2.png";
 player.attack_2_aura.src = "images/player/attack_2_aura.png";
 player.hit.src = "images/player/hit.png";
 player.shield.src = "images/player/shield.png";
+player.shield_reinforced.src = "images/player/shield_reinforced.png";
 
 // cards
 card._energy.src = "images/cards/_energy.png";

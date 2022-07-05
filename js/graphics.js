@@ -338,6 +338,10 @@ function playerGraphics() {
 		draw.imageSector(player.shield, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 3) playerAnim[0] = 2;
+	} else if (playerAnim[1] == "shield_reinforced") {
+		draw.imageSector(player.shield_reinforced, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+		playerAnim[0] += 0.25;
+		if (playerAnim[0] >= 3) playerAnim[0] = 2;
 	};
 	draw.bars(x + 22, y + 15, game.health, game.maxHealth, game.shield, game.maxShield);
 	let frame, en = game.energy, maxEn = game.maxEnergy, percentage = en / maxEn;
@@ -383,9 +387,13 @@ function enemyGraphics() {
 		if (tempAnim[0] >= 20) {
 			tempAnim[0] = 18;
 			tempAnim[2] = "backwards";
+			game.enemyStage = "middle";
 		} else if (tempAnim[0] < 0) {
 			tempAnim = [0, "none", "normal", -1];
 			enemyAnim[tempAnim[3]] = 0;
+			game.enemyStage = "end";
+		} else {
+			game.enemyStage = "pending";
 		};
 		invNum = tempAnim[3];
 	} else invNum = -1;

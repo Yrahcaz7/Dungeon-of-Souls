@@ -17,7 +17,18 @@
 */
 
 class Enemy {
-	constructor(type, power = 1) {
+	constructor(type, power = 1, override = {}) {
+		if (Object.keys(override).length) {
+			this.type = override.type;
+			this.maxHealth = override.maxHealth;
+			this.health = override.health;
+			this.maxShield = override.maxShield;
+			this.shield = override.shield;
+			this.attackPower = override.attackPower;
+			this.intent = override.intent;
+			this.location = override.location;
+			return;
+		};
 		if (type == "slime_small") power--;
 		power += game.floor * 0.1;
 		this.type = type;
@@ -25,21 +36,22 @@ class Enemy {
 		this.health = this.maxHealth;
 		this.maxShield = Math.round(((Math.random() / 5) + 0.9) * ((power * 5) + 10));
 		this.shield = 0;
-		this.attackPower = Math.round(((power / 2) + 1) * 5);
+		this.attackPower = Math.round(((power / 2) + 1) * 5 - 0.25);
+		this.intent = "attack" /*(Math.random()>=0.5)?"attack":"defend"*/;
 		this.location = game.enemyIndex;
 		game.enemyIndex++;
 	};
-	startAction(type) {
-		if (type == "attack") {
+	startAction() {
+		if (this.intent == "attack") {
 			if (game.shield) {
 				if (game.reinforces) startAnim.player("shield_reinforced");
 				else startAnim.player("shield");
 			};
-			startAnim.enemy(this.location, "slime_small_launch");
+			if (this.type == "slime_small") startAnim.enemy(this.location, "slime_small_launch");
 		};
 	};
-	middleAction(type) {
-		if (type == "attack") {
+	middleAction() {
+		if (this.intent == "attack") {
 			var damage = this.attackPower;
 			if (game.shield <= damage) {
 				damage -= game.shield;
@@ -51,9 +63,13 @@ class Enemy {
 			if (game.shield < 1) startAnim.player("hit");
 		};
 	};
-	finishAction(type) {
+	finishAction() {
 		if (this.location == game.enemies.length - 1) {
-			game.turn = "player";
+			game.enemyNum = 0;
+			startTurn();
+		} else {
+			game.enemyNum++;
 		};
+		game.enemyStage = "none";
 	};
 };
