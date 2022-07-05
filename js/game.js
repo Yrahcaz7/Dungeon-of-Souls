@@ -335,7 +335,7 @@ function selection() {
 			game.select[1] = popups.length - 1;
 			return;
 		} else if (action == "up") {
-			if (game.select[1] >= popups.length - 1) {
+			if (game.select[1] >= popups.length - 1 || game.select[1] >= 6) {
 				game.select = ["music", 0];
 			} else {
 				game.select[1]++;

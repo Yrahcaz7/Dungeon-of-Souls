@@ -589,35 +589,28 @@ function showPopup(type, description) {
 	type = "" + type;
 	description = "" + description;
 	if (!type || !description) return;
-	popups.push([type, description, 400, -1]);
+	popups.push([type, description, 400, 0]);
 };
 
 function popupGraphics() {
-	if (popups.length >= 8) {
-		popups.splice(0, 1);
-	};
 	if (popups.length >= 1) {
-		for (let a = 0; a < popups.length; a++) {
-			if (popups[a][3] >= 3) {
+		for (let a = 0; a < popups.length && a <= 6; a++) {
+			let stopPoint = (popups[a][1].length * 6) + 13;
+			if (popups[a][2] > 400) {
 				popups.splice(a, 1);
 				continue;
 			};
-			let stopPoint = 400 - (popups[a][1].length * 6) - 13;
-			if (popups[a][2] > stopPoint) popups[a][2] -= 5;
+			stopPoint = 400 - stopPoint;
+			if (popups[a][3] >= 50) popups[a][2] += 5 * ((popups[a][1].length + 1) / 15);
+			else if (popups[a][2] > stopPoint) popups[a][2] -= 5 * ((popups[a][1].length + 1) / 15);
 			if (popups[a][2] < stopPoint) popups[a][2] = stopPoint;
-			if (popups[a][3] < 0) {
-				draw.image(popup.back, popups[a][2], 150 - (a * 21));
-				draw.lore(popups[a][2] + 13, 150 - (a * 21) + 8, popups[a][1]);
-			} else {
-				draw.image(popup.back_fade[Math.floor(popups[a][3])], stopPoint, 150 - (a * 21));
-				draw.lore(popups[a][2] + 13, 150 - (a * 21) + 8, popups[a][1], "black_fade_" + Math.floor(popups[a][3]));
-			};
+			if (popups[a][2] == stopPoint) popups[a][3]++;
+			draw.image(popup.back, popups[a][2], 150 - (a * 21));
+			draw.lore(popups[a][2] + 13, 150 - (a * 21) + 8, popups[a][1]);
 			if (popups[a][0] == "music") draw.image(popup.music, popups[a][2] + 4, 150 - (a * 21) + 3);
 			if (game.select[0] == "popups" && game.select[1] == a) {
 				draw.image(select.popup, popups[a][2] - 1, 150 - (a * 21) - 1);
 			};
-			if (popups[a][3] < 0) popups[a][3] += 0.02;
-			else popups[a][3] += 0.4;
 		};
 	};
 };
