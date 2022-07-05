@@ -123,15 +123,15 @@ const draw = {
 		draw.image(select.selector[3], x + width - 6, y + height - 7);
 	},
 	star(x, y, effect) {
-		if (effect <= 2) draw.image(icon.star[0], x, y);
-		else if (effect <= 5) draw.image(icon.star[1], x, y);
-		else if (effect <= 10) draw.image(icon.star[2], x, y);
-		else if (effect <= 15) draw.image(icon.star[3], x, y);
-		else if (effect <= 20) draw.image(icon.star[4], x, y);
-		else if (effect <= 30) draw.image(icon.star[5], x, y);
-		else if (effect <= 40) draw.image(icon.star[6], x, y);
-		else if (effect <= 55) draw.image(icon.star[7], x, y);
-		else if (effect <= 75) draw.image(icon.star[8], x, y);
+		if (effect >= 75) draw.image(icon.star[8], x, y);
+		else if (effect >= 55) draw.image(icon.star[7], x, y);
+		else if (effect >= 40) draw.image(icon.star[6], x, y);
+		else if (effect >= 30) draw.image(icon.star[5], x, y);
+		else if (effect >= 20) draw.image(icon.star[4], x, y);
+		else if (effect >= 15) draw.image(icon.star[3], x, y);
+		else if (effect >= 10) draw.image(icon.star[2], x, y);
+		else if (effect >= 5) draw.image(icon.star[1], x, y);
+		else draw.image(icon.star[0], x, y);
 	},
 	// fractal - third order (uses complex and basic)
 	bars(x, y, health, maxHealth, shield, maxShield) {
