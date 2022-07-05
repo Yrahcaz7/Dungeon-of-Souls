@@ -30,7 +30,7 @@ class Enemy {
 			return;
 		};
 		if (type == "slime_small") power--;
-		power += game.floor * 0.1;
+		power += game.floor * 0.05;
 		this.type = type;
 		this.maxHealth = Math.round(((Math.random() / 5) + 0.9) * ((power * 10) + 20));
 		this.health = this.maxHealth;

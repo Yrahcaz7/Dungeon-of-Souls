@@ -18,6 +18,10 @@
 
 var global = {
 	unlockedCards: ["reinforce", "aura blade"],
+	options: {
+		music: true,
+		stickyCards: false,
+	},
 	charStage: {
 		knight: 0,
 	},
@@ -58,7 +62,6 @@ var global = {
 	auraBladePos: [[65, 10], [80, 25], [40, 0], [25, 35]],
 	reinforces: 0,
 	attackEffect: "none",
-	music: true,
 	saveNum: 0,
 }, actionTimer = -1, notif = [-1, ""], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck") && game.select[1];
 
@@ -70,7 +73,7 @@ function hardReset() {
 
 function musicPopups() {
 	let src = document.getElementById("music").src;
-	if (!game.music) {
+	if (!global.options.music) {
 		showPopup("music", "music is off");
 	} else if (src.includes("Ruins_of_Caelum.mp3")) {
 		showPopup("music", "Ruins of Caelum");
@@ -415,12 +418,12 @@ function selection() {
 		return;
 	};
 	if (action == "enter" && game.select[0] == "music") {
-		if (game.music) {
+		if (global.options.music) {
 			document.getElementById("music").pause();
-			game.music = false;
+			global.options.music = false;
 		} else {
 			document.getElementById("music").play();
-			game.music = true;
+			global.options.music = true;
 		};
 		musicPopups();
 		actionTimer = 2;
@@ -605,7 +608,7 @@ const gameloop = setInterval(function() {
 	if (game.turn == "enemy") enemyTurn();
 }, 100), musicloop = setInterval(function() {
 	let time = document.getElementById("music").currentTime;
-	if (game.music) {
+	if (global.options.music) {
 		if (time === 0) {
 			document.getElementById("music").play();
 		} else if (time > document.getElementById("music").duration - 0.1) {

@@ -285,7 +285,7 @@ function foregrounds() {
 	draw.image(extra.help, 381, 3);
 	if (game.select[0] == "looker" && game.select[1] == 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 362, 3);
 	else draw.imageSector(extra.looker, 0, 0, 16, 16, 362, 3);
-	if (!game.music) draw.imageSector(extra.music, 15, 0, 16, 16, 343, 3);
+	if (!global.options.music) draw.imageSector(extra.music, 15, 0, 16, 16, 343, 3);
 	else draw.imageSector(extra.music, 0, 0, 16, 16, 343, 3);
 	draw.image(extra.end, 3, 163);
 	draw.image(extra.deck, 3, 182);
@@ -489,7 +489,7 @@ function renderCards() {
 	let temp = -1;
 	for (let index = 0; index < game.hand.length; index++) {
 		let card = game.hand[index];
-		if (game.select[0] == "hand" && game.select[1] == index) {
+		if (game.select[0] == "hand" && game.select[1] == index || (game.prevCard == index && global.options.stickyCards)) {
 			temp = index;
 		} else {
 			if (cardAnim[index] > 0) cardAnim[index] -= 6 + Math.random();
