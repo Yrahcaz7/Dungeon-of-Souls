@@ -165,17 +165,17 @@ extra.discard.src = "images/extras/discard.png";
 // icons
 icon.reinforce.src = "images/icons/reinforce.png";
 icon.aura_blade.src = "images/icons/aura_blade.png";
-icon.star[0].src = "images/icons/star-1.png";
-icon.star[1].src = "images/icons/star-2.png";
-icon.star[2].src = "images/icons/star-3.png";
-icon.star[3].src = "images/icons/star-4.png";
-icon.star[4].src = "images/icons/star-5.png";
-icon.star[5].src = "images/icons/star-6.png";
-icon.star[6].src = "images/icons/star-8.png";
-icon.star[7].src = "images/icons/star-E.png";
-icon.star[8].src = "images/icons/star-I.png";
-icon.star[9].src = "images/icons/star-V.png";
-icon.star[10].src = "images/icons/star-Z.png";
+icon.star[0].src = "images/icons/star/1.png";
+icon.star[1].src = "images/icons/star/2.png";
+icon.star[2].src = "images/icons/star/3.png";
+icon.star[3].src = "images/icons/star/4.png";
+icon.star[4].src = "images/icons/star/5.png";
+icon.star[5].src = "images/icons/star/6.png";
+icon.star[6].src = "images/icons/star/8.png";
+icon.star[7].src = "images/icons/star/E.png";
+icon.star[8].src = "images/icons/star/I.png";
+icon.star[9].src = "images/icons/star/V.png";
+icon.star[10].src = "images/icons/star/Z.png";
 
 // popups
 popup.back.src = "images/popup/back.png";
