@@ -168,7 +168,7 @@ extra.discard.src = "images/extras/discard.png";
 icon.reinforce.src = "images/icons/reinforce.png";
 icon.aura_blade.src = "images/icons/aura_blade.png";
 
-// intent - defend
+// intents
 intent.defend[0].src = "images/intent/defend/1.png";
 intent.defend[1].src = "images/intent/defend/2.png";
 intent.defend[2].src = "images/intent/defend/3.png";
@@ -180,8 +180,6 @@ intent.defend[7].src = "images/intent/defend/E.png";
 intent.defend[8].src = "images/intent/defend/I.png";
 intent.defend[9].src = "images/intent/defend/V.png";
 intent.defend[10].src = "images/intent/defend/Z.png";
-
-// intent - attack
 intent.attack[0].src = "images/intent/attack/1.png";
 intent.attack[1].src = "images/intent/attack/2.png";
 intent.attack[2].src = "images/intent/attack/3.png";
