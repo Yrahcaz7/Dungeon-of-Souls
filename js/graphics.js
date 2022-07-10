@@ -135,8 +135,8 @@ const draw = {
 		else if (effect >= 10) stage = 2;
 		else if (effect >= 5) stage = 1;
 		else stage = 0;
-		if (type == "attack") draw.image(icon.star[stage], x, y);
-		else if (type == "defend") draw.image(icon.shield[stage], x, y + 1);
+		if (type == "attack") draw.image(intent.attack[stage], x, y);
+		else if (type == "defend") draw.image(intent.defend[stage], x, y + 1);
 	},
 	// fractal - third order (uses complex and basic)
 	bars(x, y, health, maxHealth, shield, maxShield) {

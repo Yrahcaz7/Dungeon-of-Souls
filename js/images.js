@@ -78,8 +78,9 @@ clock = {
 }, icon = {
 	reinforce: new Image,
 	aura_blade: new Image,
-	shield: [new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image],
-	star: [new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image],
+}, intent = {
+	defend: [new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image],
+	attack: [new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image],
 }, popup = {
 	back: new Image,
 	music: new Image,
@@ -167,31 +168,31 @@ extra.discard.src = "images/extras/discard.png";
 icon.reinforce.src = "images/icons/reinforce.png";
 icon.aura_blade.src = "images/icons/aura_blade.png";
 
-// intent - guard
-icon.shield[0].src = "images/icons/shield/1.png";
-icon.shield[1].src = "images/icons/shield/2.png";
-icon.shield[2].src = "images/icons/shield/3.png";
-icon.shield[3].src = "images/icons/shield/4.png";
-icon.shield[4].src = "images/icons/shield/5.png";
-icon.shield[5].src = "images/icons/shield/6.png";
-icon.shield[6].src = "images/icons/shield/7.png";
-icon.shield[7].src = "images/icons/shield/E.png";
-icon.shield[8].src = "images/icons/shield/I.png";
-icon.shield[9].src = "images/icons/shield/V.png";
-icon.shield[10].src = "images/icons/shield/Z.png";
+// intent - defend
+intent.defend[0].src = "images/intent/defend/1.png";
+intent.defend[1].src = "images/intent/defend/2.png";
+intent.defend[2].src = "images/intent/defend/3.png";
+intent.defend[3].src = "images/intent/defend/4.png";
+intent.defend[4].src = "images/intent/defend/5.png";
+intent.defend[5].src = "images/intent/defend/6.png";
+intent.defend[6].src = "images/intent/defend/7.png";
+intent.defend[7].src = "images/intent/defend/E.png";
+intent.defend[8].src = "images/intent/defend/I.png";
+intent.defend[9].src = "images/intent/defend/V.png";
+intent.defend[10].src = "images/intent/defend/Z.png";
 
 // intent - attack
-icon.star[0].src = "images/icons/star/1.png";
-icon.star[1].src = "images/icons/star/2.png";
-icon.star[2].src = "images/icons/star/3.png";
-icon.star[3].src = "images/icons/star/4.png";
-icon.star[4].src = "images/icons/star/5.png";
-icon.star[5].src = "images/icons/star/6.png";
-icon.star[6].src = "images/icons/star/8.png";
-icon.star[7].src = "images/icons/star/E.png";
-icon.star[8].src = "images/icons/star/I.png";
-icon.star[9].src = "images/icons/star/V.png";
-icon.star[10].src = "images/icons/star/Z.png";
+intent.attack[0].src = "images/intent/attack/1.png";
+intent.attack[1].src = "images/intent/attack/2.png";
+intent.attack[2].src = "images/intent/attack/3.png";
+intent.attack[3].src = "images/intent/attack/4.png";
+intent.attack[4].src = "images/intent/attack/5.png";
+intent.attack[5].src = "images/intent/attack/6.png";
+intent.attack[6].src = "images/intent/attack/8.png";
+intent.attack[7].src = "images/intent/attack/E.png";
+intent.attack[8].src = "images/intent/attack/I.png";
+intent.attack[9].src = "images/intent/attack/V.png";
+intent.attack[10].src = "images/intent/attack/Z.png";
 
 // popups
 popup.back.src = "images/popup/back.png";
