@@ -28,11 +28,9 @@ function chance(chance = 0.5) {
 };
 
 function mapPiece() {
-	return chance()?"battle":false;
-};
-
-function mapPos() {
-	return [randomInt(-5, 5), randomInt(-5, 5)];
+	let type = chance()?"battle":false;
+	if (!type) return false;
+	return [type, randomInt(-5, 5), randomInt(-5, 5)];
 };
 
 var global = {
@@ -92,16 +90,6 @@ var global = {
 		[mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()],
 		[mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()],
 		[mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()],
-	],
-	mapPos: [
-		[mapPos(), mapPos(), mapPos(), mapPos(), mapPos(), mapPos()],
-		[mapPos(), mapPos(), mapPos(), mapPos(), mapPos(), mapPos()],
-		[mapPos(), mapPos(), mapPos(), mapPos(), mapPos(), mapPos()],
-		[mapPos(), mapPos(), mapPos(), mapPos(), mapPos(), mapPos()],
-		[mapPos(), mapPos(), mapPos(), mapPos(), mapPos(), mapPos()],
-		[mapPos(), mapPos(), mapPos(), mapPos(), mapPos(), mapPos()],
-		[mapPos(), mapPos(), mapPos(), mapPos(), mapPos(), mapPos()],
-		[mapPos(), mapPos(), mapPos(), mapPos(), mapPos(), mapPos()],
 	],
 	saveNum: 0,
 }, actionTimer = -1, notif = [-1, ""], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "map") && game.select[1];

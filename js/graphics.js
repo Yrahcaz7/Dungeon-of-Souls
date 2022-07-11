@@ -661,30 +661,31 @@ function mapGraphics() {
 	if (game.mapSelect[0] == "exit") draw.image(select.round, 21, 177);
 	for (let x = 0; x < game.map.length; x++) {
 		for (let y = 0; y < game.map[x].length; y++) {
-			let drawX = 28 + (x * 32) + game.mapPos[x][y][0];
-			let drawY = 12 + (y * 32) + game.mapPos[x][y][1];
+			if (!game.map[x][y]) continue;
+			let drawX = 28 + (x * 32) + game.map[x][y][1];
+			let drawY = 12 + (y * 32) + game.map[x][y][2];
 			if (game.map[x][y]) {
 				for (let branch = 0; branch < 2; branch++) {
 					let posX, posY;
 					for (num = 0; num < 7; num++) {
 						if (branch && x != game.map.length - 1) {
 							if (game.map[x + 1][y - num]) {
-								posX = 28 + ((x + 1) * 32) + game.mapPos[x + 1][y - num][0];
-								posY = 12 + ((y - num) * 32) + game.mapPos[x + 1][y - num][1];
+								posX = 28 + ((x + 1) * 32) + game.map[x + 1][y - num][1];
+								posY = 12 + ((y - num) * 32) + game.map[x + 1][y - num][2];
 								break;
 							} else if (game.map[x + 1][y + num]) {
-								posX = 28 + ((x + 1) * 32) + game.mapPos[x + 1][y + num][0];
-								posY = 12 + ((y + num) * 32) + game.mapPos[x + 1][y + num][1];
+								posX = 28 + ((x + 1) * 32) + game.map[x + 1][y + num][1];
+								posY = 12 + ((y + num) * 32) + game.map[x + 1][y + num][2];
 								break;
 							};
 						} else if (x !== 0) {
 							if (game.map[x - 1][y - num]) {
-								posX = 28 + ((x - 1) * 32) + game.mapPos[x - 1][y - num][0];
-								posY = 12 + ((y - num) * 32) + game.mapPos[x - 1][y - num][1];
+								posX = 28 + ((x - 1) * 32) + game.map[x - 1][y - num][1];
+								posY = 12 + ((y - num) * 32) + game.map[x - 1][y - num][2];
 								break;
 							} else if (game.map[x - 1][y + num]) {
-								posX = 28 + ((x - 1) * 32) + game.mapPos[x - 1][y + num][0];
-								posY = 12 + ((y + num) * 32) + game.mapPos[x - 1][y + num][1];
+								posX = 28 + ((x - 1) * 32) + game.map[x - 1][y + num][1];
+								posY = 12 + ((y + num) * 32) + game.map[x - 1][y + num][2];
 								break;
 							};
 						};
@@ -716,9 +717,10 @@ function mapGraphics() {
 	};
 	for (let x = 0; x < game.map.length; x++) {
 		for (let y = 0; y < game.map[x].length; y++) {
-			let drawX = 28 + (x * 32) + game.mapPos[x][y][0];
-			let drawY = 12 + (y * 32) + game.mapPos[x][y][1];
-			if (game.map[x][y] == "battle") {
+			if (!game.map[x][y]) continue;
+			let drawX = 28 + (x * 32) + game.map[x][y][1];
+			let drawY = 12 + (y * 32) + game.map[x][y][2];
+			if (game.map[x][y][0] == "battle") {
 				draw.image(map.battle, drawX, drawY);
 			};
 		};
