@@ -40,7 +40,7 @@ class Enemy {
 		this.shield = 0;
 		this.attackPower = Math.round(((power / 2) + 1) * 5 - 0.25);
 		this.defendPower = Math.round(((power / 2) + 1) * 5 - 1);
-		this.intent = (Math.random()>=0.4)?"attack":"defend";
+		this.intent = (chance(3/5))?"attack":"defend";
 		this.intentHistory = [this.intent];
 		this.location = game.enemyIndex;
 		game.enemyIndex++;
@@ -79,7 +79,7 @@ class Enemy {
 		} else {
 			game.enemyNum++;
 		};
-		this.intent = (Math.random()>=0.4)?"attack":"defend";
+		this.intent = (chance(3/5))?"attack":"defend";
 		this.intentHistory.push(this.intent);
 		if (overrideIntent("attack", this.intentHistory, this.location)) {
 			this.intent = "defend";

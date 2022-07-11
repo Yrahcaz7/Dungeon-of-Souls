@@ -106,7 +106,7 @@ function updateData() {
 	// map
 	for (let index = 0; index < game.map.length; index++) {
 		if (!game.map[index].includes("battle")) {
-			game.map[index] = [(Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false];
+			game.map[index] = [mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()];
 		};
 	};
 	// fixes
