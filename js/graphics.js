@@ -659,4 +659,68 @@ function mapGraphics() {
 	draw.image(map.bottom, 5, 180);
 	draw.image(extra.end, 22, 178);
 	if (game.mapSelect[0] == "exit") draw.image(select.round, 21, 177);
+	for (let x = 0; x < game.map.length; x++) {
+		for (let y = 0; y < game.map[x].length; y++) {
+			let drawX = 28 + (x * 32) + game.mapPos[x][y][0];
+			let drawY = 12 + (y * 32) + game.mapPos[x][y][1];
+			if (game.map[x][y]) {
+				for (let branch = 0; branch < 2; branch++) {
+					let posX, posY;
+					for (num = 0; num < 7; num++) {
+						if (branch && x != game.map.length - 1) {
+							if (game.map[x + 1][y - num]) {
+								posX = 28 + ((x + 1) * 32) + game.mapPos[x + 1][y - num][0];
+								posY = 12 + ((y - num) * 32) + game.mapPos[x + 1][y - num][1];
+								break;
+							} else if (game.map[x + 1][y + num]) {
+								posX = 28 + ((x + 1) * 32) + game.mapPos[x + 1][y + num][0];
+								posY = 12 + ((y + num) * 32) + game.mapPos[x + 1][y + num][1];
+								break;
+							};
+						} else if (x !== 0) {
+							if (game.map[x - 1][y - num]) {
+								posX = 28 + ((x - 1) * 32) + game.mapPos[x - 1][y - num][0];
+								posY = 12 + ((y - num) * 32) + game.mapPos[x - 1][y - num][1];
+								break;
+							} else if (game.map[x - 1][y + num]) {
+								posX = 28 + ((x - 1) * 32) + game.mapPos[x - 1][y + num][0];
+								posY = 12 + ((y + num) * 32) + game.mapPos[x - 1][y + num][1];
+								break;
+							};
+						};
+					};
+					let distX = (posX - drawX);
+					let distY = (posY - drawY);
+					if (distY === 0) {
+						draw.rect("#ffffff", drawX + 8, drawY + 7, distX, distY + 2);
+					} else {
+						for (let num = 1; num < 4; num += 0.5) {
+							let div = Math.sqrt(distX ** 2 + distY ** 2) / num;
+							if (div < 1) div = 1;
+							distX = distX / div;
+							distY = distY / div;
+							for (let section = 0; section < div; section++) {
+								draw.rect("#ffffff", drawX + 8, drawY + 8, Math.ceil(distX), Math.ceil(distY));
+								draw.rect("#ffffff", Math.floor(drawX + 8 + (distX * section)), Math.floor(drawY + 8 + (distY * section)), Math.floor(distX), Math.floor(distY));
+								draw.rect("#ffffff", Math.floor(drawX + 8 + (distX * section)), Math.floor(drawY + 8 + (distY * section)), Math.ceil(distX), Math.ceil(distY));
+								draw.rect("#ffffff", Math.ceil(drawX + 8 + (distX * section)), Math.ceil(drawY + 8 + (distY * section)), Math.ceil(distX), Math.ceil(distY));
+								draw.rect("#ffffff", Math.ceil(drawX + 8 + (distX * section)), Math.ceil(drawY + 8 + (distY * section)), Math.floor(distX), Math.floor(distY));
+							};
+							distX = distX * div;
+							distY = distY * div;
+						};
+					};
+				};
+			};
+		};
+	};
+	for (let x = 0; x < game.map.length; x++) {
+		for (let y = 0; y < game.map[x].length; y++) {
+			let drawX = 28 + (x * 32) + game.mapPos[x][y][0];
+			let drawY = 12 + (y * 32) + game.mapPos[x][y][1];
+			if (game.map[x][y] == "battle") {
+				draw.image(map.battle, drawX, drawY);
+			};
+		};
+	};
 };

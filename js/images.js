@@ -94,6 +94,7 @@ const player = {
 	top: new Image,
 	row: new Image,
 	bottom: new Image,
+	battle: new Image,
 },
 view = new Image, aura_blade = new Image; // other
 
@@ -212,6 +213,7 @@ popup.music.src = "images/popup/music.png";
 map.top.src = "images/map/top.png";
 map.row.src = "images/map/row.png";
 map.bottom.src = "images/map/bottom.png";
+map.battle.src = "images/map/battle.png";
 
 // other
 view.src = "images/view.png";
