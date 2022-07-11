@@ -105,7 +105,7 @@ function updateData() {
 	game.discardProxy = JSON.stringify(game.discard);
 	// map
 	for (let index = 0; index < game.map.length; index++) {
-		if (!game.map[index].includes("battle")) {
+		if (!game.map[index].includes("battle") || game.map[index].indexOf("battle") === game.map[index].lastIndexOf("battle")) {
 			if (index === 0) game.map[0] = [false, mapPiece(), mapPiece(), mapPiece(), mapPiece(), false];
 			else game.map[index] = [mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()];
 		};
