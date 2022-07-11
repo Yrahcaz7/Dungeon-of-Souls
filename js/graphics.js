@@ -60,6 +60,17 @@ const draw = {
 		ctx.fillStyle = color;
 		ctx.fillRect(x * scale, y * scale, width * scale, height * scale);
 	},
+	line(x, y, x2, y2, color = "#000", width = 1) {
+		if ((!x && x !== 0) || (!y && y !== 0) || (!x2 && x2 !== 0) || (!y2 && y2 !== 0)) return;
+		ctx.beginPath();
+		if (color) ctx.strokeStyle = color;
+		else ctx.strokeStyle = "#000";
+		if (width) ctx.lineWidth = width * scale;
+		else ctx.lineWidth = 1 * scale;
+		ctx.moveTo(x * scale, y * scale);
+		ctx.lineTo(x2 * scale, y2 * scale);
+		ctx.stroke();
+	},
 	// complex - second order (uses basic)
 	lore(x, y, string, color = "black", position = "right", small = false) {
 		x = +x;
@@ -690,27 +701,7 @@ function mapGraphics() {
 							};
 						};
 					};
-					let distX = (posX - drawX);
-					let distY = (posY - drawY);
-					if (distY === 0) {
-						draw.rect("#ffffff", drawX + 8, drawY + 7, distX, distY + 2);
-					} else {
-						for (let num = 1; num < 4; num += 0.5) {
-							let div = Math.sqrt(distX ** 2 + distY ** 2) / num;
-							if (div < 1) div = 1;
-							distX = distX / div;
-							distY = distY / div;
-							for (let section = 0; section < div; section++) {
-								draw.rect("#ffffff", drawX + 8, drawY + 8, Math.ceil(distX), Math.ceil(distY));
-								draw.rect("#ffffff", Math.floor(drawX + 8 + (distX * section)), Math.floor(drawY + 8 + (distY * section)), Math.floor(distX), Math.floor(distY));
-								draw.rect("#ffffff", Math.floor(drawX + 8 + (distX * section)), Math.floor(drawY + 8 + (distY * section)), Math.ceil(distX), Math.ceil(distY));
-								draw.rect("#ffffff", Math.ceil(drawX + 8 + (distX * section)), Math.ceil(drawY + 8 + (distY * section)), Math.ceil(distX), Math.ceil(distY));
-								draw.rect("#ffffff", Math.ceil(drawX + 8 + (distX * section)), Math.ceil(drawY + 8 + (distY * section)), Math.floor(distX), Math.floor(distY));
-							};
-							distX = distX * div;
-							distY = distY * div;
-						};
-					};
+					draw.line(drawX + 8, drawY + 8, posX + 8, posY + 8, "#fff", 3);
 				};
 			};
 		};
