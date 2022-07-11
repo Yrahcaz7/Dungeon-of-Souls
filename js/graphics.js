@@ -670,6 +670,7 @@ function mapGraphics() {
 	draw.image(map.bottom, 5, 180);
 	draw.image(extra.end, 22, 178);
 	if (game.mapSelect[0] == "exit") draw.image(select.round, 21, 177);
+	let store = [];
 	for (let x = 0; x < game.map.length; x++) {
 		for (let y = 0; y < game.map[x].length; y++) {
 			if (!game.map[x][y]) continue;
@@ -681,20 +682,24 @@ function mapGraphics() {
 					for (num = 0; num < 7; num++) {
 						if (branch && x != game.map.length - 1) {
 							if (game.map[x + 1][y - num]) {
+								store.push([x, y, x + 1, y - num]);
 								posX = 28 + ((x + 1) * 32) + game.map[x + 1][y - num][1];
 								posY = 12 + ((y - num) * 32) + game.map[x + 1][y - num][2];
 								break;
 							} else if (game.map[x + 1][y + num]) {
+								store.push([x, y, x + 1, y + num]);
 								posX = 28 + ((x + 1) * 32) + game.map[x + 1][y + num][1];
 								posY = 12 + ((y + num) * 32) + game.map[x + 1][y + num][2];
 								break;
 							};
 						} else if (x !== 0) {
 							if (game.map[x - 1][y - num]) {
+								store.push([x, y, x - 1, y - num]);
 								posX = 28 + ((x - 1) * 32) + game.map[x - 1][y - num][1];
 								posY = 12 + ((y - num) * 32) + game.map[x - 1][y - num][2];
 								break;
 							} else if (game.map[x - 1][y + num]) {
+								store.push([x, y, x - 1, y + num]);
 								posX = 28 + ((x - 1) * 32) + game.map[x - 1][y + num][1];
 								posY = 12 + ((y + num) * 32) + game.map[x - 1][y + num][2];
 								break;
@@ -714,6 +719,15 @@ function mapGraphics() {
 			if (game.map[x][y][0] == "battle") {
 				draw.image(map.battle, drawX, drawY);
 			};
+		};
+	};
+	for (let num = 0; num < store.length; num++) {
+		if (store[num][2] > store[num][0]) {
+			if (!(game.paths["" + store[num][0] + ", " + store[num][1]])) game.paths["" + store[num][0] + ", " + store[num][1]] = [];
+			if (!(game.paths["" + store[num][0] + ", " + store[num][1]].includes("" + store[num][2] + ", " + store[num][3]))) game.paths["" + store[num][0] + ", " + store[num][1]].push("" + store[num][2] + ", " + store[num][3]);
+		} else if (store[num][0] > store[num][2]) {
+			if (!(game.paths["" + store[num][2] + ", " + store[num][3]])) game.paths["" + store[num][2] + ", " + store[num][3]] = [];
+			if (!(game.paths["" + store[num][2] + ", " + store[num][3]].includes("" + store[num][0] + ", " + store[num][1]))) game.paths["" + store[num][2] + ", " + store[num][3]].push("" + store[num][0] + ", " + store[num][1]);
 		};
 	};
 };

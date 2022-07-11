@@ -91,6 +91,7 @@ var global = {
 		[mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()],
 		[mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()],
 	],
+	paths: {},
 	saveNum: 0,
 }, actionTimer = -1, notif = [-1, ""], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "map") && game.select[1];
 
