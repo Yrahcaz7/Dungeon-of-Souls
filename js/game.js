@@ -55,6 +55,7 @@ var global = {
 	select: ["none", 0],
 	cardSelect: [0, 0],
 	mapSelect: "exit",
+	mapOn: -1,
 	enemyAtt: new Card(),
 	enemyAttSel: 0,
 	enemyAttFin: false,
@@ -307,12 +308,36 @@ function selection() {
 	};
 	// map
 	if (game.select[0] == "in_map" && game.state == "to_next") {
-		// selecting here
-		if (action == "enter" && game.mapSelect != "exit") {
-			// // convert mapSelect to form "x, y"
-			// game.location = game.mapSelect;
-			// game.state = "enter";
+		if (game.mapSelect == "exit" && action == "up") {
+			game.mapOn = game.paths[game.location].length - 1;
+			game.mapSelect = game.paths[game.location][game.mapOn];
+			actionTimer = 1;
+			return;
+		} else if (action == "up" && game.mapOn) {
+			game.mapOn = game.mapOn - 1;
+			game.mapSelect = game.paths[game.location][game.mapOn];
+			actionTimer = 1;
+			return;
+		} else if (action == "down" && game.mapSelect != "exit") {
+			if (game.mapOn < game.paths[game.location].length - 1) {
+				game.mapOn = game.mapOn + 1;
+				game.mapSelect = game.paths[game.location][game.mapOn];
+			} else {
+				game.mapSelect = "exit";
+			};
+			actionTimer = 1;
+			return;
 		};
+		if (action == "enter" && game.mapSelect != "exit") {
+			game.location = game.mapSelect;
+			game.select = ["none", 0];
+			game.mapSelect = "exit";
+			game.state = "enter";
+			actionTimer = 1;
+			return;
+		};
+	} else {
+		game.mapOn = -1;
 	};
 	// select hand
 	if (game.select[0] == "none") game.select = ["hand", 0];
