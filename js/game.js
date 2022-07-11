@@ -64,6 +64,12 @@ var global = {
 	auraBladePos: [[65, 10], [80, 25], [40, 0], [25, 35]],
 	reinforces: 0,
 	attackEffect: "none",
+	map: [
+		[(Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false],
+		[(Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false],
+		[(Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false],
+		[(Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false, (Math.random()>=0.5)?"battle":false],
+	],
 	saveNum: 0,
 }, actionTimer = -1, notif = [-1, ""], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "map") && game.select[1];
 
