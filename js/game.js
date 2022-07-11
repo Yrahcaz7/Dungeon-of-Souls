@@ -577,7 +577,9 @@ const gameloop = setInterval(function() {
 		if (game.select[0] != "deck" || !game.select[1]) target();
 		popupGraphics();
 	};
-	if (game.select[0] == "confirm_end") {
+	if (game.select[0] == "in_map") {
+		mapGraphics();
+	} else if (game.select[0] == "confirm_end") {
 		let x = 140, y = 86;
 		draw.rect("#00000088");
 		draw.rect("#000000", x, y, 120, 22);

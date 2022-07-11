@@ -84,6 +84,10 @@ clock = {
 }, popup = {
 	back: new Image,
 	music: new Image,
+}, map = {
+	top: new Image,
+	row: new Image,
+	bottom: new Image,
 },
 view = new Image, aura_blade = new Image; // other
 
@@ -195,6 +199,11 @@ intent.attack[10].src = "images/intent/attack/Z.png";
 // popups
 popup.back.src = "images/popup/back.png";
 popup.music.src = "images/popup/music.png";
+
+// map
+map.top.src = "images/map/top.png";
+map.row.src = "images/map/row.png";
+map.bottom.src = "images/map/bottom.png";
 
 // other
 view.src = "images/view.png";

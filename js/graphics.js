@@ -647,3 +647,11 @@ function popupGraphics() {
 		};
 	};
 };
+
+function mapGraphics() {
+	draw.image(paper.top, 3, 4);
+	for (let num = 0; num < 10; num++) {
+		draw.image(paper.row, 16, 20 + (num * 16));
+	};
+	draw.image(paper.bottom, 3, 180);
+};
