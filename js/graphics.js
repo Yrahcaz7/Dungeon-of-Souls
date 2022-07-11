@@ -398,7 +398,6 @@ function enemyGraphics() {
 			game.enemies.splice(index, 1);
 		};
 		if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
-		if (starAnim[index] >= 4) starAnim[index] = 0;
 		if (index !== invNum) {
 			if (select.type == "slime_big") {
 				draw.imageSector(enemy.slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
@@ -406,6 +405,37 @@ function enemyGraphics() {
 				draw.imageSector(enemy.slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
 			};
 		};
+		enemyAnim[index] += (Math.random() + 0.5) * 0.1;
+		draw.bars(pos[0], pos[1], select.health, select.maxHealth, select.shield, select.maxShield);
+	};
+	if (tempAnim[3] != -1) {
+		let pos = game.enemyPos[tempAnim[3]];
+		if (tempAnim[1] == "slime_small_launch") {
+			if (tempAnim[0] >= 10) {
+				let phase = ((tempAnim[0] - 9) / 10),
+					posX = Math.round(((game.enemyPos[tempAnim[3]][0] - 68) - 64) * phase),
+					posY = Math.round(((game.enemyPos[tempAnim[3]][1] - (50 + 10))) * phase);
+				draw.imageSector(enemy.slime.small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
+			} else draw.imageSector(enemy.slime.small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
+			if (tempAnim[2] == "normal") tempAnim[0]++;
+			else if (tempAnim[2] == "backwards") tempAnim[0]--;
+			if (tempAnim[0] >= 20) {
+				tempAnim[0] = 18;
+				tempAnim[2] = "backwards";
+				game.enemyStage = "middle";
+			} else if (tempAnim[0] < 0) {
+				tempAnim = [0, "none", "normal", -1];
+				enemyAnim[tempAnim[3]] = 0;
+				game.enemyStage = "end";
+			} else {
+				game.enemyStage = "pending";
+			};
+			invNum = tempAnim[3];
+		} else invNum = -1;
+	};
+	for (let index = 0; index < game.enemies.length; index++) {
+		let select = game.enemies[index], pos = game.enemyPos[index];
+		if (starAnim[index] >= 4) starAnim[index] = 0;
 		if (index !== tempAnim[3] && (game.turn == "player" || game.enemyNum !== index)) {
 			let y = Math.round(pos[1] + Math.abs(starAnim[index] - 2));
 			if (select.type == "slime_big") {
@@ -421,34 +451,8 @@ function enemyGraphics() {
 				draw.lore(pos[0] + 30, y + 12, game.enemies[index].attackPower, "white", "center");
 			};
 		};
-		enemyAnim[index] += (Math.random() + 0.5) * 0.1;
 		starAnim[index] += (Math.random() + 0.5) * 0.15;
-		draw.bars(pos[0], pos[1], select.health, select.maxHealth, select.shield, select.maxShield);
 	};
-	if (tempAnim[3] == -1) return;
-	let pos = game.enemyPos[tempAnim[3]];
-	if (tempAnim[1] == "slime_small_launch") {
-		if (tempAnim[0] >= 10) {
-			let phase = ((tempAnim[0] - 9) / 10),
-			posX = Math.round(((game.enemyPos[tempAnim[3]][0] - 68) - 64) * phase),
-			posY = Math.round(((game.enemyPos[tempAnim[3]][1] - (50 + 10))) * phase);
-			draw.imageSector(enemy.slime.small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
-		} else draw.imageSector(enemy.slime.small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
-		if (tempAnim[2] == "normal") tempAnim[0]++;
-		else if (tempAnim[2] == "backwards") tempAnim[0]--;
-		if (tempAnim[0] >= 20) {
-			tempAnim[0] = 18;
-			tempAnim[2] = "backwards";
-			game.enemyStage = "middle";
-		} else if (tempAnim[0] < 0) {
-			tempAnim = [0, "none", "normal", -1];
-			enemyAnim[tempAnim[3]] = 0;
-			game.enemyStage = "end";
-		} else {
-			game.enemyStage = "pending";
-		};
-		invNum = tempAnim[3];
-	} else invNum = -1;
 };
 
 function infoGraphics() {
