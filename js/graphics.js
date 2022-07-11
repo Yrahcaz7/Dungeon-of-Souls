@@ -676,6 +676,9 @@ function mapGraphics() {
 			if (!game.map[x][y]) continue;
 			let drawX = 28 + (x * 32) + game.map[x][y][1];
 			let drawY = 12 + (y * 32) + game.map[x][y][2];
+			if (x === 0) {
+				draw.line(drawX + 8, drawY + 8, 20, drawY + 8, "#fff", 3);
+			};
 			if (game.map[x][y]) {
 				for (let branch = 0; branch < 2; branch++) {
 					let posX, posY;
