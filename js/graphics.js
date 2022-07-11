@@ -459,8 +459,9 @@ function infoGraphics() {
 	if (game.select[1] == 2) {
 		draw.lore(1, 1, "Dungeon of Souls - Changelog", "red");
 		draw.lore(1, 23, logTitles[0], "white");
-		draw.lore(1, 78, logTitles[1], "white");
-		draw.lore(1, 133, logTitles[2], "white");
+		draw.lore(1, 50.5, logTitles[1], "white");
+		draw.lore(1, 105.5, logTitles[2], "white");
+		draw.lore(1, 160.5, logTitles[3], "white");
 		draw.lore(1, 34, changelog, "white", "right", true);
 	} else {
 		draw.lore(1, 1, "Dungeon of Souls - Overview", "red");

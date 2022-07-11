@@ -41,8 +41,11 @@ const infoText = {
 	+ "find the fragment of time.\n"
 	+ "Else, at the edge of the sky,\n"
 	+ "you shall eternally die.",
-logTitles = ["Version 1.0 - Manifestation - (in progress)", "Version 0.2 - Realization - (302 total commits)", "Version 0.1 - Desolation - (107 commits)"],
+logTitles = ["Version 1.1 - Formulation - (in progress)", "Version 1.0 - Manifestation - (413 total commits)", "Version 0.2 - Realization - (302 total commits)", "Version 0.1 - Desolation - (107 commits)"],
 changelog = ""
+	+ " - enemies now die upon reaching 0 health\n"
+	+ " - added the map\n"
+	+ "\n\n\n"
 	+ " - you can now end your turn (you couldn't before)\n"
 	+ " - enemies can now attack and defend\n"
 	+ " - you can now see what the enemy intends to do\n"
