@@ -267,10 +267,10 @@ function backgrounds() {
 	time[1] += (time[2] / 60);
 	time[0] += (time[1] / 60);
 	if (time[0] >= 12) time[0] = time[0] - 12;
-	draw.image(cave);
+	draw.image(background.cave);
 	draw.rect("#10106080");
-	draw.image(background);
-	draw.image(floating_arch, 136, 34 - Math.round(backAnim[0]));
+	draw.image(background.temple);
+	draw.image(background.floating_arch, 136, 34 - Math.round(backAnim[0]));
 	draw.image(clock.face, clockX, clockY);
 	draw.imageSector(clock.hour_hand, Math.floor((time[0]) * 82 / 12) * 24, 0, 24, 24, clockX + 18, clockY + 18);
 	draw.imageSector(clock.min_hand, Math.floor((time[1]) * 80 / 60) * 34, 0, 34, 34, clockX + 13, clockY + 13);
@@ -382,21 +382,21 @@ function enemyGraphics() {
 		game.enemies.splice(6);
 	};
 	for (let index = 0; index < game.enemies.length; index++) {
-		let enemy = game.enemies[index], pos = game.enemyPos[index];
+		let select = game.enemies[index], pos = game.enemyPos[index];
 		if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
 		if (starAnim[index] >= 4) starAnim[index] = 0;
 		if (index !== invNum) {
-			if (enemy.type == "slime_big") {
-				draw.imageSector(slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
-			} else if (enemy.type == "slime_small") {
-				draw.imageSector(slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
+			if (select.type == "slime_big") {
+				draw.imageSector(enemy.slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
+			} else if (select.type == "slime_small") {
+				draw.imageSector(enemy.slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
 			};
 		};
 		if (index !== tempAnim[3] && (game.turn == "player" || game.enemyNum !== index)) {
 			let y = Math.round(pos[1] + Math.abs(starAnim[index] - 2));
-			if (enemy.type == "slime_big") {
+			if (select.type == "slime_big") {
 				y -= 17;
-			} else if (enemy.type == "slime_small") {
+			} else if (select.type == "slime_small") {
 				y -= 7;
 			};
 			if (game.enemies[index].intent == "defend") {
@@ -409,7 +409,7 @@ function enemyGraphics() {
 		};
 		enemyAnim[index] += (Math.random() + 0.5) * 0.1;
 		starAnim[index] += (Math.random() + 0.5) * 0.15;
-		draw.bars(pos[0], pos[1], enemy.health, enemy.maxHealth, enemy.shield, enemy.maxShield);
+		draw.bars(pos[0], pos[1], select.health, select.maxHealth, select.shield, select.maxShield);
 	};
 	if (tempAnim[3] == -1) return;
 	let pos = game.enemyPos[tempAnim[3]];
@@ -418,8 +418,8 @@ function enemyGraphics() {
 			let phase = ((tempAnim[0] - 9) / 10),
 			posX = Math.round(((game.enemyPos[tempAnim[3]][0] - 68) - 64) * phase),
 			posY = Math.round(((game.enemyPos[tempAnim[3]][1] - (50 + 10))) * phase);
-			draw.imageSector(slime.small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
-		} else draw.imageSector(slime.small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
+			draw.imageSector(enemy.slime.small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
+		} else draw.imageSector(enemy.slime.small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
 		if (tempAnim[2] == "normal") tempAnim[0]++;
 		else if (tempAnim[2] == "backwards") tempAnim[0]--;
 		if (tempAnim[0] >= 20) {

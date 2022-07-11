@@ -39,13 +39,17 @@ const player = {
 		defense: new Image,
 		magic: new Image,
 	},
-}, slime = {
-	big: new Image,
-	small: new Image,
-	small_launch: new Image,
-},
-cave = new Image, background = new Image, floating_arch = new Image, // backrounds
-clock = {
+}, enemy = {
+	slime: {
+		big: new Image,
+		small: new Image,
+		small_launch: new Image,
+	},
+}, background = {
+	cave: new Image,
+	temple: new Image,
+	floating_arch: new Image,
+}, clock = {
 	face: new Image,
 	hour_hand: new Image,
 	min_hand: new Image,
@@ -119,14 +123,14 @@ card.outline.defense.src = "images/cards/outline/defense.png";
 card.outline.magic.src = "images/cards/outline/magic.png";
 
 // slimes
-slime.big.src = "images/enemies/slime/big.png";
-slime.small.src = "images/enemies/slime/small.png";
-slime.small_launch.src = "images/enemies/slime/small_launch.png";
+enemy.slime.big.src = "images/enemies/slime/big.png";
+enemy.slime.small.src = "images/enemies/slime/small.png";
+enemy.slime.small_launch.src = "images/enemies/slime/small_launch.png";
 
 // backrounds
-cave.src = "images/cave.png";
-background.src = "images/background.png";
-floating_arch.src = "images/floating_arch.png";
+background.cave.src = "images/background/cave.png";
+background.temple.src = "images/background/temple.png";
+background.floating_arch.src = "images/background/floating_arch.png";
 
 // the clock
 clock.face.src = "images/clock/face.png";
