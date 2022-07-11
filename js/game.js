@@ -49,6 +49,7 @@ var global = {
 	shield: 0,
 	maxShield: 60,
 	floor: 1,
+	location: "-1",
 	state: "enter",
 	turn: "none",
 	select: ["none", 0],
@@ -276,10 +277,8 @@ function enemyTurn() {
 	for (let a = 0; a < game.enemies.length; a++) {
 		let ref = game.enemies[a];
 		if (ref instanceof Enemy) continue;
-		else {
-			game.enemies[a] = new Enemy(undefined, undefined, ref);
-			console.log("refresh enemy " + a);
-		};
+		game.enemies[a] = new Enemy(undefined, undefined, ref);
+		console.log("refresh enemy " + a);
 	};
 	if (game.enemyStage == "end") game.enemies[num].finishAction();
 	else if (game.enemyStage == "middle") game.enemies[num].middleAction();
@@ -607,17 +606,21 @@ const gameloop = setInterval(function() {
 	// update data again
 	updateData();
 	// load floor
-	if (game.floor == 1) {
+	if (game.location == "-1") {
 		if (game.state == "enter") {
 			game.enemyIndex = 0;
 			game.enemies.push(new Enemy("slime_small"));
 			enterBattle();
 		};
-	} else if (game.floor == 2) {
-		if (game.state == "enter") {
-			game.enemyIndex = 0;
-			game.enemies.push(new Enemy("slime_big"));
-			enterBattle();
+	} else {
+		let place = game.location.split(", ");
+		if (game.map[place[0]][place[1]][0] == "battle") {
+			if (game.state == "enter") {
+				game.enemyIndex = 0;
+				if (chance()) game.enemies.push(new Enemy("slime_big"));
+				else game.enemies.push(new Enemy("slime_small"), new Enemy("slime_small", 0.75 + game.floor * 0.05));
+				enterBattle();
+			};
 		};
 	};
 	// visuals
