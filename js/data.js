@@ -67,7 +67,7 @@ var bladeFloat = [0, "up", 2.5, "up", 3, "down", 0.5, "down"];
 
 function updateData() {
 	// hide
-	hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "discard") && game.select[1];
+	hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "discard" || game.select[0] == "map") && game.select[1];
 	// enemyPos
 	let number = game.enemies.length, x = 400, y = 50;
 	if (number == 1) game.enemyPos = [[x - 105, y]];

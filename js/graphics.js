@@ -651,9 +651,12 @@ function popupGraphics() {
 };
 
 function mapGraphics() {
-	draw.image(paper.top, 3, 4);
+	draw.rect("#000000");
+	draw.image(map.top, 5, 4);
 	for (let num = 0; num < 10; num++) {
-		draw.image(paper.row, 16, 20 + (num * 16));
+		draw.image(map.row, 18, 20 + (num * 16));
 	};
-	draw.image(paper.bottom, 3, 180);
+	draw.image(map.bottom, 5, 180);
+	draw.image(extra.end, 22, 178);
+	if (game.mapSelect[0] == "exit") draw.image(select.round, 21, 177);
 };

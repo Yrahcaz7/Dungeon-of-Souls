@@ -36,6 +36,7 @@ var global = {
 	turn: "none",
 	select: ["none", 0],
 	cardSelect: [0, 0],
+	mapSelect: ["exit", 0],
 	enemyAtt: new Card(),
 	enemyAttSel: 0,
 	enemyAttFin: false,
@@ -46,6 +47,7 @@ var global = {
 	enemyIndex: 0,
 	enemyNum: 0,
 	enemyStage: "none",
+	artifacts: [],
 	deck: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("reinforce"), new Card("aura blade")],
 	deckLocal: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("reinforce"), new Card("aura blade")],
 	deckProxy: "",
@@ -63,7 +65,7 @@ var global = {
 	reinforces: 0,
 	attackEffect: "none",
 	saveNum: 0,
-}, actionTimer = -1, notif = [-1, ""], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck") && game.select[1];
+}, actionTimer = -1, notif = [-1, ""], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "map") && game.select[1];
 
 function hardReset() {
 	localStorage.removeItem("Yrahcaz7/Dungeon-of-Souls/save/0");
@@ -285,6 +287,11 @@ function selection() {
 		return;
 	};
 	// select / deselect player and more extras
+	if (action == "up" && game.select[0] == "lookat_you") {
+		game.select = ["map", 0];
+		actionTimer = 1;
+		return;
+	};
 	if (action == "up" && game.select[0] == "discard" && !game.select[1]) {
 		if (popups[0]) game.select = ["popups", 0];
 		else game.select = ["lookat_enemy", 0];
@@ -423,6 +430,16 @@ function selection() {
 		actionTimer = 2;
 		return;
 	};
+	if (action == "enter" && game.select[0] == "map") {
+		game.select = ["in_map", 0];
+		actionTimer = 2;
+		return;
+	};
+	if (action == "enter" && game.select[0] == "in_map" && game.mapSelect[0] == "exit") {
+		game.select = ["map", 0];
+		actionTimer = 2;
+		return;
+	};
 	if (action == "enter" && game.select[0] == "help") {
 		if (game.select[1] <= 1) game.select[1]++;
 		else game.select[1] = 0;
@@ -457,8 +474,12 @@ function selection() {
 		return;
 	};
 	// deselect extras
-	if ((game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "music") && !game.select[1]) {
-		if (action == "left" && game.select[0] == "looker") {
+	if ((game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "music" || game.select[0] == "map") && !game.select[1]) {
+		if (action == "left" && game.select[0] == "music") {
+			game.select = ["map", 0];
+			actionTimer = 1;
+			return;
+		} else if (action == "left" && game.select[0] == "looker") {
 			game.select = ["music", 0];
 			actionTimer = 1;
 			return;
@@ -470,12 +491,18 @@ function selection() {
 			game.select = ["looker", 0];
 			actionTimer = 1;
 			return;
+		} else if (action == "right" && game.select[0] == "map") {
+			if (game.artifacts[0]) game.select = ["artifacts", 0];
+			else game.select = ["music", 0];
+			actionTimer = 1;
+			return;
 		} else if (action == "right" && game.select[0] == "looker") {
 			game.select = ["help", 0];
 			actionTimer = 1;
 			return;
 		} else if (action == "down") {
-			game.select = ["lookat_enemy", 0];
+			if (game.select[0] == "map") game.select = ["lookat_you", 0];
+			else game.select = ["lookat_enemy", 0];
 			actionTimer = 1;
 			return;
 		};
@@ -575,7 +602,6 @@ const gameloop = setInterval(function() {
 	if (!hide) {
 		renderCards();
 		if (game.select[0] != "deck" || !game.select[1]) target();
-		popupGraphics();
 	};
 	if (game.select[0] == "in_map") {
 		mapGraphics();
@@ -618,6 +644,7 @@ const gameloop = setInterval(function() {
 		deckPos = 0;
 		deckMove = "none";
 	};
+	popupGraphics();
 	// enemy actions
 	if (game.turn == "enemy") enemyTurn();
 }, 100), musicloop = setInterval(function() {
