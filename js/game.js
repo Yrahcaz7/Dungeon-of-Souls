@@ -16,12 +16,23 @@
 	along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+function randomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+	if ((!min && min !== 0) || (!max && max !== 0)) return NaN;
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
 function chance(chance = 0.5) {
 	return !(Math.random()>=chance);
 };
 
 function mapPiece() {
 	return chance()?"battle":false;
+};
+
+function mapPos() {
+	return [randomInt(-5, 5), randomInt(-5, 5)];
 };
 
 var global = {
@@ -77,6 +88,12 @@ var global = {
 		[mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()],
 		[mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()],
 		[mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()],
+	],
+	mapPos: [
+		[mapPos(), mapPos(), mapPos(), mapPos(), mapPos(), mapPos(), mapPos()],
+		[mapPos(), mapPos(), mapPos(), mapPos(), mapPos(), mapPos(), mapPos()],
+		[mapPos(), mapPos(), mapPos(), mapPos(), mapPos(), mapPos(), mapPos()],
+		[mapPos(), mapPos(), mapPos(), mapPos(), mapPos(), mapPos(), mapPos()],
 	],
 	saveNum: 0,
 }, actionTimer = -1, notif = [-1, ""], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "map") && game.select[1];
