@@ -44,7 +44,7 @@ const infoText = {
 logTitles = ["Version 1.1 - Formulation - (in progress)", "Version 1.0 - Manifestation - (413 total commits)", "Version 0.2 - Realization - (302 total commits)", "Version 0.1 - Desolation - (107 commits)"],
 changelog = ""
 	+ " - enemies now die upon reaching 0 health\n"
-	+ " - added the map\n"
+	+ " - added the map (upper-left corner)\n"
 	+ "\n\n\n"
 	+ " - you can now end your turn (you couldn't before)\n"
 	+ " - enemies can now attack and defend\n"
