@@ -672,7 +672,7 @@ function mapGraphics() {
 	};
 	draw.image(map.bottom, 5, 180);
 	draw.image(extra.end, 22, 178);
-	if (game.mapSelect[0] == "exit") draw.image(select.round, 21, 177);
+	if (game.mapSelect == "exit") draw.image(select.round, 21, 177);
 	let store = [];
 	for (let x = 0; x < game.map.length; x++) {
 		for (let y = 0; y < game.map[x].length; y++) {
@@ -717,6 +717,7 @@ function mapGraphics() {
 			};
 		};
 	};
+	let coords = game.mapSelect.split(", ");
 	for (let x = 0; x < game.map.length; x++) {
 		for (let y = 0; y < game.map[x].length; y++) {
 			if (!game.map[x][y]) continue;
@@ -724,6 +725,7 @@ function mapGraphics() {
 			let drawY = 12 + (y * 32) + game.map[x][y][2];
 			if (game.map[x][y][0] == "battle") {
 				draw.image(map.battle, drawX, drawY);
+				if (x == coords[0] && y == coords[1]) draw.image(select.battle, drawX - 1, drawY - 1);
 			};
 		};
 	};

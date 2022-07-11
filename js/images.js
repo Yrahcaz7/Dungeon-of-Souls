@@ -72,6 +72,7 @@ const player = {
 	discard: new Image,
 	popup: new Image,
 	map: new Image,
+	battle: new Image,
 	selector: [new Image, new Image, new Image, new Image],
 }, extra = {
 	help: new Image,
@@ -163,6 +164,7 @@ select.deck.src = "images/select/deck.png";
 select.discard.src = "images/select/discard.png";
 select.popup.src = "images/select/popup.png";
 select.map.src = "images/select/map.png";
+select.battle.src = "images/select/battle.png";
 select.selector[0].src = "images/select/u_l.png";
 select.selector[1].src = "images/select/u_r.png";
 select.selector[2].src = "images/select/d_l.png";

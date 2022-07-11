@@ -54,7 +54,7 @@ var global = {
 	turn: "none",
 	select: ["none", 0],
 	cardSelect: [0, 0],
-	mapSelect: ["exit", 0],
+	mapSelect: "exit",
 	enemyAtt: new Card(),
 	enemyAttSel: 0,
 	enemyAttFin: false,
@@ -477,7 +477,7 @@ function selection() {
 		actionTimer = 2;
 		return;
 	};
-	if (action == "enter" && game.select[0] == "in_map" && game.mapSelect[0] == "exit") {
+	if (action == "enter" && game.select[0] == "in_map" && game.mapSelect == "exit") {
 		game.select = ["map", 0];
 		actionTimer = 2;
 		return;
