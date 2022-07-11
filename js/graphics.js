@@ -389,11 +389,14 @@ function playerGraphics() {
 };
 
 function enemyGraphics() {
-	if (game.enemies.length > 6) {
-		game.enemies.splice(6);
+	if (game.enemies.length > 5) {
+		game.enemies.splice(5);
 	};
 	for (let index = 0; index < game.enemies.length; index++) {
 		let select = game.enemies[index], pos = game.enemyPos[index];
+		if (select.health <= 0) {
+			game.enemies.splice(index, 1);
+		};
 		if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
 		if (starAnim[index] >= 4) starAnim[index] = 0;
 		if (index !== invNum) {

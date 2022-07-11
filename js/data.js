@@ -75,7 +75,7 @@ function updateData() {
 	else if (number == 3) game.enemyPos = [[x - 70, y], [x - 140, y + 32], [x - 140, y - 32]];
 	else if (number == 4) game.enemyPos = [[x - 70, y], [x - 140, y + 32], [x - 140, y - 32], [x - 210, y]];
 	else if (number == 5) game.enemyPos = [[x - 70, y], [x - 140, y + 32], [x - 140, y - 32], [x - 210, y + 32], [x - 210, y - 32]];
-	else if (number == 6) game.enemyPos = [[x - 70, y], [x - 140, y + 32], [x - 140, y - 32], [x - 210, y + 64], [x - 210, y], [x - 210, y - 64]];
+	else game.enemyPos = [[x - 70, y], [x - 140, y + 32], [x - 140, y - 32], [x - 210, y + 64], [x - 210, y], [x - 210, y - 64]];
 	// handPos
 	number = game.hand.length;
 	x = 198;

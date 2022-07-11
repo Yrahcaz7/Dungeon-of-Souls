@@ -305,6 +305,15 @@ function selection() {
 		};
 		return;
 	};
+	// map
+	if (game.select[0] == "in_map" && game.state == "to_next") {
+		// selecting here
+		if (action == "enter" && game.mapSelect != "exit") {
+			// // convert mapSelect to form "x, y"
+			// game.location = game.mapSelect;
+			// game.state = "enter";
+		};
+	};
 	// select hand
 	if (game.select[0] == "none") game.select = ["hand", 0];
 	// select extras
@@ -321,6 +330,7 @@ function selection() {
 	};
 	if (action == "up" && game.select[0] == "discard" && !game.select[1]) {
 		if (popups[0]) game.select = ["popups", 0];
+		else if (!game.enemies.length) game.select = ["music", 0];
 		else game.select = ["lookat_enemy", 0];
 		actionTimer = 1;
 		return;
@@ -337,7 +347,8 @@ function selection() {
 			return;
 		};
 		if (game.select[0] == "discard" && !game.select[1]) {
-			if (!game.hand[0]) game.select = ["lookat_enemy", 0];
+			if (!game.enemies.length) game.select = ["lookat_you", 0];
+			else if (!game.hand[0]) game.select = ["lookat_enemy", 0];
 			else game.select = ["hand", game.prevCard];
 			actionTimer = 1;
 			return;
@@ -350,7 +361,8 @@ function selection() {
 	};
 	if (action == "right") {
 		if (game.select[0] == "lookat_you") {
-			if (!game.hand[0]) game.select = ["lookat_enemy", game.enemies.length - 1];
+			if (!game.enemies.length) game.select = ["discard", 0];
+			else if (!game.hand[0]) game.select = ["lookat_enemy", game.enemies.length - 1];
 			else game.select = ["hand", game.prevCard];
 			actionTimer = 1;
 			return;
@@ -378,7 +390,8 @@ function selection() {
 	// popup selection
 	if (game.select[0] == "popups") {
 		if (popups.length == 0) {
-			game.select = ["hand", game.prevCard];
+			if (!game.hand.length) game.select = ["discard", 0];
+			else game.select = ["hand", game.prevCard];
 			return;
 		} else if (game.select[1] >= popups.length) {
 			game.select[1] = popups.length - 1;
@@ -400,13 +413,15 @@ function selection() {
 			actionTimer = 1;
 			return;
 		} else if (action == "left") {
-			game.select = ["hand", game.prevCard];
+			if (!game.hand.length) game.select = ["lookat_you", 0];
+			else game.select = ["hand", game.prevCard];
 			actionTimer = 1;
 			return;
 		} else if (action == "enter") {
 			popups.splice(game.select[1], 1);
 			if (popups.length == 0) {
-				game.select = ["hand", game.prevCard];
+				if (!game.hand.length) game.select = ["discard", 0];
+				else game.select = ["hand", game.prevCard];
 			} else if (game.select[1] > 0) {
 				game.select[1]--;
 			};
@@ -529,6 +544,8 @@ function selection() {
 			return;
 		} else if (action == "down") {
 			if (game.select[0] == "map") game.select = ["lookat_you", 0];
+			else if (popups.length) game.select = ["popups", popups.length - 1];
+			else if (!game.enemies.length) game.select = ["discard", 0];
 			else game.select = ["lookat_enemy", 0];
 			actionTimer = 1;
 			return;
@@ -603,6 +620,11 @@ const gameloop = setInterval(function() {
 	// actions
 	if (game.turn == "player") playerTurn();
 	selection();
+	if (game.state == "battle" && !game.enemies.length) {
+		endTurn();
+		game.state = "to_next";
+		game.turn = "none";
+	};
 	// update data again
 	updateData();
 	// load floor
