@@ -389,8 +389,8 @@ function playerGraphics() {
 };
 
 function enemyGraphics() {
-	if (game.enemies.length > 5) {
-		game.enemies.splice(5);
+	if (game.enemies.length > 6) {
+		game.enemies.splice(6);
 	};
 	for (let index = 0; index < game.enemies.length; index++) {
 		let select = game.enemies[index], pos = game.enemyPos[index];

@@ -75,10 +75,10 @@ function updateData() {
 	let number = game.enemies.length, x = 400, y = 50;
 	if (number == 1) game.enemyPos = [[x - 105, y]];
 	else if (number == 2) game.enemyPos = [[x - 70, y - 5], [x - 140, y + 20]];
-	else if (number == 3) game.enemyPos = [[x - 70, y], [x - 140, y + 32], [x - 140, y - 32]];
-	else if (number == 4) game.enemyPos = [[x - 70, y], [x - 140, y + 32], [x - 140, y - 32], [x - 210, y]];
-	else if (number == 5) game.enemyPos = [[x - 70, y], [x - 140, y + 32], [x - 140, y - 32], [x - 210, y + 32], [x - 210, y - 32]];
-	else game.enemyPos = [[x - 70, y], [x - 140, y + 32], [x - 140, y - 32], [x - 210, y + 64], [x - 210, y], [x - 210, y - 64]];
+	else if (number == 3) game.enemyPos = [[x - 70, y + 20], [x - 140, y + 30], [x - 110, y - 36]];
+	else if (number == 4) game.enemyPos = [[x - 70, y + 30], [x - 140, y + 30], [x - 110, y - 36], [x - 200, y - 20]];
+	else if (number == 5) game.enemyPos = [[x - 70, y + 30], [x - 140, y + 30], [x - 100, y - 36], [x - 170, y - 36], [x - 210, y + 30]];
+	else if (number == 6) game.enemyPos = [[x - 70, y + 30], [x - 140, y + 30], [x - 100, y - 36], [x - 170, y - 36], [x - 210, y + 30], [x - 240, y - 36]];
 	// handPos
 	number = game.hand.length;
 	x = 198;
