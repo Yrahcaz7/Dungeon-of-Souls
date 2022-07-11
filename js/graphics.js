@@ -295,12 +295,14 @@ function foregrounds() {
 	draw.image(extra.end, 3, 163);
 	draw.image(extra.deck, 3, 182);
 	draw.image(extra.discard, 383, 182);
+	draw.image(extra.map, 2, 12);
 	if (game.select[0] == "help") draw.image(select.round, 380, 2);
 	else if (game.select[0] == "looker") draw.image(select.round, 361, 2);
 	else if (game.select[0] == "music") draw.image(select.round, 342, 2);
 	else if (game.select[0] == "end") draw.image(select.round, 2, 162);
 	else if (game.select[0] == "deck") draw.image(select.deck, 2, 181);
 	else if (game.select[0] == "discard") draw.image(select.discard, 382, 181);
+	else if (game.select[0] == "map") draw.image(select.map, 1, 11);
 	draw.lore(1, 1, "floor: " + game.floor, "red", "right");
 };
 

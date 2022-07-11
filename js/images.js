@@ -67,6 +67,7 @@ clock = {
 	deck: new Image,
 	discard: new Image,
 	popup: new Image,
+	map: new Image,
 	selector: [new Image, new Image, new Image, new Image],
 }, extra = {
 	help: new Image,
@@ -75,6 +76,7 @@ clock = {
 	end: new Image,
 	deck: new Image,
 	discard: new Image,
+	map: new Image,
 }, icon = {
 	reinforce: new Image,
 	aura_blade: new Image,
@@ -155,6 +157,7 @@ select.card_unplayable.src = "images/select/card_unplayable.png";
 select.deck.src = "images/select/deck.png";
 select.discard.src = "images/select/discard.png";
 select.popup.src = "images/select/popup.png";
+select.map.src = "images/select/map.png";
 select.selector[0].src = "images/select/u_l.png";
 select.selector[1].src = "images/select/u_r.png";
 select.selector[2].src = "images/select/d_l.png";
@@ -167,6 +170,7 @@ extra.music.src = "images/extras/music.png";
 extra.end.src = "images/extras/end.png";
 extra.deck.src = "images/extras/deck.png";
 extra.discard.src = "images/extras/discard.png";
+extra.map.src = "images/extras/map.png";
 
 // icons
 icon.reinforce.src = "images/icons/reinforce.png";
