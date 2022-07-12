@@ -635,8 +635,11 @@ function selection() {
 const gameloop = setInterval(function() {
 	// bugs
 	if (!canvas || !ctx) {
-		console.error("Canvas not loaded properly. Please reload page if problem persists.");
-		return;
+		canvasData();
+		if (!canvas || !ctx) {
+			console.error("Canvas not loaded properly. Please reload page if problem persists.");
+			return;
+		};
 	};
 	// clear
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
