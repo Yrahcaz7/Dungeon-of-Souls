@@ -560,9 +560,13 @@ function renderCards() {
 };
 
 function info(type, location = "player", xPlus = 0) {
-	if (type == "iron will") {
+	if (type == "the map") {
+		let x = 20 + xPlus, y = 11;
+		draw.textBox(x, y, 12, "The Map", "black", "center");
+		draw.textBox(x, y + 13, 24, infoText.the_map, "black", "right", true);
+	} else if (type == "iron will") {
 		if (location == "artifact") {
-			let x = 38 + (game.select[1] * 18) + xPlus, y = 12;
+			let x = 38 + (game.select[1] * 18) + xPlus, y = 11;
 			draw.textBox(x, y, 12, "Iron Will", "black", "center");
 			draw.textBox(x, y + 13, 24, infoText.iron_will, "black", "right", true);
 		};
@@ -611,7 +615,9 @@ function info(type, location = "player", xPlus = 0) {
 };
 
 function target() {
-	if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") {
+	if (game.select[0] == "map") {
+		info("the map");
+	} else if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") {
 		enemyType = game.enemies[game.select[1]].type;
 		pos = game.enemyPos[game.select[1]];
 		if (enemyType == "slime_small") {
