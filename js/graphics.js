@@ -307,6 +307,11 @@ function foregrounds() {
 	draw.image(extra.deck, 3, 182);
 	draw.image(extra.discard, 383, 182);
 	draw.image(extra.map, 2, 12);
+	if (game.artifacts.includes("iron will")) {
+		let index = game.artifacts.indexOf("iron will");
+		draw.image(icon.iron_will, 20 + (index * 18), 12);
+		if (game.select[0] == "artifacts" && game.select[1] == index) draw.image(select.iron_will, 19 + (index * 18), 11);
+	};
 	if (game.select[0] == "help") draw.image(select.round, 380, 2);
 	else if (game.select[0] == "looker") draw.image(select.round, 361, 2);
 	else if (game.select[0] == "music") draw.image(select.round, 342, 2);

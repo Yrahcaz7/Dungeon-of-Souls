@@ -543,7 +543,8 @@ function selection() {
 	// deselect extras
 	if ((game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "music" || game.select[0] == "map") && !game.select[1]) {
 		if (action == "left" && game.select[0] == "music") {
-			game.select = ["map", 0];
+			if (game.artifacts.length) game.select = ["artifacts", game.artifacts.length - 1];
+			else game.select = ["map", 0];
 			actionTimer = 1;
 			return;
 		} else if (action == "left" && game.select[0] == "looker") {
@@ -575,6 +576,26 @@ function selection() {
 			actionTimer = 1;
 			return;
 		};
+	};
+	// artifacts
+	if (game.select[0] == "artifacts") {
+		if (action == "left") {
+			if (game.select[1] == 0) game.select = ["map", 0];
+			else game.select[1]--;
+			actionTimer = 1;
+			return;
+		} else if (action == "right") {
+			if (game.select[1] == game.artifacts.length - 1) game.select = ["music", 0];
+			else game.select[1]++;
+			actionTimer = 1;
+			return;
+		} else if (action == "down") {
+			game.select = ["lookat_you", 0];
+			actionTimer = 1;
+			return;
+		};
+		if (game.select[1] < 0) game.select[1] = 0;
+		else if (game.select[1] >= game.artifacts.length - 1) game.select[1] = game.artifacts.length - 1;
 	};
 	// select card
 	if (game.select[0] == "hand") {
@@ -654,6 +675,7 @@ const gameloop = setInterval(function() {
 		game.auraBlades = 0;
 		game.state = "to_next";
 		game.turn = "none";
+		if (game.artifacts.includes("iron will")) game.health += 2;
 	};
 	// update data again
 	updateData();
