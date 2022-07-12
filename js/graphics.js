@@ -669,22 +669,25 @@ function popupGraphics() {
 	};
 };
 
-function mapGraphics() {
-	draw.rect("#000000");
-	draw.image(map.top, 5, 4);
-	for (let num = 0; num < 10; num++) {
-		draw.image(map.row, 18, 20 + (num * 16));
+function mapGraphics(onlyCalc = false) {
+	let render = !onlyCalc;
+	if (render) {
+		draw.rect("#000000");
+		draw.image(map.top, 5, 4);
+		for (let num = 0; num < 10; num++) {
+			draw.image(map.row, 18, 20 + (num * 16));
+		};
+		draw.image(map.bottom, 5, 180);
+		draw.image(extra.end, 22, 178);
+		if (game.mapSelect == "exit") draw.image(select.round, 21, 177);
 	};
-	draw.image(map.bottom, 5, 180);
-	draw.image(extra.end, 22, 178);
-	if (game.mapSelect == "exit") draw.image(select.round, 21, 177);
 	let store = [];
 	for (let x = 0; x < game.map.length; x++) {
 		for (let y = 0; y < game.map[x].length; y++) {
 			if (!game.map[x][y]) continue;
 			let drawX = 28 + (x * 32) + game.map[x][y][1];
 			let drawY = 12 + (y * 32) + game.map[x][y][2];
-			if (x === 0) {
+			if (x === 0 && render) {
 				draw.line(drawX + 8, drawY + 8, 20, drawY + 8, "#fff", 3);
 			};
 			if (game.map[x][y]) {
@@ -717,20 +720,22 @@ function mapGraphics() {
 							};
 						};
 					};
-					draw.line(drawX + 8, drawY + 8, posX + 8, posY + 8, "#fff", 3);
+					if (render) draw.line(drawX + 8, drawY + 8, posX + 8, posY + 8, "#fff", 3);
 				};
 			};
 		};
 	};
 	let coords = game.mapSelect.split(", ");
-	for (let x = 0; x < game.map.length; x++) {
-		for (let y = 0; y < game.map[x].length; y++) {
-			if (!game.map[x][y]) continue;
-			let drawX = 28 + (x * 32) + game.map[x][y][1];
-			let drawY = 12 + (y * 32) + game.map[x][y][2];
-			if (game.map[x][y][0] == "battle") {
-				draw.image(map.battle, drawX, drawY);
-				if (x == coords[0] && y == coords[1]) draw.image(select.battle, drawX - 1, drawY - 1);
+	if (render) {
+		for (let x = 0; x < game.map.length; x++) {
+			for (let y = 0; y < game.map[x].length; y++) {
+				if (!game.map[x][y]) continue;
+				let drawX = 28 + (x * 32) + game.map[x][y][1];
+				let drawY = 12 + (y * 32) + game.map[x][y][2];
+				if (game.map[x][y][0] == "battle") {
+					draw.image(map.battle, drawX, drawY);
+					if (x == coords[0] && y == coords[1]) draw.image(select.battle, drawX - 1, drawY - 1);
+				};
 			};
 		};
 	};
@@ -746,5 +751,8 @@ function mapGraphics() {
 			if (!(game.paths["-1"])) game.paths["-1"] = [];
 			if (!(game.paths["-1"].includes("" + store[num][0] + ", " + store[num][1]))) game.paths["-1"].push("" + store[num][0] + ", " + store[num][1]);
 		};
+	};
+	for (let item in game.paths) {
+		game.paths[item].sort();
 	};
 };
