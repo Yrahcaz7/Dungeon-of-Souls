@@ -559,16 +559,16 @@ function renderCards() {
 	};
 };
 
-function info(type, location = "player") {
+function info(type, location = "player", xPlus = 0) {
 	if (type == "iron will") {
 		if (location == "artifact") {
-			let x = 38 + (game.select[1] * 18), y = 12;
+			let x = 38 + (game.select[1] * 18) + xPlus, y = 12;
 			draw.textBox(x, y, 12, "Iron Will", "black", "center");
 			draw.textBox(x, y + 13, 24, infoText.iron_will, "black", "right", true);
 		};
 	} else if (type == "reinforce") {
 		if (location == "card") {
-			let x = game.handPos[game.select[1]], y = 146 - Math.floor(cardAnim[game.select[1]]);
+			let x = game.handPos[game.select[1]] + xPlus, y = 146 - Math.floor(cardAnim[game.select[1]]);
 			if (game.select[1] == game.hand.length - 1 && game.hand.length >= 4) {
 				x -= 146;
 			};
@@ -577,10 +577,10 @@ function info(type, location = "player") {
 			let pos = 70, desc = "You have " + game.reinforces + " reinforce";
 			if (game.reinforces >= 2) desc += "s.";
 			else desc += ".";
-			draw.textBox(84, pos, desc.length, desc, "black", "right", true);
-			draw.textBox(84, pos + 11, 24, infoText.reinforce, "black", "right", true);
+			draw.textBox(84 + xPlus, pos, desc.length, desc, "black", "right", true);
+			draw.textBox(84 + xPlus, pos + 11, 24, infoText.reinforce, "black", "right", true);
 		} else if (location == "deck") {
-			let x = 2 + (game.cardSelect[0] * 66), y = 14 + (game.cardSelect[1] * 98) - game.deckPos;
+			let x = 2 + (game.cardSelect[0] * 66) + xPlus, y = 14 + (game.cardSelect[1] * 98) - game.deckPos;
 			if (game.cardSelect[0] >= 4) {
 				x -= 146;
 			};
@@ -588,7 +588,7 @@ function info(type, location = "player") {
 		};
 	} else if (type == "aura blades") {
 		if (location == "card") {
-			let x = game.handPos[game.select[1]], y = 146 - Math.floor(cardAnim[game.select[1]]);
+			let x = game.handPos[game.select[1]] + xPlus, y = 146 - Math.floor(cardAnim[game.select[1]]);
 			if (game.select[1] == game.hand.length - 1 && game.hand.length >= 4) {
 				x -= 146;
 			};
@@ -598,10 +598,10 @@ function info(type, location = "player") {
 			if (game.reinforces) pos += 44;
 			if (game.auraBlades >= 2) desc += "s.";
 			else desc += ".";
-			draw.textBox(84, pos, desc.length, desc, "black", "right", true);
-			draw.textBox(84, pos + 11, 24, infoText.aura_blade, "black", "right", true);
+			draw.textBox(84 + xPlus, pos, desc.length, desc, "black", "right", true);
+			draw.textBox(84 + xPlus, pos + 11, 24, infoText.aura_blade, "black", "right", true);
 		} else if (location == "deck") {
-			let x = 2 + (game.cardSelect[0] * 66), y = 14 + (game.cardSelect[1] * 98) - game.deckPos;
+			let x = 2 + (game.cardSelect[0] * 66) + xPlus, y = 14 + (game.cardSelect[1] * 98) - game.deckPos;
 			if (game.cardSelect[0] >= 4) {
 				x -= 146;
 			};
@@ -622,16 +622,18 @@ function target() {
 			draw.lore(pos[0] + 31, pos[1] + 17.5, "big slime", "white", "center", true);
 		};
 	} else if (game.select[0] == "lookat_you") {
-		draw.selector(60, 72, 20, 39);
+		let coor = [60, 72, 20, 39];
+		if (playerAnim[1] == "shield" || playerAnim[1] == "shield_reinforced") coor = [58, 72, 23, 39];
+		draw.selector(coor[0], coor[1], coor[2], coor[3]);
 		if (game.character == "knight") {
-			if (global.charStage.knight == 0) draw.lore(69, 64.5, "the forgotten one", "white", "center", true);
-			else if (global.charStage.knight == 1) draw.lore(69, 64.5, "the true knight", "white", "center", true);
+			if (global.charStage.knight == 0) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the forgotten one", "white", "center", true);
+			else if (global.charStage.knight == 1) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the true knight", "white", "center", true);
 		};
 		if (game.reinforces) {
-			info("reinforce", "player");
+			info("reinforce", "player", coor[0] + coor[2] - 80);
 		};
 		if (game.auraBlades) {
-			info("aura blades", "player");
+			info("aura blades", "player", coor[0] + coor[2] - 80);
 		};
 	} else if (game.select[0] == "artifacts") {
 		let name = game.artifacts[game.select[1]];
