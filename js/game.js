@@ -68,7 +68,7 @@ var global = {
 	enemyStage: "none",
 	artifacts: ["iron will"],
 	deck: [new Card("reinforce"), new Card("aura blade"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block")],
-	deckLocal: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("reinforce"), new Card("aura blade")],
+	deckLocal: [new Card("reinforce"), new Card("aura blade"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block")],
 	deckProxy: "",
 	deckPos: 0,
 	deckMove: "none",
@@ -95,7 +95,7 @@ var global = {
 	],
 	paths: {},
 	saveNum: 0,
-}, actionTimer = -1, notif = [-1, ""], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "map") && game.select[1];
+}, actionTimer = -1, notif = [-1, ""], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "map") && game.select[1], firstTick = true;
 
 function hardReset() {
 	localStorage.removeItem("Yrahcaz7/Dungeon-of-Souls/save/0");
@@ -661,6 +661,12 @@ const gameloop = setInterval(function() {
 			console.error("Canvas not loaded properly. Please reload page if problem persists.");
 			return;
 		};
+	};
+	// load
+	if (firstTick) {
+		draw.rect("#000");
+		firstTick = false;
+		return;
 	};
 	// clear
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
