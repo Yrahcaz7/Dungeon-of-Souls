@@ -647,6 +647,8 @@ const gameloop = setInterval(function() {
 	selection();
 	if (game.state == "battle" && !game.enemies.length) {
 		endTurn();
+		if (game.select[0] == "hand" || game.select[0] == "lookat_enemy") game.select = ["lookat_you"];
+		game.auraBlades = 0;
 		game.state = "to_next";
 		game.turn = "none";
 	};
