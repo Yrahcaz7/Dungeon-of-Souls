@@ -247,6 +247,15 @@ const draw = {
 		};
 		draw.rect(outlineColor, x, y, width + 3, height + 2);
 		draw.rect(boxColor, x + 1, y + 1, width + 1, height);
+		if (position == "center") {
+			x += width / 2;
+			if (small) x -= 1.5;
+			else x -= 3;
+		} else if (position == "left") {
+			x += width;
+			if (small) x -= 3;
+			else x -= 6;
+		};
 		draw.lore(x + 2, y + 2, string, textColor, position, small);
 	},
 };
@@ -551,7 +560,13 @@ function renderCards() {
 };
 
 function info(type, location = "player") {
-	if (type == "reinforce") {
+	if (type == "iron will") {
+		if (location == "artifact") {
+			let x = 38 + (game.select[1] * 18), y = 12;
+			draw.textBox(x, y, 12, "Iron Will", "black", "center");
+			draw.textBox(x, y + 13, 24, infoText.iron_will, "black", "right", true);
+		};
+	} else if (type == "reinforce") {
 		if (location == "card") {
 			let x = game.handPos[game.select[1]], y = 146 - Math.floor(cardAnim[game.select[1]]);
 			if (game.select[1] == game.hand.length - 1 && game.hand.length >= 4) {
@@ -618,28 +633,30 @@ function target() {
 		if (game.auraBlades) {
 			info("aura blades", "player");
 		};
+	} else if (game.select[0] == "artifacts") {
+		let name = game.artifacts[game.select[1]];
+		if (name == "iron will") {
+			info("iron will", "artifact");
+		};
 	} else if (game.select[0] == "hand") {
 		let name = game.hand[game.select[1]].name;
 		if (name == "reinforce") {
 			info("reinforce", "card");
-		};
-		if (name == "aura blade") {
+		} else if (name == "aura blade") {
 			info("aura blades", "card");
 		};
 	} else if (game.select[0] == "deck" && game.select[1] == 1) {
 		let proxy = JSON.parse(game.deckProxy).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].name;
 		if (proxy == "reinforce") {
 			info("reinforce", "deck");
-		};
-		if (proxy == "aura blade") {
+		} else if (proxy == "aura blade") {
 			info("aura blades", "deck");
 		};
 	} else if (game.select[0] == "discard" && game.select[1] == 1) {
 		let proxy = JSON.parse(game.discardProxy).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].name;
 		if (proxy == "reinforce") {
 			info("reinforce", "deck");
-		};
-		if (proxy == "aura blade") {
+		} else if (proxy == "aura blade") {
 			info("aura blades", "deck");
 		};
 	};
