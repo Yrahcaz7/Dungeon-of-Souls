@@ -674,13 +674,13 @@ function mapGraphics(onlyCalc = false) {
 	let render = !onlyCalc;
 	if (render) {
 		draw.rect("#000000");
-		draw.image(map.top, 5, 4);
+		draw.image(map.top, 3, 4);
 		for (let num = 0; num < 10; num++) {
-			draw.image(map.row, 18, 20 + (num * 16));
+			draw.image(map.row, 16, 20 + (num * 16));
 		};
-		draw.image(map.bottom, 5, 180);
-		draw.image(extra.end, 22, 178);
-		if (game.mapSelect == "exit") draw.image(select.round, 21, 177);
+		draw.image(map.bottom, 16, 180);
+		draw.image(extra.end, 22, 176);
+		if (game.mapSelect == "exit") draw.image(select.round, 21, 175);
 	};
 	let store = [];
 	for (let x = 0; x < game.map.length; x++) {
@@ -689,7 +689,7 @@ function mapGraphics(onlyCalc = false) {
 			let drawX = 28 + (x * 32) + game.map[x][y][1];
 			let drawY = 12 + (y * 32) + game.map[x][y][2];
 			if (x === 0 && render) {
-				draw.line(drawX + 8, drawY + 8, 20, drawY + 8, "#fff", 3);
+				draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#fff", 3);
 			};
 			if (game.map[x][y]) {
 				for (let branch = 0; branch < 2; branch++) {
