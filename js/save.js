@@ -27,6 +27,7 @@ function save() {
 function load(saveNum = 0) {
 	let get = localStorage.getItem(id + "/" + saveNum);
 	if (get) {
+		get = JSON.parse(atob(get));
 		if (typeof get.character != "string") get.character = "" + get.character;
 		if (typeof get.health != "number") get.health = +get.health;
 		if (typeof get.maxHealth != "number") get.maxHealth = +get.maxHealth;
@@ -57,7 +58,7 @@ function load(saveNum = 0) {
 		if (typeof get.reinforces != "number") get.reinforces = +get.reinforces;
 		if (typeof get.attackEffect != "string") get.attackEffect = "" + get.attackEffect;
 		if (typeof get.saveNum != "number") get.saveNum = +get.saveNum;
-		Object.assign(game, JSON.parse(atob(get)));
+		Object.assign(game, get);
 		if (saveNum !== 0) {
 			localStorage.setItem(id + "/" + game.saveNum, localStorage.getItem(id + "/0"));
 			game.saveNum = 0;
@@ -66,10 +67,11 @@ function load(saveNum = 0) {
 	};
 	get = localStorage.getItem(id + "/master");
 	if (get) {
+		get = JSON.parse(atob(get));
 		if (typeof get.options.music != "boolean") get.options.music = true;
 		if (typeof get.options.stickyCards != "boolean") get.options.stickyCards = false;
 		if (typeof get.charStage.knight != "number") get.charStage.knight = +get.charStage.knight;
-		Object.assign(global, JSON.parse(atob(get)));
+		Object.assign(global, get);
 	};
 };
 
