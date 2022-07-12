@@ -664,7 +664,6 @@ const gameloop = setInterval(function() {
 	};
 	// load
 	if (firstTick) {
-		draw.rect("#000");
 		firstTick = false;
 		return;
 	};
