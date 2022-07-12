@@ -39,6 +39,9 @@ const player = {
 		defense: new Image,
 		magic: new Image,
 	},
+	rarity: {
+		rare: new Image,
+	},
 }, enemy = {
 	slime: {
 		big: new Image,
@@ -68,6 +71,8 @@ const player = {
 	round: new Image,
 	card_normal: new Image,
 	card_unplayable: new Image,
+	card_rare: new Image,
+	card_rare_unplayable: new Image,
 	deck: new Image,
 	discard: new Image,
 	popup: new Image,
@@ -127,6 +132,9 @@ card.outline.curse.src = "images/cards/outline/curse.png";
 card.outline.defense.src = "images/cards/outline/defense.png";
 card.outline.magic.src = "images/cards/outline/magic.png";
 
+// card rarities
+card.rarity.rare.src = "images/cards/rarity/rare.png";
+
 // slimes
 enemy.slime.big.src = "images/enemies/slime/big.png";
 enemy.slime.small.src = "images/enemies/slime/small.png";
@@ -163,6 +171,8 @@ bar.energy.src = "images/bars/energy.png";
 select.round.src = "images/select/round.png";
 select.card_normal.src = "images/select/card_normal.png";
 select.card_unplayable.src = "images/select/card_unplayable.png";
+select.card_rare.src = "images/select/card_rare.png";
+select.card_rare_unplayable.src = "images/select/card_rare_unplayable.png";
 select.deck.src = "images/select/deck.png";
 select.discard.src = "images/select/discard.png";
 select.popup.src = "images/select/popup.png";

@@ -214,8 +214,13 @@ const draw = {
 		else if (type == "defense") draw.image(card.outline.defense, x + 3, y + 3);
 		else if (type == "magic") draw.image(card.outline.magic, x + 3, y + 3);
 		if (selected) {
-			if (cardObject.unplayable) draw.image(select.card_unplayable, x + 1, y + 1);
-			else draw.image(select.card_normal, x - 1, y - 1);
+			if (cardObject.unplayable) {
+				if (cardObject.rarity == "rare") draw.image(select.card_rare_unplayable, x - 3, y - 3);
+				else draw.image(select.card_unplayable, x + 1, y + 1);
+			} else {
+				if (cardObject.rarity == "rare") draw.image(select.card_rare, x - 3, y - 3);
+				else draw.image(select.card_normal, x - 1, y - 1);
+			};
 		};
 		if (img == card.error) draw.image(card.error, x + 2, y + 2);
 		else draw.image(img, x + 7, y + 7);
@@ -226,6 +231,9 @@ const draw = {
 		};
 		draw.lore(x + 6, y + 55, cardObject.text, "black", "right", true);
 		draw.lore(x + 33, y + 89.5, cardObject.rarity + "|" + cardObject.type, "black", "center", true);
+		if (cardObject.rarity == "rare") {
+			draw.image(card.rarity.rare, x - 2, y - 2);
+		};
 		if (!cardObject.unplayable) {
 			draw.image(card._energy, x, y);
 			draw.lore(x + 4, y + 2, cardObject.energyCost);
