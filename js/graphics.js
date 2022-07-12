@@ -726,7 +726,8 @@ function mapGraphics(onlyCalc = false) {
 			};
 		};
 	};
-	let coords = game.mapSelect.split(", ");
+	let coordSel = game.mapSelect.split(", ");
+	let coordOn = game.location.split(", ");
 	if (render) {
 		for (let x = 0; x < game.map.length; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
@@ -735,7 +736,8 @@ function mapGraphics(onlyCalc = false) {
 				let drawY = 12 + (y * 32) + game.map[x][y][2];
 				if (game.map[x][y][0] == "battle") {
 					draw.image(map.battle, drawX, drawY);
-					if (x == coords[0] && y == coords[1]) draw.image(select.battle, drawX - 1, drawY - 1);
+					if (x == coordSel[0] && y == coordSel[1]) draw.image(select.battle, drawX - 1, drawY - 1);
+					if (x == coordOn[0] && y == coordOn[1]) draw.image(select.battle_blue, drawX - 1, drawY - 1);
 				};
 			};
 		};
