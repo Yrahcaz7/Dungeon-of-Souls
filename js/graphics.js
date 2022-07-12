@@ -397,6 +397,7 @@ function enemyGraphics() {
 		if (select.health <= 0) {
 			game.enemies.splice(index, 1);
 		};
+		if (!pos) return;
 		if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
 		if (index !== invNum) {
 			if (select.type == "slime_big") {
