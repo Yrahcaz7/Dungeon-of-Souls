@@ -47,7 +47,7 @@ class Enemy {
 	};
 	startAction() {
 		if (this.intent == "attack") {
-			if (game.shield) {
+			if (game.shield && playerAnim[1] != "shield" && playerAnim[1] != "shield_reinforced") {
 				if (game.reinforces) startAnim.player("shield_reinforced");
 				else startAnim.player("shield");
 			};

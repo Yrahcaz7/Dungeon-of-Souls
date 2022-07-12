@@ -74,7 +74,7 @@ function updateData() {
 	// enemyPos
 	let number = game.enemies.length, x = 400, y = 50;
 	if (number == 1) game.enemyPos = [[x - 105, y]];
-	else if (number == 2) game.enemyPos = [[x - 70, y - 5], [x - 140, y + 20]];
+	else if (number == 2) game.enemyPos = [[x - 70, y - 5], [x - 140, y + 10]];
 	else if (number == 3) game.enemyPos = [[x - 70, y + 20], [x - 140, y + 30], [x - 110, y - 36]];
 	else if (number == 4) game.enemyPos = [[x - 70, y + 30], [x - 140, y + 30], [x - 110, y - 36], [x - 200, y - 20]];
 	else if (number == 5) game.enemyPos = [[x - 70, y + 30], [x - 140, y + 30], [x - 100, y - 36], [x - 170, y - 36], [x - 210, y + 30]];
