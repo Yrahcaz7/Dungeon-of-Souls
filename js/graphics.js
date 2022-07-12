@@ -86,6 +86,33 @@ const draw = {
 		else if (color == "red_fade_0") img = letters.red_fade[0];
 		else if (color == "red_fade_1") img = letters.red_fade[1];
 		else if (color == "red_fade_2") img = letters.red_fade[2];
+		string = string.replace("<br>", "\n");
+		if (string.includes("<b>") || string.includes("<big>") || string.includes("<s>") || string.includes("<small>")) {
+			string = string.replace(/<\/b>|<\/big>|<\/s>|<\/small>/, "");
+			let array = string.split("<");
+			let space = 0;
+			if (!array[0]) array.splice(0, 1);
+			for (let index = 0; index < array.length; index++) {
+				if (array[index].includes("s>") || array[index].includes("small>")) {
+					array[index] = array[index].replace(/s>|small>/, "");
+					draw.lore(x, y + space, array[index], color, position, true);
+					space += 5.5;
+				} else if (array[index].includes("b>") || array[index].includes("big>")) {
+					array[index] = array[index].replace(/b>|big>/, "");
+					draw.lore(x, y + space, array[index], color, position, false);
+					space += 11;
+				} else {
+					if (small) {
+						draw.lore(x, y + space, array[index], color, position, true);
+						space += 5.5;
+					} else {
+						draw.lore(x, y + space, array[index], color, position, false);
+						space += 11;
+					};
+				};
+			};
+			return;
+		};
 		for (let a = 0; a < string.length; a++) {
 			let index = string.charCodeAt(a);
 			if (string.includes("\n", enterIndex + 1)) {
