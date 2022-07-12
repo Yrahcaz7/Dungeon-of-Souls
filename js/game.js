@@ -56,7 +56,7 @@ var global = {
 	cardSelect: [0, 0],
 	mapSelect: "exit",
 	mapOn: -1,
-	enemyAtt: new Card(),
+	enemyAtt: "none",
 	enemyAttSel: 0,
 	enemyAttFin: false,
 	energy: 3,
@@ -67,7 +67,7 @@ var global = {
 	enemyNum: 0,
 	enemyStage: "none",
 	artifacts: ["iron will"],
-	deck: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("reinforce"), new Card("aura blade")],
+	deck: [new Card("reinforce"), new Card("aura blade"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block")],
 	deckLocal: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("reinforce"), new Card("aura blade")],
 	deckProxy: "",
 	deckPos: 0,
@@ -156,7 +156,7 @@ function drawHand() {
 
 function enterBattle() {
 	game.state = "battle";
-	shuffleDeck();
+	game.deckLocal = randomize(game.deck).slice(0);
 	startTurn();
 };
 
@@ -676,6 +676,7 @@ const gameloop = setInterval(function() {
 		game.state = "to_next";
 		game.turn = "none";
 		if (game.artifacts.includes("iron will")) game.health += 2;
+		showPopup("go", "go to the map!");
 	};
 	// update data again
 	updateData();
