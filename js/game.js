@@ -66,7 +66,7 @@ var global = {
 	enemyIndex: 0,
 	enemyNum: 0,
 	enemyStage: "none",
-	artifacts: [],
+	artifacts: ["iron will"],
 	deck: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("reinforce"), new Card("aura blade")],
 	deckLocal: [new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block"), new Card("reinforce"), new Card("aura blade")],
 	deckProxy: "",

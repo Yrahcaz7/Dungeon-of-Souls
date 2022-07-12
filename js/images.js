@@ -74,6 +74,7 @@ const player = {
 	map: new Image,
 	battle: new Image,
 	battle_blue: new Image,
+	iron_will: new Image,
 	selector: [new Image, new Image, new Image, new Image],
 }, extra = {
 	help: new Image,
@@ -86,6 +87,7 @@ const player = {
 }, icon = {
 	reinforce: new Image,
 	aura_blade: new Image,
+	iron_will: new Image,
 }, intent = {
 	defend: [new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image],
 	attack: [new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image],
@@ -167,6 +169,7 @@ select.popup.src = "images/select/popup.png";
 select.map.src = "images/select/map.png";
 select.battle.src = "images/select/battle.png";
 select.battle_blue.src = "images/select/battle_blue.png";
+select.iron_will.src = "images/select/iron_will.png";
 select.selector[0].src = "images/select/u_l.png";
 select.selector[1].src = "images/select/u_r.png";
 select.selector[2].src = "images/select/d_l.png";
@@ -184,6 +187,7 @@ extra.map.src = "images/extras/map.png";
 // icons
 icon.reinforce.src = "images/icons/reinforce.png";
 icon.aura_blade.src = "images/icons/aura_blade.png";
+icon.iron_will.src = "images/icons/iron_will.png";
 
 // intents
 intent.defend[0].src = "images/intent/defend/1.png";
