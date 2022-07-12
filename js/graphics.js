@@ -686,7 +686,7 @@ function mapGraphics(onlyCalc = false) {
 	for (let x = 0; x < game.map.length; x++) {
 		for (let y = 0; y < game.map[x].length; y++) {
 			if (!game.map[x][y]) continue;
-			let drawX = 28 + (x * 32) + game.map[x][y][1];
+			let drawX = 25 + (x * 32) + game.map[x][y][1];
 			let drawY = 12 + (y * 32) + game.map[x][y][2];
 			if (x === 0 && render) {
 				draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#fff", 3);
@@ -698,24 +698,24 @@ function mapGraphics(onlyCalc = false) {
 						if (branch && x != game.map.length - 1) {
 							if (game.map[x + 1][y - num]) {
 								store.push([x, y, x + 1, y - num]);
-								posX = 28 + ((x + 1) * 32) + game.map[x + 1][y - num][1];
+								posX = 25 + ((x + 1) * 32) + game.map[x + 1][y - num][1];
 								posY = 12 + ((y - num) * 32) + game.map[x + 1][y - num][2];
 								break;
 							} else if (game.map[x + 1][y + num]) {
 								store.push([x, y, x + 1, y + num]);
-								posX = 28 + ((x + 1) * 32) + game.map[x + 1][y + num][1];
+								posX = 25 + ((x + 1) * 32) + game.map[x + 1][y + num][1];
 								posY = 12 + ((y + num) * 32) + game.map[x + 1][y + num][2];
 								break;
 							};
 						} else if (x !== 0) {
 							if (game.map[x - 1][y - num]) {
 								store.push([x, y, x - 1, y - num]);
-								posX = 28 + ((x - 1) * 32) + game.map[x - 1][y - num][1];
+								posX = 25 + ((x - 1) * 32) + game.map[x - 1][y - num][1];
 								posY = 12 + ((y - num) * 32) + game.map[x - 1][y - num][2];
 								break;
 							} else if (game.map[x - 1][y + num]) {
 								store.push([x, y, x - 1, y + num]);
-								posX = 28 + ((x - 1) * 32) + game.map[x - 1][y + num][1];
+								posX = 25 + ((x - 1) * 32) + game.map[x - 1][y + num][1];
 								posY = 12 + ((y + num) * 32) + game.map[x - 1][y + num][2];
 								break;
 							};
@@ -731,7 +731,7 @@ function mapGraphics(onlyCalc = false) {
 		for (let x = 0; x < game.map.length; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
 				if (!game.map[x][y]) continue;
-				let drawX = 28 + (x * 32) + game.map[x][y][1];
+				let drawX = 25 + (x * 32) + game.map[x][y][1];
 				let drawY = 12 + (y * 32) + game.map[x][y][2];
 				if (game.map[x][y][0] == "battle") {
 					draw.image(map.battle, drawX, drawY);
