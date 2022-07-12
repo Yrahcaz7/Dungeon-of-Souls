@@ -27,7 +27,7 @@ function save() {
 function load(saveNum = 0) {
 	let get = localStorage.getItem(id + "/" + saveNum);
 	if (get) {
-		if (typeof get.character != "string") get.character == "" + get.character;
+		if (typeof get.character != "string") get.character = "" + get.character;
 		if (typeof get.health != "number") get.health = +get.health;
 		if (typeof get.maxHealth != "number") get.maxHealth = +get.maxHealth;
 		if (typeof get.shield != "number") get.shield = +get.shield;
@@ -66,6 +66,9 @@ function load(saveNum = 0) {
 	};
 	get = localStorage.getItem(id + "/master");
 	if (get) {
+		if (typeof get.options.music != "boolean") get.options.music = true;
+		if (typeof get.options.stickyCards != "boolean") get.options.stickyCards = false;
+		if (typeof get.charStage.knight != "number") get.charStage.knight = +get.charStage.knight;
 		Object.assign(global, JSON.parse(atob(get)));
 	};
 };
