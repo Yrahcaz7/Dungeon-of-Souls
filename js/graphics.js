@@ -76,7 +76,7 @@ const draw = {
 		x = +x;
 		y = +y;
 		string = "" + string;
-		if ((!x && x !== 0) || (!y && y !== 0) || !string) return;
+		if ((!x && x !== 0) || (!y && y !== 0) || !string) return 0;
 		let img = letters.black, enters = 0, enterIndex = 0, len = string.length;
 		if (color == "red") img = letters.red;
 		else if (color == "white") img = letters.white;
@@ -95,23 +95,19 @@ const draw = {
 			for (let index = 0; index < array.length; index++) {
 				if (array[index].includes("s>") || array[index].includes("small>")) {
 					array[index] = array[index].replace(/s>|small>/, "");
-					draw.lore(x, y + space, array[index], color, position, true);
-					space += 5.5;
+					space += 5.5 * (draw.lore(x, y + space, array[index], color, position, true) + 1);
 				} else if (array[index].includes("b>") || array[index].includes("big>")) {
 					array[index] = array[index].replace(/b>|big>/, "");
-					draw.lore(x, y + space, array[index], color, position, false);
-					space += 11;
+					space += 11 * (draw.lore(x, y + space, array[index], color, position, false) + 1);
 				} else {
 					if (small) {
-						draw.lore(x, y + space, array[index], color, position, true);
-						space += 5.5;
+						space += 5.5 * (draw.lore(x, y + space, array[index], color, position, true) + 1);
 					} else {
-						draw.lore(x, y + space, array[index], color, position, false);
-						space += 11;
+						space += 11 * (draw.lore(x, y + space, array[index], color, position, false) + 1);
 					};
 				};
 			};
-			return;
+			return 0;
 		};
 		for (let a = 0; a < string.length; a++) {
 			let index = string.charCodeAt(a);
@@ -148,6 +144,7 @@ const draw = {
 				len += enterIndex;
 			};
 		};
+		return enters;
 	},
 	selector(x, y, width, height) {
 		x = +x;
@@ -512,18 +509,10 @@ function infoGraphics() {
 	draw.lore(1, 12, "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-Souls\"", "red", "right", true);
 	if (game.select[1] == 2) {
 		draw.lore(1, 1, "Dungeon of Souls - Changelog", "red");
-		draw.lore(1, 23, logTitles[0], "white");
-		draw.lore(1, 56, logTitles[1], "white");
-		draw.lore(1, 111, logTitles[2], "white");
-		draw.lore(1, 166, logTitles[3], "white");
-		draw.lore(1, 34, changelog, "white", "right", true);
+		draw.lore(1, 23, changelog, "white");
 	} else {
 		draw.lore(1, 1, "Dungeon of Souls - Overview", "red");
-		draw.lore(1, 23, "Storyline:", "white");
-		draw.lore(1, 67, "Controls:", "white");
-		draw.lore(1, 100, "How to Play:", "white");
-		draw.lore(1, 149.5, "An ominous feeling...", "white");
-		draw.lore(1, 34, text, "white", "right", true);
+		draw.lore(1, 23, text, "white");
 	};
 };
 
