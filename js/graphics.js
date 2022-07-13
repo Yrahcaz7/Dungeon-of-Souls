@@ -235,6 +235,7 @@ const draw = {
 		if (cardObject.type == "attack") draw.image(card.outline.attack, x + 3, y + 3);
 		else if (cardObject.type == "curse") draw.image(card.outline.curse, x + 3, y + 3);
 		else if (cardObject.type == "defense") draw.image(card.outline.defense, x + 3, y + 3);
+		else if (cardObject.type == "skill") draw.image(card.outline.skill, x + 3, y + 3);
 		else if (cardObject.type == "magic") draw.image(card.outline.magic, x + 3, y + 3);
 		if (selected) {
 			if (cardObject.unplayable) {

@@ -33,6 +33,7 @@ const player = {
 		attack: new Image,
 		curse: new Image,
 		defense: new Image,
+		skill: new Image,
 		magic: new Image,
 	},
 	rarity: {
@@ -45,6 +46,7 @@ const player = {
 	common: {
 		"reinforce": new Image,
 		"aura blade": new Image,
+		"war cry": new Image,
 	},
 	rare: {
 		"everlasting shield": new Image,
@@ -137,6 +139,7 @@ card.starter["block"].src = "images/cards/starter/block.png";
 // common cards
 card.common["reinforce"].src = "images/cards/common/reinforce.png";
 card.common["aura blade"].src = "images/cards/common/aura_blade.png";
+card.common["war cry"].src = "images/cards/common/war_cry.png";
 
 // rare cards
 card.rare["everlasting shield"].src = "images/cards/rare/everlasting_shield.png";
@@ -145,6 +148,7 @@ card.rare["everlasting shield"].src = "images/cards/rare/everlasting_shield.png"
 card.outline.attack.src = "images/cards/outline/attack.png";
 card.outline.curse.src = "images/cards/outline/curse.png";
 card.outline.defense.src = "images/cards/outline/defense.png";
+card.outline.skill.src = "images/cards/outline/skill.png";
 card.outline.magic.src = "images/cards/outline/magic.png";
 
 // card rarities

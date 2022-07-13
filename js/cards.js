@@ -53,6 +53,12 @@ const cards = {
 		cost: 1,
 		unplayable: false,
 	},
+	"war cry": {
+		desc: "All enemies (except\nbosses) switch\ntheir intents to\ndefense.",
+		type: "skill",
+		cost: 1,
+		unplayable: false,
+	},
 };
 
 class Card {
