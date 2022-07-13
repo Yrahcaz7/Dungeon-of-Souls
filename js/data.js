@@ -107,8 +107,6 @@ function updateData() {
 		if (bladeFloat[num * 2] >= 4) bladeFloat[num * 2 + 1] = "down";
 		else if (bladeFloat[num * 2] <= 0) bladeFloat[num * 2 + 1] = "up";
 	};
-	// proxies
-	game.deckProxy = JSON.stringify(game.deckLocal);
 	// map
 	for (let index = 0; index < game.map.length; index++) {
 		let falses = 0;
@@ -132,7 +130,11 @@ function updateData() {
 		if (enemy.shield > enemy.maxShield) game.enemies[a].shield = enemy.maxShield;
 	};
 	// other
+	game.deckProxy = JSON.stringify(game.deckLocal);
 	game.deck.cardSort();
 	game.discard.cardSort();
-	if (game.select[0] == "hand") game.prevCard = game.select[1];
+	if (game.select[0] == "hand") {
+		if (game.hand[0]) game.prevCard = game.select[1];
+		else game.select = ["end", 0];
+	};
 };
