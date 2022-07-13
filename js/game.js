@@ -157,6 +157,10 @@ function drawHand() {
 function enterBattle() {
 	game.state = "battle";
 	game.deckLocal = randomize(game.deck).slice(0);
+	game.discard = [];
+	game.shield = 0;
+	game.auraBlades = 0;
+	game.reinforces = 0;
 	startTurn();
 };
 
@@ -681,7 +685,6 @@ const gameloop = setInterval(function() {
 	if (game.state == "battle" && !game.enemies.length) {
 		endTurn();
 		if (game.select[0] == "hand" || game.select[0] == "lookat_enemy") game.select = ["lookat_you"];
-		game.auraBlades = 0;
 		game.state = "to_next";
 		game.turn = "none";
 		if (game.artifacts.includes("iron will")) game.health += 2;
