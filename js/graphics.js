@@ -225,17 +225,17 @@ const draw = {
 		selected = !!selected;
 		overrideX = +overrideX;
 		if (!cardObject || (!index && index !== 0) || (!y && y !== 0)) return;
-		let x = game.handPos[index], img = card.error, name = cardObject.name, type = cardObject.type;
+		let x = game.handPos[index], img = card.error;
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
 		if (cardObject.rarity == "starter") img = card.starter[cardObject.name];
 		else if (cardObject.rarity == "common") img = card.common[cardObject.name];
 		else if (cardObject.rarity == "rare") img = card.rare[cardObject.name];
 		else console.error("card " + index + " is invalid rarity: \"" + cardObject.rarity + "\" or name: \"" + cardObject.name + "\"");
-		if (name != "error") draw.image(card.back, x + 2, y + 2);
-		if (type == "attack") draw.image(card.outline.attack, x + 3, y + 3);
-		else if (type == "curse") draw.image(card.outline.curse, x + 3, y + 3);
-		else if (type == "defense") draw.image(card.outline.defense, x + 3, y + 3);
-		else if (type == "magic") draw.image(card.outline.magic, x + 3, y + 3);
+		if (cardObject.name != "error") draw.image(card.back, x + 2, y + 2);
+		if (cardObject.type == "attack") draw.image(card.outline.attack, x + 3, y + 3);
+		else if (cardObject.type == "curse") draw.image(card.outline.curse, x + 3, y + 3);
+		else if (cardObject.type == "defense") draw.image(card.outline.defense, x + 3, y + 3);
+		else if (cardObject.type == "magic") draw.image(card.outline.magic, x + 3, y + 3);
 		if (selected) {
 			if (cardObject.unplayable) {
 				if (cardObject.rarity == "rare") draw.image(select.card_rare_unplayable, x - 3, y - 3);
