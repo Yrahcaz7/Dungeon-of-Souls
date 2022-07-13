@@ -266,6 +266,11 @@ function playerTurn() {
 				game.reinforces += 3;
 			} else if (name == "aura blade") {
 				game.auraBlades++;
+			} else if (name == "war cry") {
+				for (let index = 0; index < game.enemies.length; index++) {
+					game.enemies[index].intent = "defend";
+					game.enemies[index].intentHistory.push("defend");
+				};
 			} else {
 				activate = false;
 			};
