@@ -361,7 +361,7 @@ function foregrounds() {
 	else if (game.select[0] == "deck") draw.image(select.deck, 2, 181);
 	else if (game.select[0] == "discard") draw.image(select.discard, 382, 181);
 	else if (game.select[0] == "map") draw.image(select.map, 1, 11);
-	draw.lore(1, 1, "floor: " + game.floor, "red", "right");
+	draw.lore(1, 1, "floor " + game.floor, "red", "right");
 };
 
 function playerGraphics() {
@@ -733,20 +733,19 @@ function mapGraphics(onlyCalc = false) {
 	let render = !onlyCalc;
 	if (render) {
 		draw.rect("#000000");
-		draw.image(map.top, 3, 4);
-		for (let num = 0; num < 10; num++) {
-			draw.image(map.row, 16, 20 + (num * 16));
-		};
-		draw.image(map.bottom, 16, 180);
-		draw.image(extra.end, 22, 176);
-		if (game.mapSelect == "exit") draw.image(select.round, 21, 175);
+		draw.image(map.top, 3, 12);
+		draw.image(map.row, 16, 20, map.row.width, 164);
+		draw.image(map.bottom, 16, 184);
+		draw.image(extra.end, 22, 179);
+		if (game.mapSelect == "exit") draw.image(select.round, 21, 178);
+		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", "red");
 	};
 	let store = [];
 	for (let x = 0; x < game.map.length; x++) {
 		for (let y = 0; y < game.map[x].length; y++) {
 			if (!game.map[x][y]) continue;
 			let drawX = 25 + (x * 32) + game.map[x][y][1];
-			let drawY = 12 + (y * 32) + game.map[x][y][2];
+			let drawY = 18 + (y * 32) + game.map[x][y][2];
 			if (x === 0 && render) {
 				draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#fff", 3);
 			};
@@ -758,24 +757,24 @@ function mapGraphics(onlyCalc = false) {
 							if (game.map[x + 1][y - num]) {
 								store.push([x, y, x + 1, y - num]);
 								posX = 25 + ((x + 1) * 32) + game.map[x + 1][y - num][1];
-								posY = 12 + ((y - num) * 32) + game.map[x + 1][y - num][2];
+								posY = 18 + ((y - num) * 32) + game.map[x + 1][y - num][2];
 								break;
 							} else if (game.map[x + 1][y + num]) {
 								store.push([x, y, x + 1, y + num]);
 								posX = 25 + ((x + 1) * 32) + game.map[x + 1][y + num][1];
-								posY = 12 + ((y + num) * 32) + game.map[x + 1][y + num][2];
+								posY = 18 + ((y + num) * 32) + game.map[x + 1][y + num][2];
 								break;
 							};
 						} else if (x !== 0) {
 							if (game.map[x - 1][y - num]) {
 								store.push([x, y, x - 1, y - num]);
 								posX = 25 + ((x - 1) * 32) + game.map[x - 1][y - num][1];
-								posY = 12 + ((y - num) * 32) + game.map[x - 1][y - num][2];
+								posY = 18 + ((y - num) * 32) + game.map[x - 1][y - num][2];
 								break;
 							} else if (game.map[x - 1][y + num]) {
 								store.push([x, y, x - 1, y + num]);
 								posX = 25 + ((x - 1) * 32) + game.map[x - 1][y + num][1];
-								posY = 12 + ((y + num) * 32) + game.map[x - 1][y + num][2];
+								posY = 18 + ((y + num) * 32) + game.map[x - 1][y + num][2];
 								break;
 							};
 						};
@@ -792,7 +791,7 @@ function mapGraphics(onlyCalc = false) {
 			for (let y = 0; y < game.map[x].length; y++) {
 				if (!game.map[x][y]) continue;
 				let drawX = 25 + (x * 32) + game.map[x][y][1];
-				let drawY = 12 + (y * 32) + game.map[x][y][2];
+				let drawY = 18 + (y * 32) + game.map[x][y][2];
 				if (game.map[x][y][0] == "battle") {
 					draw.image(map.battle, drawX, drawY);
 					if (x == coordSel[0] && y == coordSel[1]) draw.image(select.battle, drawX - 1, drawY - 1);

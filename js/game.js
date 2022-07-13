@@ -52,6 +52,7 @@ var global = {
 	location: "-1",
 	rewards: {},
 	cardRewardChoices: 3,
+	gold: 0,
 	state: "enter",
 	turn: "none",
 	select: ["none", 0],
