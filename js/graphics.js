@@ -735,6 +735,13 @@ function mapGraphics(onlyCalc = false) {
 		draw.image(map.top, 3, 12);
 		draw.image(map.row, 16, 20, map.row.width, 164);
 		draw.image(map.bottom, 16, 184);
+		if (game.state == "to_next") {
+			if (game.location == "-1") draw.image(map.select, 20, 12);
+			else draw.rect("#77ccffaa", 20 + ((+game.location.split(", ")[0] + 1) * 32), 12, 26, 188);
+		} else if (game.location != "-1") {
+			if (game.location.split(", ")[0] == "0") draw.image(map.select, 20, 12);
+			else draw.rect("#77ccffaa", 20 + (+game.location.split(", ")[0] * 32), 12, 26, 188);
+		};
 		draw.image(extra.end, 22, 179);
 		if (game.mapSelect == "exit") draw.image(select.round, 21, 178);
 		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", "red");

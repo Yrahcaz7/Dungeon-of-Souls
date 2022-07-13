@@ -114,6 +114,7 @@ const player = {
 	row: new Image,
 	bottom: new Image,
 	battle: new Image,
+	select: new Image,
 },
 view = new Image, aura_blade = new Image; // other
 
@@ -252,6 +253,7 @@ map.top.src = "images/map/top.png";
 map.row.src = "images/map/row.png";
 map.bottom.src = "images/map/bottom.png";
 map.battle.src = "images/map/battle.png";
+map.select.src = "images/map/select.png";
 
 // other
 view.src = "images/view.png";
