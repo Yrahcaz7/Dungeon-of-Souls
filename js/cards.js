@@ -106,3 +106,19 @@ Array.prototype.cardSort = function() {
 		return 0;
 	});
 };
+
+function randomCard() {
+	if (chance(7/10)) {
+		return new Card(Object.keys(card.common)[randomInt(0, Object.keys(card.common).length - 1)]);
+	} else {
+		return new Card(Object.keys(card.rare)[randomInt(0, Object.keys(card.rare).length - 1)]);
+	};
+};
+
+function cardReward() {
+	let result = [];
+	for (let num = 0; num < game.cardRewardChoices; num++) {
+		result.push(randomCard());
+	};
+	return result;
+};

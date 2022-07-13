@@ -50,6 +50,8 @@ var global = {
 	maxShield: 60,
 	floor: 1,
 	location: "-1",
+	rewards: {},
+	cardRewardChoices: 3,
 	state: "enter",
 	turn: "none",
 	select: ["none", 0],
@@ -688,6 +690,8 @@ const gameloop = setInterval(function() {
 		game.state = "to_next";
 		game.turn = "none";
 		if (game.artifacts.includes("iron will")) game.health += 2;
+		game.rewards.gold = randomInt(25 + (game.floor * 1.5), 50 + (game.floor * 2));
+		game.rewards.card = cardReward();
 		showPopup("go", "go to the map!");
 	};
 	// update data again
