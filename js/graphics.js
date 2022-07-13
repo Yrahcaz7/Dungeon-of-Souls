@@ -230,6 +230,7 @@ const draw = {
 		if (name == "slash") img = card.slash;
 		else if (name == "block") img = card.block;
 		else if (name == "reinforce") img = card.reinforce;
+		else if (name == "everlasting shield") img = card.everlasting_shield;
 		else if (name == "aura blade") img = card.aura_blade;
 		else console.error("card " + index + " is invalid type: " + name);
 		if (name != "error") draw.image(card.back, x + 2, y + 2);
@@ -577,7 +578,7 @@ function renderCards() {
 		if (notif[1] >= 9) color = "red_fade_2";
 		else if (notif[1] >= 7) color = "red_fade_1";
 		else if (notif[1] >= 5) color = "red_fade_0";
-		draw.lore(game.handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1], notif[2], color, "center");
+		draw.lore(game.handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1] + notif[3], notif[2], color, "center");
 		notif[1]++;
 		if (notif[1] > 11) notif = [-1, 0];
 	};
@@ -672,21 +673,21 @@ function target() {
 		};
 	} else if (game.select[0] == "hand") {
 		let name = game.hand[game.select[1]].name;
-		if (name == "reinforce") {
+		if (name == "reinforce" || name == "everlasting shield") {
 			info("reinforce", "card");
 		} else if (name == "aura blade") {
 			info("aura blades", "card");
 		};
 	} else if (game.select[0] == "deck" && game.select[1] == 1) {
 		let proxy = JSON.parse(game.deckProxy).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].name;
-		if (proxy == "reinforce") {
+		if (proxy == "reinforce" || proxy == "everlasting shield") {
 			info("reinforce", "deck");
 		} else if (proxy == "aura blade") {
 			info("aura blades", "deck");
 		};
 	} else if (game.select[0] == "discard" && game.select[1] == 1) {
 		let proxy = JSON.parse(game.discardProxy).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].name;
-		if (proxy == "reinforce") {
+		if (proxy == "reinforce" || proxy == "everlasting shield") {
 			info("reinforce", "deck");
 		} else if (proxy == "aura blade") {
 			info("aura blades", "deck");

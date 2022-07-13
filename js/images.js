@@ -32,6 +32,7 @@ const player = {
 	slash: new Image,
 	block: new Image,
 	reinforce: new Image,
+	everlasting_shield: new Image,
 	aura_blade: new Image,
 	outline: {
 		attack: new Image,
@@ -124,6 +125,7 @@ card.error.src = "images/cards/error.png";
 card.slash.src = "images/cards/slash.png";
 card.block.src = "images/cards/block.png";
 card.reinforce.src = "images/cards/reinforce.png";
+card.everlasting_shield.src = "images/cards/everlasting_shield.png";
 card.aura_blade.src = "images/cards/aura_blade.png";
 
 // card outlines

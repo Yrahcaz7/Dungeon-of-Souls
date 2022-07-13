@@ -95,7 +95,7 @@ var global = {
 	],
 	paths: {},
 	saveNum: 0,
-}, actionTimer = -1, notif = [-1, ""], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "map") && game.select[1], firstTick = true;
+}, actionTimer = -1, notif = [-1, 0, "", 0], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "map") && game.select[1], firstTick = true;
 
 function hardReset() {
 	localStorage.removeItem("Yrahcaz7/Dungeon-of-Souls/save/0");
@@ -247,6 +247,8 @@ function playerTurn() {
 			} else if (name == "reinforce") {
 				game.shield += 1;
 				game.reinforces++;
+			} else if (name == "everlasting shield") {
+				game.reinforces += 3;
 			} else if (name == "aura blade") {
 				game.auraBlades++;
 			} else {
@@ -266,7 +268,8 @@ function playerTurn() {
 				actionTimer = 5;
 			};
 		} else {
-			notif = [game.select[1], 0, "not enough energy"];
+			if (game.hand[game.select[1]].rarity == "rare") notif = [game.select[1], 0, "not enough energy", -2];
+			else notif = [game.select[1], 0, "not enough energy", 0];
 			actionTimer = 1;
 		};
 		return;
