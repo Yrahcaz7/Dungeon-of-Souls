@@ -26,6 +26,7 @@ class Enemy {
 			this.shield = override.shield;
 			this.attackPower = override.attackPower;
 			this.defendPower = override.defendPower;
+			this.reinforces = override.reinforces;
 			this.intent = override.intent;
 			this.intentHistory = override.intentHistory;
 			this.location = override.location;
@@ -39,7 +40,8 @@ class Enemy {
 		this.maxShield = Math.round(((Math.random() / 5) + 0.9) * ((power * 5) + 10));
 		this.shield = 0;
 		this.attackPower = Math.round(((power / 2) + 1) * 5 - 0.25);
-		this.defendPower = Math.round(((power / 2) + 1) * 5 - 1);
+		this.defendPower = Math.round(((power / 2) + 1) * 5 + 1);
+		this.reinforces = 0;
 		this.intent = (chance(3/5))?"attack":"defend";
 		this.intentHistory = [this.intent];
 		this.location = game.enemyIndex;
@@ -79,7 +81,7 @@ class Enemy {
 		} else {
 			game.enemyNum++;
 		};
-		this.intent = (chance(3/5))?"attack":"defend";
+		this.intent = chance(3/5)?"attack":"defend";
 		this.intentHistory.push(this.intent);
 		if (overrideIntent("attack", this.intentHistory, this.location)) {
 			this.intent = "defend";
