@@ -233,7 +233,7 @@ function playerTurn() {
 			damage = 5;
 		};
 		if (game.attackEffect == "aura blade") {
-			damage += 10 + game.auraBlades;
+			damage += 6 + game.auraBlades;
 		};
 		if (shield > damage) {
 			game.enemies[game.enemyAttSel].shield -= damage;

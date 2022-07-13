@@ -20,7 +20,7 @@ const cards = { // card attributes format: [type, ...special];
 	"aura blade": {
 		desc: "Gain 1 aura blade.",
 		attributes: ["magic"],
-		cost: 2,
+		cost: 1,
 	},
 	"block": {
 		desc: "Gain 4 shield.",
