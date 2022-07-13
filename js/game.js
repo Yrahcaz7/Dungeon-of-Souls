@@ -237,7 +237,8 @@ function playerTurn() {
 	if (action == "enter" && game.select[0] == "hand") {
 		let selected = game.hand[game.select[1]], name = selected.name;
 		if (selected.unplayable) {
-			notif = [game.select[1], 0, "unplayable"];
+			if (game.hand[game.select[1]].rarity == "rare") notif = [game.select[1], 0, "unplayable", -2];
+			else notif = [game.select[1], 0, "unplayable", 0];
 			actionTimer = 1;
 		} else if (game.energy >= selected.energyCost) {
 			let activate = true;
