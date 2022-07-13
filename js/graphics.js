@@ -520,7 +520,7 @@ function infoGraphics() {
 function deckGraphics(overrideName = "deck") {
 	draw.rect("#000000cc");
 	let tempDeck = JSON.parse(game.deckProxy).cardSort(), selected;
-	if (overrideName == "discard") tempDeck = JSON.parse(game.discardProxy).cardSort();
+	if (overrideName == "discard") tempDeck = game.discard;
 	for (let x = 0, y = 0; x + (y * 6) < tempDeck.length; x++) {
 		if (x == game.cardSelect[0] && y == game.cardSelect[1]) {
 			selected = [x, y];
@@ -686,7 +686,7 @@ function target() {
 			info("aura blades", "deck");
 		};
 	} else if (game.select[0] == "discard" && game.select[1] == 1) {
-		let proxy = JSON.parse(game.discardProxy).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].name;
+		let proxy = game.discard[game.cardSelect[0] + (game.cardSelect[1] * 6)].name;
 		if (proxy == "reinforce" || proxy == "everlasting shield") {
 			info("reinforce", "deck");
 		} else if (proxy == "aura blade") {

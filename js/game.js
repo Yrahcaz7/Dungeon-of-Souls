@@ -78,7 +78,6 @@ var global = {
 	prevCard: -1,
 	activeCard: -1,
 	discard: [],
-	discardProxy: "",
 	auraBlades: 0,
 	auraBladePos: [[65, 10], [80, 25], [40, 0], [25, 35]],
 	reinforces: 0,
@@ -750,7 +749,7 @@ const gameloop = setInterval(function() {
 			draw.rect("#ffffff", 1, 12, 398, 1);
 		};
 	} else if (game.select[0] == "discard" && game.select[1]) {
-		if (game.discardProxy != "[]") {
+		if (game.discard[0]) {
 			deckGraphics("discard");
 		} else {
 			draw.rect("#000000cc");

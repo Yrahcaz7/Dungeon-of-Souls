@@ -109,7 +109,6 @@ function updateData() {
 	};
 	// proxies
 	game.deckProxy = JSON.stringify(game.deckLocal);
-	game.discardProxy = JSON.stringify(game.discard);
 	// map
 	for (let index = 0; index < game.map.length; index++) {
 		let falses = 0;
@@ -134,5 +133,6 @@ function updateData() {
 	};
 	// other
 	game.deck.cardSort();
+	game.discard.cardSort();
 	if (game.select[0] == "hand") game.prevCard = game.select[1];
 };
