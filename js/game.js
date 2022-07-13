@@ -133,24 +133,25 @@ function shuffleDeck(...newCards) {
 };
 
 function drawHand() {
-	let index = 0;
+	let index = 0, len = game.deckLocal.length;
 	if (game.deckLocal.length) {
-		for (; index < game.handSize && index < game.deckLocal.length; index++) {
-			game.hand.push(game.deckLocal[index]);
+		for (; index < game.handSize && index < len; index++) {
+			game.hand.push(game.deckLocal[0]);
+			game.deckLocal.splice(0, 1);
 		};
 	};
 	if (index != game.handSize) {
-		for (let a = 0; a < game.discard.length; a++) {
+		len = game.discard.length;
+		for (let a = 0; a < len; a++) {
 			game.deckLocal.push(game.discard[a]);
 		};
-		game.discard.splice(0);
+		game.discard = [];
 		shuffleDeck();
-		for (; index < game.handSize && index < game.deckLocal.length; index++) {
-			game.hand.push(game.deckLocal[index]);
+		len = game.deckLocal.length;
+		for (; index < game.handSize && index < len; index++) {
+			game.hand.push(game.deckLocal[0]);
+			game.deckLocal.splice(0, 1);
 		};
-	};
-	for (index--; index >= 0; index--) {
-		game.deckLocal.splice(index, 1);
 	};
 };
 
