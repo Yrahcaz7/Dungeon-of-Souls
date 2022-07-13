@@ -16,48 +16,41 @@
 	along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-const cards = {
+const cards = { // card attributes format: [type, ...special];
 	"aura blade": {
 		desc: "Gain 1 aura blade.",
-		type: "magic",
+		attributes: ["magic"],
 		cost: 2,
-		unplayable: false,
 	},
 	"block": {
 		desc: "Gain 4 shield.",
-		type: "defense",
+		attributes: ["defense"],
 		cost: 1,
-		unplayable: false,
 	},
 	"error": {
 		desc: "Unplayable.",
-		type: "curse",
+		attributes: ["curse", "unplayable"],
 		cost: 0,
-		unplayable: true,
 	},
 	"everlasting shield": {
 		desc: "Gain 3 reinforces.",
-		type: "defense",
+		attributes: ["defense"],
 		cost: 2,
-		unplayable: false,
 	},
 	"reinforce": {
 		desc: "Gain 1 shield and\n1 reinforce.",
-		type: "defense",
+		attributes: ["defense"],
 		cost: 1,
-		unplayable: false,
 	},
 	"slash": {
 		desc: "Deal 5 damage.",
-		type: "attack",
+		attributes: ["attack"],
 		cost: 1,
-		unplayable: false,
 	},
 	"war cry": {
 		desc: "All enemies (except\nbosses) switch\ntheir intents to\ndefense.",
-		type: "skill",
+		attributes: ["skill"],
 		cost: 1,
-		unplayable: false,
 	},
 };
 
@@ -65,11 +58,11 @@ class Card {
 	constructor(name, level = 0) {
 		this.name = name;
 		this.rarity = "";
-		this.type = cards[name].type;
+		this.type = cards[name].attributes[0];
 		this.text = cards[name].desc;
 		this.energyCost = cards[name].cost;
 		this.level = level;
-		this.unplayable = cards[name].unplayable;
+		this.unplayable = cards[name].attributes.includes("unplayable");
 		this.order = -1;
 		// error
 		if (!Object.keys(card.starter).includes(name) && !Object.keys(card.common).includes(name) && !Object.keys(card.rare).includes(name)) {

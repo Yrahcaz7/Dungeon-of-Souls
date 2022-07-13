@@ -160,6 +160,7 @@ function drawHand() {
 function enterBattle() {
 	game.state = "battle";
 	game.deckLocal = randomize(game.deck).slice(0);
+	game.hand = [];
 	game.discard = [];
 	game.shield = 0;
 	game.auraBlades = 0;
