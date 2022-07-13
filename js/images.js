@@ -131,15 +131,15 @@ card.back.src = "images/cards/back.png";
 card.error.src = "images/cards/error.png";
 
 // starter cards
-card.starter["slash"].src = "images/cards/slash.png";
-card.starter["block"].src = "images/cards/block.png";
+card.starter["slash"].src = "images/cards/starter/slash.png";
+card.starter["block"].src = "images/cards/starter/block.png";
 
 // common cards
-card.common["reinforce"].src = "images/cards/reinforce.png";
-card.common["aura blade"].src = "images/cards/aura_blade.png";
+card.common["reinforce"].src = "images/cards/common/reinforce.png";
+card.common["aura blade"].src = "images/cards/common/aura_blade.png";
 
 // rare cards
-card.rare["everlasting shield"].src = "images/cards/everlasting_shield.png";
+card.rare["everlasting shield"].src = "images/cards/rare/everlasting_shield.png";
 
 // card outlines
 card.outline.attack.src = "images/cards/outline/attack.png";
