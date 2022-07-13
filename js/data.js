@@ -124,6 +124,8 @@ function updateData() {
 	// fixes
 	if (game.health < 0) game.health = 0;
 	else if (game.health > game.maxHealth) game.health = game.maxHealth;
+	if (game.shield < 0) game.shield = 0;
+	else if (game.shield > game.maxShield) game.shield = game.maxShield;
 	for (let a = 0; a < game.enemies.length; a++) {
 		let enemy = game.enemies[a];
 		if (enemy.health < 0) game.enemies[a].health = 0;
