@@ -16,64 +16,69 @@
 	along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
+const cards = {
+	"aura blade": {
+		desc: "Gain 1 aura blade.",
+		type: "magic",
+		cost: 2,
+		unplayable: false,
+	},
+	"block": {
+		desc: "Gain 4 shield.",
+		type: "defense",
+		cost: 1,
+		unplayable: false,
+	},
+	"error": {
+		desc: "Unplayable.",
+		type: "curse",
+		cost: 0,
+		unplayable: true,
+	},
+	"everlasting shield": {
+		desc: "Gain 3 reinforces.",
+		type: "defense",
+		cost: 2,
+		unplayable: false,
+	},
+	"reinforce": {
+		desc: "Gain 1 shield and\n1 reinforce.",
+		type: "defense",
+		cost: 1,
+		unplayable: false,
+	},
+	"slash": {
+		desc: "Deal 5 damage.",
+		type: "attack",
+		cost: 1,
+		unplayable: false,
+	},
+};
+
 class Card {
 	constructor(name, level = 0) {
 		this.name = name;
 		this.rarity = "";
-		this.type = "";
-		this.text = "";
-		this.energyCost = 0;
+		this.type = cards[name].type;
+		this.text = cards[name].desc;
+		this.energyCost = cards[name].cost;
 		this.level = level;
-		this.unplayable = false;
+		this.unplayable = cards[name].unplayable;
 		this.order = -1;
 		// error
-		if (name != "slash" && name != "block" && name != "reinforce" && name != "everlasting shield" && name != "aura blade" && name != "error") {
+		if (!Object.keys(card.starter).includes(name) && !Object.keys(card.common).includes(name) && !Object.keys(card.rare).includes(name)) {
 			name = "error";
 			this.name = "error";
 		};
 		// rarity
-		if (name == "slash" || name == "block") {
+		if (Object.keys(card.starter).includes(name)) {
 			this.rarity = "starter";
-		} else if (name == "reinforce" || name == "aura blade") {
+		} else if (Object.keys(card.common).includes(name)) {
 			this.rarity = "common";
-		} else if (name == "everlasting shield") {
+		} else if (Object.keys(card.rare).includes(name)) {
 			this.rarity = "rare";
 		} else {
 			this.rarity = "error";
-		};
-		// type
-		if (name == "slash") {
-			this.type = "attack";
-		} else if (name == "block" || name == "reinforce" || name == "everlasting shield") {
-			this.type = "defense";
-		} else if (name == "aura blade") {
-			this.type = "magic";
-		} else if (name == "error") {
-			this.type = "curse";
-		};
-		// energy cost
-		if (name == "slash" || name == "block" || name == "reinforce") {
-			this.energyCost = 1;
-		} else if (name == "aura blade" || name == "everlasting shield") {
-			this.energyCost = 2;
-		};
-		// special
-		if (name == "error") {
-			this.unplayable = true;
-		};
-		// text
-		if (name == "slash") {
-			this.text = "Deal 5 damage.";
-		} else if (name == "block") {
-			this.text = "Gain 4 shield.";
-		} else if (name == "reinforce") {
-			this.text = "Gain 1 shield and\n1 reinforce.";
-		} else if (name == "everlasting shield") {
-			this.text = "Gain 3 reinforces.";
-		} else if (name == "aura blade") {
-			this.text = "Gain 1 aura blade.";
-		} else if (name == "error") {
-			this.text = "Unplayable.";
 		};
 		// order
 		if (this.rarity == "starter") this.order = 2;
