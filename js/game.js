@@ -48,7 +48,7 @@ var global = {
 	maxHealth: 60,
 	shield: 0,
 	maxShield: 60,
-	floor: 1,
+	floor: 0,
 	location: "-1",
 	rewards: {},
 	cardRewardChoices: 3,
@@ -351,6 +351,7 @@ function selection() {
 			game.select = ["none", 0];
 			game.mapSelect = "exit";
 			game.state = "enter";
+			game.floor++;
 			actionTimer = 1;
 			return;
 		};
