@@ -258,7 +258,7 @@ const draw = {
 			draw.image(card.rarity.rare, x - 2, y - 2);
 		};
 		if (!cardObject.unplayable) {
-			draw.image(card._energy, x, y);
+			draw.image(card.energy, x, y);
 			draw.lore(x + 4, y + 2, cardObject.energyCost);
 		};
 	},

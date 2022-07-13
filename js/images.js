@@ -26,7 +26,7 @@ const player = {
 	shield: new Image,
 	shield_reinforced: new Image,
 }, card = {
-	_energy: new Image,
+	energy: new Image,
 	back: new Image,
 	error: new Image,
 	outline: {
@@ -126,7 +126,7 @@ player.shield.src = "images/player/shield.png";
 player.shield_reinforced.src = "images/player/shield_reinforced.png";
 
 // card stuff
-card._energy.src = "images/cards/_energy.png";
+card.energy.src = "images/cards/energy.png";
 card.back.src = "images/cards/back.png";
 card.error.src = "images/cards/error.png";
 
