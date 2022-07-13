@@ -29,11 +29,6 @@ const player = {
 	_energy: new Image,
 	back: new Image,
 	error: new Image,
-	slash: new Image,
-	block: new Image,
-	reinforce: new Image,
-	everlasting_shield: new Image,
-	aura_blade: new Image,
 	outline: {
 		attack: new Image,
 		curse: new Image,
@@ -42,6 +37,17 @@ const player = {
 	},
 	rarity: {
 		rare: new Image,
+	},
+	starter: {
+		"slash": new Image,
+		"block": new Image,
+	},
+	common: {
+		"reinforce": new Image,
+		"aura blade": new Image,
+	},
+	rare: {
+		"everlasting shield": new Image,
 	},
 }, enemy = {
 	slime: {
@@ -119,15 +125,21 @@ player.hit.src = "images/player/hit.png";
 player.shield.src = "images/player/shield.png";
 player.shield_reinforced.src = "images/player/shield_reinforced.png";
 
-// cards
+// card stuff
 card._energy.src = "images/cards/_energy.png";
 card.back.src = "images/cards/back.png";
 card.error.src = "images/cards/error.png";
-card.slash.src = "images/cards/slash.png";
-card.block.src = "images/cards/block.png";
-card.reinforce.src = "images/cards/reinforce.png";
-card.everlasting_shield.src = "images/cards/everlasting_shield.png";
-card.aura_blade.src = "images/cards/aura_blade.png";
+
+// starter cards
+card.starter["slash"].src = "images/cards/slash.png";
+card.starter["block"].src = "images/cards/block.png";
+
+// common cards
+card.common["reinforce"].src = "images/cards/reinforce.png";
+card.common["aura blade"].src = "images/cards/aura_blade.png";
+
+// rare cards
+card.rare["everlasting shield"].src = "images/cards/everlasting_shield.png";
 
 // card outlines
 card.outline.attack.src = "images/cards/outline/attack.png";

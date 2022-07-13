@@ -227,11 +227,11 @@ const draw = {
 		if (!cardObject || (!index && index !== 0) || (!y && y !== 0)) return;
 		let x = game.handPos[index], img = card.error, name = cardObject.name, type = cardObject.type;
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
-		if (name == "slash") img = card.slash;
-		else if (name == "block") img = card.block;
-		else if (name == "reinforce") img = card.reinforce;
-		else if (name == "everlasting shield") img = card.everlasting_shield;
-		else if (name == "aura blade") img = card.aura_blade;
+		if (name == "slash") img = card.starter["slash"];
+		else if (name == "block") img = card.starter["block"];
+		else if (name == "reinforce") img = card.common["reinforce"];
+		else if (name == "everlasting shield") img = card.rare["everlasting shield"];
+		else if (name == "aura blade") img = card.common["aura blade"];
 		else console.error("card " + index + " is invalid type: " + name);
 		if (name != "error") draw.image(card.back, x + 2, y + 2);
 		if (type == "attack") draw.image(card.outline.attack, x + 3, y + 3);
