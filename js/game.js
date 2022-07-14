@@ -548,13 +548,11 @@ function selection() {
 		actionTimer = 2;
 		return;
 	};
-	if (action == "up" && game.select[0] == "help" && infPos > 0) {
-		if (game.select[1] == 2) {
-			infPos -= infLimit / 5;
-		};
-	} else if (infPos < 0) infPos = 0;
+	if (action == "up" && game.select[0] == "help" && infPos > 0 && infLimit > 0) {
+		infPos -= infLimit / 6 + 0.5;
+	};
 	if (action == "down" && game.select[0] == "help") {
-		if (infPos < infLimit) infPos += infLimit / 5;
+		if (infPos < infLimit) infPos += infLimit / 6 + 0.5;
 		else infPos = infLimit;
 	};
 	if (action == "enter" && game.select[0] == "music") {
