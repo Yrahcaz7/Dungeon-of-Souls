@@ -16,8 +16,7 @@
 	along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], invNum = -1, popups = [],
+var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, "none", "normal", -1], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], invNum = -1, popups = [],
 infPos = 0, infLimit = 0;
 
 String.prototype.title = function() {
@@ -79,6 +78,8 @@ const draw = {
 		string = "" + string;
 		if ((!x && x !== 0) || (!y && y !== 0) || !string) return 0;
 		string = string.replaceAll(/<br>/g, "\n");
+		x = round(x, 1);
+		y = round(y, 1);
 		let img = letters.black, enters = 0, enterIndex = 0, len = string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>/g, "").length;
 		if (color == "red") img = letters.red;
 		else if (color == "white") img = letters.white;
@@ -322,6 +323,11 @@ const startAnim = {
 		if (game.auraBlades && (type == "attack" || type == "attack_2")) type += "_aura";
 		playerAnim = [0, type];
 	},
+	effect(type) {
+		type = "" + type;
+		if (!type) return;
+		effAnim = [0, type];
+	},
 	enemy(index, type) {
 		index = +index;
 		type = "" + type;
@@ -532,14 +538,15 @@ function infoGraphics() {
 	draw.lore(1, 12 - infPos, "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-Souls\"", "red", "right", true);
 	if (game.select[1] == 3) {
 		draw.lore(1, 1 - infPos, "Dungeon of Souls - Changelog", "red");
-		infLimit = (draw.lore(1, 23 - round(infPos, 1), changelog, "white") + 23) - 200;
+		infLimit = (draw.lore(1, 23 - infPos, changelog, "white") + 23) - 200;
 	} else if (game.select[1] == 2) {
 		draw.lore(1, 1 - infPos, "Dungeon of Souls - How To Play", "red");
-		infLimit = (draw.lore(1, 23 - round(infPos, 1), gameplay, "white") + 23) - 200;
+		infLimit = (draw.lore(1, 23 - infPos, gameplay, "white") + 23) - 200;
 	} else {
 		draw.lore(1, 1 - infPos, "Dungeon of Souls - Overview", "red");
-		infLimit = (draw.lore(1, 23 - round(infPos, 1), overview, "white") + 23) - 200;
+		infLimit = (draw.lore(1, 23 - infPos, overview, "white") + 23) - 200;
 	};
+	if (infLimit > 0) draw.image(arrows, 386, 22);
 };
 
 function deckGraphics(overrideName = "deck") {
