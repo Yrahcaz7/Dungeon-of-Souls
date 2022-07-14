@@ -30,8 +30,14 @@ function chance(chance = 0.5) {
 function mapPiece(row, attribute = "none") {
 	if (attribute == "1stbattle") return ["battle", 0, 0, ["slime_small"], randomInt(25 + (row * 1.5), 50 + (row * 2)), [randomCard(true), randomCard(true), randomCard(true), randomCard(true), randomCard(true)]];
 	let type = chance()?"battle":false;
+	let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
 	if (!type) return false;
-	return [type, randomInt(-5, 5), randomInt(-5, 5), chance()?["slime_big"]:["slime_small", "slime_small, " + (0.75 + (row * 0.05))], randomInt(25 + (row * 1.5), 50 + (row * 2)), [randomCard(true), randomCard(true), randomCard(true), randomCard(true), randomCard(true)]];
+	if (type == "battle") {
+		if (row >= 5) result.push(chance()?["slime_big"]:(chance(7/10)?["slime_big", "slime_small, " + (0.5 + (row * 0.05))]:["slime_small", "slime_small, " + (0.75 + (row * 0.05))]));
+		else result.push(chance()?["slime_big"]:["slime_small", "slime_small, " + (0.75 + (row * 0.05))]);
+		result.push(randomInt(25 + (row * 1.5), 50 + (row * 2)), [randomCard(true), randomCard(true), randomCard(true), randomCard(true), randomCard(true)]);
+	};
+	return result;
 };
 
 function round(number, places = 0) {
