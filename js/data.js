@@ -21,7 +21,7 @@ const infoText = {
 	aura_blade: "Every time you attack,\none of your aura blades\nis used up for 5 + X\nextra damage, X being\nthe number of aura\nblades you have.",
 	iron_will: "Every time a battle\nends, you heal 2 health.",
 	the_map: "Every time a battle\nends, you can choose\nwhere you go next.",
-}, text = ""
+}, overview = ""
 	+ "<b>Storyline:<s>"
 	+ "You have been trapped in this dungeon as long as you can remember.\n"
 	+ "You are determined to get out, so you pick up some armour and start climbing up the floors.\n"
@@ -44,6 +44,33 @@ const infoText = {
 	+ "find the fragment of time.\n"
 	+ "Else, at the edge of the sky,\n"
 	+ "you shall eternally die.",
+gameplay = ""
+	+ "<b>Cards and Effects<s>"
+	+ "You have a deck of cards, which you draw the top 5 from each turn.\n"
+	+ "You can play the cards in your hand for the effect(s) they say.\n"
+	+ " - Damage reduces enemies' health, while shield protects your health from attacks.\n"
+	+ " - Take note that shield goes away at the end of your turn unless something says otherwise.\n"
+	+ " - Most other effects are more complex, and have a tooltip that says what they do.\n"
+	+ "<b>Enemy Intents<s>"
+	+ "Take note of what's floating above the enemies' heads. That is their intent.\n"
+	+ "An enemy's intent shows what it intents to do on it's next turn.\n"
+	+ "Red with spikes or stars is attack, blue and shield shape means shield.\n"
+	+ "There are others later, but you can look at the tooltips to see what they are.\n"
+	+ "Use the monster's predictableness to strategize what cards you play.\n"
+	+ "<b>Building a Deck<s>"
+	+ "After each battle, you will get rewards, including a choice of 3 cards.\n"
+	+ "Some special things can give you more or less card choices, but it's normally 3.\n"
+	+ "Choose cards wisely, and try to get a good synergy between the cards in your deck.\n"
+	+ " - Put info about enhancements here when they are added.\n"
+	+ "<b>Artifacts<s>"
+	+ "Artifacts are very important. You start with two, The Map and Iron Will.\n"
+	+ "The map you always have, and it lets you pick where you go next after a battle.\n"
+	+ "Iron Will heals you a bit after every battle, which is very useful (especially for beginners.)\n"
+	+ "More artifacts will appear later, and you can always look at the tooltip to see what it does.\n"
+	+ "<b>Losing the Game<s>"
+	+ "If you reach 0 health, you will die and lose your progress.\n"
+	+ "However, you earn XP, and when you get enough you can unlock new cards.\n"
+	+ "Then, you can use your new knowledge and cards to reach higher heights next time.",
 changelog = ""
 	+ "<b>Version 1.1 - Formulation (in progress)<s>"
 	+ " - enemies now die upon reaching 0 health\n"
@@ -119,6 +146,10 @@ function updateData() {
 			else game.map[index] = [mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()];
 		};
 	};
+	// info
+	if (infPos <= 0) infPos = 0;
+	if (infLimit <= 0) infLimit = 0;
+	if (infPos >= infLimit) infPos = infLimit;
 	// fixes
 	if (game.health < 0) game.health = 0;
 	else if (game.health > game.maxHealth) game.health = game.maxHealth;

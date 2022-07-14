@@ -33,6 +33,11 @@ function mapPiece() {
 	return [type, randomInt(-5, 5), randomInt(-5, 5)];
 };
 
+function round(number, places = 0) {
+	places = 10 ** places;
+	return Math.round(number * places) / places;
+};
+
 var global = {
 	unlockedCards: ["aura blade", "everlasting shield", "reinforce"],
 	options: {
@@ -533,10 +538,19 @@ function selection() {
 		return;
 	};
 	if (action == "enter" && game.select[0] == "help") {
-		if (game.select[1] <= 1) game.select[1]++;
+		if (game.select[1] <= 2) game.select[1]++;
 		else game.select[1] = 0;
 		actionTimer = 2;
 		return;
+	};
+	if (action == "up" && game.select[0] == "help" && infPos > 0) {
+		if (game.select[1] == 2) {
+			infPos -= infLimit / 5;
+		};
+	} else if (infPos < 0) infPos = 0;
+	if (action == "down" && game.select[0] == "help") {
+		if (infPos < infLimit) infPos += infLimit / 5;
+		else infPos = infLimit;
 	};
 	if (action == "enter" && game.select[0] == "music") {
 		if (global.options.music) {

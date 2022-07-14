@@ -17,7 +17,8 @@
 */
 
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], invNum = -1, popups = [];
+tempAnim = [0, "none", "normal", -1], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], invNum = -1, popups = [],
+infPos = 0, infLimit = 0;
 
 String.prototype.title = function() {
 	let result = "";
@@ -77,8 +78,8 @@ const draw = {
 		y = +y;
 		string = "" + string;
 		if ((!x && x !== 0) || (!y && y !== 0) || !string) return 0;
-		string = string.replace(/<br>/, "\n");
-		let img = letters.black, enters = 0, enterIndex = 0, len = string.replace(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>/, "").length;
+		string = string.replaceAll(/<br>/g, "\n");
+		let img = letters.black, enters = 0, enterIndex = 0, len = string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>/g, "").length;
 		if (color == "red") img = letters.red;
 		else if (color == "white") img = letters.white;
 		else if (color == "black_fade_0") img = letters.black_fade[0];
@@ -88,7 +89,7 @@ const draw = {
 		else if (color == "red_fade_1") img = letters.red_fade[1];
 		else if (color == "red_fade_2") img = letters.red_fade[2];
 		if (string.includes("<b>") || string.includes("<big>") || string.includes("<s>") || string.includes("<small>")) {
-			string = string.replace(/<\/b>|<\/big>|<\/s>|<\/small>/, "");
+			string = string.replaceAll(/<\/b>|<\/big>|<\/s>|<\/small>/g, "");
 			let array = string.split("<");
 			let space = 0;
 			if (!array[0]) array.splice(0, 1);
@@ -107,7 +108,7 @@ const draw = {
 					};
 				};
 			};
-			return 0;
+			return space;
 		};
 		let defImg = img;
 		for (let a = 0; a < string.length; a++) {
@@ -133,8 +134,8 @@ const draw = {
 				};
 			};
 			let index = string.charCodeAt(a);
-			if (string.replace(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>/, "").includes("\n", enterIndex + 1)) {
-				len = string.replace(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>/, "").indexOf("\n", enterIndex + 1);
+			if (string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>/g, "").includes("\n", enterIndex + 1)) {
+				len = string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>/g, "").indexOf("\n", enterIndex + 1);
 			};
 			if (index == 10) {
 				enters++;
@@ -528,13 +529,16 @@ function infoGraphics() {
 	draw.rect("#000000cc");
 	draw.image(extra.help, 381, 3);
 	draw.image(select.round, 380, 2);
-	draw.lore(1, 12, "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-Souls\"", "red", "right", true);
-	if (game.select[1] == 2) {
-		draw.lore(1, 1, "Dungeon of Souls - Changelog", "red");
-		draw.lore(1, 23, changelog, "white");
+	draw.lore(1, 12 - infPos, "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-Souls\"", "red", "right", true);
+	if (game.select[1] == 3) {
+		draw.lore(1, 1 - infPos, "Dungeon of Souls - Changelog", "red");
+		infLimit = (draw.lore(1, 23 - round(infPos, 1), changelog, "white") + 23) - 200;
+	} else if (game.select[1] == 2) {
+		draw.lore(1, 1 - infPos, "Dungeon of Souls - How To Play", "red");
+		infLimit = (draw.lore(1, 23 - round(infPos, 1), gameplay, "white") + 23) - 200;
 	} else {
-		draw.lore(1, 1, "Dungeon of Souls - Overview", "red");
-		draw.lore(1, 23, text, "white");
+		draw.lore(1, 1 - infPos, "Dungeon of Souls - Overview", "red");
+		infLimit = (draw.lore(1, 23 - round(infPos, 1), overview, "white") + 23) - 200;
 	};
 };
 
