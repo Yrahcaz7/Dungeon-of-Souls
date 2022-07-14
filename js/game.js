@@ -27,10 +27,11 @@ function chance(chance = 0.5) {
 	return Math.random()<chance;
 };
 
-function mapPiece() {
+function mapPiece(row, attribute = "none") {
+	if (attribute == "1stbattle") return ["battle", 0, 0, ["slime_small"], randomInt(25 + (row * 1.5), 50 + (row * 2)), [randomCard(true), randomCard(true), randomCard(true), randomCard(true), randomCard(true)]];
 	let type = chance()?"battle":false;
 	if (!type) return false;
-	return [type, randomInt(-5, 5), randomInt(-5, 5)];
+	return [type, randomInt(-5, 5), randomInt(-5, 5), chance()?["slime_big"]:["slime_small", "slime_small, " + (0.75 + (row * 0.05))], randomInt(25 + (row * 1.5), 50 + (row * 2)), [randomCard(true), randomCard(true), randomCard(true), randomCard(true), randomCard(true)]];
 };
 
 function round(number, places = 0) {
@@ -90,15 +91,16 @@ var global = {
 	auraBladePos: [[65, 10], [80, 25], [40, 0], [25, 35]],
 	reinforces: 0,
 	attackEffect: "none",
+	room: mapPiece(0, "1stbattle"),
 	map: [
-		[false, mapPiece(), mapPiece(), mapPiece(), mapPiece(), false],
-		[mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()],
-		[mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()],
-		[mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()],
-		[mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()],
-		[mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()],
-		[mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()],
-		[mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()],
+		[false, mapPiece(1), mapPiece(1), mapPiece(1), mapPiece(1), false],
+		[mapPiece(2), mapPiece(2), mapPiece(2), mapPiece(2), mapPiece(2), mapPiece(2)],
+		[mapPiece(3), mapPiece(3), mapPiece(3), mapPiece(3), mapPiece(3), mapPiece(3)],
+		[mapPiece(4), mapPiece(4), mapPiece(4), mapPiece(4), mapPiece(4), mapPiece(4)],
+		[mapPiece(5), mapPiece(5), mapPiece(5), mapPiece(5), mapPiece(5), mapPiece(5)],
+		[mapPiece(6), mapPiece(6), mapPiece(6), mapPiece(6), mapPiece(6), mapPiece(6)],
+		[mapPiece(7), mapPiece(7), mapPiece(7), mapPiece(7), mapPiece(7), mapPiece(7)],
+		[mapPiece(8), mapPiece(8), mapPiece(8), mapPiece(8), mapPiece(8), mapPiece(8)],
 	],
 	paths: {},
 	saveNum: 0,
@@ -304,10 +306,15 @@ function playerTurn() {
 };
 
 function enemyTurn() {
+	if (game.enemyNum >= game.enemies.length) {
+		game.enemyNum = 0;
+		startTurn();
+	};
 	let num = game.enemyNum;
 	for (let a = 0; a < game.enemies.length; a++) {
 		let ref = game.enemies[a];
 		if (ref instanceof Enemy) continue;
+		ref.location = a;
 		game.enemies[a] = new Enemy(undefined, undefined, ref);
 		console.log("refresh enemy " + a);
 	};
@@ -360,6 +367,8 @@ function selection() {
 		};
 		if (action == "enter" && game.mapSelect != "exit") {
 			game.location = game.mapSelect;
+			let coor = game.mapSelect.split(", ");
+			game.room = game.map[coor[0]][coor[1]];
 			game.select = ["none", 0];
 			game.mapSelect = "exit";
 			game.state = "enter";
@@ -722,29 +731,20 @@ const gameloop = setInterval(function() {
 		game.state = "to_next";
 		game.turn = "none";
 		if (game.artifacts.includes("iron will")) game.health += 2;
-		game.rewards.gold = randomInt(25 + (game.floor * 1.5), 50 + (game.floor * 2));
-		game.rewards.card = cardReward();
 		showPopup("go", "go to the map!");
 	};
 	// update data again
 	updateData();
 	// load floor
-	if (game.location == "-1") {
-		if (game.state == "enter") {
-			game.enemyIndex = 0;
-			game.enemies.push(new Enemy("slime_small"));
-			enterBattle();
+	let place = game.location.split(", ");
+	if (game.state == "enter" && (game.location == "-1" || game.map[place[0]][place[1]][0] == "battle")) {
+		game.enemyIndex = 0;
+		for (let index = 0; index < game.room[3].length; index++) {
+			let item = game.room[3][index].split(", ");
+			if (item[1]) game.enemies.push(new Enemy(item[0], item[1]));
+			else game.enemies.push(new Enemy(item[0]));
 		};
-	} else {
-		let place = game.location.split(", ");
-		if (game.map[place[0]][place[1]][0] == "battle") {
-			if (game.state == "enter") {
-				game.enemyIndex = 0;
-				if (chance()) game.enemies.push(new Enemy("slime_big"));
-				else game.enemies.push(new Enemy("slime_small"), new Enemy("slime_small", 0.75 + game.floor * 0.05));
-				enterBattle();
-			};
-		};
+		enterBattle();
 	};
 	// visuals
 	backgrounds();

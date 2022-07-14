@@ -145,8 +145,8 @@ function updateData() {
 			if (!game.map[index][ind2]) falses++;
 		};
 		if (falses >= 5) {
-			if (index === 0) game.map[0] = [false, mapPiece(), mapPiece(), mapPiece(), mapPiece(), false];
-			else game.map[index] = [mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece(), mapPiece()];
+			if (index === 0) game.map[0] = [false, mapPiece(1), mapPiece(1), mapPiece(1), mapPiece(1), false];
+			else game.map[index] = [mapPiece(index), mapPiece(index), mapPiece(index), mapPiece(index), mapPiece(index), mapPiece(index)];
 		};
 	};
 	// info

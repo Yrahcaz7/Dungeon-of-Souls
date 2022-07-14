@@ -493,6 +493,13 @@ function enemyGraphics() {
 		let select = game.enemies[index], pos = game.enemyPos[index];
 		if (select.health <= 0) {
 			game.enemies.splice(index, 1);
+			if (tempAnim[3] >= index) tempAnim[3]--;
+			for (let a = index; a < game.enemies.length; a++) {
+				let ref = game.enemies[a];
+				ref.location = a;
+				game.enemies[a] = new Enemy(undefined, undefined, ref);
+				console.log("refresh enemy " + a);
+			};
 		};
 		if (!pos) return;
 		if (enemyAnim[index] >= 4) enemyAnim[index] = 0;

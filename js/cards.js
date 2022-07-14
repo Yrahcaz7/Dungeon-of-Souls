@@ -111,18 +111,12 @@ Array.prototype.cardSort = function() {
 	});
 };
 
-function randomCard() {
+function randomCard(plainText = false) {
+	let result;
 	if (chance(7/10)) {
-		return new Card(Object.keys(card.common)[randomInt(0, Object.keys(card.common).length - 1)]);
+		result = Object.keys(card.common)[randomInt(0, Object.keys(card.common).length - 1)];
 	} else {
-		return new Card(Object.keys(card.rare)[randomInt(0, Object.keys(card.rare).length - 1)]);
+		result = Object.keys(card.rare)[randomInt(0, Object.keys(card.rare).length - 1)];
 	};
-};
-
-function cardReward() {
-	let result = [];
-	for (let num = 0; num < game.cardRewardChoices; num++) {
-		result.push(randomCard());
-	};
-	return result;
+	return plainText?result:new Card(result);
 };
