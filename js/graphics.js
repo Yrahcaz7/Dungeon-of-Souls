@@ -809,7 +809,9 @@ function mapGraphics(onlyCalc = false) {
 			else draw.rect("#77ccffaa", 20 + (+game.location.split(", ")[0] * 32), 12, 26, 188);
 		};
 		draw.image(extra.end, 22, 179);
+		draw.image(extra.seed, 362, 17);
 		if (game.mapSelect == "exit") draw.image(select.round, 21, 178);
+		if (game.mapSelect == "seed") draw.image(select.round, 361, 16);
 		let info = "floor " + game.floor + " - " + game.gold + " gold";
 		let push = info.length * 2;
 		draw.lore(1, 1, info, "red");

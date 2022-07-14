@@ -100,6 +100,7 @@ const player = {
 	deck: new Image,
 	discard: new Image,
 	map: new Image,
+	seed: new Image,
 }, icon = {
 	reinforce: new Image,
 	aura_blade: new Image,
@@ -217,6 +218,7 @@ extra.end.src = "images/extras/end.png";
 extra.deck.src = "images/extras/deck.png";
 extra.discard.src = "images/extras/discard.png";
 extra.map.src = "images/extras/map.png";
+extra.seed.src = "images/extras/seed.png";
 
 // icons
 icon.reinforce.src = "images/icons/reinforce.png";
