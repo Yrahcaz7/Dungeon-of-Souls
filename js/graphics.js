@@ -815,8 +815,8 @@ function mapGraphics(onlyCalc = false) {
 		let info = "floor " + game.floor + " - " + game.gold + " gold";
 		let push = info.length * 2;
 		draw.lore(1, 1, info, "red");
-		if (push <= 126) {//.toString(36)
-			let seed = JSON.stringify(game.map);
+		if (push <= 126) {
+			let seed = JSON.stringify(game.firstRoom) + " " + JSON.stringify(game.map);
 			// true and false
 			seed = seed.replace(/false/g, "\\0").replace(/true/g, "\\1");
 			// enemies
@@ -828,8 +828,8 @@ function mapGraphics(onlyCalc = false) {
 			seed = seed.replace(/"battle",/g, "\\B");
 			// numbers
 			seed = seed.replace(/\+0./g, "=").replace(/\+1./g, "^");
-			// technical <0
-			seed = seed.replace(/\[\[/g, "(").replace(/\]\]/g, ")").replace(/\[\\/g, "{").replace(/"\]/g, "}").replace(/,\\/g, "/").replace(/\),/g, "~").replace(/\],/g, "&").replace(/'\//g, "!").replace(/'&/g, "*").replace(/\)\/0/g, "#").replace(/,\{/g, "$").replace(/\},/g, "%").replace(/~\{/g, "@").replace(/\(\\/g, "`").replace(/\)&/g, "?").replace(/\?`/g, ";").replace(/#\$/g, "|").replace(/#&`/g, ">").replace(/\?\{/g, "<");
+			// technical
+			seed = seed.replace(/\[\[/g, "(").replace(/\]\]/g, ")").replace(/\[\\/g, "{").replace(/"\]/g, "}").replace(/,\\/g, "/").replace(/\),/g, "~").replace(/\],/g, "&").replace(/'\//g, "!").replace(/'&/g, "*").replace(/\)\/0/g, "#").replace(/,\{/g, "$").replace(/\},/g, "%").replace(/~\{/g, "@").replace(/\(\\/g, "`").replace(/\)&/g, "?").replace(/\?`/g, ";").replace(/#\$/g, "|").replace(/#&`/g, ">").replace(/\?\{0/g, "<");
 			// capital letters
 			seed = seed.replace(/@B/g, "A").replace(/\|B/g, "H").replace(/;B/g, "W").replace(/\$B/g, "G");
 			// duplicate numbers

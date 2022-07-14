@@ -97,7 +97,8 @@ var global = {
 	auraBladePos: [[65, 10], [80, 25], [40, 0], [25, 35]],
 	reinforces: 0,
 	attackEffect: "none",
-	room: mapPiece(0, "1stbattle"),
+	room: "none",
+	firstRoom: mapPiece(0, "1stbattle"),
 	map: [
 		[false, mapPiece(1), mapPiece(1), mapPiece(1), mapPiece(1), false],
 		[mapPiece(2), mapPiece(2), mapPiece(2), mapPiece(2), mapPiece(2), mapPiece(2)],
@@ -744,6 +745,7 @@ const gameloop = setInterval(function() {
 	// load floor
 	let place = game.location.split(", ");
 	if (game.state == "enter" && (game.location == "-1" || game.map[place[0]][place[1]][0] == "battle")) {
+		if (game.location == "-1") game.room = game.firstRoom;
 		game.enemyIndex = 0;
 		for (let index = 0; index < game.room[3].length; index++) {
 			let item = game.room[3][index].split(", ");
