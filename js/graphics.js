@@ -829,11 +829,11 @@ function mapGraphics(onlyCalc = false) {
 			// numbers
 			seed = seed.replace(/\+0./g, "=").replace(/\+1./g, "^");
 			// technical
-			seed = seed.replace(/\[\[/g, "(").replace(/\]\]/g, ")").replace(/\[\\/g, "{").replace(/"\]/g, "}").replace(/,\\/g, "/").replace(/\),/g, "~").replace(/\],/g, "&").replace(/'\//g, "!").replace(/'&/g, "*").replace(/\)\/0/g, "#").replace(/,\{/g, "$").replace(/\},/g, "%").replace(/~\{/g, "@").replace(/\(\\/g, "`").replace(/\)&/g, "?").replace(/\?`/g, ";").replace(/#\$/g, "|").replace(/#&`/g, ">").replace(/\?\{0/g, "<");
+			seed = seed.replace(/\[\[/g, "(").replace(/\]\]/g, ")").replace(/\[\\/g, "{").replace(/"\]/g, "}").replace(/,\\/g, "/").replace(/\),/g, "~").replace(/\],/g, "&").replace(/'\//g, "!").replace(/'&/g, "*").replace(/\)\/0/g, "#").replace(/,\{/g, "$").replace(/\},/g, "%").replace(/~\{/g, "@").replace(/\(\\/g, "`").replace(/\)&/g, "?").replace(/\?`/g, ";").replace(/#\$/g, "|").replace(/#&`/g, ">").replace(/\?\{0/g, "<").replace(/#&\{/g, "'");
 			// capital letters
 			seed = seed.replace(/@B/g, "A").replace(/\|B/g, "H").replace(/;B/g, "W").replace(/\$B/g, "G");
 			// duplicate numbers
-			seed = seed.replace(/\/0\/0/g, "0:2").replace(/\/0\/0\/0/g, "0:3").replace(/\/0\/0\/0\/0/g, "0:4");
+			seed = seed.replace(/0\/0\/0\/0/g, "0:4").replace(/0\/0\/0/g, "0:3").replace(/0\/0/g, "0:2").replace(/#\/0/g, "-0");
 			// duplicate enemies
 			seed = seed.replace(/ss!ss/g, "ss:2").replace(/sb!sb/g, "sb:2");
 			// duplicate cards (3)
