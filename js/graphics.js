@@ -810,9 +810,13 @@ function mapGraphics(onlyCalc = false) {
 		};
 		draw.image(extra.end, 22, 179);
 		if (game.mapSelect == "exit") draw.image(select.round, 21, 178);
-		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", "red");
-		let seed = btoa(JSON.stringify(game.map));
-		draw.lore(390, 0, "seed: " + seed.slice(0, 90) + "\n" + seed.slice(90, 183) + "...", "white", "left", true);
+		let info = "floor " + game.floor + " - " + game.gold + " gold";
+		let push = info.length * 2;
+		draw.lore(1, 1, info, "red");
+		if (push <= 126) {
+			let seed = btoa(JSON.stringify(game.map));
+			draw.lore(396, 1, "seed: " + seed.slice(0, 126 - push) + "\n" + seed.slice(126 - push, 255 - (push * 2)) + "...", "white", "left", true);
+		};
 	};
 	let store = [];
 	for (let x = 0; x < game.map.length; x++) {
