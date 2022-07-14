@@ -463,6 +463,14 @@ function playerGraphics() {
 	draw.lore(x + 18, y + 28, maxEn, "black", "right");
 };
 
+function effectGraphics() {
+	if (effAnim[1] == "war cry") {
+		draw.imageSector(war_cry, Math.floor(effAnim[0]) * 188, 0, 188, 188, -22, -18, 188, 188);
+		effAnim[0] += 1;
+		if (effAnim[0] >= 35) effAnim = [0, "none"];
+	};
+};
+
 function enemyGraphics() {
 	if (game.enemies.length > 6) {
 		game.enemies.splice(6);

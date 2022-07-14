@@ -273,6 +273,7 @@ function playerTurn() {
 			} else if (name == "aura blade") {
 				game.auraBlades++;
 			} else if (name == "war cry") {
+				startAnim.effect("war cry");
 				for (let index = 0; index < game.enemies.length; index++) {
 					game.enemies[index].intent = "defend";
 					game.enemies[index].intentHistory.push("defend");
@@ -748,6 +749,7 @@ const gameloop = setInterval(function() {
 	if (!hide) {
 		playerGraphics();
 		enemyGraphics();
+		effectGraphics();
 	};
 	foregrounds();
 	if (!hide) {

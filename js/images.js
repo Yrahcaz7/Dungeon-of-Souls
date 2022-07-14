@@ -116,7 +116,7 @@ const player = {
 	battle: new Image,
 	select: new Image,
 },
-view = new Image, aura_blade = new Image, arrows = new Image; // other
+view = new Image, aura_blade = new Image, arrows = new Image, war_cry = new Image; // other
 
 // player
 player.idle.src = "images/player/idle.png";
@@ -259,3 +259,4 @@ map.select.src = "images/map/select.png";
 view.src = "images/view.png";
 aura_blade.src = "images/aura_blade.png";
 arrows.src = "images/arrows.png";
+war_cry.src = "images/war_cry.png";
