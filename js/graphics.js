@@ -77,10 +77,10 @@ const draw = {
 		y = +y;
 		string = "" + string;
 		if ((!x && x !== 0) || (!y && y !== 0) || !string) return 0;
-		string = string.replaceAll(/<br>/g, "\n");
+		string = string.replace(/<br>/g, "\n");
 		x = round(x, 1);
 		y = round(y, 1);
-		let img = letters.black, enters = 0, enterIndex = 0, len = string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<light-green>|<\/light-green>/g, "").length;
+		let img = letters.black, enters = 0, enterIndex = 0, len = string.replace(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<light-green>|<\/light-green>/g, "").length;
 		if (color == "red") img = letters.red;
 		else if (color == "white") img = letters.white;
 		else if (color == "deep-red") img = letters.deep_red;
@@ -92,7 +92,7 @@ const draw = {
 		else if (color == "red_fade_1") img = letters.red_fade[1];
 		else if (color == "red_fade_2") img = letters.red_fade[2];
 		if (string.includes("<b>") || string.includes("<big>") || string.includes("<s>") || string.includes("<small>")) {
-			string = string.replaceAll(/<\/b>|<\/big>|<\/s>|<\/small>/g, "");
+			string = string.replace(/<\/b>|<\/big>|<\/s>|<\/small>/g, "");
 			let array = string.split("<");
 			let space = 0;
 			if (!array[0]) array.splice(0, 1);
@@ -155,8 +155,8 @@ const draw = {
 				};
 			};
 			let index = string.charCodeAt(a);
-			if (string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<light-green>|<\/light-green>/g, "").includes("\n", enterIndex + 1)) {
-				len = string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<light-green>|<\/light-green>/g, "").indexOf("\n", enterIndex + 1);
+			if (string.replace(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<light-green>|<\/light-green>/g, "").includes("\n", enterIndex + 1)) {
+				len = string.replace(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<light-green>|<\/light-green>/g, "").indexOf("\n", enterIndex + 1);
 			};
 			if (index == 10) {
 				enters++;
@@ -815,8 +815,33 @@ function mapGraphics(onlyCalc = false) {
 		let info = "floor " + game.floor + " - " + game.gold + " gold";
 		let push = info.length * 2;
 		draw.lore(1, 1, info, "red");
-		if (push <= 126) {
-			let seed = btoa(JSON.stringify(game.map));
+		if (push <= 126) {//.toString(36)
+			let seed = JSON.stringify(game.map);
+			// true and false
+			seed = seed.replace(/false/g, "\\0").replace(/true/g, "\\1");
+			// enemies
+			seed = seed.replace(/"slime_small"/g, "\\ss'").replace(/"slime_big"/g, "\\sb'");
+			seed = seed.replace(/"slime_small, /g, "\\ss+").replace(/"slime_big, /g, "\\sb+");
+			// cards
+			seed = seed.replace(/"aura blade"/g, "\\aur_b").replace(/"block"/g, "\\blo").replace(/"error"/g, "\\err").replace(/"everlasting shield"/g, "\\eve_s").replace(/"reinforce"/g, "\\rei").replace(/"slash"/g, "\\sla").replace(/"war cry"/g, "\\war_c");
+			// map nodes
+			seed = seed.replace(/"battle",/g, "\\B");
+			// numbers
+			seed = seed.replace(/\+0./g, "=").replace(/\+1./g, "^");
+			// technical <0
+			seed = seed.replace(/\[\[/g, "(").replace(/\]\]/g, ")").replace(/\[\\/g, "{").replace(/"\]/g, "}").replace(/,\\/g, "/").replace(/\),/g, "~").replace(/\],/g, "&").replace(/'\//g, "!").replace(/'&/g, "*").replace(/\)\/0/g, "#").replace(/,\{/g, "$").replace(/\},/g, "%").replace(/~\{/g, "@").replace(/\(\\/g, "`").replace(/\)&/g, "?").replace(/\?`/g, ";").replace(/#\$/g, "|").replace(/#&`/g, ">").replace(/\?\{/g, "<");
+			// capital letters
+			seed = seed.replace(/@B/g, "A").replace(/\|B/g, "H").replace(/;B/g, "W").replace(/\$B/g, "G");
+			// duplicate numbers
+			seed = seed.replace(/\/0\/0/g, "0:2").replace(/\/0\/0\/0/g, "0:3").replace(/\/0\/0\/0\/0/g, "0:4");
+			// duplicate enemies
+			seed = seed.replace(/ss!ss/g, "ss:2").replace(/sb!sb/g, "sb:2");
+			// duplicate cards (3)
+			seed = seed.replace(/aur_b\/aur_b\/aur_b/g, "aur_b:3").replace(/blo\/blo\/blo/g, "blo:3").replace(/err\/err\/err/g, "err:3").replace(/eve_s\/eve_s\/eve_s/g, "eve_s:3").replace(/rei\/rei\/rei/g, "rei:3").replace(/sla\/sla\/sla/g, "sla:3").replace(/war_c\/war_c\/war_c/g, "war_c:3");
+			// duplicate cards (2)
+			seed = seed.replace(/aur_b\/aur_b/g, "aur_b:2").replace(/blo\/blo/g, "blo:2").replace(/err\/err/g, "err:2").replace(/eve_s\/eve_s/g, "eve_s:2").replace(/rei\/rei/g, "rei:2").replace(/sla\/sla/g, "sla:2").replace(/war_c\/war_c/g, "war_c:2");
+			// print
+			console.log(seed);
 			draw.lore(396, 1, "seed: " + seed.slice(0, 126 - push) + "\n" + seed.slice(126 - push, 255 - (push * 2)) + "...", "white", "left", true);
 		};
 	};
