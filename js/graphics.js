@@ -77,6 +77,7 @@ const draw = {
 		y = +y;
 		string = "" + string;
 		if ((!x && x !== 0) || (!y && y !== 0) || !string) return 0;
+		string = string.replace(/<br>/, "\n");
 		let img = letters.black, enters = 0, enterIndex = 0, len = string.replace(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>/, "").length;
 		if (color == "red") img = letters.red;
 		else if (color == "white") img = letters.white;
@@ -86,7 +87,6 @@ const draw = {
 		else if (color == "red_fade_0") img = letters.red_fade[0];
 		else if (color == "red_fade_1") img = letters.red_fade[1];
 		else if (color == "red_fade_2") img = letters.red_fade[2];
-		string = string.replace(/<br>/, "\n");
 		if (string.includes("<b>") || string.includes("<big>") || string.includes("<s>") || string.includes("<small>")) {
 			string = string.replace(/<\/b>|<\/big>|<\/s>|<\/small>/, "");
 			let array = string.split("<");
