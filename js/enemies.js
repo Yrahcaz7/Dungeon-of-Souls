@@ -35,9 +35,9 @@ class Enemy {
 		if (type == "slime_small") power--;
 		power += game.floor * 0.05;
 		this.type = type;
-		this.maxHealth = Math.round(((Math.random() / 5) + 0.9) * ((power * 10) + 20));
+		this.maxHealth = Math.round(((Math.random() / 10) + 0.95) * ((power * 10) + 20));
 		this.health = this.maxHealth;
-		this.maxShield = Math.round(((Math.random() / 5) + 0.9) * ((power * 5) + 10));
+		this.maxShield = Math.round(((Math.random() / 10) + 0.95) * ((power * 5) + 10));
 		this.shield = 0;
 		this.attackPower = Math.round(((power / 2) + 1) * 5 - 0.25);
 		this.defendPower = Math.round(((power / 2) + 1) * 5 + 1);
