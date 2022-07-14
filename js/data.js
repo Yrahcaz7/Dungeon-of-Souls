@@ -157,7 +157,7 @@ function updateData() {
 	for (let index = 0; index < game.hand.length; index++) {
 		let card = game.hand[index];
 		if (card.name == "slash") {
-			if (game.auraBlades) game.hand[index].text = "Deal <deep-green>" + (10 + game.auraBlades) + "</deep-green> damage.";
+			if (game.auraBlades) game.hand[index].text = "Deal <light-green>" + (10 + game.auraBlades) + "</light-green> damage.";
 			else game.hand[index].text = cards["slash"].desc;
 		};
 	};

@@ -80,11 +80,11 @@ const draw = {
 		string = string.replaceAll(/<br>/g, "\n");
 		x = round(x, 1);
 		y = round(y, 1);
-		let img = letters.black, enters = 0, enterIndex = 0, len = string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<deep-green>|<\/deep-green>/g, "").length;
+		let img = letters.black, enters = 0, enterIndex = 0, len = string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<light-green>|<\/light-green>/g, "").length;
 		if (color == "red") img = letters.red;
 		else if (color == "white") img = letters.white;
 		else if (color == "deep-red") img = letters.deep_red;
-		else if (color == "deep-green") img = letters.deep_green;
+		else if (color == "light-green") img = letters.light_green;
 		else if (color == "black_fade_0") img = letters.black_fade[0];
 		else if (color == "black_fade_1") img = letters.black_fade[1];
 		else if (color == "black_fade_2") img = letters.black_fade[2];
@@ -128,9 +128,9 @@ const draw = {
 				} else if (string.indexOf("<deep-red>") == a) {
 					img = letters.deep_red;
 					string = string.replace("<deep-red>", "");
-				} else if (string.indexOf("<deep-green>") == a) {
-					img = letters.deep_green;
-					string = string.replace("<deep-green>", "");
+				} else if (string.indexOf("<light-green>") == a) {
+					img = letters.light_green;
+					string = string.replace("<light-green>", "");
 				} else if (img == letters.red && string.indexOf("</red>") == a) {
 					img = defImg;
 					string = string.replace("</red>", "");
@@ -143,14 +143,14 @@ const draw = {
 				} else if (img == letters.deep_red && string.indexOf("</deep-red>") == a) {
 					img = defImg;
 					string = string.replace("</deep-red>", "");
-				} else if (img == letters.deep_green && string.indexOf("</deep-green>") == a) {
+				} else if (img == letters.light_green && string.indexOf("</light-green>") == a) {
 					img = defImg;
-					string = string.replace("</deep-green>", "");
+					string = string.replace("</light-green>", "");
 				};
 			};
 			let index = string.charCodeAt(a);
-			if (string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<deep-green>|<\/deep-green>/g, "").includes("\n", enterIndex + 1)) {
-				len = string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<deep-green>|<\/deep-green>/g, "").indexOf("\n", enterIndex + 1);
+			if (string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<light-green>|<\/light-green>/g, "").includes("\n", enterIndex + 1)) {
+				len = string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<light-green>|<\/light-green>/g, "").indexOf("\n", enterIndex + 1);
 			};
 			if (index == 10) {
 				enters++;
