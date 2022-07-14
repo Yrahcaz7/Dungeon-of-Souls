@@ -77,7 +77,7 @@ const draw = {
 		y = +y;
 		string = "" + string;
 		if ((!x && x !== 0) || (!y && y !== 0) || !string) return 0;
-		let img = letters.black, enters = 0, enterIndex = 0, len = string.length;
+		let img = letters.black, enters = 0, enterIndex = 0, len = string.replace(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>/, "").length;
 		if (color == "red") img = letters.red;
 		else if (color == "white") img = letters.white;
 		else if (color == "black_fade_0") img = letters.black_fade[0];
@@ -86,7 +86,7 @@ const draw = {
 		else if (color == "red_fade_0") img = letters.red_fade[0];
 		else if (color == "red_fade_1") img = letters.red_fade[1];
 		else if (color == "red_fade_2") img = letters.red_fade[2];
-		string = string.replace("<br>", "\n");
+		string = string.replace(/<br>/, "\n");
 		if (string.includes("<b>") || string.includes("<big>") || string.includes("<s>") || string.includes("<small>")) {
 			string = string.replace(/<\/b>|<\/big>|<\/s>|<\/small>/, "");
 			let array = string.split("<");
@@ -109,10 +109,32 @@ const draw = {
 			};
 			return 0;
 		};
+		let defImg = img;
 		for (let a = 0; a < string.length; a++) {
+			if (string.charAt(a) == "<") {
+				if (string.indexOf("<red>") == a) {
+					img = letters.red;
+					string = string.replace("<red>", "");
+				} else if (string.indexOf("<white>") == a) {
+					img = letters.white;
+					string = string.replace("<white>", "");
+				} else if (string.indexOf("<black>") == a) {
+					img = letters.black;
+					string = string.replace("<black>", "");
+				} else if (img == letters.red && string.indexOf("</red>") == a) {
+					img = defImg;
+					string = string.replace("</red>", "");
+				} else if (img == letters.white && string.indexOf("</white>") == a) {
+					img = defImg;
+					string = string.replace("</white>", "");
+				} else if (img == letters.black && string.indexOf("</black>") == a) {
+					img = defImg;
+					string = string.replace("</black>", "");
+				};
+			};
 			let index = string.charCodeAt(a);
-			if (string.includes("\n", enterIndex + 1)) {
-				len = string.indexOf("\n", enterIndex + 1);
+			if (string.replace(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>/, "").includes("\n", enterIndex + 1)) {
+				len = string.replace(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>/, "").indexOf("\n", enterIndex + 1);
 			};
 			if (index == 10) {
 				enters++;
@@ -360,7 +382,7 @@ function foregrounds() {
 	else if (game.select[0] == "deck") draw.image(select.deck, 2, 181);
 	else if (game.select[0] == "discard") draw.image(select.discard, 382, 181);
 	else if (game.select[0] == "map") draw.image(select.map, 1, 11);
-	draw.lore(1, 1, "floor " + game.floor, "red", "right");
+	draw.lore(1, 1, "floor " + game.floor, "red");
 };
 
 function playerGraphics() {
