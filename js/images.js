@@ -70,6 +70,8 @@ const player = {
 	black: new Image,
 	red: new Image,
 	white: new Image,
+	deep_red: new Image,
+	deep_green: new Image,
 	black_fade: [new Image, new Image, new Image],
 	red_fade: [new Image, new Image, new Image],
 }, bar = {
@@ -175,6 +177,8 @@ clock.node.src = "images/clock/node.png";
 letters.black.src = "images/letters/black.png";
 letters.red.src = "images/letters/red.png";
 letters.white.src = "images/letters/white.png";
+letters.deep_red.src = "images/letters/deep_red.png";
+letters.deep_green.src = "images/letters/deep_green.png";
 letters.black_fade[0].src = "images/letters/black_fade_0.png";
 letters.black_fade[1].src = "images/letters/black_fade_1.png";
 letters.black_fade[2].src = "images/letters/black_fade_2.png";

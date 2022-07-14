@@ -80,9 +80,11 @@ const draw = {
 		string = string.replaceAll(/<br>/g, "\n");
 		x = round(x, 1);
 		y = round(y, 1);
-		let img = letters.black, enters = 0, enterIndex = 0, len = string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>/g, "").length;
+		let img = letters.black, enters = 0, enterIndex = 0, len = string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<deep-green>|<\/deep-green>/g, "").length;
 		if (color == "red") img = letters.red;
 		else if (color == "white") img = letters.white;
+		else if (color == "deep-red") img = letters.deep_red;
+		else if (color == "deep-green") img = letters.deep_green;
 		else if (color == "black_fade_0") img = letters.black_fade[0];
 		else if (color == "black_fade_1") img = letters.black_fade[1];
 		else if (color == "black_fade_2") img = letters.black_fade[2];
@@ -123,6 +125,12 @@ const draw = {
 				} else if (string.indexOf("<black>") == a) {
 					img = letters.black;
 					string = string.replace("<black>", "");
+				} else if (string.indexOf("<deep-red>") == a) {
+					img = letters.deep_red;
+					string = string.replace("<deep-red>", "");
+				} else if (string.indexOf("<deep-green>") == a) {
+					img = letters.deep_green;
+					string = string.replace("<deep-green>", "");
 				} else if (img == letters.red && string.indexOf("</red>") == a) {
 					img = defImg;
 					string = string.replace("</red>", "");
@@ -132,11 +140,17 @@ const draw = {
 				} else if (img == letters.black && string.indexOf("</black>") == a) {
 					img = defImg;
 					string = string.replace("</black>", "");
+				} else if (img == letters.deep_red && string.indexOf("</deep-red>") == a) {
+					img = defImg;
+					string = string.replace("</deep-red>", "");
+				} else if (img == letters.deep_green && string.indexOf("</deep-green>") == a) {
+					img = defImg;
+					string = string.replace("</deep-green>", "");
 				};
 			};
 			let index = string.charCodeAt(a);
-			if (string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>/g, "").includes("\n", enterIndex + 1)) {
-				len = string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>/g, "").indexOf("\n", enterIndex + 1);
+			if (string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<deep-green>|<\/deep-green>/g, "").includes("\n", enterIndex + 1)) {
+				len = string.replaceAll(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<deep-green>|<\/deep-green>/g, "").indexOf("\n", enterIndex + 1);
 			};
 			if (index == 10) {
 				enters++;
@@ -847,6 +861,7 @@ function mapGraphics(onlyCalc = false) {
 			};
 		};
 	};
+	game.paths = {};
 	for (let num = 0; num < store.length; num++) {
 		if (store[num][2] > store[num][0]) {
 			if (!(game.paths["" + store[num][0] + ", " + store[num][1]])) game.paths["" + store[num][0] + ", " + store[num][1]] = [];

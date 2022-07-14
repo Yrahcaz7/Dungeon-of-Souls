@@ -153,6 +153,14 @@ function updateData() {
 	if (infPos <= 0) infPos = 0;
 	if (infLimit <= 0) infLimit = 0;
 	if (infPos >= infLimit) infPos = infLimit;
+	// cards
+	for (let index = 0; index < game.hand.length; index++) {
+		let card = game.hand[index];
+		if (card.name == "slash") {
+			if (game.auraBlades) game.hand[index].text = "Deal <deep-green>" + (10 + game.auraBlades) + "</deep-green> damage.";
+			else game.hand[index].text = cards["slash"].desc;
+		};
+	};
 	// fixes
 	if (game.health < 0) game.health = 0;
 	else if (game.health > game.maxHealth) game.health = game.maxHealth;
