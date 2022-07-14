@@ -99,17 +99,23 @@ const draw = {
 			for (let index = 0; index < array.length; index++) {
 				if (array[index].includes("s>") || array[index].includes("small>")) {
 					array[index] = array[index].replace(/s>|small>/, "");
-					space += 5.5 * (draw.lore(x, y + space, array[index], color, position, true) + 1);
+					space += draw.lore(x, y + space, array[index], color, position, true);
 				} else if (array[index].includes("b>") || array[index].includes("big>")) {
 					array[index] = array[index].replace(/b>|big>/, "");
-					space += 11 * (draw.lore(x, y + space, array[index], color, position, false) + 1);
+					space += draw.lore(x, y + space, array[index], color, position, false);
 				} else {
-					if (small) {
-						space += 5.5 * (draw.lore(x, y + space, array[index], color, position, true) + 1);
-					} else {
-						space += 11 * (draw.lore(x, y + space, array[index], color, position, false) + 1);
-					};
+					space += draw.lore(x, y + space, array[index], color, position, small);
 				};
+			};
+			return space;
+		};
+		if (string.includes("\n") && position != "right") {
+			let array = string.split("\n");
+			let space = 0;
+			if (!array[0]) array.splice(0, 1);
+			for (let index = 0; index < array.length; index++) {
+				array[index] = array[index].replace(/\n/, "");
+				space += draw.lore(x, y + space, array[index], color, position, small);
 			};
 			return space;
 		};
@@ -158,7 +164,6 @@ const draw = {
 			};
 			if (enters) {
 				a -= enterIndex;
-				len -= enterIndex;
 			};
 			if (small) {
 				if (position == "right") {
@@ -179,10 +184,9 @@ const draw = {
 			};
 			if (enters) {
 				a += enterIndex;
-				len += enterIndex;
 			};
 		};
-		return enters;
+		return small?(enters+1)*5.5:(enters+1)*11;
 	},
 	selector(x, y, width, height) {
 		x = +x;
