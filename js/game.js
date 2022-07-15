@@ -17,11 +17,11 @@
 */
 
 function randomInt(min, max) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
+	min = Math.ceil(min);
+	max = Math.floor(max);
 	if ((!min && min !== 0) || (!max && max !== 0)) return NaN;
 	if (min > max) [min, max] = [max, min];
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+	return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
 function chance(chance = 0.5) {
