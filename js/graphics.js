@@ -794,7 +794,7 @@ function popupGraphics() {
 };
 
 function mapGraphics(onlyCalc = false) {
-	let render = !onlyCalc;
+	let render = !onlyCalc, seed = "";
 	if (render) {
 		draw.rect("#000000");
 		draw.image(map.top, 3, 12);
@@ -810,12 +810,12 @@ function mapGraphics(onlyCalc = false) {
 		draw.image(extra.end, 22, 179);
 		draw.image(extra.seed, 362, 17);
 		if (game.mapSelect == "exit") draw.image(select.round, 21, 178);
-		if (game.mapSelect == "seed") draw.image(select.round, 361, 16);
+		if (game.mapSelect == "seed" || game.mapSelect == "seed-on") draw.image(select.round, 361, 16);
 		let info = "floor " + game.floor + " - " + game.gold + " gold";
 		let push = info.length * 2;
 		draw.lore(1, 1, info, "red");
 		if (push <= 126) {
-			let seed = JSON.stringify(game.firstRoom) + " " + JSON.stringify(game.map);
+			seed = JSON.stringify(game.firstRoom) + " " + JSON.stringify(game.map);
 			// true and false
 			seed = seed.replace(/false/g, "\\0").replace(/true/g, "\\1");
 			// enemies
@@ -840,7 +840,6 @@ function mapGraphics(onlyCalc = false) {
 			// duplicate cards (2)
 			seed = seed.replace(/aur_b\/aur_b/g, "aur_b:2").replace(/blo\/blo/g, "blo:2").replace(/err\/err/g, "err:2").replace(/eve_s\/eve_s/g, "eve_s:2").replace(/rei\/rei/g, "rei:2").replace(/sla\/sla/g, "sla:2").replace(/war_c\/war_c/g, "war_c:2");
 			// print
-			console.log(seed);
 			draw.lore(396, 1, "seed: " + seed.slice(0, 126 - push) + "\n" + seed.slice(126 - push, 255 - (push * 2)) + "...", "white", "left", true);
 		};
 	};
@@ -920,5 +919,15 @@ function mapGraphics(onlyCalc = false) {
 	};
 	for (let item in game.paths) {
 		game.paths[item].sort();
+	};
+	if (render && game.mapSelect == "seed-on") {
+		draw.rect("#000000cc");
+		for (let line = 0; line < seed.length / 132; line++) {
+			let indexes = [line * 132, (line + 1) * 132];
+			draw.lore(1, 14 + (line * 5.5), seed.slice(indexes[0], indexes[1]), "white", "right", true);
+		};
+		draw.rect("#00000044", 0, 0, 400, 13);
+		draw.lore(200, 1, "Seed", "white", "center");
+		draw.rect("#ffffff", 1, 12, 398, 1);
 	};
 };
