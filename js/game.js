@@ -373,7 +373,7 @@ function selection() {
 			game.mapSelect = game.paths[game.location][0];
 			actionTimer = 1;
 			return;
-		} else if (action == "left" && game.mapSelect != "exit" && game.mapSelect != "seed-on") {
+		} else if (action == "left" && game.mapSelect != "exit" && game.mapSelect != "seed-on" && game.floor) {
 			game.mapOn = -1;
 			game.mapSelect = "exit";
 			actionTimer = 1;
