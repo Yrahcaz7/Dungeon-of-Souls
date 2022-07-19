@@ -358,12 +358,20 @@ function selection() {
 			game.mapSelect = game.paths[game.location][game.mapOn];
 			actionTimer = 1;
 			return;
-		} else if (action == "up" && game.mapOn) {
-			game.mapOn = game.mapOn - 1;
-			game.mapSelect = game.paths[game.location][game.mapOn];
+		} else if (action == "up" && game.mapSelect != "seed-on") {
+			if (game.mapOn) {
+				game.mapOn = game.mapOn - 1;
+				game.mapSelect = game.paths[game.location][game.mapOn];
+			} else {
+				game.mapSelect = "seed";
+			};
 			actionTimer = 1;
 			return;
-		} else if (action == "down" && game.mapSelect != "exit") {
+		} else if (action == "down" && game.mapSelect == "seed") {
+			game.mapSelect = game.paths[game.location][0];
+			actionTimer = 1;
+			return;
+		} else if (action == "down" && game.mapSelect != "exit" && game.mapSelect != "seed-on") {
 			if (game.mapOn < game.paths[game.location].length - 1) {
 				game.mapOn = game.mapOn + 1;
 				game.mapSelect = game.paths[game.location][game.mapOn];
@@ -372,8 +380,15 @@ function selection() {
 			};
 			actionTimer = 1;
 			return;
-		};
-		if (action == "enter" && game.mapSelect != "exit") {
+		} else if (action == "enter" && game.mapSelect == "seed-on") {
+			game.mapSelect = "seed";
+			actionTimer = 1;
+			return;
+		} else if (action == "enter" && game.mapSelect == "seed") {
+			game.mapSelect = "seed-on";
+			actionTimer = 1;
+			return;
+		} else if (action == "enter" && game.mapSelect != "exit") {
 			game.location = game.mapSelect;
 			let coor = game.mapSelect.split(", ");
 			game.room = game.map[coor[0]][coor[1]];
@@ -385,6 +400,25 @@ function selection() {
 			return;
 		};
 	} else {
+		if (game.select[0] == "in_map") {
+			if ((action == "up" || action == "right") && game.mapSelect == "exit") {
+				game.mapSelect = "seed";
+				actionTimer = 1;
+				return;
+			} else if ((action == "left" || action == "down") && game.mapSelect == "seed") {
+				game.mapSelect = "exit";
+				actionTimer = 1;
+				return;
+			} else if (action == "enter" && game.mapSelect == "seed-on") {
+				game.mapSelect = "seed";
+				actionTimer = 1;
+				return;
+			} else if (action == "enter" && game.mapSelect == "seed") {
+				game.mapSelect = "seed-on";
+				actionTimer = 1;
+				return;
+			}
+		};
 		game.mapOn = -1;
 	};
 	// select hand
