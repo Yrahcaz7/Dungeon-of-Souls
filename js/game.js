@@ -452,15 +452,13 @@ function selection() {
 		game.select = ["map", 0];
 		actionTimer = 1;
 		return;
-	};
-	if (action == "up" && game.select[0] == "discard" && !game.select[1]) {
+	} else if (action == "up" && game.select[0] == "discard" && !game.select[1]) {
 		if (popups[0]) game.select = ["popups", 0];
 		else if (!game.enemies.length) game.select = ["music", 0];
 		else game.select = ["lookat_enemy", 0];
 		actionTimer = 1;
 		return;
-	};
-	if (action == "left") {
+	} else if (action == "left") {
 		if (game.select[0] == "hand" && !game.select[1]) {
 			game.select = ["lookat_you", 0];
 			actionTimer = 1;
@@ -473,8 +471,7 @@ function selection() {
 			actionTimer = 1;
 			return;
 		};
-	};
-	if ((action == "left" || action == "down")) {
+	} else if ((action == "left" || action == "down")) {
 		if (game.select[0] == "end") {
 			game.select = ["deck", 0];
 			actionTimer = 1;
@@ -485,8 +482,7 @@ function selection() {
 			actionTimer = 1;
 			return;
 		};
-	};
-	if (action == "right") {
+	} else if (action == "right") {
 		if (game.select[0] == "lookat_you") {
 			if (!game.enemies.length) game.select = ["discard", 0];
 			else if (!game.hand[0]) game.select = ["lookat_enemy", game.enemies.length - 1];
@@ -503,8 +499,7 @@ function selection() {
 			actionTimer = 1;
 			return;
 		};
-	};
-	if ((action == "right" || action == "up")) {
+	} else if ((action == "right" || action == "up")) {
 		if (game.select[0] == "deck" && !game.select[1]) {
 			game.select = ["end", 0];
 			actionTimer = 1;
@@ -600,31 +595,20 @@ function selection() {
 		else game.select[1] = 0;
 		actionTimer = 2;
 		return;
-	};
-	if (action == "enter" && game.select[0] == "map") {
+	} else if (action == "enter" && game.select[0] == "map") {
 		game.select = ["in_map", 0];
 		actionTimer = 2;
 		return;
-	};
-	if (action == "enter" && game.select[0] == "in_map" && game.mapSelect == "exit") {
+	} else if (action == "enter" && game.select[0] == "in_map" && game.mapSelect == "exit") {
 		game.select = ["map", 0];
 		actionTimer = 2;
 		return;
-	};
-	if (action == "enter" && game.select[0] == "help") {
+	} else if (action == "enter" && game.select[0] == "help") {
 		if (game.select[1] <= 2) game.select[1]++;
 		else game.select[1] = 0;
 		actionTimer = 2;
 		return;
-	};
-	if (action == "up" && game.select[0] == "help" && infPos > 0 && infLimit > 0) {
-		infPos -= infLimit / 6 + 0.5;
-	};
-	if (action == "down" && game.select[0] == "help") {
-		if (infPos < infLimit) infPos += infLimit / 6 + 0.5;
-		else infPos = infLimit;
-	};
-	if (action == "enter" && game.select[0] == "music") {
+	} else if (action == "enter" && game.select[0] == "music") {
 		if (global.options.music) {
 			document.getElementById("music").pause();
 			global.options.music = false;
@@ -635,8 +619,7 @@ function selection() {
 		musicPopups();
 		actionTimer = 2;
 		return;
-	};
-	if (action == "enter" && game.select[0] == "end" && game.turn == "player") {
+	} else if (action == "enter" && game.select[0] == "end" && game.turn == "player") {
 		let confirm = false;
 		if (game.hand.length >= 1) {
 			for (let a = 0; a < game.hand.length; a++) {
@@ -650,6 +633,13 @@ function selection() {
 		else endTurn();
 		actionTimer = 2;
 		return;
+	};
+	// scrolling
+	if (action == "up" && game.select[0] == "help" && infPos > 0 && infLimit > 0) {
+		infPos -= infLimit / 6 + 0.5;
+	} else if (action == "down" && game.select[0] == "help") {
+		if (infPos < infLimit) infPos += infLimit / 6 + 0.5;
+		else infPos = infLimit;
 	};
 	// deselect extras
 	if ((game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "music" || game.select[0] == "map") && !game.select[1]) {
