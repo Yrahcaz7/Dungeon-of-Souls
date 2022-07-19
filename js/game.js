@@ -353,7 +353,7 @@ function selection() {
 	};
 	// map
 	if (game.select[0] == "in_map" && game.state == "to_next") {
-		if (game.mapSelect == "exit" && action == "up") {
+		if (action == "up" && game.mapSelect == "exit") {
 			game.mapOn = game.paths[game.location].length - 1;
 			game.mapSelect = game.paths[game.location][game.mapOn];
 			actionTimer = 1;
@@ -363,11 +363,28 @@ function selection() {
 				game.mapOn = game.mapOn - 1;
 				game.mapSelect = game.paths[game.location][game.mapOn];
 			} else {
+				game.mapOn = -1;
 				game.mapSelect = "seed";
 			};
 			actionTimer = 1;
 			return;
+		} else if (action == "left" && game.mapSelect == "seed") {
+			game.mapOn = 0;
+			game.mapSelect = game.paths[game.location][0];
+			actionTimer = 1;
+			return;
+		} else if (action == "left" && game.mapSelect != "exit" && game.mapSelect != "seed-on") {
+			game.mapOn = -1;
+			game.mapSelect = "exit";
+			actionTimer = 1;
+			return;
+		} else if (action == "right" && game.mapSelect == "exit" && game.floor) {
+			game.mapOn = game.paths[game.location].length - 1;
+			game.mapSelect = game.paths[game.location][game.mapOn];
+			actionTimer = 1;
+			return;
 		} else if (action == "down" && game.mapSelect == "seed") {
+			game.mapOn = 0;
 			game.mapSelect = game.paths[game.location][0];
 			actionTimer = 1;
 			return;
@@ -376,6 +393,7 @@ function selection() {
 				game.mapOn = game.mapOn + 1;
 				game.mapSelect = game.paths[game.location][game.mapOn];
 			} else {
+				game.mapOn = -1;
 				game.mapSelect = "exit";
 			};
 			actionTimer = 1;
