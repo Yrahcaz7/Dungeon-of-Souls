@@ -84,12 +84,12 @@ const draw = {
 			for (let index = 0; index < array.length; index++) {
 				if (array[index].includes("s>") || array[index].includes("small>")) {
 					array[index] = array[index].replace(/s>|small>/, "");
-					space += draw.lore(x, y + space, array[index], color, position, true);
+					space += draw.lore(x, y + space, array[index], {"color": color, "text-align": position, "text-small": true});
 				} else if (array[index].includes("b>") || array[index].includes("big>")) {
 					array[index] = array[index].replace(/b>|big>/, "");
-					space += draw.lore(x, y + space, array[index], color, position, false);
+					space += draw.lore(x, y + space, array[index], {"color": color, "text-align": position, "text-small": false});
 				} else {
-					space += draw.lore(x, y + space, array[index], color, position, small);
+					space += draw.lore(x, y + space, array[index], style);
 				};
 			};
 			return space;
@@ -100,7 +100,7 @@ const draw = {
 			if (!array[0]) array.splice(0, 1);
 			for (let index = 0; index < array.length; index++) {
 				array[index] = array[index].replace(/\n/, "");
-				space += draw.lore(x, y + space, array[index], color, position, small);
+				space += draw.lore(x, y + space, array[index], style);
 			};
 			return space;
 		};
