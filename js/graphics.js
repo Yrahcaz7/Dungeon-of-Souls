@@ -549,19 +549,19 @@ function enemyGraphics() {
 };
 
 function infoGraphics() {
-	draw.rect("#000000cc");
+	draw.rect("#000c");
 	draw.image(extra.help, 381, 3);
 	draw.image(select.round, 380, 2);
-	draw.lore(1, 12 - infPos, "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-Souls\"", "red", "right", true);
+	draw.lore(1, 12 - infPos, "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-Souls\"", {"color": "red", "text-small": true});
 	if (game.select[1] == 3) {
-		draw.lore(1, 1 - infPos, "Dungeon of Souls - Changelog", "red");
-		infLimit = (draw.lore(1, 23 - infPos, changelog, "white") + 23) - 200;
+		draw.lore(1, 1 - infPos, "Dungeon of Souls - Changelog", {"color": "red"});
+		infLimit = (draw.lore(1, 23 - infPos, changelog, {"color": "white"}) + 23) - 200;
 	} else if (game.select[1] == 2) {
-		draw.lore(1, 1 - infPos, "Dungeon of Souls - How To Play", "red");
-		infLimit = (draw.lore(1, 23 - infPos, gameplay, "white") + 23) - 200;
+		draw.lore(1, 1 - infPos, "Dungeon of Souls - How To Play", {"color": "red"});
+		infLimit = (draw.lore(1, 23 - infPos, gameplay, {"color": "white"}) + 23) - 200;
 	} else {
-		draw.lore(1, 1 - infPos, "Dungeon of Souls - Overview", "red");
-		infLimit = (draw.lore(1, 23 - infPos, overview, "white") + 23) - 200;
+		draw.lore(1, 1 - infPos, "Dungeon of Souls - Overview", {"color": "red"});
+		infLimit = (draw.lore(1, 23 - infPos, overview, {"color": "white"}) + 23) - 200;
 	};
 	if (infLimit > 0) draw.image(arrows, 386, 22);
 };
