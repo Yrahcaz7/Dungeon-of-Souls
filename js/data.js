@@ -155,11 +155,25 @@ function updateData() {
 	if (infLimit <= 0) infLimit = 0;
 	if (infPos >= infLimit) infPos = infLimit;
 	// cards
+	for (let index = 0; index < game.deckLocal.length; index++) {
+		let card = game.deckLocal[index];
+		if (card.name == "slash") {
+			if (game.auraBlades) game.deckLocal[index].text = "Deal <light-green>" + (10 + game.auraBlades) + "</light-green> damage.";
+			else game.deckLocal[index].text = cards["slash"].desc;
+		};
+	};
 	for (let index = 0; index < game.hand.length; index++) {
 		let card = game.hand[index];
 		if (card.name == "slash") {
 			if (game.auraBlades) game.hand[index].text = "Deal <light-green>" + (10 + game.auraBlades) + "</light-green> damage.";
 			else game.hand[index].text = cards["slash"].desc;
+		};
+	};
+	for (let index = 0; index < game.discard.length; index++) {
+		let card = game.discard[index];
+		if (card.name == "slash") {
+			if (game.auraBlades) game.discard[index].text = "Deal <light-green>" + (10 + game.auraBlades) + "</light-green> damage.";
+			else game.discard[index].text = cards["slash"].desc;
 		};
 	};
 	// fixes
