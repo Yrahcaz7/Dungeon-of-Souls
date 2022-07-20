@@ -811,16 +811,13 @@ const gameloop = setInterval(function() {
 	} else if (game.select[0] == "confirm_end") {
 		let x = 140, y = 86;
 		draw.rect("#00000088");
-		draw.rect("#000000", x, y, 120, 22);
-		draw.rect("#cccccc", x + 1, y + 1, 120 - 2, 22 - 2);
+		draw.box(x + 1, y + 1, 118, 20);
 		draw.lore(x + 2, y + 2, "Are you sure you want to end your turn?", "black", "right", true);
-		if (!game.select[1]) draw.rect("#ffffff", x + 1, y + 7, 23, 14);
-		else draw.rect("#ffffff", x + 23, y + 7, 17, 14);
-		draw.rect("#000000", x + 2, y + 8, 21, 12);
-		draw.rect("#cccccc", x + 3, y + 9, 21 - 2, 12 - 2);
+		if (!game.select[1]) draw.rect("#fff", x + 1, y + 7, 23, 14);
+		else draw.rect("#fff", x + 23, y + 7, 17, 14);
+		draw.box(x + 3, y + 9, 19, 10);
+		draw.box(x + 25, y + 9, 13, 10);
 		draw.lore(x + 4, y + 10, "YES");
-		draw.rect("#000000", x + 24, y + 8, 15, 12);
-		draw.rect("#cccccc", x + 25, y + 9, 15 - 2, 12 - 2);
 		draw.lore(x + 26, y + 10, "NO");
 	} else if (game.state == "battle_fin") {
 		

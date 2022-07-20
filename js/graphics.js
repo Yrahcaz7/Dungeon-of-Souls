@@ -214,6 +214,16 @@ const draw = {
 		if (type == "attack") draw.image(intent.attack[stage], x, y);
 		else if (type == "defend") draw.image(intent.defend[stage], x, y + 1);
 	},
+	box(x, y, width, height, boxColor = "#ccc", outlineWidth = 1, outlineColor = "#000") {
+		draw.rect(boxColor, x, y, width, height);
+		if (outlineWidth) {
+			let val = outlineWidth, col = outlineColor;
+			draw.rect(col, x - val, y - val, width + val, val); // top
+			draw.rect(col, x - val, y + height, width + val, val); // bottom
+			draw.rect(col, x - val, y - val, val, height + val); // left
+			draw.rect(col, x + width, y - val, val, height + (val * 2)); // right
+		};
+	},
 	// fractal - third order (uses complex and basic)
 	bars(x, y, health, maxHealth, shield, maxShield) {
 		x = +x;
@@ -304,7 +314,7 @@ const draw = {
 			draw.lore(x + 4, y + 2, cardObject.energyCost);
 		};
 	},
-	textBox(x, y, width, string, textColor = "black", position = "right", small = false, boxColor = "#cccccc", outlineColor = "#000000") {
+	textBox(x, y, width, string, textColor = "black", position = "right", small = false, boxColor = "#ccc", outlineColor = "#000") {
 		x = +x;
 		y = +y;
 		width = +width;
