@@ -17,15 +17,6 @@
 
 var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, "none", "normal", -1], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], invNum = -1, popups = [], infPos = 0, infLimit = 0;
 
-String.prototype.title = function() {
-	let result = "";
-	for (let num = 0; num < this.length; num++) {
-		if (num == 0 || this.charAt(num - 1) == " " || this.charAt(num - 1) == "\n") result += this.charAt(num).toUpperCase();
-		else result += this.charAt(num);
-	};
-	return result;
-};
-
 const draw = {
 	// basic - first order
 	image(image, x = 0, y = 0, width = +image.width, height = +image.height) {

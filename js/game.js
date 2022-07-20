@@ -15,23 +15,6 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-function randomInt(min, max) {
-	min = Math.ceil(min);
-	max = Math.floor(max);
-	if ((!min && min !== 0) || (!max && max !== 0)) return NaN;
-	if (min > max) [min, max] = [max, min];
-	return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-function chance(chance = 0.5) {
-	return Math.random()<chance;
-};
-
-function round(number, places = 0) {
-	places = 10 ** places;
-	return Math.round(number * places) / places;
-};
-
 function mapPiece(row, attribute = "none") {
 	if (attribute == "1stbattle") return ["battle", 0, 0, ["slime_small"], randomInt(25 + (row * 1.5), 50 + (row * 2)), [randomCard(true), randomCard(true), randomCard(true), randomCard(true), randomCard(true)]];
 	let type = chance()?"battle":false;
@@ -113,12 +96,6 @@ var global = {
 	saveNum: 0,
 }, actionTimer = -1, notif = [-1, 0, "", 0], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "map") && game.select[1], firstTick = true;
 
-function hardReset() {
-	localStorage.removeItem("Yrahcaz7/Dungeon-of-Souls/save/0");
-	game = null;
-	location.reload();
-};
-
 function musicPopups() {
 	let src = document.getElementById("music").src;
 	if (!global.options.music) {
@@ -126,16 +103,6 @@ function musicPopups() {
 	} else if (src.includes("Ruins_of_Caelum.mp3")) {
 		showPopup("music", "Ruins of Caelum");
 	};
-};
-
-function randomize(array) {
-	let index = array.length, randomIndex;
-	while (index != 0) {
-		randomIndex = Math.floor(Math.random() * index);
-		index--;
-		[array[index], array[randomIndex]] = [array[randomIndex], array[index]];
-	};
-	return array;
 };
 
 function shuffleDeck(...newCards) {
