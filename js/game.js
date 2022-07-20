@@ -29,7 +29,7 @@ function mapPiece(row, attribute = "none") {
 };
 
 var global = {
-	unlockedCards: ["aura blade", "everlasting shield", "reinforce"],
+	unlockedCards: ["aura blade", "everlasting shield", "reinforce", "war cry"],
 	options: {
 		music: true,
 		stickyCards: false,

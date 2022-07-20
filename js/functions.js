@@ -58,6 +58,18 @@ function randomize(array) {
 // reset functions
 
 function hardReset() {
+	for (let index = 0; index < localStorage.length; index++) {
+        const key = localStorage.key(index);
+        if (key.startsWith("Yrahcaz7/Dungeon-of-Souls/save/")) {
+            localStorage.removeItem(key);
+        };
+    };
+	game = null;
+    global = null;
+	location.reload();
+};
+
+function restartRun() {
 	localStorage.removeItem("Yrahcaz7/Dungeon-of-Souls/save/0");
 	game = null;
 	location.reload();
