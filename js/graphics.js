@@ -567,7 +567,7 @@ function infoGraphics() {
 };
 
 function deckGraphics(overrideName = "deck") {
-	draw.rect("#000000cc");
+	draw.rect("#000c");
 	let tempDeck = JSON.parse(game.deckProxy).cardSort(), selected;
 	if (overrideName == "discard") tempDeck = game.discard;
 	for (let x = 0, y = 0; x + (y * 6) < tempDeck.length; x++) {
@@ -596,9 +596,9 @@ function deckGraphics(overrideName = "deck") {
 		else if (game.deckPos >= (98 * (selected[1] - 1)) + 12 + 5) game.deckPos -= speed;
 		else game.deckPos = (98 * (selected[1] - 1)) + 11;
 	};
-	draw.rect("#00000044", 0, 0, 400, 13);
+	draw.rect("#0004", 0, 0, 400, 13);
 	draw.lore(200, 1, overrideName.title(), {"color": "white", "text-align": "center"});
-	draw.rect("#ffffff", 1, 12, 398, 1);
+	draw.rect("#fff", 1, 12, 398, 1);
 };
 
 function renderCards() {
@@ -907,13 +907,13 @@ function mapGraphics(onlyCalc = false) {
 		game.paths[item].sort();
 	};
 	if (render && game.mapSelect == "seed-on") {
-		draw.rect("#000000cc");
+		draw.rect("#000c");
 		for (let line = 0; line < seed.length / 132; line++) {
 			let indexes = [line * 132, (line + 1) * 132];
 			draw.lore(1, 14 + (line * 5.5), seed.slice(indexes[0], indexes[1]), {"color": "white", "text-small": true});
 		};
-		draw.rect("#00000044", 0, 0, 400, 13);
+		draw.rect("#0004", 0, 0, 400, 13);
 		draw.lore(200, 1, "Seed", {"color": "white", "text-align": "center"});
-		draw.rect("#ffffff", 1, 12, 398, 1);
+		draw.rect("#fff", 1, 12, 398, 1);
 	};
 };

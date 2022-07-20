@@ -820,7 +820,7 @@ const gameloop = setInterval(function() {
 		mapGraphics();
 	} else if (game.select[0] == "confirm_end") {
 		let x = 140, y = 86;
-		draw.rect("#00000088");
+		draw.rect("#0008");
 		draw.box(x + 1, y + 1, 118, 20);
 		draw.lore(x + 2, y + 2, "Are you sure you want to end your turn?", {"text-small": true});
 		if (!game.select[1]) draw.rect("#fff", x + 1, y + 7, 23, 14);
@@ -837,19 +837,19 @@ const gameloop = setInterval(function() {
 		if (game.deckProxy != "[]") {
 			deckGraphics();
 		} else {
-			draw.rect("#000000cc");
-			draw.rect("#00000044", 0, 0, 400, 13);
-			draw.lore(200, 1, "Deck", "white", "center");
-			draw.rect("#ffffff", 1, 12, 398, 1);
+			draw.rect("#000c");
+			draw.rect("#0004", 0, 0, 400, 13);
+			draw.lore(200, 1, "Deck", {"color": "white", "text-align": "center"});
+			draw.rect("#fff", 1, 12, 398, 1);
 		};
 	} else if (game.select[0] == "discard" && game.select[1]) {
 		if (game.discard[0]) {
 			deckGraphics("discard");
 		} else {
-			draw.rect("#000000cc");
-			draw.rect("#00000044", 0, 0, 400, 13);
-			draw.lore(200, 1, "Discard", "white", "center");
-			draw.rect("#ffffff", 1, 12, 398, 1);
+			draw.rect("#000c");
+			draw.rect("#0004", 0, 0, 400, 13);
+			draw.lore(200, 1, "Discard", {"color": "white", "text-align": "center"});
+			draw.rect("#fff", 1, 12, 398, 1);
 		};
 	} else {
 		game.cardSelect = [0, 0];
