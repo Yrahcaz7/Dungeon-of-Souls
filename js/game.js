@@ -812,7 +812,7 @@ const gameloop = setInterval(function() {
 		let x = 140, y = 86;
 		draw.rect("#00000088");
 		draw.box(x + 1, y + 1, 118, 20);
-		draw.lore(x + 2, y + 2, "Are you sure you want to end your turn?", "black", "right", true);
+		draw.lore(x + 2, y + 2, "Are you sure you want to end your turn?", {"text-small": true});
 		if (!game.select[1]) draw.rect("#fff", x + 1, y + 7, 23, 14);
 		else draw.rect("#fff", x + 23, y + 7, 17, 14);
 		draw.box(x + 3, y + 9, 19, 10);

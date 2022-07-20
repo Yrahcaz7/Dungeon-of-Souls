@@ -30,31 +30,14 @@ String.prototype.title = function() {
 const draw = {
 	// basic - first order
 	image(image, x = 0, y = 0, width = +image.width, height = +image.height) {
-		x = +x;
-		y = +y;
-		width = +width;
-		height = +height;
 		if (!image || (!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
 		ctx.drawImage(image, x * scale, y * scale, width * scale, height * scale);
 	},
-	imageSector(image, sx, sy, sw, sh, dx, dy, dw = sw, dh = sh) {
-		sx = +sx;
-		sy = +sy;
-		sw = +sw;
-		sh = +sh;
-		dx = +dx;
-		dy = +dy;
-		dw = +dw;
-		dh = +dh;
+	imageSector(image, sx, sy, sw, sh, dx, dy, dw = +sw, dh = +sh) {
 		if (!image || (!sx && sx !== 0) || (!sy && sy !== 0) || !sw || !sh || (!dx && dx !== 0) || (!dy && dy !== 0) || !dw || !dh) return;
 		ctx.drawImage(image, sx, sy, sw, sh, dx * scale, dy * scale, dw * scale, dh * scale);
 	},
 	rect(color, x = 0, y = 0, width = canvas.width / scale, height = canvas.height / scale) {
-		color = "" + color;
-		x = +x;
-		y = +y;
-		width = +width;
-		height = +height;
 		if (!color || (!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
 		ctx.fillStyle = color;
 		ctx.fillRect(x * scale, y * scale, width * scale, height * scale);
@@ -71,11 +54,14 @@ const draw = {
 		ctx.stroke();
 	},
 	// complex - second order (uses basic)
-	lore(x, y, string, color = "black", position = "right", small = false) {
-		x = +x;
-		y = +y;
+	lore(x, y, string, style = {"color": "black", "text-align": "right", "text-small": false}) {
 		string = "" + string;
-		if ((!x && x !== 0) || (!y && y !== 0) || !string) return 0;
+		if (!style["color"]) style["color"] = "black";
+		if (!style["text-align"]) style["text-align"] = "right";
+		if (!style["text-small"]) style["text-small"] = false;
+		let color = style["color"];
+		let position = style["text-align"];
+		let small = style["text-small"];
 		string = string.replace(/<br>/g, "\n");
 		x = round(x, 1);
 		y = round(y, 1);
@@ -188,11 +174,6 @@ const draw = {
 		return small?(enters+1)*5.5:(enters+1)*11;
 	},
 	selector(x, y, width, height) {
-		x = +x;
-		y = +y;
-		width = +width;
-		height = +height;
-		if ((!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
 		draw.image(select.selector[0], x - 2, y - 2);
 		draw.image(select.selector[1], x + width - 6, y - 2);
 		draw.image(select.selector[2], x - 2, y + height - 7);
@@ -214,10 +195,14 @@ const draw = {
 		if (type == "attack") draw.image(intent.attack[stage], x, y);
 		else if (type == "defend") draw.image(intent.defend[stage], x, y + 1);
 	},
-	box(x, y, width, height, boxColor = "#ccc", outlineWidth = 1, outlineColor = "#000") {
-		draw.rect(boxColor, x, y, width, height);
-		if (outlineWidth) {
-			let val = outlineWidth, col = outlineColor;
+	box(x, y, width, height, style = {"background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
+		if (!style["background-color"]) style["background-color"] = "#ccc";
+		if (!style["border-width"]) style["border-width"] = 1;
+		if (!style["border-color"]) style["border-color"] = "#000";
+		draw.rect(style["background-color"], x, y, width, height);
+		let val = style["border-width"];
+		if (val) {
+			let col = style["border-color"];
 			draw.rect(col, x - val, y - val, width + val, val); // top
 			draw.rect(col, x - val, y + height, width + val, val); // bottom
 			draw.rect(col, x - val, y - val, val, height + val); // left
@@ -226,13 +211,6 @@ const draw = {
 	},
 	// fractal - third order (uses complex and basic)
 	bars(x, y, health, maxHealth, shield, maxShield) {
-		x = +x;
-		y = +y;
-		health = +health;
-		maxHealth = +maxHealth;
-		shield = +shield;
-		maxShield = +maxShield;
-		if ((!x && x !== 0) || (!y && y !== 0) || (!health && health !== 0) || !maxHealth) return;
 		let frame, percentage = health / maxHealth;
 		if (percentage < 0) frame = 0;
 		else if (percentage > 1) frame = 62;
@@ -248,8 +226,8 @@ const draw = {
 			health = "0" + health;
 		};
 		draw.imageSector(bar.health, 0, Math.round(frame) * 11, 64, 12, x, y + 65, 64, 12);
-		draw.lore(x + 25, y + 67, health, "black", "left");
-		draw.lore(x + 34, y + 67, maxHealth, "black", "right");
+		draw.lore(x + 25, y + 67, health, {"text-align": "left"});
+		draw.lore(x + 34, y + 67, maxHealth);
 		if (!shield || !maxShield) return;
 		percentage = shield / maxShield;
 		if (percentage < 0) frame = 0;
@@ -266,16 +244,11 @@ const draw = {
 			shield = "0" + shield;
 		};
 		draw.imageSector(bar.shield, 0, Math.round(frame) * 11, 64, 12, x, y + 76, 64, 12);
-		draw.lore(x + 25, y + 78, shield, "black", "left");
-		draw.lore(x + 34, y + 78, maxShield, "black", "right");
+		draw.lore(x + 25, y + 78, shield, {"text-align": "left"});
+		draw.lore(x + 34, y + 78, maxShield);
 	},
 	card(cardObject, index, y, selected = false, overrideX = NaN) {
 		if (!(cardObject instanceof Object)) cardObject = new Card("" + cardObject);
-		index = +index;
-		y = +y;
-		selected = !!selected;
-		overrideX = +overrideX;
-		if (!cardObject || (!index && index !== 0) || (!y && y !== 0)) return;
 		let x = game.handPos[index], img = card.error;
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
 		if (cardObject.rarity == "starter") img = card.starter[cardObject.name];
@@ -300,12 +273,12 @@ const draw = {
 		if (img == card.error) draw.image(card.error, x + 2, y + 2);
 		else draw.image(img, x + 7, y + 7);
 		if (cardObject.name.length >= 11) {
-			draw.lore(x + 32, y + 44, cardObject.name.title(), "black", "center", true);
+			draw.lore(x + 32, y + 44, cardObject.name.title(), {"text-align": "center", "text-small": true});
 		} else {
-			draw.lore(x + 32, y + 42, cardObject.name.title(), "black", "center");
+			draw.lore(x + 32, y + 42, cardObject.name.title(), {"text-align": "center"});
 		};
-		draw.lore(x + 6, y + 55, cardObject.text, "black", "right", true);
-		draw.lore(x + 33, y + 89.5, cardObject.rarity + "|" + cardObject.type, "black", "center", true);
+		draw.lore(x + 6, y + 55, cardObject.text, {"text-small": true});
+		draw.lore(x + 33, y + 89.5, cardObject.rarity + "|" + cardObject.type, {"text-align": "center", "text-small": true});
 		if (cardObject.rarity == "rare") {
 			draw.image(card.rarity.rare, x - 2, y - 2);
 		};
@@ -314,13 +287,16 @@ const draw = {
 			draw.lore(x + 4, y + 2, cardObject.energyCost);
 		};
 	},
-	textBox(x, y, width, string, textColor = "black", position = "right", small = false, boxColor = "#ccc", outlineColor = "#000") {
-		x = +x;
-		y = +y;
-		width = +width;
-		string = "" + string;
-		if ((!x && x !== 0) || (!y && y !== 0) || !width || !string) return;
-		var lines = (string.match(/\n/g) || []).length, height = small?7:12;
+	textBox(x, y, width, string, style = {"color": "black", "text-align": "right", "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
+		if (!style["color"]) style["color"] = "black";
+		if (!style["text-align"]) style["text-align"] = "right";
+		if (!style["text-small"]) style["text-small"] = false;
+		if (!style["background-color"]) style["background-color"] = "#ccc";
+		if (!style["border-width"]) style["border-width"] = 1;
+		if (!style["border-color"]) style["border-color"] = "#000";
+		let small = style["text-small"];
+		let position = style["text-align"];
+		let lines = (string.match(/\n/g) || []).length, height = small?7:12;
 		if (small) {
 			width = Math.ceil(width * 3 + 0.5);
 			height = Math.ceil(lines * 5.5 + 7);
@@ -328,8 +304,7 @@ const draw = {
 			width = width * 6;
 			height = lines * 11 + 12;
 		};
-		draw.rect(outlineColor, x, y, width + 3, height + 2);
-		draw.rect(boxColor, x + 1, y + 1, width + 1, height);
+		draw.box(x, y, width, height, style);
 		if (position == "center") {
 			x += width / 2;
 			if (small) x -= 1.5;
@@ -339,7 +314,7 @@ const draw = {
 			if (small) x -= 3;
 			else x -= 6;
 		};
-		draw.lore(x + 2, y + 2, string, textColor, position, small);
+		draw.lore(x + 1, y + 1, string, style);
 	},
 };
 
@@ -416,7 +391,7 @@ function foregrounds() {
 	else if (game.select[0] == "deck") draw.image(select.deck, 2, 181);
 	else if (game.select[0] == "discard") draw.image(select.discard, 382, 181);
 	else if (game.select[0] == "map") draw.image(select.map, 1, 11);
-	draw.lore(1, 1, "floor " + game.floor, "red");
+	draw.lore(1, 1, "floor " + game.floor, {"color": "red"});
 };
 
 function playerGraphics() {
@@ -424,20 +399,20 @@ function playerGraphics() {
 	if (game.reinforces) {
 		if (game.shield) {
 			draw.image(icon.reinforce, x + 23, y + 104);
-			draw.lore(x + 34, y + 112, game.reinforces, "white", "left");
+			draw.lore(x + 34, y + 112, game.reinforces, {"color": "white", "text-align": "left"});
 		} else {
 			draw.image(icon.reinforce, x + 23, y + 93);
-			draw.lore(x + 34, y + 101, game.reinforces, "white", "left");
+			draw.lore(x + 34, y + 101, game.reinforces, {"color": "white", "text-align": "left"});
 		};
 	};
 	if (game.auraBlades) {
 		if (game.reinforces) x += 17;
 		if (game.shield) {
 			draw.image(icon.aura_blade, x + 23, y + 104);
-			draw.lore(x + 34, y + 112, game.auraBlades, "white", "left");
+			draw.lore(x + 34, y + 112, game.auraBlades, {"color": "white", "text-align": "left"});
 		} else {
 			draw.image(icon.aura_blade, x + 23, y + 93);
-			draw.lore(x + 34, y + 101, game.auraBlades, "white", "left");
+			draw.lore(x + 34, y + 101, game.auraBlades, {"color": "white", "text-align": "left"});
 		};
 		if (game.reinforces) x -= 17;
 		for (let blade = 1; blade <= game.auraBlades && blade <= 4; blade++) {
@@ -486,8 +461,8 @@ function playerGraphics() {
 		en = "0" + en;
 	};
 	draw.imageSector(bar.energy, 0, Math.round(frame) * 31, 32, 32, x, y + 16, 32, 32);
-	draw.lore(x + 9, y + 28, en, "black", "left");
-	draw.lore(x + 18, y + 28, maxEn, "black", "right");
+	draw.lore(x + 9, y + 28, en, {"text-align": "left"});
+	draw.lore(x + 18, y + 28, maxEn);
 };
 
 function effectGraphics() {
@@ -563,10 +538,10 @@ function enemyGraphics() {
 			};
 			if (game.enemies[index].intent == "defend") {
 				draw.intent(pos[0] + 16, y, game.enemies[index].defendPower, "defend");
-				draw.lore(pos[0] + 30, y + 12, game.enemies[index].defendPower, "white", "center");
+				draw.lore(pos[0] + 30, y + 12, game.enemies[index].defendPower, {"color": "white", "text-align": "center"});
 			} else if (game.enemies[index].intent == "attack") {
 				draw.intent(pos[0] + 16, y, game.enemies[index].attackPower, "attack");
-				draw.lore(pos[0] + 30, y + 12, game.enemies[index].attackPower, "white", "center");
+				draw.lore(pos[0] + 30, y + 12, game.enemies[index].attackPower, {"color": "white", "text-align": "center"});
 			};
 		};
 		starAnim[index] += (Math.random() + 0.5) * 0.15;
@@ -622,7 +597,7 @@ function deckGraphics(overrideName = "deck") {
 		else game.deckPos = (98 * (selected[1] - 1)) + 11;
 	};
 	draw.rect("#00000044", 0, 0, 400, 13);
-	draw.lore(200, 1, overrideName.title(), "white", "center");
+	draw.lore(200, 1, overrideName.title(), {"color": "white", "text-align": "center"});
 	draw.rect("#ffffff", 1, 12, 398, 1);
 };
 
@@ -652,7 +627,7 @@ function renderCards() {
 		if (notif[1] >= 9) color = "red_fade_2";
 		else if (notif[1] >= 7) color = "red_fade_1";
 		else if (notif[1] >= 5) color = "red_fade_0";
-		draw.lore(game.handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1] + notif[3], notif[2], color, "center");
+		draw.lore(game.handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1] + notif[3], notif[2], {"color": color, "text-align": "center"});
 		notif[1]++;
 		if (notif[1] > 11) notif = [-1, 0];
 	};
@@ -661,13 +636,13 @@ function renderCards() {
 function info(type, location = "player", xPlus = 0) {
 	if (type == "the map") {
 		let x = 20 + xPlus, y = 11;
-		draw.textBox(x, y, 12, "The Map", "black", "center");
-		draw.textBox(x, y + 13, 24, infoText.the_map, "black", "right", true);
+		draw.textBox(x, y, 12, "The Map", {"text-align": "center"});
+		draw.textBox(x, y + 13, 24, infoText.the_map, {"text-small": true});
 	} else if (type == "iron will") {
 		if (location == "artifact") {
 			let x = 38 + (game.select[1] * 18) + xPlus, y = 11;
-			draw.textBox(x, y, 12, "Iron Will", "black", "center");
-			draw.textBox(x, y + 13, 24, infoText.iron_will, "black", "right", true);
+			draw.textBox(x, y, 12, "Iron Will", {"text-align": "center"});
+			draw.textBox(x, y + 13, 24, infoText.iron_will, {"text-small": true});
 		};
 	} else if (type == "reinforce") {
 		if (location == "card") {
@@ -675,19 +650,19 @@ function info(type, location = "player", xPlus = 0) {
 			if (game.select[1] == game.hand.length - 1 && game.hand.length >= 4) {
 				x -= 146;
 			};
-			draw.textBox(x + 69, y, 24, infoText.reinforce, "black", "right", true);
+			draw.textBox(x + 69, y, 24, infoText.reinforce, {"text-small": true});
 		} else if (location == "player") {
 			let pos = 70, desc = "You have " + game.reinforces + " reinforce";
 			if (game.reinforces >= 2) desc += "s.";
 			else desc += ".";
-			draw.textBox(84 + xPlus, pos, desc.length, desc, "black", "right", true);
-			draw.textBox(84 + xPlus, pos + 11, 24, infoText.reinforce, "black", "right", true);
+			draw.textBox(84 + xPlus, pos, desc.length, desc, {"text-small": true});
+			draw.textBox(84 + xPlus, pos + 11, 24, infoText.reinforce, {"text-small": true});
 		} else if (location == "deck") {
 			let x = 2 + (game.cardSelect[0] * 66) + xPlus, y = 14 + (game.cardSelect[1] * 98) - game.deckPos;
 			if (game.cardSelect[0] >= 4) {
 				x -= 146;
 			};
-			draw.textBox(x + 69, y, 24, infoText.reinforce, "black", "right", true);
+			draw.textBox(x + 69, y, 24, infoText.reinforce, {"text-small": true});
 		};
 	} else if (type == "aura blades") {
 		if (location == "card") {
@@ -695,20 +670,20 @@ function info(type, location = "player", xPlus = 0) {
 			if (game.select[1] == game.hand.length - 1 && game.hand.length >= 4) {
 				x -= 146;
 			};
-			draw.textBox(x + 69, y, 24, infoText.aura_blade, "black", "right", true);
+			draw.textBox(x + 69, y, 24, infoText.aura_blade, {"text-small": true});
 		} else if (location == "player") {
 			let pos = 70, desc = "You have " + game.auraBlades + " aura blade";
 			if (game.reinforces) pos += 44;
 			if (game.auraBlades >= 2) desc += "s.";
 			else desc += ".";
-			draw.textBox(84 + xPlus, pos, desc.length, desc, "black", "right", true);
-			draw.textBox(84 + xPlus, pos + 11, 24, infoText.aura_blade, "black", "right", true);
+			draw.textBox(84 + xPlus, pos, desc.length, desc, {"text-small": true});
+			draw.textBox(84 + xPlus, pos + 11, 24, infoText.aura_blade, {"text-small": true});
 		} else if (location == "deck") {
 			let x = 2 + (game.cardSelect[0] * 66) + xPlus, y = 14 + (game.cardSelect[1] * 98) - game.deckPos;
 			if (game.cardSelect[0] >= 4) {
 				x -= 146;
 			};
-			draw.textBox(x + 69, y, 24, infoText.aura_blade, "black", "right", true);
+			draw.textBox(x + 69, y, 24, infoText.aura_blade, {"text-small": true});
 		};
 	};
 };
@@ -721,18 +696,18 @@ function target() {
 		pos = game.enemyPos[game.select[1]];
 		if (enemyType == "slime_small") {
 			draw.selector(pos[0] + 19, pos[1] + 35, 26, 29);
-			draw.lore(pos[0] + 31, pos[1] + 27.5, "small slime", "white", "center", true);
+			draw.lore(pos[0] + 31, pos[1] + 27.5, "small slime", {"color": "white", "text-align": "center", "text-small": true});
 		} else if (enemyType == "slime_big") {
 			draw.selector(pos[0] + 5, pos[1] + 25, 54, 39);
-			draw.lore(pos[0] + 31, pos[1] + 17.5, "big slime", "white", "center", true);
+			draw.lore(pos[0] + 31, pos[1] + 17.5, "big slime", {"color": "white", "text-align": "center", "text-small": true});
 		};
 	} else if (game.select[0] == "lookat_you") {
 		let coor = [60, 72, 20, 39];
 		if (playerAnim[1] == "shield" || playerAnim[1] == "shield_reinforced") coor = [58, 72, 23, 39];
 		draw.selector(coor[0], coor[1], coor[2], coor[3]);
 		if (game.character == "knight") {
-			if (global.charStage.knight == 0) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the forgotten one", "white", "center", true);
-			else if (global.charStage.knight == 1) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the true knight", "white", "center", true);
+			if (global.charStage.knight == 0) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the forgotten one", {"color": "white", "text-align": "center", "text-small": true});
+			else if (global.charStage.knight == 1) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the true knight", {"color": "white", "text-align": "center", "text-small": true});
 		};
 		if (game.reinforces) {
 			info("reinforce", "player", coor[0] + coor[2] - 80);
@@ -793,7 +768,7 @@ function popupGraphics() {
 			if (popups[a][2] < stopPoint) popups[a][2] = stopPoint;
 			if (popups[a][2] == stopPoint) popups[a][3] += 0.025;
 			draw.image(popup.back, popups[a][2], 150 - (a * 21));
-			draw.lore(popups[a][2] + 13, 150 - (a * 21) + 8, !!popups[a][4]?popups[a][1]+"<br>"+popups[a][4]:popups[a][1], "black", "right", !!popups[a][4]);
+			draw.lore(popups[a][2] + 13, 150 - (a * 21) + 8, !!popups[a][4]?popups[a][1]+"<br>"+popups[a][4]:popups[a][1], {"text-small": !!popups[a][4]});
 			if (popups[a][0] == "music") draw.image(popup.music, popups[a][2] + 4, 150 - (a * 21) + 3);
 			else if (popups[a][0] == "go") draw.image(popup.go, popups[a][2] + 2, 150 - (a * 21) + 3);
 			if (game.select[0] == "popups" && game.select[1] == a) {
@@ -806,16 +781,16 @@ function popupGraphics() {
 function mapGraphics(onlyCalc = false) {
 	let render = !onlyCalc, seed = "";
 	if (render) {
-		draw.rect("#000000");
+		draw.rect("#000");
 		draw.image(map.top, 3, 12);
 		draw.image(map.row, 16, 20, map.row.width, 164);
 		draw.image(map.bottom, 16, 184);
 		if (game.state == "battle_fin") {
 			if (game.location == "-1") draw.image(map.select, 20, 12);
-			else draw.rect("#77ccffaa", 20 + ((+game.location.split(", ")[0] + 1) * 32), 12, 26, 188);
+			else draw.rect("#7cfa", 20 + ((+game.location.split(", ")[0] + 1) * 32), 12, 26, 188);
 		} else if (game.location != "-1") {
 			if (game.location.split(", ")[0] == "0") draw.image(map.select, 20, 12);
-			else draw.rect("#77ccffaa", 20 + (+game.location.split(", ")[0] * 32), 12, 26, 188);
+			else draw.rect("#7cfa", 20 + (+game.location.split(", ")[0] * 32), 12, 26, 188);
 		};
 		draw.image(extra.end, 22, 179);
 		draw.image(extra.seed, 362, 17);
@@ -823,7 +798,8 @@ function mapGraphics(onlyCalc = false) {
 		if (game.mapSelect == "seed" || game.mapSelect == "seed-on") draw.image(select.round, 361, 16);
 		let info = "floor " + game.floor + " - " + game.gold + " gold";
 		let push = info.length * 2;
-		draw.lore(1, 1, info, "red");
+		draw.lore(1, 1, info, {"color": "red"});
+		// seed snippet
 		if (push <= 126) {
 			seed = JSON.stringify(game.firstRoom) + " " + JSON.stringify(game.map);
 			// true and false
@@ -850,7 +826,7 @@ function mapGraphics(onlyCalc = false) {
 			// duplicate cards (2)
 			seed = seed.replace(/aur_b\/aur_b/g, "aur_b:2").replace(/blo\/blo/g, "blo:2").replace(/err\/err/g, "err:2").replace(/eve_s\/eve_s/g, "eve_s:2").replace(/rei\/rei/g, "rei:2").replace(/sla\/sla/g, "sla:2").replace(/war_c\/war_c/g, "war_c:2");
 			// print
-			draw.lore(396, 1, "seed: " + seed.slice(0, 126 - push) + "\n" + seed.slice(126 - push, 255 - (push * 2)) + "...", "white", "left", true);
+			draw.lore(396, 1, "seed: " + seed.slice(0, 126 - push) + "\n" + seed.slice(126 - push, 255 - (push * 2)) + "...", {"color": "white", "text-align": "left", "text-small": true});
 		};
 	};
 	let store = [];
@@ -934,10 +910,10 @@ function mapGraphics(onlyCalc = false) {
 		draw.rect("#000000cc");
 		for (let line = 0; line < seed.length / 132; line++) {
 			let indexes = [line * 132, (line + 1) * 132];
-			draw.lore(1, 14 + (line * 5.5), seed.slice(indexes[0], indexes[1]), "white", "right", true);
+			draw.lore(1, 14 + (line * 5.5), seed.slice(indexes[0], indexes[1]), {"color": "white", "text-small": true});
 		};
 		draw.rect("#00000044", 0, 0, 400, 13);
-		draw.lore(200, 1, "Seed", "white", "center");
+		draw.lore(200, 1, "Seed", {"color": "white", "text-align": "center"});
 		draw.rect("#ffffff", 1, 12, 398, 1);
 	};
 };
