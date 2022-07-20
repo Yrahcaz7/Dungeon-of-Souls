@@ -62,3 +62,38 @@ function hardReset() {
 	game = null;
 	location.reload();
 };
+
+// gameplay functions
+
+function shuffleDeck(...newCards) {
+	if (newCards) {
+		for (let card of newCards) {
+			if (card instanceof Object) game.deckLocal.push(card);
+			else game.deckLocal.push(new Card("" + card));
+		};
+	};
+	game.deckLocal = randomize(game.deckLocal);
+};
+
+function drawHand() {
+	let index = 0, len = game.deckLocal.length;
+	if (game.deckLocal.length) {
+		for (; index < game.handSize && index < len; index++) {
+			game.hand.push(game.deckLocal[0]);
+			game.deckLocal.splice(0, 1);
+		};
+	};
+	if (index != game.handSize) {
+		len = game.discard.length;
+		for (let a = 0; a < len; a++) {
+			game.deckLocal.push(game.discard[a]);
+		};
+		game.discard = [];
+		shuffleDeck();
+		len = game.deckLocal.length;
+		for (; index < game.handSize && index < len; index++) {
+			game.hand.push(game.deckLocal[0]);
+			game.deckLocal.splice(0, 1);
+		};
+	};
+};
