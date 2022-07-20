@@ -352,7 +352,7 @@ function selection() {
 		return;
 	};
 	// map
-	if (game.select[0] == "in_map" && game.state == "to_next") {
+	if (game.select[0] == "in_map" && game.state == "battle_fin") {
 		if (action == "up" && game.mapSelect == "exit") {
 			game.mapOn = game.paths[game.location].length - 1;
 			game.mapSelect = game.paths[game.location][game.mapOn];
@@ -774,8 +774,8 @@ const gameloop = setInterval(function() {
 	selection();
 	if (game.state == "battle" && !game.enemies.length) {
 		endTurn();
-		if (game.select[0] == "hand" || game.select[0] == "lookat_enemy") game.select = ["lookat_you"];
-		game.state = "to_next";
+		game.select = ["rewards", 0];
+		game.state = "battle_fin";
 		game.turn = "none";
 		if (game.artifacts.includes("iron will")) game.health += 2;
 		showPopup("go", "go to the map!");
@@ -822,6 +822,8 @@ const gameloop = setInterval(function() {
 		draw.rect("#000000", x + 24, y + 8, 15, 12);
 		draw.rect("#cccccc", x + 25, y + 9, 15 - 2, 12 - 2);
 		draw.lore(x + 26, y + 10, "NO");
+	} else if (game.state == "battle_fin") {
+		
 	} else if (game.select[0] == "help" && game.select[1]) {
 		infoGraphics();
 	} else if (game.select[0] == "deck" && game.select[1]) {

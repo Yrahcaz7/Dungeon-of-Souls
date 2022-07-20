@@ -800,7 +800,7 @@ function mapGraphics(onlyCalc = false) {
 		draw.image(map.top, 3, 12);
 		draw.image(map.row, 16, 20, map.row.width, 164);
 		draw.image(map.bottom, 16, 184);
-		if (game.state == "to_next") {
+		if (game.state == "battle_fin") {
 			if (game.location == "-1") draw.image(map.select, 20, 12);
 			else draw.rect("#77ccffaa", 20 + ((+game.location.split(", ")[0] + 1) * 32), 12, 26, 188);
 		} else if (game.location != "-1") {
