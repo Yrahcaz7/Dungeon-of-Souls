@@ -721,7 +721,7 @@ const gameloop = setInterval(function() {
 		game.state = "battle_fin";
 		game.turn = "none";
 		if (game.artifacts.includes("iron will")) game.health += 2;
-		showPopup("go", "go to the map!");
+		// showPopup("go", "go to the map!");
 	};
 	// update data again
 	updateData();
@@ -763,7 +763,13 @@ const gameloop = setInterval(function() {
 		draw.lore(x + 4, y + 10, "YES");
 		draw.lore(x + 26, y + 10, "NO");
 	} else if (game.state == "battle_fin") {
-		
+		let x = 199 - (game.cardRewardChoices * 68 / 2), y = 20, width = (game.cardRewardChoices * 68) + 2;
+		draw.box(x, y, width, 160);
+		if (game.cardRewardChoices == 1) draw.lore(x + (width / 2), y + 1, "Choose your\nreward:", {"text-align": "center"});
+		else draw.lore(x + (width / 2), y + 1, "Choose your reward:", {"text-align": "center"});
+		for (let index = 0; index < game.cardRewardChoices; index++) {
+			draw.card(new Card(game.room[5][index]), index, 50, false, (199 - (game.cardRewardChoices * 68 / 2)) + 1 + (index * 68));
+		};
 	} else if (game.select[0] == "help" && game.select[1]) {
 		infoGraphics();
 	} else if (game.select[0] == "deck" && game.select[1]) {
