@@ -110,12 +110,42 @@ Array.prototype.cardSort = function() {
 	});
 };
 
-function randomCard(plainText = false) {
-	let result;
-	if (chance(7/10)) {
-		result = Object.keys(card.common)[randomInt(0, Object.keys(card.common).length - 1)];
-	} else {
-		result = Object.keys(card.rare)[randomInt(0, Object.keys(card.rare).length - 1)];
+function randomCardSet(length = 0) {
+	if (length <= 0) return [];
+	let result = [];
+	for (let index = 0; index < length; index++) {
+		result.push(randomCard(result));
 	};
-	return plainText?result:new Card(result);
+	return result;
+};
+
+function randomCard(notInclude = []) {
+	const common = Object.keys(card.common), rare = Object.keys(card.rare);
+	let not = notInclude.toString(), bool = true;
+	if (not) {
+		for (let index = 0; index < common.length; index++) {
+			if (!not.includes(common[index])) bool = false;
+		};
+		for (let index = 0; index < rare.length; index++) {
+			if (!not.includes(rare[index])) bool = false;
+		};
+	};
+	if (bool) {
+		let result;
+		if (chance(7/10)) {
+			result = common[randomInt(0, Object.keys(card.common).length - 1)];
+		} else {
+			result = rare[randomInt(0, Object.keys(card.rare).length - 1)];			
+		};
+		return result;
+	};
+	let result;
+	while (!result || notInclude.includes(result)) {
+		if (chance(7/10)) {
+			result = common[randomInt(0, Object.keys(card.common).length - 1)];
+		} else {
+			result = rare[randomInt(0, Object.keys(card.rare).length - 1)];			
+		};
+	};
+	return result;
 };

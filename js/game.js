@@ -16,14 +16,14 @@
  */
 
 function mapPiece(row, attribute = "none") {
-	if (attribute == "1stbattle") return ["battle", 0, 0, ["slime_small"], randomInt(25 + (row * 1.5), 50 + (row * 2)), [randomCard(true), randomCard(true), randomCard(true), randomCard(true), randomCard(true)]];
+	if (attribute == "1stbattle") return ["battle", 0, 0, ["slime_small"], randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5)];
 	let type = chance()?"battle":false;
 	let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
 	if (!type) return false;
 	if (type == "battle") {
 		if (row >= 5) result.push(chance()?["slime_big"]:(chance(7/10)?["slime_big", "slime_small, " + round(0.5 + (row * 0.05), 2)]:["slime_small", "slime_small, " + round(0.75 + (row * 0.05), 2)]));
 		else result.push(chance()?["slime_big"]:["slime_small", "slime_small, " + round(0.75 + (row * 0.05), 2)]);
-		result.push(randomInt(25 + (row * 1.5), 50 + (row * 2)), [randomCard(true), randomCard(true), randomCard(true), randomCard(true), randomCard(true)]);
+		result.push(randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5));
 	};
 	return result;
 };

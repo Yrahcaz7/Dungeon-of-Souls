@@ -26,6 +26,18 @@ String.prototype.title = function() {
 	return result;
 };
 
+Array.prototype.equals = function(array) {
+	if (!array) return false;
+	if (array === this) return true;
+	if (this.length != array.length) return false;
+	for (var index = 0; index < this.length; index++) {
+		if (this[index] instanceof Array && array[index] instanceof Array) {
+			if (!this[index].equals(array[index])) return false;
+		} else if (this[index] != array[index]) return false;
+	};
+	return true;
+};
+
 // technical functions
 
 function randomInt(min, max) {
