@@ -850,6 +850,7 @@ const gameloop = setInterval(function() {
 		draw.lore(x + 4, y + 10, "YES");
 		draw.lore(x + 26, y + 10, "NO");
 	} else if (game.select[0] == "confirm_exit") {
+		rewardGraphics(false);
 		let x = 122, y = 83;
 		draw.rect("#0008");
 		draw.box(x + 1, y + 1, 154, 26);
@@ -861,30 +862,9 @@ const gameloop = setInterval(function() {
 		draw.lore(x + 4, y + 16, "YES");
 		draw.lore(x + 26, y + 16, "NO");
 	} else if (game.select[0] == "rewards") {
-		draw.box(150, 20, 100, 160);
-		draw.lore(199, 21, "Battle loot!", {"text-align": "center"});
-		for (let index = 0; index < game.rewards.length; index++) {
-			let item = game.rewards[index];
-			draw.image(rewards.item, 151, 32 + (index * 19));
-			if (item.endsWith(" - claimed")) draw.image(select.item_green, 151, 32 + (index * 19));
-			else if (game.select[1] == index) draw.image(select.item, 151, 32 + (index * 19));
-			if (item == "finish") draw.image(rewards.back, 151, 32 + (index * 19));
-			draw.lore(171, 36 + (index * 19), item.replace(" - claimed", ""));
-		};
+		rewardGraphics();
 	} else if (game.select[0] == "card_rewards") {
-		let x = 199 - (game.cardRewardChoices * 68 / 2), y = 20, width = (game.cardRewardChoices * 68) + 2, height = 160;
-		draw.box(x, y, width, height);
-		if (game.cardRewardChoices == 1) draw.lore(x + (width / 2), y + 1, "Choose your\ncard reward:", {"text-align": "center"});
-		else draw.lore(x + (width / 2), y + 1, "Choose your card reward:", {"text-align": "center"});
-		game.handPos = [];
-		for (let index = 0; index < game.cardRewardChoices; index++) {
-			game.handPos.push((199 - (game.cardRewardChoices * 68 / 2)) + 1 + (index * 68));
-			if (game.select[1] == index) draw.card(new Card(game.room[5][index]), index, 50, true);
-			else draw.card(new Card(game.room[5][index]), index, 50, false);
-		};
-		if (game.select[1] == -1 || game.select[1] == game.cardRewardChoices) draw.rect("#fff", x, y + height - 14, width, 14);
-		draw.box(x + 2, y + height - 12, width - 4, 10);
-		draw.lore(x + 3, y + height - 11, "Go back");
+		cardRewardGraphics();
 	} else if (game.select[0] == "help" && game.select[1]) {
 		infoGraphics();
 	} else if (game.select[0] == "deck" && game.select[1]) {
