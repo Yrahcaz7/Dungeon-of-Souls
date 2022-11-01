@@ -117,13 +117,6 @@ function enterBattle() {
 };
 
 function startTurn() {
-	for (let index = 0; index < game.enemies.length; index++) {
-		if (game.enemies[index].reinforces) {
-			game.enemies[index].reinforces--;
-		} else {
-			game.enemies[index].shield = 0;
-		};
-	};
 	drawHand();
 	game.turn = "player";
 	if (game.reinforces) {
@@ -139,6 +132,13 @@ function startTurn() {
 };
 
 function endTurn() {
+	for (let index = 0; index < game.enemies.length; index++) {
+		if (game.enemies[index].reinforces) {
+			game.enemies[index].reinforces--;
+		} else {
+			game.enemies[index].shield = 0;
+		};
+	};
 	if (game.hand.length >= 1) {
 		let iteration = 0;
 		for (let index = 0; index < game.hand.length; iteration++) {
