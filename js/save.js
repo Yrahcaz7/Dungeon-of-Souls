@@ -27,36 +27,6 @@ function load(saveNum = 0) {
 	let get = localStorage.getItem(id + "/" + saveNum);
 	if (get) {
 		get = JSON.parse(atob(get));
-		if (typeof get.character != "string") get.character = "" + get.character;
-		if (typeof get.health != "number") get.health = +get.health;
-		if (typeof get.maxHealth != "number") get.maxHealth = +get.maxHealth;
-		if (typeof get.shield != "number") get.shield = +get.shield;
-		if (typeof get.maxShield != "number") get.maxShield = +get.maxShield;
-		if (typeof get.floor != "number") get.floor = +get.floor;
-		if (typeof get.location != "string") get.location = "" + get.location;
-		if (typeof get.state != "string") get.state = "" + get.state;
-		if (typeof get.turn != "string") get.turn = "" + get.turn;
-		if (typeof get.mapSelect != "string") get.mapSelect = "" + get.mapSelect;
-		if (typeof get.mapOn != "number") get.mapOn = +get.mapOn;
-		if (typeof get.enemyAtt != "string" && !(get.enemyAtt instanceof Object)) get.enemyAtt = "none";
-		if (typeof get.enemyAttSel != "number") get.enemyAttSel = +get.enemyAttSel;
-		if (typeof get.enemyAttFin != "boolean") get.enemyAttFin = false;
-		if (typeof get.energy != "number") get.energy = +get.energy;
-		if (typeof get.maxEnergy != "number") get.maxEnergy = +get.maxEnergy;
-		if (typeof get.enemyIndex != "number") get.enemyIndex = +get.enemyIndex;
-		if (typeof get.enemyNum != "number") get.enemyNum = +get.enemyNum;
-		if (typeof get.enemyStage != "string") get.enemyStage = "" + get.enemyStage;
-		if (typeof get.deckProxy != "string") get.deckProxy = JSON.stringify(game.deckLocal);
-		if (typeof get.deckPos != "number") get.deckPos = +get.deckPos;
-		if (typeof get.deckMove != "string") get.deckMove = "" + get.deckMove;
-		if (typeof get.handSize != "number") get.handSize = +get.handSize;
-		if (typeof get.prevCard != "number") get.prevCard = +get.prevCard;
-		if (typeof get.activeCard != "number") get.activeCard = +get.activeCard;
-		if (typeof get.discardProxy != "string") get.discardProxy = JSON.stringify(game.discard);
-		if (typeof get.auraBlades != "number") get.auraBlades = +get.auraBlades;
-		if (typeof get.reinforces != "number") get.reinforces = +get.reinforces;
-		if (typeof get.attackEffect != "string") get.attackEffect = "" + get.attackEffect;
-		if (typeof get.saveNum != "number") get.saveNum = +get.saveNum;
 		Object.assign(game, get);
 		if (saveNum !== 0) {
 			localStorage.setItem(id + "/" + game.saveNum, localStorage.getItem(id + "/0"));
