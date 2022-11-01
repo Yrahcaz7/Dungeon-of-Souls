@@ -219,7 +219,7 @@ function playerTurn() {
 				startAnim.effect("war cry");
 				for (let index = 0; index < game.enemies.length; index++) {
 					game.enemies[index].intent = "defend";
-					game.enemies[index].intentHistory.push("defend");
+					game.enemies[index].intentHistory[0] = "defend";
 				};
 			} else {
 				activate = false;
