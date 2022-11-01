@@ -844,6 +844,8 @@ function mapGraphics(onlyCalc = false) {
 		// seed snippet
 		if (push <= 126) {
 			seed = JSON.stringify(game.firstRoom) + " " + JSON.stringify(game.map);
+			// constants
+			seed = seed.slice(30, seed.length - 2).replace("]] [[false", " ");
 			// true and false
 			seed = seed.replace(/false/g, "\\0").replace(/true/g, "\\1");
 			// enemies
@@ -863,10 +865,6 @@ function mapGraphics(onlyCalc = false) {
 			seed = seed.replace(/0\/0\/0\/0/g, "0:4").replace(/0\/0\/0/g, "0:3").replace(/0\/0/g, "0:2").replace(/#\/0/g, "-0");
 			// duplicate enemies
 			seed = seed.replace(/ss!ss/g, "ss:2").replace(/sb!sb/g, "sb:2");
-			// duplicate cards (3)
-			seed = seed.replace(/aur_b\/aur_b\/aur_b/g, "aur_b:3").replace(/blo\/blo\/blo/g, "blo:3").replace(/err\/err\/err/g, "err:3").replace(/eve_s\/eve_s\/eve_s/g, "eve_s:3").replace(/rei\/rei\/rei/g, "rei:3").replace(/sla\/sla\/sla/g, "sla:3").replace(/war_c\/war_c\/war_c/g, "war_c:3");
-			// duplicate cards (2)
-			seed = seed.replace(/aur_b\/aur_b/g, "aur_b:2").replace(/blo\/blo/g, "blo:2").replace(/err\/err/g, "err:2").replace(/eve_s\/eve_s/g, "eve_s:2").replace(/rei\/rei/g, "rei:2").replace(/sla\/sla/g, "sla:2").replace(/war_c\/war_c/g, "war_c:2");
 			// print
 			draw.lore(396, 1, "seed: " + seed.slice(0, 126 - push) + "\n" + seed.slice(126 - push, 255 - (push * 2)) + "...", {"color": "white", "text-align": "left", "text-small": true});
 		};
