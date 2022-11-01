@@ -493,11 +493,34 @@ function enemyGraphics() {
 	};
 	if (tempAnim[3] != -1) {
 		let pos = game.enemyPos[tempAnim[3]];
-		if (tempAnim[1] == "slime_small_launch") {
+		if (tempAnim[1] == "slime_ball") {
+			let phase = (tempAnim[0] / 10),
+				posX = Math.round(((pos[0] - 80)) * phase),
+				posY = Math.round(((pos[1] - 42)) * phase);
+			if (playerAnim[1].startsWith("shield")) {
+				posX = Math.round(((pos[0] - 94)) * phase);
+				posY = Math.round(((pos[1] - 44)) * phase);
+			};
+			if (game.enemyStage == "end") {
+				tempAnim = [0, "none", "normal", -1];
+				enemyAnim[tempAnim[3]] = 0;
+			} else if (game.enemyStage == "middle") {
+				draw.imageSector(enemy.slime.slime_ball, 4 * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
+				game.enemyStage = "end";
+			} else {
+				draw.imageSector(enemy.slime.slime_ball, (tempAnim[0] % 4) * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
+				tempAnim[0]++;
+				game.enemyStage = "pending";
+				if (tempAnim[0] >= 11) {
+					tempAnim[0] = 11;
+					game.enemyStage = "middle";
+				};
+			};
+		} else if (tempAnim[1] == "slime_small_launch") {
 			if (tempAnim[0] >= 10) {
 				let phase = ((tempAnim[0] - 9) / 10),
-					posX = Math.round(((game.enemyPos[tempAnim[3]][0] - 68) - 64) * phase),
-					posY = Math.round(((game.enemyPos[tempAnim[3]][1] - (50 + 10))) * phase);
+					posX = Math.round(((pos[0] - 68) - 64) * phase),
+					posY = Math.round(((pos[1] - (50 + 10))) * phase);
 				draw.imageSector(enemy.slime.small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
 			} else draw.imageSector(enemy.slime.small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
 			if (tempAnim[2] == "normal") tempAnim[0]++;

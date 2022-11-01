@@ -53,6 +53,7 @@ const player = {
 }, enemy = {
 	slime: {
 		big: new Image,
+		slime_ball: new Image,
 		small: new Image,
 		small_launch: new Image,
 	},
@@ -164,6 +165,7 @@ card.rarity.rare.src = "images/cards/rarity/rare.png";
 
 // slimes
 enemy.slime.big.src = "images/enemies/slime/big.png";
+enemy.slime.slime_ball.src = "images/enemies/slime/slime_ball.png";
 enemy.slime.small.src = "images/enemies/slime/small.png";
 enemy.slime.small_launch.src = "images/enemies/slime/small_launch.png";
 

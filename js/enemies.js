@@ -52,7 +52,8 @@ class Enemy {
 				if (game.reinforces) startAnim.player("shield_reinforced");
 				else startAnim.player("shield");
 			};
-			if (this.type == "slime_small") startAnim.enemy(this.location, "slime_small_launch");
+			if (this.type == "slime_big") startAnim.enemy(this.location, "slime_ball");
+			else if (this.type == "slime_small") startAnim.enemy(this.location, "slime_small_launch");
 		} else if (this.intent == "defend") {
 			this.middleAction(); // teporary
 		};
