@@ -78,10 +78,11 @@ changelog = ""
 	+ "<b>Version 1.1 - Formulation (in progress)<s>"
 	+ " - enemies now die upon reaching 0 health\n"
 	+ " - added the map (upper-left corner)\n"
-	+ " - added seeds (still a work in progress)\n"
-	+ " - added artifacts, which give various effects\n"
+	+ " - added artifacts and seeds (a work in progress)\n"
 	+ " - added the how to play page (finally!)\n"
 	+ " - added two new cards, and a new effect\n"
+	+ " - added loot/rewards at end of fights\n"
+	+ " - even more things that I didn't list here\n"
 	+ "<b>Version 1.0 - Manifestation<s>"
 	+ " - you can now end your turn (you couldn't before)\n"
 	+ " - enemies can now attack and defend\n"
@@ -188,6 +189,8 @@ function updateData() {
 		if (enemy.health > enemy.maxHealth) game.enemies[a].health = enemy.maxHealth;
 		if (enemy.shield > enemy.maxShield) game.enemies[a].shield = enemy.maxShield;
 	};
+	// game over
+	if (game.health === 0) game.turn = "game_over";
 	// other
 	game.deckProxy = JSON.stringify(game.deckLocal);
 	game.deck.cardSort();

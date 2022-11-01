@@ -431,7 +431,7 @@ function playerGraphics() {
 		if (playerAnim[0] >= 6) playerAnim = [0, "idle"];
 	} else if (playerAnim[1] == "hit") {
 		draw.imageSector(player.hit, 0, 0, 120, 80, x, y, 120, 80);
-		playerAnim[0] += 0.5;
+		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
 	} else if (playerAnim[1] == "shield") {
 		draw.imageSector(player.shield, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
