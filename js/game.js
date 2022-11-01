@@ -45,7 +45,7 @@ var global = {
 	maxShield: 60,
 	floor: 0,
 	location: "-1",
-	rewards: {},
+	rewards: [],
 	cardRewardChoices: 3,
 	gold: 0,
 	state: "enter",
@@ -80,7 +80,7 @@ var global = {
 	auraBladePos: [[65, 10], [80, 25], [40, 0], [25, 35]],
 	reinforces: 0,
 	attackEffect: "none",
-	room: "none",
+	room: [],
 	firstRoom: mapPiece(0, "1stbattle"),
 	map: [
 		[false, mapPiece(1), mapPiece(1), mapPiece(1), mapPiece(1), false],
@@ -252,12 +252,12 @@ function enemyTurn() {
 		startTurn();
 	};
 	let num = game.enemyNum;
-	for (let a = 0; a < game.enemies.length; a++) {
-		let ref = game.enemies[a];
+	for (let index = 0; index < game.enemies.length; index++) {
+		let ref = game.enemies[index];
 		if (ref instanceof Enemy) continue;
-		ref.location = a;
-		game.enemies[a] = new Enemy(undefined, undefined, ref);
-		console.log("refresh enemy " + a);
+		ref.location = index;
+		game.enemies[index] = new Enemy(undefined, undefined, ref);
+		console.log("refresh enemy " + index);
 	};
 	if (game.enemyStage == "end") game.enemies[num].finishAction();
 	else if (game.enemyStage == "middle") game.enemies[num].middleAction();
@@ -280,6 +280,81 @@ function selection() {
 		} else if (action == "enter") {
 			if (!game.select[1]) endTurn();
 			game.select = ["end", 0];
+			actionTimer = 2;
+		};
+		return;
+	};
+	if (game.select[0] == "confirm_exit") {
+		if (action == "left" && game.select[1]) {
+			game.select[1] = 0;
+			actionTimer = 1;
+		} else if (action == "right" && !game.select[1]) {
+			game.select[1] = 1;
+			actionTimer = 1;
+		} else if (action == "enter") {
+			if (!game.select[1]) {
+				game.select = ["map", 0];
+				showPopup("go", "go to the map!");
+			} else {
+				game.select = ["rewards", game.rewards.length - 1];
+			};
+			actionTimer = 2;
+		};
+		return;
+	};
+	// rewards
+	if (game.select[0] == "rewards") {
+		if ((action == "right" || action == "down") && game.select[1] < game.rewards.length - 1) {
+			game.select[1]++;
+			actionTimer = 1;
+		} else if ((action == "up" || action == "left") && game.select[1] > 0) {
+			game.select[1]--;
+			actionTimer = 1;
+		} else if (action == "enter") {
+			let item = "" + game.rewards[game.select[1]];
+			if (!item.endsWith(" - claimed")) {
+				let arr = item.split(" ");
+				if (arr[1] == "gold") {
+					game.gold += +arr[0];
+					game.rewards[game.select[1]] += " - claimed";
+				} else if (arr[1] == "card") {
+					game.select = ["card_rewards", 0];
+				} else if (item == "finish") {
+					let bool = false;
+					for (let index = 0; index < game.rewards.length; index++) {
+						if (!game.rewards[index].endsWith(" - claimed") && game.rewards[index] != "finish") {
+							bool = true;
+							break;
+						};
+					};
+					if (bool) {
+						game.select = ["confirm_exit", 0];
+					} else {
+						game.select = ["map", 0];
+						showPopup("go", "go to the map!");
+					};
+				};
+			};
+			actionTimer = 2;
+		};
+		return;
+	};
+	if (game.select[0] == "card_rewards") {
+		if (action == "right" && game.select[1] < game.cardRewardChoices - 1) {
+			game.select[1]++;
+			actionTimer = 1;
+		} else if (action == "left" && game.select[1] > 0) {
+			game.select[1]--;
+			actionTimer = 1;
+		} else if (action == "enter") {
+			game.deck.push(new Card(game.room[5][game.select[1]]));
+			for (let index = 0; index < game.rewards.length; index++) {
+				if (game.rewards[index] == "1 card") {
+					game.rewards[index] += " - claimed";
+					game.select = ["rewards", index];
+					break;
+				};
+			};
 			actionTimer = 2;
 		};
 		return;
@@ -562,8 +637,8 @@ function selection() {
 	} else if (action == "enter" && game.select[0] == "end" && game.turn == "player") {
 		let confirm = false;
 		if (game.hand.length >= 1) {
-			for (let a = 0; a < game.hand.length; a++) {
-				if (game.hand[a].energyCost <= game.energy) {
+			for (let index = 0; index < game.hand.length; index++) {
+				if (game.hand[index].energyCost <= game.energy) {
 					confirm = true;
 					break;
 				};
@@ -653,16 +728,16 @@ function selection() {
 				return;
 			} else if (action == "up") {
 				let to = -1, distance = -1;
-				for (let a = 0; a < game.enemies.length; a++) {
-					if (game.enemyPos[a][1] > distance) {
-						distance = game.enemyPos[a][1];
-						to = a;
+				for (let index = 0; index < game.enemies.length; index++) {
+					if (game.enemyPos[index][1] > distance) {
+						distance = game.enemyPos[index][1];
+						to = index;
 					};
 				};
-				for (let a = 0; a < game.enemies.length; a++) {
-					if (game.enemyPos[a][0] < distance) {
-						distance = game.enemyPos[a][0];
-						to = a;
+				for (let index = 0; index < game.enemies.length; index++) {
+					if (game.enemyPos[index][0] < distance) {
+						distance = game.enemyPos[index][0];
+						to = index;
 					};
 				};
 				game.select = ["lookat_enemy", to];
@@ -720,8 +795,11 @@ const gameloop = setInterval(function() {
 		game.select = ["rewards", 0];
 		game.state = "battle_fin";
 		game.turn = "none";
+		game.rewards = [];
+		if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
+		if (game.cardRewardChoices > 0) game.rewards.push("1 card");
+		game.rewards.push("finish");
 		if (game.artifacts.includes("iron will")) game.health += 2;
-		// showPopup("go", "go to the map!");
 	};
 	// update data again
 	updateData();
@@ -762,13 +840,38 @@ const gameloop = setInterval(function() {
 		draw.box(x + 25, y + 9, 13, 10);
 		draw.lore(x + 4, y + 10, "YES");
 		draw.lore(x + 26, y + 10, "NO");
-	} else if (game.state == "battle_fin") {
+	} else if (game.select[0] == "confirm_exit") {
+		let x = 122, y = 83;
+		draw.rect("#0008");
+		draw.box(x + 1, y + 1, 154, 26);
+		draw.lore(x + 2, y + 2, "Are you sure you want to finish collecting rewards?\nThere are still rewards left unclaimed.", {"text-small": true});
+		if (!game.select[1]) draw.rect("#fff", x + 1, y + 13, 23, 14);
+		else draw.rect("#fff", x + 23, y + 13, 17, 14);
+		draw.box(x + 3, y + 15, 19, 10);
+		draw.box(x + 25, y + 15, 13, 10);
+		draw.lore(x + 4, y + 16, "YES");
+		draw.lore(x + 26, y + 16, "NO");
+	} else if (game.select[0] == "rewards") {
+		draw.box(150, 20, 100, 160);
+		draw.lore(199, 21, "Battle loot!", {"text-align": "center"});
+		for (let index = 0; index < game.rewards.length; index++) {
+			let item = game.rewards[index];
+			draw.image(rewards.item, 151, 32 + (index * 19));
+			if (item.endsWith(" - claimed")) draw.image(select.item_green, 151, 32 + (index * 19));
+			else if (game.select[1] == index) draw.image(select.item, 151, 32 + (index * 19));
+			if (item == "finish") draw.image(rewards.back, 151, 32 + (index * 19));
+			draw.lore(171, 36 + (index * 19), item.replace(" - claimed", ""));
+		};
+	} else if (game.select[0] == "card_rewards") {
 		let x = 199 - (game.cardRewardChoices * 68 / 2), y = 20, width = (game.cardRewardChoices * 68) + 2;
 		draw.box(x, y, width, 160);
-		if (game.cardRewardChoices == 1) draw.lore(x + (width / 2), y + 1, "Choose your\nreward:", {"text-align": "center"});
-		else draw.lore(x + (width / 2), y + 1, "Choose your reward:", {"text-align": "center"});
+		if (game.cardRewardChoices == 1) draw.lore(x + (width / 2), y + 1, "Choose your\ncard reward:", {"text-align": "center"});
+		else draw.lore(x + (width / 2), y + 1, "Choose your card reward:", {"text-align": "center"});
+		game.handPos = [];
 		for (let index = 0; index < game.cardRewardChoices; index++) {
-			draw.card(new Card(game.room[5][index]), index, 50, false, (199 - (game.cardRewardChoices * 68 / 2)) + 1 + (index * 68));
+			game.handPos.push((199 - (game.cardRewardChoices * 68 / 2)) + 1 + (index * 68));
+			if (game.select[1] == index) draw.card(new Card(game.room[5][index]), index, 50, true);
+			else draw.card(new Card(game.room[5][index]), index, 50, false);
 		};
 	} else if (game.select[0] == "help" && game.select[1]) {
 		infoGraphics();

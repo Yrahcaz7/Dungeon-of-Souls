@@ -91,6 +91,8 @@ const player = {
 	battle_blue: new Image,
 	iron_will: new Image,
 	selector: [new Image, new Image, new Image, new Image],
+	item: new Image,
+	item_green: new Image,
 }, extra = {
 	help: new Image,
 	looker: new Image,
@@ -117,6 +119,9 @@ const player = {
 	bottom: new Image,
 	battle: new Image,
 	select: new Image,
+}, rewards = {
+	item: new Image,
+	back: new Image,
 },
 view = new Image, aura_blade = new Image, arrows = new Image, war_cry = new Image; // other
 
@@ -208,6 +213,8 @@ select.selector[0].src = "images/select/u_l.png";
 select.selector[1].src = "images/select/u_r.png";
 select.selector[2].src = "images/select/d_l.png";
 select.selector[3].src = "images/select/d_r.png";
+select.item.src = "images/select/item.png";
+select.item_green.src = "images/select/item_green.png";
 
 // extras
 extra.help.src = "images/extras/help.png";
@@ -259,6 +266,10 @@ map.row.src = "images/map/row.png";
 map.bottom.src = "images/map/bottom.png";
 map.battle.src = "images/map/battle.png";
 map.select.src = "images/map/select.png";
+
+// rewards
+rewards.item.src = "images/rewards/item.png";
+rewards.back.src = "images/rewards/back.png";
 
 // other
 view.src = "images/view.png";
