@@ -340,19 +340,28 @@ function selection() {
 		return;
 	};
 	if (game.select[0] == "card_rewards") {
-		if (action == "right" && game.select[1] < game.cardRewardChoices - 1) {
+		if (action == "right" && game.select[1] < game.cardRewardChoices) {
 			game.select[1]++;
 			actionTimer = 1;
-		} else if (action == "left" && game.select[1] > 0) {
+		} else if (action == "left" && game.select[1] > -1) {
 			game.select[1]--;
 			actionTimer = 1;
 		} else if (action == "enter") {
-			game.deck.push(new Card(game.room[5][game.select[1]]));
-			for (let index = 0; index < game.rewards.length; index++) {
-				if (game.rewards[index] == "1 card") {
-					game.rewards[index] += " - claimed";
-					game.select = ["rewards", index];
-					break;
+			if (game.select[1] == -1 || game.select[1] == game.cardRewardChoices) {
+				for (let index = 0; index < game.rewards.length; index++) {
+					if (game.rewards[index] == "1 card") {
+						game.select = ["rewards", index];
+						break;
+					};
+				};
+			} else {
+				game.deck.push(new Card(game.room[5][game.select[1]]));
+				for (let index = 0; index < game.rewards.length; index++) {
+					if (game.rewards[index] == "1 card") {
+						game.rewards[index] += " - claimed";
+						game.select = ["rewards", index];
+						break;
+					};
 				};
 			};
 			actionTimer = 2;
@@ -863,8 +872,8 @@ const gameloop = setInterval(function() {
 			draw.lore(171, 36 + (index * 19), item.replace(" - claimed", ""));
 		};
 	} else if (game.select[0] == "card_rewards") {
-		let x = 199 - (game.cardRewardChoices * 68 / 2), y = 20, width = (game.cardRewardChoices * 68) + 2;
-		draw.box(x, y, width, 160);
+		let x = 199 - (game.cardRewardChoices * 68 / 2), y = 20, width = (game.cardRewardChoices * 68) + 2, height = 160;
+		draw.box(x, y, width, height);
 		if (game.cardRewardChoices == 1) draw.lore(x + (width / 2), y + 1, "Choose your\ncard reward:", {"text-align": "center"});
 		else draw.lore(x + (width / 2), y + 1, "Choose your card reward:", {"text-align": "center"});
 		game.handPos = [];
@@ -873,6 +882,9 @@ const gameloop = setInterval(function() {
 			if (game.select[1] == index) draw.card(new Card(game.room[5][index]), index, 50, true);
 			else draw.card(new Card(game.room[5][index]), index, 50, false);
 		};
+		if (game.select[1] == -1 || game.select[1] == game.cardRewardChoices) draw.rect("#fff", x, y + height - 14, width, 14);
+		draw.box(x + 2, y + height - 12, width - 4, 10);
+		draw.lore(x + 3, y + height - 11, "Go back");
 	} else if (game.select[0] == "help" && game.select[1]) {
 		infoGraphics();
 	} else if (game.select[0] == "deck" && game.select[1]) {
