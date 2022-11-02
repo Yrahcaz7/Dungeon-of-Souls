@@ -501,12 +501,14 @@ function enemyGraphics() {
 				posX = Math.round(((pos[0] - 94)) * phase);
 				posY = Math.round(((pos[1] - 44)) * phase);
 			};
-			if (game.enemyStage == "end") {
+			if (tempAnim[2] == "ending") {
 				tempAnim = [0, "none", "normal", -1];
 				enemyAnim[tempAnim[3]] = 0;
+				game.enemyStage = "end";
 			} else if (game.enemyStage == "middle") {
 				draw.imageSector(enemy.slime.slime_ball, 4 * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
-				game.enemyStage = "end";
+				tempAnim[2] = "ending";
+				game.enemyStage = "pending";
 			} else {
 				draw.imageSector(enemy.slime.slime_ball, (tempAnim[0] % 4) * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
 				tempAnim[0]++;
