@@ -31,15 +31,15 @@ function canvasData() {
 };
 
 document.addEventListener("keydown", (event) => {
-	let key = event.keyCode;
-	if (key == 32 || key == 13) action = "enter";
-	else if (key == 87 || key == 38) action = "up";
-	else if (key == 65 || key == 37) action = "left";
-	else if (key == 83 || key == 40) action = "down";
-	else if (key == 68 || key == 39) action = "right";
+	let key = event.key;
+	if (key == " " || key == "Enter") action = "enter";
+	else if (key == "W" || key == "w" || key == "ArrowUp") action = "up";
+	else if (key == "A" || key == "a" || key == "ArrowLeft") action = "left";
+	else if (key == "S" || key == "s" || key == "ArrowDown") action = "down";
+	else if (key == "D" || key == "d" || key == "ArrowRight") action = "right";
 	else action = "none";
-	if (key == 27) fullscreen("exit");
-	else if (key == 9) fullscreen();
+	if (key == "Escape") fullscreen("exit");
+	else if (key == "Tab") fullscreen();
 });
 
 document.addEventListener("keyup", () => {
@@ -52,17 +52,21 @@ function fullscreen(state = "enter") {
 			document.body.exitFullscreen();
 		} else if (document.body.webkitExitFullscreen) {
 			document.body.webkitExitFullscreen();
-	  	} else if (document.body.msExitFullscreen) {
+		} else if (document.body.mozExitFullScreen) {
+			document.body.mozExitFullScreen();
+		} else if (document.body.msExitFullscreen) {
 			document.body.msExitFullscreen();
 		};
 	} else {
 		screenState = "fullscreen";
-  		if (document.body.requestFullscreen) {
-    		document.body.requestFullscreen();
-  		} else if (document.body.webkitRequestFullscreen) {
-    		document.body.webkitRequestFullscreen();
-  		} else if (document.body.msRequestFullscreen) {
-	    	document.body.msRequestFullscreen();
-  		};
+		if (document.body.requestFullscreen) {
+			document.body.requestFullscreen();
+		} else if (document.body.webkitRequestFullscreen) {
+			document.body.webkitRequestFullscreen();
+		} else if (document.body.mozRequestFullScreen) {
+			document.body.mozRequestFullScreen();
+		} else if (document.body.msRequestFullscreen) {
+			document.body.msRequestFullscreen();
+		};
 	};
 };
