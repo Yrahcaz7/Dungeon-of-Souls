@@ -94,7 +94,7 @@ var global = {
 	],
 	paths: {},
 	saveNum: 0,
-}, actionTimer = -1, notif = [-1, 0, "", 0], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "map") && game.select[1], firstTick = true;
+}, actionTimer = -1, notif = [-1, 0, "", 0], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "map") && game.select[1], firstTick = true, menuLocation = "title";
 
 function musicPopups() {
 	let src = document.getElementById("music").src;
@@ -290,6 +290,14 @@ function selection() {
 			} else {
 				game.select = ["rewards", game.rewards.length - 1];
 			};
+			actionTimer = 2;
+		};
+		return;
+	};
+	// menus
+	if (menuLocation == "title") {
+		if (action == "enter") {
+			menuLocation = "none";
 			actionTimer = 2;
 		};
 		return;
@@ -789,7 +797,7 @@ const gameloop = setInterval(function() {
 	// update data
 	updateData();
 	// actions
-	if (game.turn == "player") playerTurn();
+	if (game.turn == "player" && menuLocation == "none") playerTurn();
 	selection();
 	if (game.state == "battle" && !game.enemies.length) {
 		endTurn();
@@ -818,6 +826,12 @@ const gameloop = setInterval(function() {
 	};
 	// visuals
 	backgrounds();
+	if (menuLocation != "none") {
+		draw.image(title, (400 - title.width) / 2, 0);
+		draw.lore(200, 52, "Act 1: The Hands of Time", {"color": "red", "text-align": "center"});
+		draw.image(view);
+		return;
+	};
 	if (!hide) {
 		playerGraphics();
 		enemyGraphics();
@@ -884,12 +898,12 @@ const gameloop = setInterval(function() {
 	};
 	popupGraphics();
 	// enemy actions
-	if (game.turn == "enemy") enemyTurn();
+	if (game.turn == "enemy" && menuLocation == "none") enemyTurn();
 }, 100), musicloop = setInterval(function() {
 	let time = document.getElementById("music").currentTime;
 	if (global.options.music) {
-		if (time === 0) {
-			document.getElementById("music").play();
+		if (time === 0 && menuLocation != "title") {
+			document.getElementById("music").play().catch(() => {console.log("Audio not playing. Interact with page first.")});
 		} else if (time > document.getElementById("music").duration - 0.1) {
 			document.getElementById("music").currentTime = 0;
 		};
