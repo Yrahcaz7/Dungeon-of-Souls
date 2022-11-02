@@ -255,7 +255,6 @@ function enemyTurn() {
 	for (let index = 0; index < game.enemies.length; index++) {
 		let ref = game.enemies[index];
 		if (ref instanceof Enemy) continue;
-		ref.location = index;
 		game.enemies[index] = new Enemy(undefined, undefined, ref);
 		console.log("refresh enemy " + index);
 	};

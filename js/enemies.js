@@ -28,7 +28,6 @@ class Enemy {
 			this.reinforces = override.reinforces;
 			this.intent = override.intent;
 			this.intentHistory = override.intentHistory;
-			this.location = override.location;
 			return;
 		};
 		if (type == "slime_small") power--;
@@ -43,7 +42,6 @@ class Enemy {
 		this.reinforces = 0;
 		this.intent = (chance(3/5))?"attack":"defend";
 		this.intentHistory = [this.intent];
-		this.location = game.enemyIndex;
 		game.enemyIndex++;
 	};
 	startAction() {
@@ -52,8 +50,8 @@ class Enemy {
 				if (game.reinforces) startAnim.player("shield_reinforced");
 				else startAnim.player("shield");
 			};
-			if (this.type == "slime_big") startAnim.enemy(this.location, "slime_ball");
-			else if (this.type == "slime_small") startAnim.enemy(this.location, "slime_small_launch");
+			if (this.type == "slime_big") startAnim.enemy(game.enemyNum, "slime_ball");
+			else if (this.type == "slime_small") startAnim.enemy(game.enemyNum, "slime_small_launch");
 		} else if (this.intent == "defend") {
 			this.middleAction(); // teporary
 		};
@@ -75,18 +73,18 @@ class Enemy {
 		};
 	};
 	finishAction() {
-		if (this.location == game.enemies.length - 1) {
+		this.intent = chance(3/5)?"attack":"defend";
+		this.intentHistory.push(this.intent);
+		if (overrideIntent("attack", this.intentHistory, game.enemyNum)) {
+			this.intent = "defend";
+		} else if (overrideIntent("defend", this.intentHistory, game.enemyNum)) {
+			this.intent = "attack";
+		};
+		if (game.enemyNum == game.enemies.length - 1) {
 			game.enemyNum = 0;
 			startTurn();
 		} else {
 			game.enemyNum++;
-		};
-		this.intent = chance(3/5)?"attack":"defend";
-		this.intentHistory.push(this.intent);
-		if (overrideIntent("attack", this.intentHistory, this.location)) {
-			this.intent = "defend";
-		} else if (overrideIntent("defend", this.intentHistory, this.location)) {
-			this.intent = "attack";
 		};
 		game.enemyStage = "none";
 	};
