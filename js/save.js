@@ -18,14 +18,13 @@
 const id = "Yrahcaz7/Dungeon-of-Souls/save";
 
 function save() {
-	let proxy = btoa(JSON.stringify(game)), globalProxy = btoa(JSON.stringify(global));
-	localStorage.setItem(id + "/" + game.saveNum, proxy);
-	localStorage.setItem(id + "/master", globalProxy);
+	if (game) localStorage.setItem(id + "/" + game.saveNum, btoa(JSON.stringify(game)));
+	if (global) localStorage.setItem(id + "/master", btoa(JSON.stringify(global)));
 };
 
 function load(saveNum = 0) {
 	let get = localStorage.getItem(id + "/" + saveNum);
-	if (get) {
+	if (get && atob(get) && JSON.parse(atob(get))) {
 		let obj = JSON.parse(atob(get));
 		for (let index = 0; index < obj.enemies.length; index++) {
 			obj.enemies[index] = new Enemy(undefined, undefined, obj.enemies[index]);
@@ -36,14 +35,17 @@ function load(saveNum = 0) {
 			game.saveNum = 0;
 			save();
 		};
+	} else {
+		console.warn("the following is not a valid local save: " + get);
+		console.log("terminating process.");
 	};
 	get = localStorage.getItem(id + "/master");
-	if (get) {
+	if (get && atob(get) && JSON.parse(atob(get))) {
 		get = JSON.parse(atob(get));
-		if (typeof get.options.music != "boolean") get.options.music = true;
-		if (typeof get.options.stickyCards != "boolean") get.options.stickyCards = false;
-		if (typeof get.charStage.knight != "number") get.charStage.knight = +get.charStage.knight;
 		Object.assign(global, get);
+	} else {
+		console.warn("the following is not a valid global save: " + get);
+		console.log("terminating process.");
 	};
 };
 
