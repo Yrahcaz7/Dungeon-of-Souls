@@ -26,8 +26,11 @@ function save() {
 function load(saveNum = 0) {
 	let get = localStorage.getItem(id + "/" + saveNum);
 	if (get) {
-		get = JSON.parse(atob(get));
-		Object.assign(game, get);
+		let obj = JSON.parse(atob(get));
+		for (let index = 0; index < obj.enemies.length; index++) {
+			obj.enemies[index] = new Enemy(undefined, undefined, obj.enemies[index]);
+		};
+		Object.assign(game, obj);
 		if (saveNum !== 0) {
 			localStorage.setItem(id + "/" + game.saveNum, localStorage.getItem(id + "/0"));
 			game.saveNum = 0;
@@ -42,23 +45,6 @@ function load(saveNum = 0) {
 		if (typeof get.charStage.knight != "number") get.charStage.knight = +get.charStage.knight;
 		Object.assign(global, get);
 	};
-};
-
-function exportSave() {
-	let str = btoa(JSON.stringify(game));
-	const txt = document.createElement("textarea");
-	txt.value = str;
-	document.body.appendChild(txt);
-	txt.focus();
-	txt.select();
-	document.execCommand("copy");
-	document.body.removeChild(txt);
-};
-
-function importSave() {
-	Object.assign(game, JSON.parse(atob(prompt("Paste your save here:"))));
-	save();
-	window.location.reload();
 };
 
 window.onbeforeunload = () => {

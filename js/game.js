@@ -251,16 +251,9 @@ function enemyTurn() {
 		game.enemyNum = 0;
 		startTurn();
 	};
-	let num = game.enemyNum;
-	for (let index = 0; index < game.enemies.length; index++) {
-		let ref = game.enemies[index];
-		if (ref instanceof Enemy) continue;
-		game.enemies[index] = new Enemy(undefined, undefined, ref);
-		console.log("refresh enemy " + index);
-	};
-	if (game.enemyStage == "end") game.enemies[num].finishAction();
-	else if (game.enemyStage == "middle") game.enemies[num].middleAction();
-	else if (game.enemyStage != "pending") game.enemies[num].startAction();
+	if (game.enemyStage == "end") game.enemies[game.enemyNum].finishAction();
+	else if (game.enemyStage == "middle") game.enemies[game.enemyNum].middleAction();
+	else if (game.enemyStage != "pending") game.enemies[game.enemyNum].startAction();
 };
 
 function selection() {
