@@ -23,7 +23,7 @@ function save() {
 };
 
 function load(saveNum = 0) {
-	let get = localStorage.getItem(id + "/" + saveNum);
+	let get = localStorage.getItem(id + "/" + saveNum), reSave = false;
 	if (get && atob(get) && JSON.parse(atob(get))) {
 		let obj = JSON.parse(atob(get));
 		for (let index = 0; index < obj.enemies.length; index++) {
@@ -35,6 +35,9 @@ function load(saveNum = 0) {
 			game.saveNum = 0;
 			save();
 		};
+	} else if (!get && game) {
+		console.log("no local save found. creating new save...");
+		reSave = true;
 	} else {
 		console.warn("the following is not a valid local save: " + get);
 		console.log("terminating process.");
@@ -43,10 +46,14 @@ function load(saveNum = 0) {
 	if (get && atob(get) && JSON.parse(atob(get))) {
 		get = JSON.parse(atob(get));
 		Object.assign(global, get);
+	} else if (!get && global) {
+		console.log("no global save found. creating new save...");
+		reSave = true;
 	} else {
 		console.warn("the following is not a valid global save: " + get);
 		console.log("terminating process.");
 	};
+	if (reSave) save();
 };
 
 window.onbeforeunload = () => {
