@@ -742,14 +742,14 @@ function target() {
 		} else if (name == "aura blade") {
 			info("aura blades", "card");
 		};
-	} else if (game.select[0] == "deck" && game.select[1] == 1) {
+	} else if (game.select[0] == "deck" && game.select[1] == 1 && game.deckProxy != "[]") {
 		let proxy = JSON.parse(game.deckProxy).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].name;
 		if (proxy == "reinforce" || proxy == "everlasting shield") {
 			info("reinforce", "deck");
 		} else if (proxy == "aura blade") {
 			info("aura blades", "deck");
 		};
-	} else if (game.select[0] == "discard" && game.select[1] == 1) {
+	} else if (game.select[0] == "discard" && game.select[1] == 1 && game.discard.length > 0) {
 		let proxy = game.discard[game.cardSelect[0] + (game.cardSelect[1] * 6)].name;
 		if (proxy == "reinforce" || proxy == "everlasting shield") {
 			info("reinforce", "deck");

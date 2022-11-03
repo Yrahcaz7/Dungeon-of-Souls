@@ -40,7 +40,10 @@ document.addEventListener("keydown", (event) => {
 	else action = "none";
 	if (key == "Escape") fullscreen("exit");
 	else if (key == "Tab") fullscreen();
-	if (!event.repeat && prevAction == "none" && action != "enter" && action != "none") actionTimer = -1;
+	if (!event.repeat && prevAction == "none") {
+		if (action != "enter") selection();
+		updateVisuals();
+	};
 });
 
 document.addEventListener("keyup", (event) => {
