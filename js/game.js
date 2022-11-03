@@ -32,7 +32,8 @@ var global = {
 	unlockedCards: ["aura blade", "everlasting shield", "reinforce", "war cry"],
 	options: {
 		music: true,
-		stickyCards: false,
+		sticky_cards: false,
+		allow_fast_movement: true,
 	},
 	charStage: {
 		knight: 0,

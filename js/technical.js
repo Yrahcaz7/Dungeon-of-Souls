@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-var canvas, scale, ctx, action = "none", screenState = "window";
+var canvas, scale, ctx, action = "none", lastAction = "none", screenState = "window";
 
 function canvasData() {
 	let canv = document.getElementById("canvas");
@@ -40,10 +40,11 @@ document.addEventListener("keydown", (event) => {
 	else action = "none";
 	if (key == "Escape") fullscreen("exit");
 	else if (key == "Tab") fullscreen();
-	if (!event.repeat && prevAction == "none") {
+	if (!event.repeat && prevAction == "none" && lastAction == action && global.options.allow_fast_movement) {
 		if (action != "enter") selection();
 		updateVisuals();
 	};
+	if (action != "none") lastAction = action;
 });
 
 document.addEventListener("keyup", (event) => {
