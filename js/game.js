@@ -402,7 +402,7 @@ function selection() {
 		return;
 	};
 	// map
-	if (game.select[0] == "in_map" && game.state == "battle_fin") {
+	if (game.select[0] == "in_map" && game.state == "event_fin") {
 		if (action == "up" && game.mapSelect == "exit") {
 			game.mapOn = game.paths[game.location].length - 1;
 			game.mapSelect = game.paths[game.location][game.mapOn];
@@ -819,7 +819,7 @@ function manageGameplay() {
 	if (game.state == "battle" && !game.enemies.length) {
 		endTurn();
 		game.select = ["rewards", 0];
-		game.state = "battle_fin";
+		game.state = "event_fin";
 		game.turn = "none";
 		game.rewards = [];
 		if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
@@ -829,15 +829,24 @@ function manageGameplay() {
 	};
 	// load floor
 	let place = game.location.split(", ");
-	if (game.state == "enter" && (game.location == "-1" || game.map[place[0]][place[1]][0] == "battle")) {
-		if (game.location == "-1") game.room = game.firstRoom;
-		game.enemyIndex = 0;
-		for (let index = 0; index < game.room[3].length; index++) {
-			let item = game.room[3][index].split(", ");
-			if (item[1]) game.enemies.push(new Enemy(item[0], item[1]));
-			else game.enemies.push(new Enemy(item[0]));
+	if (game.state == "enter") {
+		if (game.location == "-1" || game.map[place[0]][place[1]][0] == "battle") {
+			if (game.location == "-1") game.room = game.firstRoom;
+			game.enemyIndex = 0;
+			for (let index = 0; index < game.room[3].length; index++) {
+				let item = game.room[3][index].split(", ");
+				if (item[1]) game.enemies.push(new Enemy(item[0], item[1]));
+				else game.enemies.push(new Enemy(item[0]));
+			};
+			enterBattle();
+		} else if (game.map[place[0]][place[1]][0] == "treasure") {
+			game.select = ["rewards", 0];
+			game.state = "event_fin";
+			game.rewards = [];
+			if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
+			if (game.cardRewardChoices > 0) game.rewards.push("1 card");
+			game.rewards.push("finish");
 		};
-		enterBattle();
 	};
 	// update data again
 	updateData();

@@ -795,7 +795,10 @@ function popupGraphics() {
 
 function rewardGraphics(focused = true) {
 	draw.box(150, 20, 100, 160);
-	draw.lore(199, 21, "Battle loot!", {"text-align": "center"});
+	const place = game.location.split(", ");
+	const type = game.location=="-1" ? "battle" : game.map[place[0]][place[1]][0];
+	if (type == "battle") draw.lore(199, 21, "Battle loot!", {"text-align": "center"});
+	else if (type == "treasure") draw.lore(199, 21, "Treasure!", {"text-align": "center"});
 	for (let index = 0; index < game.rewards.length; index++) {
 		let item = game.rewards[index];
 		draw.image(rewards.item, 151, 32 + (index * 19));
@@ -830,7 +833,7 @@ function mapGraphics(onlyCalc = false) {
 		draw.image(map.top, 3, 12);
 		draw.image(map.row, 16, 20, map.row.width, 164);
 		draw.image(map.bottom, 16, 184);
-		if (game.state == "battle_fin") {
+		if (game.state == "event_fin") {
 			if (game.location == "-1") draw.image(map.select_first, 13, 12);
 			else draw.image(map.select, 13 + ((+game.location.split(", ")[0] + 1) * 32), 12);
 		} else if (game.location != "-1") {
