@@ -15,9 +15,23 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+window.onload = () => {
+	load();
+	canvasData();
+	mapGraphics(true);
+	if (game.map.length === 0) {
+		for (let index = 0; index < 8; index++) {
+			game.map.push(mapRow(index));
+		};
+		mapGraphics(true);
+	};
+	musicPopups();
+	updateVisuals();
+};
+
 function mapPiece(row, attribute = "none") {
 	if (attribute == "1stbattle") return ["battle", 0, 0, ["slime_small"], randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5)];
-	if (attribute == "treasure") return ["treasure", 0, 0, "closed", randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
+	if (attribute == "treasure") return ["treasure", randomInt(-5, 5), randomInt(-5, 5), "closed", randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
 	let type = chance()?"battle":false;
 	let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
 	if (!type) return false;
@@ -30,6 +44,7 @@ function mapPiece(row, attribute = "none") {
 };
 
 function pathHasTreasure(coords = "") {
+	mapGraphics(true);
 	const entries = Object.entries(game.paths);
 	let treasure = false;
 	const looping = (location = "", first = false) => {
@@ -52,7 +67,6 @@ function mapRow(row, boss = false) {
 	if (row === 0) return [false, mapPiece(1), mapPiece(1), mapPiece(1), mapPiece(1), false];
 	let arr = [mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row)];
 	if (row > 1) {
-		mapGraphics(true);
 		let rand = randomInt(0, 5), past = [];
 		while (!(past.includes(0) && past.includes(1) && past.includes(2) && past.includes(3) && past.includes(4) && past.includes(5))) {
 			if (pathHasTreasure(row + ", " + rand)) console.log("located treasure at: " + row + ", " + rand);
@@ -952,6 +966,8 @@ const gameloop = setInterval(function() {
 	selection();
 	// visuals
 	updateVisuals();
+	// save
+	save();
 }, 100), musicloop = setInterval(function() {
 	let time = document.getElementById("music").currentTime;
 	if (global.options.music) {
