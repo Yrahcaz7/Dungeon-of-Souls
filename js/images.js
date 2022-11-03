@@ -90,6 +90,9 @@ const player = {
 	map: new Image,
 	battle: new Image,
 	battle_blue: new Image,
+	treasure: new Image,
+	treasure_blue: new Image,
+	treasure_open_blue: new Image,
 	iron_will: new Image,
 	selector: [new Image, new Image, new Image, new Image],
 	item: new Image,
@@ -120,6 +123,8 @@ const player = {
 	row: new Image,
 	bottom: new Image,
 	battle: new Image,
+	treasure: new Image,
+	treasure_open: new Image,
 	select: new Image,
 	select_first: new Image,
 }, rewards = {
@@ -212,6 +217,9 @@ select.popup.src = "images/select/popup.png";
 select.map.src = "images/select/map.png";
 select.battle.src = "images/select/battle.png";
 select.battle_blue.src = "images/select/battle_blue.png";
+select.treasure.src = "images/select/treasure.png";
+select.treasure_blue.src = "images/select/treasure_blue.png";
+select.treasure_open_blue.src = "images/select/treasure_open_blue.png";
 select.iron_will.src = "images/select/iron_will.png";
 select.selector[0].src = "images/select/u_l.png";
 select.selector[1].src = "images/select/u_r.png";
@@ -270,6 +278,8 @@ map.top.src = "images/map/top.png";
 map.row.src = "images/map/row.png";
 map.bottom.src = "images/map/bottom.png";
 map.battle.src = "images/map/battle.png";
+map.treasure.src = "images/map/treasure.png";
+map.treasure_open.src = "images/map/treasure_open.png";
 map.select.src = "images/map/select.png";
 map.select_first.src = "images/map/select_first.png";
 
