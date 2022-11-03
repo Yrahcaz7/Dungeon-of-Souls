@@ -31,7 +31,7 @@ function canvasData() {
 };
 
 document.addEventListener("keydown", (event) => {
-	let key = event.key;
+	const key = event.key, prevAction = "" + action;
 	if (key == " " || key == "Enter") action = "enter";
 	else if (key == "W" || key == "w" || key == "ArrowUp") action = "up";
 	else if (key == "A" || key == "a" || key == "ArrowLeft") action = "left";
@@ -40,10 +40,12 @@ document.addEventListener("keydown", (event) => {
 	else action = "none";
 	if (key == "Escape") fullscreen("exit");
 	else if (key == "Tab") fullscreen();
+	if (!event.repeat && prevAction == "none" && action != "enter" && action != "none") actionTimer = -1;
 });
 
-document.addEventListener("keyup", () => {
-	action = "none";
+document.addEventListener("keyup", (event) => {
+	const key = event.key;
+	if (key == " " || key == "Enter" || key == "W" || key == "w" || key == "ArrowUp" || key == "A" || key == "a" || key == "ArrowLeft" || key == "S" || key == "s" || key == "ArrowDown" || key == "D" || key == "d" || key == "ArrowRight") action = "none";
 });
 
 function fullscreen(state = "enter") {
