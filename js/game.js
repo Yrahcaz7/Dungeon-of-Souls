@@ -17,6 +17,7 @@
 
 function mapPiece(row, attribute = "none") {
 	if (attribute == "1stbattle") return ["battle", 0, 0, ["slime_small"], randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5)];
+	if (attribute == "treasure") return ["treasure", 0, 0, "closed", randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
 	let type = chance()?"battle":false;
 	let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
 	if (!type) return false;
@@ -26,6 +27,45 @@ function mapPiece(row, attribute = "none") {
 		result.push(randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5));
 	};
 	return result;
+};
+
+function pathHasTreasure(coords = "") {
+	const entries = Object.entries(game.paths);
+	let treasure = false;
+	const looping = (location = "", first = false) => {
+		let loc = location.split(", ");
+		if (!first && game.map[loc[0]] && game.map[loc[0]][loc[1]][0] == "treasure") {
+			treasure = true;
+			return;
+		};
+		for (let index = 0; index < location.length; index++) {
+			for (let ind2 = 0; ind2 < entries.length; ind2++) {
+				if (entries[ind2] && entries[ind2][1].includes(location)) looping(entries[ind2][0]);
+			};
+		};
+	};
+	looping(coords, true);
+	return treasure;
+};
+
+function mapRow(row, boss = false) {
+	if (row === 0) return [false, mapPiece(1), mapPiece(1), mapPiece(1), mapPiece(1), false];
+	let arr = [mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row)];
+	if (row > 1) {
+		mapGraphics(true);
+		let rand = randomInt(0, 5), past = [];
+		while (!(past.includes(0) && past.includes(1) && past.includes(2) && past.includes(3) && past.includes(4) && past.includes(5))) {
+			if (pathHasTreasure(row + ", " + rand)) console.log("located treasure at: " + row + ", " + rand);
+			if (arr[rand] && !pathHasTreasure(row + ", " + rand)) {
+				arr[rand] = mapPiece(row, "treasure");
+				break;
+			} else {
+				if (!past.includes(rand)) past.push(rand);
+				rand = randomInt(0, 5);
+			};
+		};
+	};
+	return arr;
 };
 
 var global = {
@@ -83,16 +123,7 @@ var global = {
 	attackEffect: "none",
 	room: [],
 	firstRoom: mapPiece(0, "1stbattle"),
-	map: [
-		[false, mapPiece(1), mapPiece(1), mapPiece(1), mapPiece(1), false],
-		[mapPiece(2), mapPiece(2), mapPiece(2), mapPiece(2), mapPiece(2), mapPiece(2)],
-		[mapPiece(3), mapPiece(3), mapPiece(3), mapPiece(3), mapPiece(3), mapPiece(3)],
-		[mapPiece(4), mapPiece(4), mapPiece(4), mapPiece(4), mapPiece(4), mapPiece(4)],
-		[mapPiece(5), mapPiece(5), mapPiece(5), mapPiece(5), mapPiece(5), mapPiece(5)],
-		[mapPiece(6), mapPiece(6), mapPiece(6), mapPiece(6), mapPiece(6), mapPiece(6)],
-		[mapPiece(7), mapPiece(7), mapPiece(7), mapPiece(7), mapPiece(7), mapPiece(7)],
-		[mapPiece(8), mapPiece(8), mapPiece(8), mapPiece(8), mapPiece(8), mapPiece(8)],
-	],
+	map: [],
 	paths: {},
 	saveNum: 0,
 }, actionTimer = -1, notif = [-1, 0, "", 0], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "map") && game.select[1], menuLocation = "title";
