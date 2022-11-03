@@ -840,6 +840,7 @@ function manageGameplay() {
 			};
 			enterBattle();
 		} else if (game.map[place[0]][place[1]][0] == "treasure") {
+			game.map[place[0]][place[1]][3] = "open";
 			game.select = ["rewards", 0];
 			game.state = "event_fin";
 			game.rewards = [];

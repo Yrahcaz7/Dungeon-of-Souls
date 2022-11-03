@@ -932,9 +932,14 @@ function mapGraphics(onlyCalc = false) {
 					if (x == coordSel[0] && y == coordSel[1]) draw.image(select.battle, drawX - 1, drawY - 1);
 					if (x == coordOn[0] && y == coordOn[1]) draw.image(select.battle_blue, drawX - 1, drawY - 1);
 				} else if (game.map[x][y][0] == "treasure") {
-					draw.image(map.treasure, drawX, drawY);
-					if (x == coordSel[0] && y == coordSel[1]) draw.image(select.treasure, drawX - 1, drawY - 1);
-					if (x == coordOn[0] && y == coordOn[1]) draw.image(select.treasure_blue, drawX - 1, drawY - 1);
+					if (game.map[x][y][3] == "open") {
+						draw.image(map.treasure_open, drawX, drawY);
+						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.treasure_open_blue, drawX - 1, drawY - 1);
+					} else {
+						draw.image(map.treasure, drawX, drawY);
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(select.treasure, drawX - 1, drawY - 1);
+						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.treasure_blue, drawX - 1, drawY - 1);
+					};
 				};
 			};
 		};
