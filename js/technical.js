@@ -17,6 +17,20 @@
 
 var canvas, scale, ctx, action = "none", lastAction = "none", screenState = "window";
 
+window.onload = () => {
+	load();
+	canvasData();
+	mapGraphics(true);
+	if (game.map.length === 0) {
+		for (let index = 0; index < 8; index++) {
+			game.map.push(mapRow(index));
+		};
+		mapGraphics(true);
+	};
+	musicPopups();
+	updateVisuals();
+};
+
 function canvasData() {
 	let canv = document.getElementById("canvas");
 	if (!canv) return false;
