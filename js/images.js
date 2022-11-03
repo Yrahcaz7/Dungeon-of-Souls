@@ -120,6 +120,7 @@ const player = {
 	bottom: new Image,
 	battle: new Image,
 	select: new Image,
+	select_first: new Image,
 }, rewards = {
 	item: new Image,
 	back: new Image,
@@ -268,6 +269,7 @@ map.row.src = "images/map/row.png";
 map.bottom.src = "images/map/bottom.png";
 map.battle.src = "images/map/battle.png";
 map.select.src = "images/map/select.png";
+map.select_first.src = "images/map/select_first.png";
 
 // rewards
 rewards.item.src = "images/rewards/item.png";

@@ -830,11 +830,11 @@ function mapGraphics(onlyCalc = false) {
 		draw.image(map.row, 16, 20, map.row.width, 164);
 		draw.image(map.bottom, 16, 184);
 		if (game.state == "battle_fin") {
-			if (game.location == "-1") draw.image(map.select, 20, 12);
-			else draw.rect("#7cfa", 20 + ((+game.location.split(", ")[0] + 1) * 32), 12, 26, 188);
+			if (game.location == "-1") draw.image(map.select_first, 13, 12);
+			else draw.image(map.select, 13 + ((+game.location.split(", ")[0] + 1) * 32), 12);
 		} else if (game.location != "-1") {
-			if (game.location.split(", ")[0] == "0") draw.image(map.select, 20, 12);
-			else draw.rect("#7cfa", 20 + (+game.location.split(", ")[0] * 32), 12, 26, 188);
+			if (game.location.split(", ")[0] == "0") draw.image(map.select_first, 13, 12);
+			else draw.image(map.select, 13 + (+game.location.split(", ")[0] * 32), 12);
 		};
 		draw.image(extra.end, 22, 179);
 		draw.image(extra.seed, 362, 17);

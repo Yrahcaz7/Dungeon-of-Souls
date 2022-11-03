@@ -147,6 +147,7 @@ function endTurn() {
 			if (iteration >= 100) break;
 		};
 	};
+	cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 	game.turn = "enemy";
 };
 
