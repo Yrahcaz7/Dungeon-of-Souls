@@ -799,6 +799,7 @@ function rewardGraphics(focused = true) {
 	for (let index = 0; index < game.rewards.length; index++) {
 		let item = game.rewards[index];
 		draw.image(rewards.item, 151, 32 + (index * 19));
+		if (game.select[1] == index && focused) draw.image(select.item_border, 150, 31 + (index * 19));
 		if (item.endsWith(" - claimed")) draw.image(select.item_green, 151, 32 + (index * 19));
 		else if (game.select[1] == index && focused) draw.image(select.item, 151, 32 + (index * 19));
 		if (item == "finish") draw.image(rewards.back, 151, 32 + (index * 19));

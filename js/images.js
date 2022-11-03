@@ -94,6 +94,7 @@ const player = {
 	selector: [new Image, new Image, new Image, new Image],
 	item: new Image,
 	item_green: new Image,
+	item_border: new Image,
 }, extra = {
 	help: new Image,
 	looker: new Image,
@@ -218,6 +219,7 @@ select.selector[2].src = "images/select/d_l.png";
 select.selector[3].src = "images/select/d_r.png";
 select.item.src = "images/select/item.png";
 select.item_green.src = "images/select/item_green.png";
+select.item_border.src = "images/select/item_border.png";
 
 // extras
 extra.help.src = "images/extras/help.png";

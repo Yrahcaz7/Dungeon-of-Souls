@@ -811,8 +811,6 @@ const gameloop = setInterval(function() {
 		game.rewards.push("finish");
 		if (game.artifacts.includes("iron will")) game.health += 2;
 	};
-	// update data again
-	updateData();
 	// load floor
 	let place = game.location.split(", ");
 	if (game.state == "enter" && (game.location == "-1" || game.map[place[0]][place[1]][0] == "battle")) {
@@ -825,6 +823,8 @@ const gameloop = setInterval(function() {
 		};
 		enterBattle();
 	};
+	// update data again
+	updateData();
 	// visuals
 	backgrounds();
 	if (menuLocation != "none") {
