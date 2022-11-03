@@ -779,22 +779,11 @@ function selection() {
 	};
 };
 
-const gameloop = setInterval(function() {
-	// bugs
-	if (!canvas || !ctx) {
-		canvasData();
-		if (!canvas || !ctx) {
-			console.error("Canvas not loaded properly. Please reload page if problem persists.");
-			return;
-		};
-	};
-	// clear
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+function manageGameplay() {
 	// update data
 	updateData();
 	// actions
 	if (game.turn == "player" && menuLocation == "none") playerTurn();
-	selection();
 	if (game.state == "battle" && !game.enemies.length) {
 		endTurn();
 		game.select = ["rewards", 0];
@@ -820,6 +809,15 @@ const gameloop = setInterval(function() {
 	};
 	// update data again
 	updateData();
+	// enemy actions
+	if (game.turn == "enemy" && menuLocation == "none") enemyTurn();
+};
+
+function updateVisuals() {
+	// bugs
+	if (!canvas || !ctx) return;
+	// clear
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	// visuals
 	backgrounds();
 	if (menuLocation != "none") {
@@ -893,8 +891,23 @@ const gameloop = setInterval(function() {
 		deckMove = "none";
 	};
 	popupGraphics();
-	// enemy actions
-	if (game.turn == "enemy" && menuLocation == "none") enemyTurn();
+};
+
+const gameloop = setInterval(function() {
+	// bugs
+	if (!canvas || !ctx) {
+		canvasData();
+		if (!canvas || !ctx) {
+			console.error("Canvas not loaded properly. Please reload page if problem persists.");
+			return;
+		};
+	};
+	// gameplay
+	manageGameplay();
+	// selection
+	selection();
+	// visuals
+	updateVisuals();
 }, 100), musicloop = setInterval(function() {
 	let time = document.getElementById("music").currentTime;
 	if (global.options.music) {
