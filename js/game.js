@@ -94,7 +94,7 @@ var global = {
 	],
 	paths: {},
 	saveNum: 0,
-}, actionTimer = -1, notif = [-1, 0, "", 0], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "map") && game.select[1], firstTick = true, menuLocation = "title";
+}, actionTimer = -1, notif = [-1, 0, "", 0], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "map") && game.select[1], menuLocation = "title";
 
 function musicPopups() {
 	let src = document.getElementById("music").src;
@@ -787,11 +787,6 @@ const gameloop = setInterval(function() {
 			console.error("Canvas not loaded properly. Please reload page if problem persists.");
 			return;
 		};
-	};
-	// load
-	if (firstTick) {
-		firstTick = false;
-		return;
 	};
 	// clear
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
