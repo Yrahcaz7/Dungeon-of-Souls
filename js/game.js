@@ -818,6 +818,8 @@ function updateVisuals() {
 	if (!canvas || !ctx) return;
 	// clear
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	// update data
+	updateData();
 	// visuals
 	backgrounds();
 	if (menuLocation != "none") {
