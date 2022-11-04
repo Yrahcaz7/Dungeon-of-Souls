@@ -201,39 +201,27 @@ const draw = {
 	},
 	// fractal - third order (uses complex and basic)
 	bars(x, y, health, maxHealth, shield, maxShield) {
-		let frame, percentage = health / maxHealth;
-		if (percentage < 0) frame = 0;
-		else if (percentage > 1) frame = 62;
-		else frame = percentage * 62;
-		if (health < 10 && maxHealth >= 10) {
-			health = "0" + health;
-			if (maxHealth >= 100) health = "0" + health;
-			if (maxHealth >= 1000) health = "0" + health;
-		} else if (health < 100 && maxHealth >= 100) {
-			health = "0" + health;
-			if (maxHealth >= 1000) health = "0" + health;
-		} else if (health < 1000 && maxHealth >= 1000) {
+		let cutoff, percentage = health / maxHealth;
+		if (percentage < 0) cutoff = 0;
+		else if (percentage > 1) cutoff = 62;
+		else cutoff = Math.round(percentage * 62);
+		if ((health < 10 && maxHealth >= 10) || (health < 100 && maxHealth >= 100) || (health < 1000 && maxHealth >= 1000)) {
 			health = "0" + health;
 		};
-		draw.imageSector(bar.health, 0, Math.round(frame) * 11, 64, 12, x, y + 65, 64, 12);
+		draw.imageSector(bar.health_full, 0, 0, cutoff + 1, 12, x, y + 65);
+		draw.imageSector(bar.health_empty, cutoff + 1, 0, 64 - (cutoff + 1), 12, x + (cutoff + 1), y + 65);
 		draw.lore(x + 25, y + 67, health, {"text-align": "left"});
 		draw.lore(x + 34, y + 67, maxHealth);
 		if (!shield || !maxShield) return;
 		percentage = shield / maxShield;
-		if (percentage < 0) frame = 0;
-		else if (percentage > 1) frame = 62;
-		else frame = percentage * 62;
-		if (shield < 10 && maxShield >= 10) {
-			shield = "0" + shield;
-			if (maxShield >= 100) shield = "0" + shield;
-			if (maxShield >= 1000) shield = "0" + shield;
-		} else if (shield < 100 && maxShield >= 100) {
-			shield = "0" + shield;
-			if (maxShield >= 1000) shield = "0" + shield;
-		} else if (shield < 1000 && maxShield >= 1000) {
+		if (percentage < 0) cutoff = 0;
+		else if (percentage > 1) cutoff = 62;
+		else cutoff = Math.round(percentage * 62);
+		if ((shield < 10 && maxShield >= 10) || (shield < 100 && maxShield >= 100) || (shield < 1000 && maxShield >= 1000)) {
 			shield = "0" + shield;
 		};
-		draw.imageSector(bar.shield, 0, Math.round(frame) * 11, 64, 12, x, y + 76, 64, 12);
+		draw.imageSector(bar.shield_full, 0, 0, cutoff + 1, 12, x, y + 76);
+		draw.imageSector(bar.shield_empty, cutoff + 1, 0, 64 - (cutoff + 1), 12, x + (cutoff + 1), y + 76);
 		draw.lore(x + 25, y + 78, shield, {"text-align": "left"});
 		draw.lore(x + 34, y + 78, maxShield);
 	},
@@ -443,16 +431,17 @@ function playerGraphics() {
 		if (playerAnim[0] >= 3) playerAnim[0] = 2;
 	};
 	draw.bars(x + 22, y + 15, game.health, game.maxHealth, game.shield, game.maxShield);
-	let frame, en = game.energy, maxEn = game.maxEnergy, percentage = en / maxEn;
-	if (percentage < 0) frame = 0;
-	else if (percentage > 1) frame = 30;
-	else frame = percentage * 30;
-	if (en < 10 && maxEn >= 10) {
-		en = "0" + en;
+	let cutoff, energy = game.energy, percentage = energy / game.maxEnergy;
+	if (percentage < 0) cutoff = 0;
+	else if (percentage > 1) cutoff = 30;
+	else cutoff = Math.round(percentage * 30);
+	if (energy < 10 && game.maxEnergy >= 10) {
+		energy = "0" + energy;
 	};
-	draw.imageSector(bar.energy, 0, Math.round(frame) * 31, 32, 32, x, y + 16, 32, 32);
-	draw.lore(x + 9, y + 28, en, {"text-align": "left"});
-	draw.lore(x + 18, y + 28, maxEn);
+	draw.imageSector(bar.energy_full, 0, 0, cutoff + 1, 32, x, y + 16);
+	draw.imageSector(bar.energy_empty, cutoff + 1, 0, 32 - (cutoff + 1), 32, x + (cutoff + 1), y + 16);
+	draw.lore(x + 9, y + 28, energy, {"text-align": "left"});
+	draw.lore(x + 18, y + 28, game.maxEnergy);
 };
 
 function effectGraphics() {

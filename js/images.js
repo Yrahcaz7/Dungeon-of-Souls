@@ -75,9 +75,12 @@ const player = {
 	black_fade: [new Image, new Image, new Image],
 	red_fade: [new Image, new Image, new Image],
 }, bar = {
-	health: new Image,
-	shield: new Image,
-	energy: new Image,
+	health_empty: new Image,
+	health_full: new Image,
+	shield_empty: new Image,
+	shield_full: new Image,
+	energy_empty: new Image,
+	energy_full: new Image,
 }, select = {
 	round: new Image,
 	card_normal: new Image,
@@ -201,9 +204,12 @@ letters.red_fade[1].src = "images/letters/red_fade_1.png";
 letters.red_fade[2].src = "images/letters/red_fade_2.png";
 
 // bars
-bar.health.src = "images/bars/health.png";
-bar.shield.src = "images/bars/shield.png";
-bar.energy.src = "images/bars/energy.png";
+bar.health_empty.src = "images/bars/health_empty.png";
+bar.health_full.src = "images/bars/health_full.png";
+bar.shield_empty.src = "images/bars/shield_empty.png";
+bar.shield_full.src = "images/bars/shield_full.png";
+bar.energy_empty.src = "images/bars/energy_empty.png";
+bar.energy_full.src = "images/bars/energy_full.png";
 
 // selectors
 select.round.src = "images/select/round.png";
