@@ -21,12 +21,7 @@ window.onload = () => {
 	load();
 	canvasData();
 	mapGraphics(true);
-	if (game.map.length === 0) {
-		for (let index = 0; index < 8; index++) {
-			game.map.push(mapRow(index));
-		};
-		mapGraphics(true);
-	};
+	if (game.map.length === 0) generateMap();
 	musicPopups();
 	updateVisuals();
 };

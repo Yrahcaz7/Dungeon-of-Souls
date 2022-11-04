@@ -30,7 +30,6 @@ function mapPiece(row, attribute = "none") {
 };
 
 function pathHasTreasure(coords = "") {
-	mapGraphics(true);
 	const entries = Object.entries(game.paths);
 	let treasure = false;
 	const looping = (location = "", first = false) => {
@@ -53,6 +52,9 @@ function mapRow(row) {
 	if (row === 0) return [false, mapPiece(1), mapPiece(1), mapPiece(1), mapPiece(1), false];
 	let arr = [mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row)];
 	if (row > 1) {
+		game.map.push(arr);
+		mapGraphics(true);
+		game.map.pop();
 		let rand = randomInt(0, 5), past = [];
 		while (!(past.includes(0) && past.includes(1) && past.includes(2) && past.includes(3) && past.includes(4) && past.includes(5))) {
 			if (pathHasTreasure(row + ", " + rand)) console.log("located treasure at: " + row + ", " + rand);
@@ -62,8 +64,34 @@ function mapRow(row) {
 			} else {
 				if (!past.includes(rand)) past.push(rand);
 				rand = randomInt(0, 5);
+				if (past.includes(rand)) rand = randomInt(0, 5);
 			};
 		};
 	};
 	return arr;
+};
+
+function generateMap() {
+	game.map = [];
+	for (let index = 0; index < 8; index++) {
+		game.map.push(mapRow(index));
+	};
+	while (checkMap()) {
+		checkMap();
+	};
+	mapGraphics(true);
+};
+
+function checkMap() {
+	for (let index = 0; index < game.map.length; index++) {
+		let falses = 0;
+		for (let ind2 = 0; ind2 < game.map[index].length; ind2++) {
+			if (!game.map[index][ind2]) falses++;
+		};
+		if (falses >= 5 || falses == 0) {
+			generateMap();
+			return true;
+		};
+	};
+	return false;
 };

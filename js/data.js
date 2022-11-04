@@ -145,16 +145,6 @@ function updateData() {
 		if (bladeFloat[num * 2] >= 4) bladeFloat[num * 2 + 1] = "down";
 		else if (bladeFloat[num * 2] <= 0) bladeFloat[num * 2 + 1] = "up";
 	};
-	// map
-	for (let index = 0; index < game.map.length; index++) {
-		let falses = 0;
-		for (let ind2 = 0; ind2 < game.map[index].length; ind2++) {
-			if (!game.map[index][ind2]) falses++;
-		};
-		if (falses >= 5 || falses == 0) {
-			game.map[index] = mapRow(index);
-		};
-	};
 	// info
 	if (infPos <= 0) infPos = 0;
 	if (infLimit <= 0) infLimit = 0;
