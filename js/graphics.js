@@ -53,8 +53,8 @@ const draw = {
 		let position = style["text-align"];
 		let small = style["text-small"];
 		string = string.replace(/<br>/g, "\n");
-		x = round(x, 1);
-		y = round(y, 1);
+		x = Math.round(x);
+		y = Math.round(y);
 		let img = letters.black, enters = 0, enterIndex = 0, len = string.replace(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<light-green>|<\/light-green>/g, "").length;
 		if (color == "red") img = letters.red;
 		else if (color == "white") img = letters.white;

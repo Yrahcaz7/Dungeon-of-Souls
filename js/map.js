@@ -22,8 +22,8 @@ function mapPiece(row, attribute = "none") {
 	let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
 	if (!type) return false;
 	if (type == "battle") {
-		if (row >= 5) result.push(chance()?["slime_big"]:(chance(7/10)?["slime_big", "slime_small, " + round(0.5 + (row * 0.05), 2)]:["slime_small", "slime_small, " + round(0.75 + (row * 0.05), 2)]));
-		else result.push(chance()?["slime_big"]:["slime_small", "slime_small, " + round(0.75 + (row * 0.05), 2)]);
+		if (row >= 5) result.push(chance()?["slime_big"]:(chance(7/10)?["slime_big", "slime_small, " + Math.round(0.5 + (row * 0.05), 2)]:["slime_small", "slime_small, " + Math.round(0.75 + (row * 0.05), 2)]));
+		else result.push(chance()?["slime_big"]:["slime_small", "slime_small, " + Math.round(0.75 + (row * 0.05), 2)]);
 		result.push(randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5));
 	};
 	return result;

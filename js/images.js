@@ -198,7 +198,7 @@ for (const image in clock) {
 // letters
 for (const image in letters) {
 	if (Object.hasOwnProperty.call(letters, image)) {
-		if (letters[image].length !== undefined) continue;
+		if (letters[image].length instanceof Array) continue;
 		letters[image].src = "images/letters/" + image + ".png";
 	};
 };
@@ -219,7 +219,7 @@ for (const image in bar) {
 // selectors
 for (const image in select) {
 	if (Object.hasOwnProperty.call(select, image)) {
-		if (select[image].length !== undefined) continue;
+		if (select[image].length instanceof Array) continue;
 		select[image].src = "images/select/" + image + ".png";
 	};
 };
