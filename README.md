@@ -48,12 +48,12 @@ Inspired by ***Slay the Spire*** and ***Die in the Dungeon***.
 
 Most player sprites taken from or based off of the ones found [**here**](https://aamatniekss.itch.io/fantasy-knight-free-pixelart-animated-character).
 
-## An ominous feeling...
+## *An ominous feeling...*
 
-When the hands align,
+*When the hands align,*
 
-find the fragment of time.
+*find the fragment of time.*
 
-Else, at the edge of the sky,
+*Else, at the edge of the sky,*
 
-you shall eternally die.
+*you shall eternally die.*
