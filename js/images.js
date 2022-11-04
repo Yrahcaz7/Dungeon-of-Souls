@@ -137,14 +137,11 @@ const player = {
 view = new Image, title = new Image, aura_blade = new Image, arrows = new Image, war_cry = new Image; // other
 
 // player
-player.idle.src = "images/player/idle.png";
-player.attack.src = "images/player/attack.png";
-player.attack_aura.src = "images/player/attack_aura.png";
-player.attack_2.src = "images/player/attack_2.png";
-player.attack_2_aura.src = "images/player/attack_2_aura.png";
-player.hit.src = "images/player/hit.png";
-player.shield.src = "images/player/shield.png";
-player.shield_reinforced.src = "images/player/shield_reinforced.png";
+for (const image in player) {
+	if (Object.hasOwnProperty.call(player, image)) {
+		player[image].src = "images/player/" + image + ".png";
+	};
+};
 
 // card stuff
 card.energy.src = "images/cards/energy.png";
@@ -164,38 +161,47 @@ card.common["war cry"].src = "images/cards/common/war_cry.png";
 card.rare["everlasting shield"].src = "images/cards/rare/everlasting_shield.png";
 
 // card outlines
-card.outline.attack.src = "images/cards/outline/attack.png";
-card.outline.curse.src = "images/cards/outline/curse.png";
-card.outline.defense.src = "images/cards/outline/defense.png";
-card.outline.skill.src = "images/cards/outline/skill.png";
-card.outline.magic.src = "images/cards/outline/magic.png";
+for (const image in card.outline) {
+	if (Object.hasOwnProperty.call(card.outline, image)) {
+		card.outline[image].src = "images/cards/outline/" + image + ".png";
+	};
+};
 
 // card rarities
 card.rarity.rare.src = "images/cards/rarity/rare.png";
 
 // slimes
-enemy.slime.big.src = "images/enemies/slime/big.png";
-enemy.slime.slime_ball.src = "images/enemies/slime/slime_ball.png";
-enemy.slime.small.src = "images/enemies/slime/small.png";
-enemy.slime.small_launch.src = "images/enemies/slime/small_launch.png";
+for (const folder in enemy) {
+	if (Object.hasOwnProperty.call(enemy, folder)) {
+		for (const image in enemy[folder]) {
+			if (Object.hasOwnProperty.call(enemy[folder], image)) {
+				enemy[folder][image].src = "images/enemies/" + folder + "/" + image + ".png";
+			};
+		};
+	};
+};
 
 // backrounds
-background.cave.src = "images/background/cave.png";
-background.temple.src = "images/background/temple.png";
-background.floating_arch.src = "images/background/floating_arch.png";
+for (const image in background) {
+	if (Object.hasOwnProperty.call(background, image)) {
+		background[image].src = "images/background/" + image + ".png";
+	};
+};
 
 // the clock
-clock.face.src = "images/clock/face.png";
-clock.hour_hand.src = "images/clock/hour_hand.png";
-clock.min_hand.src = "images/clock/min_hand.png";
-clock.node.src = "images/clock/node.png";
+for (const image in clock) {
+	if (Object.hasOwnProperty.call(clock, image)) {
+		clock[image].src = "images/clock/" + image + ".png";
+	};
+};
 
 // letters
-letters.black.src = "images/letters/black.png";
-letters.red.src = "images/letters/red.png";
-letters.white.src = "images/letters/white.png";
-letters.deep_red.src = "images/letters/deep_red.png";
-letters.light_green.src = "images/letters/light_green.png";
+for (const image in letters) {
+	if (Object.hasOwnProperty.call(letters, image)) {
+		if (letters[image].length !== undefined) continue;
+		letters[image].src = "images/letters/" + image + ".png";
+	};
+};
 letters.black_fade[0].src = "images/letters/black_fade_0.png";
 letters.black_fade[1].src = "images/letters/black_fade_1.png";
 letters.black_fade[2].src = "images/letters/black_fade_2.png";
@@ -204,90 +210,60 @@ letters.red_fade[1].src = "images/letters/red_fade_1.png";
 letters.red_fade[2].src = "images/letters/red_fade_2.png";
 
 // bars
-bar.health_empty.src = "images/bars/health_empty.png";
-bar.health_full.src = "images/bars/health_full.png";
-bar.shield_empty.src = "images/bars/shield_empty.png";
-bar.shield_full.src = "images/bars/shield_full.png";
-bar.energy_empty.src = "images/bars/energy_empty.png";
-bar.energy_full.src = "images/bars/energy_full.png";
+for (const image in bar) {
+	if (Object.hasOwnProperty.call(bar, image)) {
+		bar[image].src = "images/bars/" + image + ".png";
+	};
+};
 
 // selectors
-select.round.src = "images/select/round.png";
-select.card_normal.src = "images/select/card_normal.png";
-select.card_unplayable.src = "images/select/card_unplayable.png";
-select.card_rare.src = "images/select/card_rare.png";
-select.card_rare_unplayable.src = "images/select/card_rare_unplayable.png";
-select.deck.src = "images/select/deck.png";
-select.discard.src = "images/select/discard.png";
-select.popup.src = "images/select/popup.png";
-select.map.src = "images/select/map.png";
-select.battle.src = "images/select/battle.png";
-select.battle_blue.src = "images/select/battle_blue.png";
-select.treasure.src = "images/select/treasure.png";
-select.treasure_blue.src = "images/select/treasure_blue.png";
-select.treasure_open_blue.src = "images/select/treasure_open_blue.png";
-select.iron_will.src = "images/select/iron_will.png";
+for (const image in select) {
+	if (Object.hasOwnProperty.call(select, image)) {
+		if (select[image].length !== undefined) continue;
+		select[image].src = "images/select/" + image + ".png";
+	};
+};
 select.selector[0].src = "images/select/u_l.png";
 select.selector[1].src = "images/select/u_r.png";
 select.selector[2].src = "images/select/d_l.png";
 select.selector[3].src = "images/select/d_r.png";
-select.item.src = "images/select/item.png";
-select.item_green.src = "images/select/item_green.png";
-select.item_border.src = "images/select/item_border.png";
 
 // extras
-extra.help.src = "images/extras/help.png";
-extra.looker.src = "images/extras/looker.png";
-extra.music.src = "images/extras/music.png";
-extra.end.src = "images/extras/end.png";
-extra.deck.src = "images/extras/deck.png";
-extra.discard.src = "images/extras/discard.png";
-extra.map.src = "images/extras/map.png";
-extra.seed.src = "images/extras/seed.png";
+for (const image in extra) {
+	if (Object.hasOwnProperty.call(extra, image)) {
+		extra[image].src = "images/extras/" + image + ".png";
+	};
+};
 
 // icons
-icon.reinforce.src = "images/icons/reinforce.png";
-icon.aura_blade.src = "images/icons/aura_blade.png";
-icon.iron_will.src = "images/icons/iron_will.png";
+for (const image in icon) {
+	if (Object.hasOwnProperty.call(icon, image)) {
+		icon[image].src = "images/icons/" + image + ".png";
+	};
+};
 
 // intents
-intent.defend[0].src = "images/intent/defend/1.png";
-intent.defend[1].src = "images/intent/defend/2.png";
-intent.defend[2].src = "images/intent/defend/3.png";
-intent.defend[3].src = "images/intent/defend/4.png";
-intent.defend[4].src = "images/intent/defend/5.png";
-intent.defend[5].src = "images/intent/defend/6.png";
-intent.defend[6].src = "images/intent/defend/7.png";
-intent.defend[7].src = "images/intent/defend/E.png";
-intent.defend[8].src = "images/intent/defend/I.png";
-intent.defend[9].src = "images/intent/defend/V.png";
-intent.defend[10].src = "images/intent/defend/Z.png";
-intent.attack[0].src = "images/intent/attack/1.png";
-intent.attack[1].src = "images/intent/attack/2.png";
-intent.attack[2].src = "images/intent/attack/3.png";
-intent.attack[3].src = "images/intent/attack/4.png";
-intent.attack[4].src = "images/intent/attack/5.png";
-intent.attack[5].src = "images/intent/attack/6.png";
-intent.attack[6].src = "images/intent/attack/8.png";
-intent.attack[7].src = "images/intent/attack/E.png";
-intent.attack[8].src = "images/intent/attack/I.png";
-intent.attack[9].src = "images/intent/attack/V.png";
-intent.attack[10].src = "images/intent/attack/Z.png";
+for (const folder in intent) {
+	if (Object.hasOwnProperty.call(intent, folder)) {
+		for (let index = 0; index < intent[folder].length; index++) {
+			intent[folder][index].src = "images/intent/" + folder + "/" + index + ".png";
+		};
+	};
+};
 
 // popups
-popup.back.src = "images/popup/back.png";
-popup.music.src = "images/popup/music.png";
-popup.go.src = "images/popup/go.png";
+for (const image in popup) {
+	if (Object.hasOwnProperty.call(popup, image)) {
+		popup[image].src = "images/popup/" + image + ".png";
+	};
+};
 
 // map
-map.top.src = "images/map/top.png";
-map.row.src = "images/map/row.png";
-map.bottom.src = "images/map/bottom.png";
-map.battle.src = "images/map/battle.png";
-map.treasure.src = "images/map/treasure.png";
-map.treasure_open.src = "images/map/treasure_open.png";
-map.select.src = "images/map/select.png";
-map.select_first.src = "images/map/select_first.png";
+for (const image in map) {
+	if (Object.hasOwnProperty.call(map, image)) {
+		map[image].src = "images/map/" + image + ".png";
+	};
+};
 
 // rewards
 rewards.item.src = "images/rewards/item.png";
