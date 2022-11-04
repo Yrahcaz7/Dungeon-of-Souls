@@ -893,14 +893,16 @@ const gameloop = setInterval(function() {
 			return;
 		};
 	};
-	// gameplay
-	manageGameplay();
-	// selection
-	selection();
-	// visuals
-	updateVisuals();
-	// save
-	save();
+	if (loaded) {
+		// gameplay
+		manageGameplay();
+		// selection
+		selection();
+		// visuals
+		updateVisuals();
+		// save
+		save();
+	};
 }, 100), musicloop = setInterval(function() {
 	let time = document.getElementById("music").currentTime;
 	if (global.options.music) {

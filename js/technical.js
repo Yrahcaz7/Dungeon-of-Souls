@@ -15,15 +15,25 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-var canvas, scale, ctx, action = "none", lastAction = "none", screenState = "window";
+var canvas, scale, ctx, action = "none", lastAction = "none", loaded = false;
 
 window.onload = () => {
 	load();
 	canvasData();
 	mapGraphics(true);
-	if (game.map.length === 0) generateMap();
-	musicPopups();
-	updateVisuals();
+	if (game.map.length === 0) {
+		draw.lore(200, 100, "Generating Map...", {"color": "white", "text-align": "center"});
+		setTimeout(function() {
+			generateMap();
+			musicPopups();
+			updateVisuals();
+			loaded = true;
+		}, 100);
+	} else {
+		musicPopups();
+		updateVisuals();
+		loaded = true;
+	};
 };
 
 function canvasData() {
@@ -73,7 +83,6 @@ function fullscreen(state = "enter") {
 			document.body.msExitFullscreen();
 		};
 	} else {
-		screenState = "fullscreen";
 		if (document.body.requestFullscreen) {
 			document.body.requestFullscreen();
 		} else if (document.body.webkitRequestFullscreen) {
