@@ -15,19 +15,6 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-function mapPiece(row, attribute = "none") {
-	if (attribute == "1stbattle") return ["battle", 0, 0, ["slime_small"], randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5)];
-	let type = chance()?"battle":false;
-	let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
-	if (!type) return false;
-	if (type == "battle") {
-		if (row >= 5) result.push(chance()?["slime_big"]:(chance(7/10)?["slime_big", "slime_small, " + round(0.5 + (row * 0.05), 2)]:["slime_small", "slime_small, " + round(0.75 + (row * 0.05), 2)]));
-		else result.push(chance()?["slime_big"]:["slime_small", "slime_small, " + round(0.75 + (row * 0.05), 2)]);
-		result.push(randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5));
-	};
-	return result;
-};
-
 var global = {
 	unlockedCards: ["aura blade", "everlasting shield", "reinforce", "war cry"],
 	options: {
@@ -83,16 +70,7 @@ var global = {
 	attackEffect: "none",
 	room: [],
 	firstRoom: mapPiece(0, "1stbattle"),
-	map: [
-		[false, mapPiece(1), mapPiece(1), mapPiece(1), mapPiece(1), false],
-		[mapPiece(2), mapPiece(2), mapPiece(2), mapPiece(2), mapPiece(2), mapPiece(2)],
-		[mapPiece(3), mapPiece(3), mapPiece(3), mapPiece(3), mapPiece(3), mapPiece(3)],
-		[mapPiece(4), mapPiece(4), mapPiece(4), mapPiece(4), mapPiece(4), mapPiece(4)],
-		[mapPiece(5), mapPiece(5), mapPiece(5), mapPiece(5), mapPiece(5), mapPiece(5)],
-		[mapPiece(6), mapPiece(6), mapPiece(6), mapPiece(6), mapPiece(6), mapPiece(6)],
-		[mapPiece(7), mapPiece(7), mapPiece(7), mapPiece(7), mapPiece(7), mapPiece(7)],
-		[mapPiece(8), mapPiece(8), mapPiece(8), mapPiece(8), mapPiece(8), mapPiece(8)],
-	],
+	map: [],
 	paths: {},
 	saveNum: 0,
 }, actionTimer = -1, notif = [-1, 0, "", 0], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "map") && game.select[1], menuLocation = "title";
@@ -371,7 +349,7 @@ function selection() {
 		return;
 	};
 	// map
-	if (game.select[0] == "in_map" && game.state == "battle_fin") {
+	if (game.select[0] == "in_map" && game.state == "event_fin") {
 		if (action == "up" && game.mapSelect == "exit") {
 			game.mapOn = game.paths[game.location].length - 1;
 			game.mapSelect = game.paths[game.location][game.mapOn];
@@ -788,7 +766,7 @@ function manageGameplay() {
 	if (game.state == "battle" && !game.enemies.length) {
 		endTurn();
 		game.select = ["rewards", 0];
-		game.state = "battle_fin";
+		game.state = "event_fin";
 		game.turn = "none";
 		game.rewards = [];
 		if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
@@ -798,15 +776,25 @@ function manageGameplay() {
 	};
 	// load floor
 	let place = game.location.split(", ");
-	if (game.state == "enter" && (game.location == "-1" || game.map[place[0]][place[1]][0] == "battle")) {
-		if (game.location == "-1") game.room = game.firstRoom;
-		game.enemyIndex = 0;
-		for (let index = 0; index < game.room[3].length; index++) {
-			let item = game.room[3][index].split(", ");
-			if (item[1]) game.enemies.push(new Enemy(item[0], item[1]));
-			else game.enemies.push(new Enemy(item[0]));
+	if (game.state == "enter") {
+		if (game.location == "-1" || game.map[place[0]][place[1]][0] == "battle") {
+			if (game.location == "-1") game.room = game.firstRoom;
+			game.enemyIndex = 0;
+			for (let index = 0; index < game.room[3].length; index++) {
+				let item = game.room[3][index].split(", ");
+				if (item[1]) game.enemies.push(new Enemy(item[0], item[1]));
+				else game.enemies.push(new Enemy(item[0]));
+			};
+			enterBattle();
+		} else if (game.map[place[0]][place[1]][0] == "treasure") {
+			game.map[place[0]][place[1]][3] = "open";
+			game.select = ["rewards", 0];
+			game.state = "event_fin";
+			game.rewards = [];
+			if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
+			if (game.cardRewardChoices > 0) game.rewards.push("1 card");
+			game.rewards.push("finish");
 		};
-		enterBattle();
 	};
 	// update data again
 	updateData();
@@ -905,12 +893,16 @@ const gameloop = setInterval(function() {
 			return;
 		};
 	};
-	// gameplay
-	manageGameplay();
-	// selection
-	selection();
-	// visuals
-	updateVisuals();
+	if (loaded) {
+		// gameplay
+		manageGameplay();
+		// selection
+		selection();
+		// visuals
+		updateVisuals();
+		// save
+		save();
+	};
 }, 100), musicloop = setInterval(function() {
 	let time = document.getElementById("music").currentTime;
 	if (global.options.music) {
