@@ -299,6 +299,9 @@ function selection() {
 					game.rewards[game.select[1]] += " - claimed";
 				} else if (arr[1] == "card") {
 					game.select = ["card_rewards", 0];
+				} else if (arr[1] == "health") {
+					game.health += +arr[0];
+					game.rewards[game.select[1]] += " - claimed";
 				} else if (item == "finish") {
 					let bool = false;
 					for (let index = 0; index < game.rewards.length; index++) {
@@ -763,6 +766,7 @@ function manageGameplay() {
 	updateData();
 	// actions
 	if (game.turn == "player" && menuLocation == "none") playerTurn();
+	// end battle
 	if (game.state == "battle" && !game.enemies.length) {
 		endTurn();
 		game.select = ["rewards", 0];
@@ -771,6 +775,7 @@ function manageGameplay() {
 		game.rewards = [];
 		if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
 		if (game.cardRewardChoices > 0) game.rewards.push("1 card");
+		if (game.room[0] == "battle_prime") game.rewards.push((game.maxHealth * 0.9) + " health");
 		game.rewards.push("finish");
 		if (game.artifacts.includes("iron will")) game.health += 2;
 	};
