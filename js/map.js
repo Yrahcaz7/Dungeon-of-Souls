@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-var death_zones = 0;
+var death_zones = 0, rowFalses = 0, rowNodes = 0;
 
 function weaker(row) {
 	return ", " + Math.round(0.5 + (row * 0.05), 2);
@@ -26,8 +26,11 @@ function mapPiece(row, attribute = "none") {
 	if (attribute == "treasure") return ["treasure", randomInt(-5, 5), randomInt(-5, 5), "closed", randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
 	if (attribute == "prime") return ["battle_prime", 0, 0, ["slime_small" + weaker(row), "slime_prime", "slime_small" + weaker(row)], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
 	let type = chance(3/5)?"battle":false;
+	if (type) rowNodes++;
+	else rowFalses++;
+	if (rowFalses >= 5) type = "battle";
+	else if (!type || rowNodes == 6) return false;
 	let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
-	if (!type) return false;
 	if (type == "battle") {
 		if (row >= 5) result.push(chance()?["slime_big"]:(chance(7/10)?["slime_big", "slime_small" + weaker(row)]:["slime_small", "slime_small"]));
 		else result.push(chance()?["slime_big"]:["slime_small", "slime_small" + weaker(row)]);
@@ -36,10 +39,19 @@ function mapPiece(row, attribute = "none") {
 	return result;
 };
 
-function pathHasSpecial(coords = "") {
+function pathHasSpecial(coords = "", front = false) {
 	const entries = Object.entries(game.paths);
 	let boolean = false;
-	const looping = (location = "", first = false) => {
+	const looping = front ? (location = "", first = false) => {
+		let loc = location.split(", ");
+		if (!first && game.map[loc[0]] && (game.map[loc[0]][loc[1]][0] == "treasure" || game.map[loc[0]][loc[1]][0] == "battle_prime")) {
+			boolean = true;
+			return;
+		};
+		for (let index = 0; index < game.paths[location].length; index++) {
+			if (game.paths[game.paths[location][index]]) looping(game.paths[location][index]);
+		};
+	} : (location = "", first = false) => {
 		let loc = location.split(", ");
 		if (!first && game.map[loc[0]] && (game.map[loc[0]][loc[1]][0] == "treasure" || game.map[loc[0]][loc[1]][0] == "battle_prime")) {
 			boolean = true;
@@ -55,20 +67,11 @@ function pathHasSpecial(coords = "") {
 	return boolean;
 };
 
-function checkRow(row, arr = []) {
-	let falses = 0;
-	for (let index = 0; index < arr.length; index++) {
-		if (!arr[index]) falses++;
-	};
-	if (falses >= 5 || falses == 0) {
-		return checkRow(row, [mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row)]);
-	};
-	return arr;
-};
-
 function mapRow(row) {
+	rowFalses = 0;
+	rowNodes = 0;
 	if (row === 0) return [false, mapPiece(1), mapPiece(1), mapPiece(1), mapPiece(1), false];
-	let arr = checkRow(row, [mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row)]);
+	let arr = [mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row)];
 	if (row > 1) {
 		game.map.push(arr);
 		mapGraphics(true);
@@ -108,6 +111,35 @@ function generateMap() {
 	death_zones = 0;
 	for (let index = 0; index < 8; index++) {
 		game.map.push(mapRow(index));
+	};
+	if (death_zones === 0) {
+		let rand = randomInt(0, 5), past = [];
+		while (!(past.includes(0) && past.includes(1) && past.includes(2) && past.includes(3) && past.includes(4) && past.includes(5))) {
+			if (game.map[2][rand] && game.map[2][rand][0] != "treasure" && !pathHasSpecial("2, " + rand, true)) {
+				game.map[2][rand] = mapPiece(2, "prime");
+				death_zones++;
+				break;
+			} else {
+				if (!past.includes(rand)) past.push(rand);
+				rand = randomInt(0, 5);
+				if (past.includes(rand)) rand = randomInt(0, 5);
+			};
+		};
+		if (death_zones === 0) {
+			rand = randomInt(0, 5);
+			past = [];
+			while (!(past.includes(0) && past.includes(1) && past.includes(2) && past.includes(3) && past.includes(4) && past.includes(5))) {
+				if (game.map[3][rand] && game.map[3][rand][0] == "treasure" && !pathHasSpecial("3, " + rand, true)) {
+					game.map[3][rand] = mapPiece(3, "prime");
+					death_zones++;
+					break;
+				} else {
+					if (!past.includes(rand)) past.push(rand);
+					rand = randomInt(0, 5);
+					if (past.includes(rand)) rand = randomInt(0, 5);
+				};
+			};
+		};
 	};
 	mapGraphics(true);
 };
