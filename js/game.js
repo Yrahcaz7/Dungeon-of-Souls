@@ -777,7 +777,7 @@ function manageGameplay() {
 	// load floor
 	let place = game.location.split(", ");
 	if (game.state == "enter") {
-		if (game.location == "-1" || game.map[place[0]][place[1]][0] == "battle") {
+		if (game.location == "-1" || game.map[place[0]][place[1]][0] == "battle" || game.map[place[0]][place[1]][0] == "battle_prime") {
 			if (game.location == "-1") game.room = game.firstRoom;
 			game.enemyIndex = 0;
 			for (let index = 0; index < game.room[3].length; index++) {

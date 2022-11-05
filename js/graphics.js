@@ -920,6 +920,10 @@ function mapGraphics(onlyCalc = false) {
 					draw.image(map.battle, drawX, drawY);
 					if (x == coordSel[0] && y == coordSel[1]) draw.image(select.battle, drawX - 1, drawY - 1);
 					if (x == coordOn[0] && y == coordOn[1]) draw.image(select.battle_blue, drawX - 1, drawY - 1);
+				} else if (game.map[x][y][0] == "battle_prime") {
+					draw.image(map.death_zone, drawX, drawY);
+					if (x == coordSel[0] && y == coordSel[1]) draw.image(select.death_zone, drawX - 1, drawY - 1);
+					if (x == coordOn[0] && y == coordOn[1]) draw.image(select.death_zone_blue, drawX - 1, drawY - 1);
 				} else if (game.map[x][y][0] == "treasure") {
 					if (game.map[x][y][3] == "open") {
 						draw.image(map.treasure_open, drawX, drawY);

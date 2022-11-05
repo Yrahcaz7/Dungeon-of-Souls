@@ -31,6 +31,7 @@ class Enemy {
 			return;
 		};
 		if (type == "slime_small") power--;
+		if (("" + type).includes("prime")) power++;
 		power += game.floor * 0.05;
 		this.type = type;
 		this.maxHealth = Math.round(((Math.random() / 10) + 0.95) * ((power * 10) + 20));

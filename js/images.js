@@ -96,6 +96,8 @@ const player = {
 	treasure: new Image,
 	treasure_blue: new Image,
 	treasure_open_blue: new Image,
+	death_zone: new Image,
+	death_zone_blue: new Image,
 	iron_will: new Image,
 	selector: [new Image, new Image, new Image, new Image],
 	item: new Image,
@@ -128,6 +130,7 @@ const player = {
 	battle: new Image,
 	treasure: new Image,
 	treasure_open: new Image,
+	death_zone: new Image,
 	select: new Image,
 	select_first: new Image,
 }, rewards = {
@@ -170,7 +173,7 @@ for (const image in card.outline) {
 // card rarities
 card.rarity.rare.src = "images/cards/rarity/rare.png";
 
-// slimes
+// enemies
 for (const folder in enemy) {
 	if (Object.hasOwnProperty.call(enemy, folder)) {
 		for (const image in enemy[folder]) {
