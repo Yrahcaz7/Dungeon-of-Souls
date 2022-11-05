@@ -55,9 +55,20 @@ function pathHasSpecial(coords = "") {
 	return boolean;
 };
 
+function checkRow(row, arr = []) {
+	let falses = 0;
+	for (let index = 0; index < arr.length; index++) {
+		if (!arr[index]) falses++;
+	};
+	if (falses >= 5 || falses == 0) {
+		return checkRow(row, [mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row)]);
+	};
+	return arr;
+};
+
 function mapRow(row) {
 	if (row === 0) return [false, mapPiece(1), mapPiece(1), mapPiece(1), mapPiece(1), false];
-	let arr = [mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row)];
+	let arr = checkRow(row, [mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row)]);
 	if (row > 1) {
 		game.map.push(arr);
 		mapGraphics(true);
@@ -98,22 +109,5 @@ function generateMap() {
 	for (let index = 0; index < 8; index++) {
 		game.map.push(mapRow(index));
 	};
-	while (checkMap()) {
-		checkMap();
-	};
 	mapGraphics(true);
-};
-
-function checkMap() {
-	for (let index = 0; index < game.map.length; index++) {
-		let falses = 0;
-		for (let ind2 = 0; ind2 < game.map[index].length; ind2++) {
-			if (!game.map[index][ind2]) falses++;
-		};
-		if (falses >= 5 || falses == 0) {
-			generateMap();
-			return true;
-		};
-	};
-	return false;
 };
