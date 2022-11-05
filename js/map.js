@@ -77,28 +77,30 @@ function mapRow(row) {
 		mapGraphics(true);
 		game.map.pop();
 		let rand = randomInt(0, 5), past = [];
-		while (!(past.includes(0) && past.includes(1) && past.includes(2) && past.includes(3) && past.includes(4) && past.includes(5))) {
+		const setRand = () => {
+			rand = randomInt(0, 5);
+			if (past.includes(rand)) setRand();
+		};
+		while (past.length < 6) {
 			if (arr[rand] && !pathHasSpecial(row + ", " + rand)) {
 				arr[rand] = mapPiece(row, "treasure");
 				break;
 			} else {
 				if (!past.includes(rand)) past.push(rand);
-				rand = randomInt(0, 5);
-				if (past.includes(rand)) rand = randomInt(0, 5);
+				if (past.length < 6) setRand();
 			};
 		};
 		if (row >= 3 && death_zones < 2) {
 			rand = randomInt(0, 5);
 			past = [];
-			while (!(past.includes(0) && past.includes(1) && past.includes(2) && past.includes(3) && past.includes(4) && past.includes(5))) {
+			while (past.length < 6) {
 				if (arr[rand] && arr[rand][0] != "treasure" && !pathHasSpecial(row + ", " + rand)) {
 					arr[rand] = mapPiece(row, "prime");
 					death_zones++;
 					break;
 				} else {
 					if (!past.includes(rand)) past.push(rand);
-					rand = randomInt(0, 5);
-					if (past.includes(rand)) rand = randomInt(0, 5);
+					if (past.length < 6) setRand();
 				};
 			};
 		};
@@ -114,29 +116,31 @@ function generateMap() {
 	};
 	if (death_zones === 0) {
 		let rand = randomInt(0, 5), past = [];
-		while (!(past.includes(0) && past.includes(1) && past.includes(2) && past.includes(3) && past.includes(4) && past.includes(5))) {
+		const setRand = () => {
+			rand = randomInt(0, 5);
+			if (past.includes(rand)) setRand();
+		};
+		while (past.length < 6) {
 			if (game.map[2][rand] && game.map[2][rand][0] != "treasure" && !pathHasSpecial("2, " + rand, true)) {
 				game.map[2][rand] = mapPiece(2, "prime");
 				death_zones++;
 				break;
 			} else {
 				if (!past.includes(rand)) past.push(rand);
-				rand = randomInt(0, 5);
-				if (past.includes(rand)) rand = randomInt(0, 5);
+				if (past.length < 6) setRand();
 			};
 		};
 		if (death_zones === 0) {
 			rand = randomInt(0, 5);
 			past = [];
-			while (!(past.includes(0) && past.includes(1) && past.includes(2) && past.includes(3) && past.includes(4) && past.includes(5))) {
+			while (past.length < 6) {
 				if (game.map[3][rand] && game.map[3][rand][0] == "treasure" && !pathHasSpecial("3, " + rand, true)) {
 					game.map[3][rand] = mapPiece(3, "prime");
 					death_zones++;
 					break;
 				} else {
 					if (!past.includes(rand)) past.push(rand);
-					rand = randomInt(0, 5);
-					if (past.includes(rand)) rand = randomInt(0, 5);
+					if (past.length < 6) setRand();
 				};
 			};
 		};
