@@ -53,6 +53,10 @@ class Enemy {
 			};
 			if (this.type == "slime_big") startAnim.enemy(game.enemyNum, "slime_ball");
 			else if (this.type == "slime_small") startAnim.enemy(game.enemyNum, "slime_small_launch");
+			else if (this.type == "slime_prime") {
+				this.middleAction(); // teporary
+				this.finishAction(); // teporary
+			};
 		} else if (this.intent == "defend") {
 			this.middleAction(); // teporary
 		};

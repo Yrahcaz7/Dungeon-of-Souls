@@ -56,6 +56,8 @@ const player = {
 		slime_ball: new Image,
 		small: new Image,
 		small_launch: new Image,
+		to_prime: new Image,
+		prime: new Image,
 	},
 }, background = {
 	cave: new Image,
