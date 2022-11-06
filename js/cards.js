@@ -19,36 +19,43 @@ const cards = { // card attributes format: [type, ...special];
 	"aura blade": {
 		desc: "Gain 1 aura blade.",
 		attributes: ["magic"],
+		rarity: "common",
 		cost: 1,
 	},
 	"block": {
 		desc: "Gain 4 shield.",
 		attributes: ["defense"],
+		rarity: "starter",
 		cost: 1,
 	},
 	"error": {
 		desc: "Unplayable.",
 		attributes: ["error", "unplayable"],
+		rarity: "error",
 		cost: 0,
 	},
 	"everlasting shield": {
 		desc: "Gain 3 reinforces.",
 		attributes: ["defense"],
+		rarity: "rare",
 		cost: 2,
 	},
 	"reinforce": {
 		desc: "Gain 1 shield and\n1 reinforce.",
 		attributes: ["defense"],
+		rarity: "common",
 		cost: 1,
 	},
 	"slash": {
 		desc: "Deal 5 damage.",
 		attributes: ["attack"],
+		rarity: "starter",
 		cost: 1,
 	},
 	"war cry": {
 		desc: "All enemies (except\nbosses) switch\ntheir intents to\ndefense.",
 		attributes: ["skill"],
+		rarity: "common",
 		cost: 1,
 	},
 };
@@ -57,23 +64,12 @@ class Card {
 	constructor(name, level = 0) {
 		if (cards[name] === undefined) name = "error";
 		this.name = name;
-		this.rarity = "";
 		this.level = level;
 		this.order = -1;
-		// rarity
-		if (Object.keys(card.starter).includes(name)) {
-			this.rarity = "starter";
-		} else if (Object.keys(card.common).includes(name)) {
-			this.rarity = "common";
-		} else if (Object.keys(card.rare).includes(name)) {
-			this.rarity = "rare";
-		} else {
-			this.rarity = "error";
-		};
 		// order
-		if (this.rarity == "starter") this.order = 2;
-		else if (this.rarity == "common") this.order = 1;
-		else if (this.rarity == "rare") this.order = 0;
+		if (cards[name].rarity == "starter") this.order = 2;
+		else if (cards[name].rarity == "common") this.order = 1;
+		else if (cards[name].rarity == "rare") this.order = 0;
 		else this.order = -1;
 	};
 };
