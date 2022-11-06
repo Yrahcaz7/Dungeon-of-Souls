@@ -723,17 +723,24 @@ function target() {
 	if (game.select[0] == "map") {
 		info("the map");
 	} else if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") {
-		let enemyType = game.enemies[game.select[1]].type;
+		const enemy = game.enemies[game.select[1]];
+		const enemyType = enemy.type;
 		let pos = game.enemyPos[game.select[1]];
 		if (enemyType == "slime_small") {
 			draw.selector(pos[0] + 19, pos[1] + 35, 26, 29);
 			draw.lore(pos[0] + 31, pos[1] + 27.5, "small slime", {"color": "white", "text-align": "center", "text-small": true});
+			if (game.select[1] == 0 && game.enemies.length > 1) draw.lore(pos[0] + 13.5, pos[1] + 33, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-align": "left", "text-small": true});
+			else draw.lore(pos[0] + 48, pos[1] + 33, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-small": true});
 		} else if (enemyType == "slime_big" || (enemyType == "slime_prime" && primeAnim != -1 && primeAnim < 5)) {
 			draw.selector(pos[0] + 5, pos[1] + 25, 54, 39);
 			draw.lore(pos[0] + 31, pos[1] + 17.5, "big slime", {"color": "white", "text-align": "center", "text-small": true});
+			if (game.select[1] == 0 && game.enemies.length > 1) draw.lore(pos[0] - 0.5, pos[1] + 23, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-align": "left", "text-small": true});
+			else draw.lore(pos[0] + 62, pos[1] + 23, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-small": true});
 		} else if (enemyType == "slime_prime") {
 			draw.selector(pos[0], pos[1] + 5, 63, 59);
 			draw.lore(pos[0] + 31, pos[1] - 2.5, "prime slime", {"color": "white", "text-align": "center", "text-small": true});
+			if (game.select[1] == 0 && game.enemies.length > 1) draw.lore(pos[0] - 5.5, pos[1] + 3, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-align": "left", "text-small": true});
+			else draw.lore(pos[0] + 66, pos[1] + 3, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-small": true});
 		};
 	} else if (game.select[0] == "lookat_you") {
 		let coor = [60, 72, 20, 39];

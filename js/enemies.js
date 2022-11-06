@@ -41,7 +41,7 @@ class Enemy {
 		this.attackPower = Math.round(((power / 2) + 1) * 5 - 0.25);
 		this.defendPower = Math.round(((power / 2) + 1) * 5 + 1);
 		this.reinforces = 0;
-		this.intent = (chance(3/5))?"attack":"defend";
+		this.intent = chance(3/5)?"attack":"defend";
 		this.intentHistory = [this.intent];
 		game.enemyIndex++;
 	};
