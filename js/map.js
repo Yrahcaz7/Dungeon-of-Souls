@@ -26,10 +26,10 @@ function mapPiece(row, attribute = "none") {
 	if (attribute == "treasure") return ["treasure", randomInt(-5, 5), randomInt(-5, 5), "closed", randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
 	if (attribute == "prime") return ["battle_prime", 0, 0, ["slime_small" + weaker(row), "slime_prime", "slime_small" + weaker(row)], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
 	let type = chance(3/5)?"battle":false;
+	if (rowFalses >= 5 || (row == 0 && rowFalses >= 2)) type = "battle";
 	if (type) rowNodes++;
 	else rowFalses++;
-	if (rowFalses >= 5) type = "battle";
-	else if (!type || rowNodes == 6) return false;
+	if (!type || rowNodes == 6) return false;
 	let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
 	if (type == "battle") {
 		if (row >= 5) result.push(chance()?["slime_big"]:(chance(7/10)?["slime_big", "slime_small" + weaker(row)]:["slime_small", "slime_small"]));
@@ -70,7 +70,7 @@ function pathHasSpecial(coords = "", front = false) {
 function mapRow(row) {
 	rowFalses = 0;
 	rowNodes = 0;
-	if (row === 0) return [false, mapPiece(1), mapPiece(1), mapPiece(1), mapPiece(1), false];
+	if (row === 0) return [false, mapPiece(0), mapPiece(0), mapPiece(0), mapPiece(0), false];
 	let arr = [mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row)];
 	if (row > 1) {
 		game.map.push(arr);
