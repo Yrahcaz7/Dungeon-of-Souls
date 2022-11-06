@@ -55,10 +55,9 @@ const cards = { // card attributes format: [type, ...special];
 
 class Card {
 	constructor(name, level = 0) {
-		if (cards[name] === undefined) name = "error"
+		if (cards[name] === undefined) name = "error";
 		this.name = name;
 		this.rarity = "";
-		this.type = cards[name].attributes[0];
 		this.level = level;
 		this.order = -1;
 		// rarity
@@ -87,10 +86,10 @@ Array.prototype.cardSort = function() {
 		if (a.order > b.order) {
 			return 1;
 		};
-		if (a.type < b.type) {
+		if (cards[a.name].attributes[0] < cards[b.name].attributes[0]) {
 			return -1;
 		};
-		if (a.type > b.type) {
+		if (cards[a.name].attributes[0] > cards[b.name].attributes[0]) {
 			return 1;
 		};
 		if (a.name < b.name) {

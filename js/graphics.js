@@ -233,11 +233,12 @@ const draw = {
 		else if (cardObject.rarity == "common") img = card.common[cardObject.name];
 		else if (cardObject.rarity == "rare") img = card.rare[cardObject.name];
 		if (cardObject.name != "error") draw.image(card.back, x + 2, y + 2);
-		if (cardObject.type == "attack") draw.image(card.outline.attack, x + 3, y + 3);
-		else if (cardObject.type == "curse") draw.image(card.outline.curse, x + 3, y + 3);
-		else if (cardObject.type == "defense") draw.image(card.outline.defense, x + 3, y + 3);
-		else if (cardObject.type == "skill") draw.image(card.outline.skill, x + 3, y + 3);
-		else if (cardObject.type == "magic") draw.image(card.outline.magic, x + 3, y + 3);
+		const type = cards[cardObject.name].attributes[0];
+		if (type == "attack") draw.image(card.outline.attack, x + 3, y + 3);
+		else if (type == "curse") draw.image(card.outline.curse, x + 3, y + 3);
+		else if (type == "defense") draw.image(card.outline.defense, x + 3, y + 3);
+		else if (type == "skill") draw.image(card.outline.skill, x + 3, y + 3);
+		else if (type == "magic") draw.image(card.outline.magic, x + 3, y + 3);
 		if (selected) {
 			if (cards[cardObject.name].attributes.includes("unplayable")) {
 				if (cardObject.rarity == "rare") draw.image(select.card_rare_unplayable, x - 3, y - 3);
@@ -261,7 +262,7 @@ const draw = {
 			});
 		};
 		draw.lore(x + 6, y + 55, desc, {"text-small": true});
-		draw.lore(x + 33, y + 89.5, cardObject.rarity + "|" + cardObject.type, {"text-align": "center", "text-small": true});
+		draw.lore(x + 33, y + 89.5, cardObject.rarity + "|" + type, {"text-align": "center", "text-small": true});
 		if (cardObject.rarity == "rare") {
 			draw.image(card.rarity.rare, x - 2, y - 2);
 		};

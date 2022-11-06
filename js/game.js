@@ -211,7 +211,7 @@ function playerTurn() {
 				if (game.prevCard) game.select = ["hand", game.prevCard - 1];
 				else game.select = ["hand", 0];
 				actionTimer = 2;
-			} else if (selected.type == "attack") {
+			} else if (cards[name].attributes[0] == "attack") {
 				game.activeCard = game.select[1];
 				game.select = ["attack_enemy", game.enemies.length - 1];
 				game.enemyAtt = game.hand[game.activeCard];
