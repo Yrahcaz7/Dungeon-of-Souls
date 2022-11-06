@@ -28,7 +28,7 @@ const cards = { // card attributes format: [type, ...special];
 	},
 	"error": {
 		desc: "Unplayable.",
-		attributes: ["curse", "unplayable"],
+		attributes: ["error", "unplayable"],
 		cost: 0,
 	},
 	"everlasting shield": {
@@ -55,16 +55,12 @@ const cards = { // card attributes format: [type, ...special];
 
 class Card {
 	constructor(name, level = 0) {
+		if (cards[name] === undefined) name = "error"
 		this.name = name;
 		this.rarity = "";
-		this.type = cards[name]?cards[name].attributes[0]:"error";
+		this.type = cards[name].attributes[0];
 		this.level = level;
 		this.order = -1;
-		// error
-		if (this.type == "error") {
-			name = "error";
-			this.name = "error";
-		};
 		// rarity
 		if (Object.keys(card.starter).includes(name)) {
 			this.rarity = "starter";
