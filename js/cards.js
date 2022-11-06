@@ -57,13 +57,11 @@ class Card {
 	constructor(name, level = 0) {
 		this.name = name;
 		this.rarity = "";
-		this.type = cards[name].attributes[0];
-		this.energyCost = cards[name].cost;
+		this.type = cards[name]?cards[name].attributes[0]:"error";
 		this.level = level;
-		this.unplayable = cards[name].attributes.includes("unplayable");
 		this.order = -1;
 		// error
-		if (!Object.keys(card.starter).includes(name) && !Object.keys(card.common).includes(name) && !Object.keys(card.rare).includes(name)) {
+		if (this.type == "error") {
 			name = "error";
 			this.name = "error";
 		};

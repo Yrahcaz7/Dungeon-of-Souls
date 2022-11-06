@@ -232,7 +232,6 @@ const draw = {
 		if (cardObject.rarity == "starter") img = card.starter[cardObject.name];
 		else if (cardObject.rarity == "common") img = card.common[cardObject.name];
 		else if (cardObject.rarity == "rare") img = card.rare[cardObject.name];
-		else console.error("card " + index + " is invalid rarity: \"" + cardObject.rarity + "\" or name: \"" + cardObject.name + "\"");
 		if (cardObject.name != "error") draw.image(card.back, x + 2, y + 2);
 		if (cardObject.type == "attack") draw.image(card.outline.attack, x + 3, y + 3);
 		else if (cardObject.type == "curse") draw.image(card.outline.curse, x + 3, y + 3);
@@ -240,7 +239,7 @@ const draw = {
 		else if (cardObject.type == "skill") draw.image(card.outline.skill, x + 3, y + 3);
 		else if (cardObject.type == "magic") draw.image(card.outline.magic, x + 3, y + 3);
 		if (selected) {
-			if (cardObject.unplayable) {
+			if (cards[cardObject.name].attributes.includes("unplayable")) {
 				if (cardObject.rarity == "rare") draw.image(select.card_rare_unplayable, x - 3, y - 3);
 				else draw.image(select.card_unplayable, x + 1, y + 1);
 			} else {
@@ -266,9 +265,9 @@ const draw = {
 		if (cardObject.rarity == "rare") {
 			draw.image(card.rarity.rare, x - 2, y - 2);
 		};
-		if (!cardObject.unplayable) {
+		if (!cards[cardObject.name].attributes.includes("unplayable")) {
 			draw.image(card.energy, x, y);
-			draw.lore(x + 4, y + 2, cardObject.energyCost);
+			draw.lore(x + 4, y + 2, cards[cardObject.name].cost);
 		};
 	},
 	textBox(x, y, width, string, style = {"color": "black", "text-align": "right", "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {

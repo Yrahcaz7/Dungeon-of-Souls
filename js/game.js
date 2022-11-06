@@ -179,11 +179,11 @@ function playerTurn() {
 	// play card
 	if (action == "enter" && game.select[0] == "hand") {
 		let selected = game.hand[game.select[1]], name = selected.name;
-		if (selected.unplayable) {
+		if (cards[name].attributes.includes("unplayable")) {
 			if (game.hand[game.select[1]].rarity == "rare") notif = [game.select[1], 0, "unplayable", -2];
 			else notif = [game.select[1], 0, "unplayable", 0];
 			actionTimer = 1;
-		} else if (game.energy >= selected.energyCost) {
+		} else if (game.energy >= cards[name].cost) {
 			let activate = true;
 			// effects of cards that activate right away
 			if (name == "block") {
@@ -205,7 +205,7 @@ function playerTurn() {
 				activate = false;
 			};
 			if (activate) {
-				game.energy -= selected.energyCost;
+				game.energy -= cards[name].cost;
 				game.discard.push(game.hand[game.select[1]]);
 				game.hand.splice(game.select[1], 1);
 				if (game.prevCard) game.select = ["hand", game.prevCard - 1];
@@ -630,7 +630,7 @@ function selection() {
 		let confirm = false;
 		if (game.hand.length >= 1) {
 			for (let index = 0; index < game.hand.length; index++) {
-				if (game.hand[index].energyCost <= game.energy) {
+				if (cards[game.hand[index].name].cost <= game.energy) {
 					confirm = true;
 					break;
 				};
