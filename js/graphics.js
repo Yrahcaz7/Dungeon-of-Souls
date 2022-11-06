@@ -15,7 +15,8 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, "none", "normal", -1], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], invNum = -1, popups = [], infPos = 0, infLimit = 0;
+var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, "none", "normal", -1], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], primeAnim = 0;
+var invNum = -1, popups = [], infPos = 0, infLimit = 0;
 
 const draw = {
 	// basic - first order
@@ -458,6 +459,10 @@ function enemyGraphics() {
 	};
 	for (let index = 0; index < game.enemies.length; index++) {
 		let select = game.enemies[index], pos = game.enemyPos[index];
+		draw.bars(pos[0], pos[1], select.health, select.maxHealth, select.shield, select.maxShield);
+	};
+	for (let index = 0; index < game.enemies.length; index++) {
+		let select = game.enemies[index], pos = game.enemyPos[index];
 		if (select.health <= 0) {
 			game.enemies.splice(index, 1);
 			if (tempAnim[3] >= index) tempAnim[3]--;
@@ -475,10 +480,20 @@ function enemyGraphics() {
 				draw.imageSector(enemy.slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
 			} else if (select.type == "slime_small") {
 				draw.imageSector(enemy.slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
+			} else if (select.type == "slime_prime") {
+				if (primeAnim == -1) {
+					draw.imageSector(enemy.slime.prime, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1, 64, 64);
+				} else {
+					draw.imageSector(enemy.slime.to_prime, Math.floor(primeAnim) * 64, 0, 64, 64, pos[0], pos[1] + 1, 64, 64);
+					primeAnim += (Math.random() + 0.5) * 0.1;
+					if (primeAnim >= 12) {
+						primeAnim = -1;
+						enemyAnim[index] = 0;
+					};
+				};
 			};
 		};
 		enemyAnim[index] += (Math.random() + 0.5) * 0.1;
-		draw.bars(pos[0], pos[1], select.health, select.maxHealth, select.shield, select.maxShield);
 	};
 	if (tempAnim[3] != -1) {
 		let pos = game.enemyPos[tempAnim[3]];
@@ -528,6 +543,22 @@ function enemyGraphics() {
 				game.enemyStage = "pending";
 			};
 			invNum = tempAnim[3];
+		} else if (tempAnim[1] == "slime_prime_fist") {
+			if (tempAnim[0] >= 4) {
+				let phase = ((tempAnim[0] - 4) / 10), posX = Math.round(((pos[0] - 68) - 40) * phase);
+				draw.imageSector(enemy.slime.prime_fist, 4 * 36, 0, 36, 18, pos[0] - 32 - posX, 80, 36, 18);
+			} else draw.imageSector(enemy.slime.prime_fist, Math.floor(tempAnim[0]) * 36, 0, 36, 18, pos[0] - 32, 80, 36, 18);
+			tempAnim[0]++;
+			if (game.enemyStage == "middle") {
+				tempAnim = [0, "none", "normal", -1];
+				enemyAnim[tempAnim[3]] = 0;
+				game.enemyStage = "end";
+			} else if (tempAnim[0] >= 14) {
+				tempAnim[0] = 14;
+				game.enemyStage = "middle";
+			} else {
+				game.enemyStage = "pending";
+			};
 		} else invNum = -1;
 	};
 	for (let index = 0; index < game.enemies.length; index++) {
@@ -535,10 +566,11 @@ function enemyGraphics() {
 		if (starAnim[index] >= 4) starAnim[index] = 0;
 		if (index !== tempAnim[3] && (game.turn == "player" || game.enemyNum !== index)) {
 			let y = Math.round(pos[1] + Math.abs(starAnim[index] - 2));
-			if (select.type == "slime_big") {
-				y -= 17;
-			} else if (select.type == "slime_small") {
-				y -= 7;
+			if (select.type == "slime_big") y -= 17;
+			else if (select.type == "slime_small") y -= 7;
+			else if (select.type == "slime_prime") {
+				if (primeAnim == -1 || primeAnim >= 5) y -= 37;
+				else y -= 17;
 			};
 			if (game.enemies[index].intent == "defend") {
 				draw.intent(pos[0] + 16, y, game.enemies[index].defendPower, "defend");
@@ -696,14 +728,17 @@ function target() {
 	if (game.select[0] == "map") {
 		info("the map");
 	} else if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") {
-		enemyType = game.enemies[game.select[1]].type;
-		pos = game.enemyPos[game.select[1]];
+		let enemyType = game.enemies[game.select[1]].type;
+		let pos = game.enemyPos[game.select[1]];
 		if (enemyType == "slime_small") {
 			draw.selector(pos[0] + 19, pos[1] + 35, 26, 29);
 			draw.lore(pos[0] + 31, pos[1] + 27.5, "small slime", {"color": "white", "text-align": "center", "text-small": true});
-		} else if (enemyType == "slime_big") {
+		} else if (enemyType == "slime_big" || (enemyType == "slime_prime" && primeAnim != -1 && primeAnim < 5)) {
 			draw.selector(pos[0] + 5, pos[1] + 25, 54, 39);
 			draw.lore(pos[0] + 31, pos[1] + 17.5, "big slime", {"color": "white", "text-align": "center", "text-small": true});
+		} else if (enemyType == "slime_prime") {
+			draw.selector(pos[0], pos[1] + 5, 63, 59);
+			draw.lore(pos[0] + 31, pos[1] - 2.5, "prime slime", {"color": "white", "text-align": "center", "text-small": true});
 		};
 	} else if (game.select[0] == "lookat_you") {
 		let coor = [60, 72, 20, 39];
@@ -920,6 +955,10 @@ function mapGraphics(onlyCalc = false) {
 					draw.image(map.battle, drawX, drawY);
 					if (x == coordSel[0] && y == coordSel[1]) draw.image(select.battle, drawX - 1, drawY - 1);
 					if (x == coordOn[0] && y == coordOn[1]) draw.image(select.battle_blue, drawX - 1, drawY - 1);
+				} else if (game.map[x][y][0] == "battle_prime") {
+					draw.image(map.death_zone, drawX, drawY);
+					if (x == coordSel[0] && y == coordSel[1]) draw.image(select.death_zone, drawX - 1, drawY - 1);
+					if (x == coordOn[0] && y == coordOn[1]) draw.image(select.death_zone_blue, drawX - 1, drawY - 1);
 				} else if (game.map[x][y][0] == "treasure") {
 					if (game.map[x][y][3] == "open") {
 						draw.image(map.treasure_open, drawX, drawY);

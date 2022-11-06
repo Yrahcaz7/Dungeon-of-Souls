@@ -15,27 +15,46 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+var death_zones = 0, rowFalses = 0, rowNodes = 0;
+
+function weaker(row) {
+	return ", " + Math.round(0.5 + (row * 0.05), 2);
+};
+
 function mapPiece(row, attribute = "none") {
 	if (attribute == "1stbattle") return ["battle", 0, 0, ["slime_small"], randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5)];
 	if (attribute == "treasure") return ["treasure", randomInt(-5, 5), randomInt(-5, 5), "closed", randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
-	let type = chance()?"battle":false;
+	if (attribute == "prime") return ["battle_prime", 0, 0, ["slime_small" + weaker(row), "slime_prime", "slime_small" + weaker(row)], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
+	let type = chance(3/5)?"battle":false;
+	if (type) rowNodes++;
+	else rowFalses++;
+	if (rowFalses >= 5) type = "battle";
+	else if (!type || rowNodes == 6) return false;
 	let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
-	if (!type) return false;
 	if (type == "battle") {
-		if (row >= 5) result.push(chance()?["slime_big"]:(chance(7/10)?["slime_big", "slime_small, " + Math.round(0.5 + (row * 0.05), 2)]:["slime_small", "slime_small, " + Math.round(0.75 + (row * 0.05), 2)]));
-		else result.push(chance()?["slime_big"]:["slime_small", "slime_small, " + Math.round(0.75 + (row * 0.05), 2)]);
+		if (row >= 5) result.push(chance()?["slime_big"]:(chance(7/10)?["slime_big", "slime_small" + weaker(row)]:["slime_small", "slime_small"]));
+		else result.push(chance()?["slime_big"]:["slime_small", "slime_small" + weaker(row)]);
 		result.push(randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5));
 	};
 	return result;
 };
 
-function pathHasTreasure(coords = "") {
+function pathHasSpecial(coords = "", front = false) {
 	const entries = Object.entries(game.paths);
-	let treasure = false;
-	const looping = (location = "", first = false) => {
+	let boolean = false;
+	const looping = front ? (location = "", first = false) => {
 		let loc = location.split(", ");
-		if (!first && game.map[loc[0]] && game.map[loc[0]][loc[1]][0] == "treasure") {
-			treasure = true;
+		if (!first && game.map[loc[0]] && (game.map[loc[0]][loc[1]][0] == "treasure" || game.map[loc[0]][loc[1]][0] == "battle_prime")) {
+			boolean = true;
+			return;
+		};
+		for (let index = 0; index < game.paths[location].length; index++) {
+			if (game.paths[game.paths[location][index]]) looping(game.paths[location][index]);
+		};
+	} : (location = "", first = false) => {
+		let loc = location.split(", ");
+		if (!first && game.map[loc[0]] && (game.map[loc[0]][loc[1]][0] == "treasure" || game.map[loc[0]][loc[1]][0] == "battle_prime")) {
+			boolean = true;
 			return;
 		};
 		for (let index = 0; index < location.length; index++) {
@@ -45,10 +64,12 @@ function pathHasTreasure(coords = "") {
 		};
 	};
 	looping(coords, true);
-	return treasure;
+	return boolean;
 };
 
 function mapRow(row) {
+	rowFalses = 0;
+	rowNodes = 0;
 	if (row === 0) return [false, mapPiece(1), mapPiece(1), mapPiece(1), mapPiece(1), false];
 	let arr = [mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row)];
 	if (row > 1) {
@@ -56,15 +77,31 @@ function mapRow(row) {
 		mapGraphics(true);
 		game.map.pop();
 		let rand = randomInt(0, 5), past = [];
-		while (!(past.includes(0) && past.includes(1) && past.includes(2) && past.includes(3) && past.includes(4) && past.includes(5))) {
-			if (pathHasTreasure(row + ", " + rand)) console.log("located treasure at: " + row + ", " + rand);
-			if (arr[rand] && !pathHasTreasure(row + ", " + rand)) {
+		const setRand = () => {
+			rand = randomInt(0, 5);
+			if (past.includes(rand)) setRand();
+		};
+		while (past.length < 6) {
+			if (arr[rand] && !pathHasSpecial(row + ", " + rand)) {
 				arr[rand] = mapPiece(row, "treasure");
 				break;
 			} else {
 				if (!past.includes(rand)) past.push(rand);
-				rand = randomInt(0, 5);
-				if (past.includes(rand)) rand = randomInt(0, 5);
+				if (past.length < 6) setRand();
+			};
+		};
+		if (row >= 3 && death_zones < 2) {
+			rand = randomInt(0, 5);
+			past = [];
+			while (past.length < 6) {
+				if (arr[rand] && arr[rand][0] != "treasure" && !pathHasSpecial(row + ", " + rand)) {
+					arr[rand] = mapPiece(row, "prime");
+					death_zones++;
+					break;
+				} else {
+					if (!past.includes(rand)) past.push(rand);
+					if (past.length < 6) setRand();
+				};
 			};
 		};
 	};
@@ -73,25 +110,40 @@ function mapRow(row) {
 
 function generateMap() {
 	game.map = [];
+	death_zones = 0;
 	for (let index = 0; index < 8; index++) {
 		game.map.push(mapRow(index));
 	};
-	while (checkMap()) {
-		checkMap();
+	if (death_zones === 0) {
+		let rand = randomInt(0, 5), past = [];
+		const setRand = () => {
+			rand = randomInt(0, 5);
+			if (past.includes(rand)) setRand();
+		};
+		while (past.length < 6) {
+			if (game.map[2][rand] && game.map[2][rand][0] != "treasure" && !pathHasSpecial("2, " + rand, true)) {
+				game.map[2][rand] = mapPiece(2, "prime");
+				death_zones++;
+				break;
+			} else {
+				if (!past.includes(rand)) past.push(rand);
+				if (past.length < 6) setRand();
+			};
+		};
+		if (death_zones === 0) {
+			rand = randomInt(0, 5);
+			past = [];
+			while (past.length < 6) {
+				if (game.map[3][rand] && game.map[3][rand][0] == "treasure" && !pathHasSpecial("3, " + rand, true)) {
+					game.map[3][rand] = mapPiece(3, "prime");
+					death_zones++;
+					break;
+				} else {
+					if (!past.includes(rand)) past.push(rand);
+					if (past.length < 6) setRand();
+				};
+			};
+		};
 	};
 	mapGraphics(true);
-};
-
-function checkMap() {
-	for (let index = 0; index < game.map.length; index++) {
-		let falses = 0;
-		for (let ind2 = 0; ind2 < game.map[index].length; ind2++) {
-			if (!game.map[index][ind2]) falses++;
-		};
-		if (falses >= 5 || falses == 0) {
-			generateMap();
-			return true;
-		};
-	};
-	return false;
 };

@@ -31,6 +31,7 @@ class Enemy {
 			return;
 		};
 		if (type == "slime_small") power--;
+		if (("" + type).includes("prime")) power++;
 		power += game.floor * 0.05;
 		this.type = type;
 		this.maxHealth = Math.round(((Math.random() / 10) + 0.95) * ((power * 10) + 20));
@@ -52,6 +53,11 @@ class Enemy {
 			};
 			if (this.type == "slime_big") startAnim.enemy(game.enemyNum, "slime_ball");
 			else if (this.type == "slime_small") startAnim.enemy(game.enemyNum, "slime_small_launch");
+			else if (this.type == "slime_prime") startAnim.enemy(game.enemyNum, "slime_prime_fist");
+			else {
+				this.middleAction();
+				this.finishAction();
+			};
 		} else if (this.intent == "defend") {
 			this.middleAction(); // teporary
 		};
