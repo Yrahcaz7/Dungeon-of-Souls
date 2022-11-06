@@ -397,38 +397,34 @@ function playerGraphics() {
 			draw.image(aura_blade, x + game.auraBladePos[blade - 1][0], y + game.auraBladePos[blade - 1][1]);
 		};
 	};
+	draw.imageSector(player[playerAnim[1]], Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 	if (playerAnim[1] == "idle") {
-		draw.imageSector(player.idle, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 10) playerAnim[0] = 0;
 	} else if (playerAnim[1] == "attack") {
-		draw.imageSector(player.attack, Math.floor(playerAnim[0]) * 120, 0, 120, 84, x, y, 120, 84);
 		playerAnim[0]++;
 		if (playerAnim[0] >= 4) playerAnim = [0, "idle"];
 	} else if (playerAnim[1] == "attack_aura") {
-		draw.imageSector(player.attack_aura, Math.floor(playerAnim[0]) * 120, 0, 120, 84, x, y, 120, 84);
 		playerAnim[0]++;
 		if (playerAnim[0] >= 4) playerAnim = [0, "idle"];
 	} else if (playerAnim[1] == "attack_2") {
-		draw.imageSector(player.attack_2, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0]++;
 		if (playerAnim[0] >= 6) playerAnim = [0, "idle"];
 	} else if (playerAnim[1] == "attack_2_aura") {
-		draw.imageSector(player.attack_2_aura, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0]++;
 		if (playerAnim[0] >= 6) playerAnim = [0, "idle"];
-	} else if (playerAnim[1] == "hit") {
-		draw.imageSector(player.hit, 0, 0, 120, 80, x, y, 120, 80);
-		playerAnim[0] += 0.25;
-		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
 	} else if (playerAnim[1] == "shield") {
-		draw.imageSector(player.shield, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 3) playerAnim[0] = 2;
 	} else if (playerAnim[1] == "shield_reinforced") {
-		draw.imageSector(player.shield_reinforced, Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 3) playerAnim[0] = 2;
+	} else if (playerAnim[1] == "hit") {
+		playerAnim[0] += 0.25;
+		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
+	} else if (playerAnim[1] == "death") {
+		playerAnim[0] += 0.5;
+		if (playerAnim[0] >= 10) playerAnim[0] = 9;
 	};
 	draw.bars(x + 22, y + 15, game.health, game.maxHealth, game.shield, game.maxShield);
 	let cutoff, energy = game.energy, percentage = energy / game.maxEnergy;

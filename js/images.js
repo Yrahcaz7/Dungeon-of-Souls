@@ -21,9 +21,10 @@ const player = {
 	attack_aura: new Image,
 	attack_2: new Image,
 	attack_2_aura: new Image,
-	hit: new Image,
 	shield: new Image,
 	shield_reinforced: new Image,
+	hit: new Image,
+	death: new Image,
 }, card = {
 	energy: new Image,
 	back: new Image,

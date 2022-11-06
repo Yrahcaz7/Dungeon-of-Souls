@@ -187,7 +187,10 @@ function updateData() {
 		if (enemy.shield > enemy.maxShield) game.enemies[a].shield = enemy.maxShield;
 	};
 	// game over
-	if (game.health === 0) game.turn = "game_over";
+	if (game.health === 0) {
+		if (playerAnim[1] != "death") startAnim.player("death");
+		game.turn = "game_over";
+	};
 	// other
 	game.deckProxy = JSON.stringify(game.deckLocal);
 	game.deck.cardSort();
