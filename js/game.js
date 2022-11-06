@@ -86,7 +86,7 @@ function musicPopups() {
 
 function enterBattle() {
 	game.state = "battle";
-	game.deckLocal = randomize(game.deck).slice(0);
+	game.deckLocal = randomize(game.deck.slice(0));
 	game.hand = [];
 	game.discard = [];
 	game.shield = 0;

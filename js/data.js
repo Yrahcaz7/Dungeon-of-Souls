@@ -150,31 +150,6 @@ function updateData() {
 	if (infPos <= 0) infPos = 0;
 	if (infLimit <= 0) infLimit = 0;
 	if (infPos >= infLimit) infPos = infLimit;
-	// cards
-	for (let index = 0; index < game.deckLocal.length; index++) {
-		let name = game.deckLocal[index].name;
-		if (game.auraBlades) {
-			game.deckLocal[index].text = cards[name].desc.replace(/([Dd]eal\s)(\d+)(\sdamage)/g, (substring, pre, number, post) => {
-				return pre + "<light-green>" + (parseInt(number) + 5 + game.auraBlades) + "</light-green>" + post;
-			});
-		} else game.deckLocal[index].text = cards[name].desc;
-	};
-	for (let index = 0; index < game.hand.length; index++) {
-		let name = game.hand[index].name;
-		if (game.auraBlades) {
-			game.hand[index].text = cards[name].desc.replace(/([Dd]eal\s)(\d+)(\sdamage)/g, (substring, pre, number, post) => {
-				return pre + "<light-green>" + (parseInt(number) + 5 + game.auraBlades) + "</light-green>" + post;
-			});
-		} else game.hand[index].text = cards[name].desc;
-	};
-	for (let index = 0; index < game.discard.length; index++) {
-		let name = game.discard[index].name;
-		if (game.auraBlades) {
-			game.discard[index].text = cards[name].desc.replace(/([Dd]eal\s)(\d+)(\sdamage)/g, (substring, pre, number, post) => {
-				return pre + "<light-green>" + (parseInt(number) + 5 + game.auraBlades) + "</light-green>" + post;
-			});
-		} else game.discard[index].text = cards[name].desc;
-	};
 	// fixes
 	if (game.health < 0) game.health = 0;
 	else if (game.health > game.maxHealth) game.health = game.maxHealth;

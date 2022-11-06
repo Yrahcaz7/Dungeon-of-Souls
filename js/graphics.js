@@ -255,7 +255,13 @@ const draw = {
 		} else {
 			draw.lore(x + 32, y + 42, cardObject.name.title(), {"text-align": "center"});
 		};
-		draw.lore(x + 6, y + 55, cardObject.text, {"text-small": true});
+		let desc = cards[cardObject.name].desc;
+		if (game.auraBlades) {
+			desc = desc.replace(/([Dd]eal\s)(\d+)(\sdamage)/g, (substring, pre, number, post) => {
+				return pre + "<light-green>" + (parseInt(number) + 5 + game.auraBlades) + "</light-green>" + post;
+			});
+		};
+		draw.lore(x + 6, y + 55, desc, {"text-small": true});
 		draw.lore(x + 33, y + 89.5, cardObject.rarity + "|" + cardObject.type, {"text-align": "center", "text-small": true});
 		if (cardObject.rarity == "rare") {
 			draw.image(card.rarity.rare, x - 2, y - 2);

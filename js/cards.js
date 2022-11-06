@@ -58,7 +58,6 @@ class Card {
 		this.name = name;
 		this.rarity = "";
 		this.type = cards[name].attributes[0];
-		this.text = cards[name].desc;
 		this.energyCost = cards[name].cost;
 		this.level = level;
 		this.unplayable = cards[name].attributes.includes("unplayable");
