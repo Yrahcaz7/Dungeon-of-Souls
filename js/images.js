@@ -58,6 +58,7 @@ const player = {
 		small_launch: new Image,
 		to_prime: new Image,
 		prime: new Image,
+		prime_fist: new Image,
 	},
 }, background = {
 	cave: new Image,

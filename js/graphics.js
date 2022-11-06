@@ -543,6 +543,22 @@ function enemyGraphics() {
 				game.enemyStage = "pending";
 			};
 			invNum = tempAnim[3];
+		} else if (tempAnim[1] == "slime_prime_fist") {
+			if (tempAnim[0] >= 4) {
+				let phase = ((tempAnim[0] - 4) / 10), posX = Math.round(((pos[0] - 68) - 40) * phase);
+				draw.imageSector(enemy.slime.prime_fist, 4 * 36, 0, 36, 18, pos[0] - 32 - posX, 80, 36, 18);
+			} else draw.imageSector(enemy.slime.prime_fist, Math.floor(tempAnim[0]) * 36, 0, 36, 18, pos[0] - 32, 80, 36, 18);
+			tempAnim[0]++;
+			if (game.enemyStage == "middle") {
+				tempAnim = [0, "none", "normal", -1];
+				enemyAnim[tempAnim[3]] = 0;
+				game.enemyStage = "end";
+			} else if (tempAnim[0] >= 14) {
+				tempAnim[0] = 14;
+				game.enemyStage = "middle";
+			} else {
+				game.enemyStage = "pending";
+			};
 		} else invNum = -1;
 	};
 	for (let index = 0; index < game.enemies.length; index++) {
