@@ -54,8 +54,8 @@ const draw = {
 		let position = style["text-align"];
 		let small = style["text-small"];
 		string = string.replace(/<br>/g, "\n");
-		x = Math.round(x);
-		y = Math.round(y);
+		x = Math.round(x * 2) / 2;
+		y = Math.round(y * 2) / 2;
 		let img = letters.black, enters = 0, enterIndex = 0, len = string.replace(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<light-green>|<\/light-green>/g, "").length;
 		if (color == "red") img = letters.red;
 		else if (color == "white") img = letters.white;
@@ -90,7 +90,6 @@ const draw = {
 			let space = 0;
 			if (!array[0]) array.splice(0, 1);
 			for (let index = 0; index < array.length; index++) {
-				array[index] = array[index].replace(/\n/, "");
 				space += draw.lore(x, y + space, array[index], style);
 			};
 			return space;
@@ -879,22 +878,24 @@ function mapGraphics(onlyCalc = false) {
 			// true and false
 			seed = seed.replace(/false/g, "\\0").replace(/true/g, "\\1");
 			// enemies
-			seed = seed.replace(/"slime_small"/g, "\\ss'").replace(/"slime_big"/g, "\\sb'");
-			seed = seed.replace(/"slime_small, /g, "\\ss+").replace(/"slime_big, /g, "\\sb+");
+			seed = seed.replace(/"slime_small"/g, "\\ss'").replace(/"slime_big"/g, "\\sb'").replace(/"slime_prime"/g, "\\sp'");
+			seed = seed.replace(/"slime_small, /g, "\\ss+").replace(/"slime_big, /g, "\\sb+").replace(/"slime_prime, /g, "\\sp+");
 			// cards
 			seed = seed.replace(/"aura blade"/g, "\\aur_b").replace(/"block"/g, "\\blo").replace(/"error"/g, "\\err").replace(/"everlasting shield"/g, "\\eve_s").replace(/"reinforce"/g, "\\rei").replace(/"slash"/g, "\\sla").replace(/"war cry"/g, "\\war_c");
 			// map nodes
-			seed = seed.replace(/"battle",/g, "\\B");
+			seed = seed.replace(/"battle",/g, "\\B").replace(/"treasure",/g, "\\T").replace(/"battle_prime",/g, "\\P");
+			// map attributes
+			seed = seed.replace(/"closed",|"open",/g, "\\C");
 			// numbers
 			seed = seed.replace(/\+0./g, "=").replace(/\+1./g, "^");
 			// technical
 			seed = seed.replace(/\[\[/g, "(").replace(/\]\]/g, ")").replace(/\[\\/g, "{").replace(/"\]/g, "}").replace(/,\\/g, "/").replace(/\),/g, "~").replace(/\],/g, "&").replace(/'\//g, "!").replace(/'&/g, "*").replace(/\)\/0/g, "#").replace(/,\{/g, "$").replace(/\},/g, "%").replace(/~\{/g, "@").replace(/\(\\/g, "`").replace(/\)&/g, "?").replace(/\?`/g, ";").replace(/#\$/g, "|").replace(/#&`/g, ">").replace(/\?\{0/g, "<").replace(/#&\{/g, "'");
-			// capital letters
-			seed = seed.replace(/@B/g, "A").replace(/\|B/g, "H").replace(/;B/g, "W").replace(/\$B/g, "G");
 			// duplicate numbers
 			seed = seed.replace(/0\/0\/0\/0/g, "0:4").replace(/0\/0\/0/g, "0:3").replace(/0\/0/g, "0:2").replace(/#\/0/g, "-0");
 			// duplicate enemies
 			seed = seed.replace(/ss!ss/g, "ss:2").replace(/sb!sb/g, "sb:2");
+			// encode
+			seed = btoa(seed);
 			// print
 			draw.lore(396, 1, "seed: " + seed.slice(0, 126 - push) + "\n" + seed.slice(126 - push, 255 - (push * 2)) + "...", {"color": "white", "text-align": "left", "text-small": true});
 		};
