@@ -19,45 +19,50 @@ const cards = { // card attributes format: [type, ...special];
 	"aura blade": {
 		desc: "Gain 1 aura blade.",
 		attributes: ["magic"],
-		rarity: "common",
+		rarity: 1,
 		cost: 1,
 	},
 	"block": {
 		desc: "Gain 4 shield.",
 		attributes: ["defense"],
-		rarity: "starter",
+		rarity: 0,
 		cost: 1,
 	},
 	"error": {
 		desc: "Unplayable.",
 		attributes: ["error", "unplayable"],
-		rarity: "error",
+		rarity: -1,
 		cost: 0,
 	},
 	"everlasting shield": {
 		desc: "Gain 3 reinforces.",
 		attributes: ["defense"],
-		rarity: "rare",
+		rarity: 2,
 		cost: 2,
 	},
 	"reinforce": {
 		desc: "Gain 1 shield and\n1 reinforce.",
 		attributes: ["defense"],
-		rarity: "common",
+		rarity: 1,
 		cost: 1,
 	},
 	"slash": {
 		desc: "Deal 5 damage.",
 		attributes: ["attack"],
-		rarity: "starter",
+		rarity: 0,
 		cost: 1,
 	},
 	"war cry": {
 		desc: "All enemies (except\nbosses) switch\ntheir intents to\ndefense.",
 		attributes: ["skill"],
-		rarity: "common",
+		rarity: 1,
 		cost: 1,
 	},
+}, rarities = {
+	"-1": "error",
+	0: "starter",
+	1: "common",
+	2: "rare",
 };
 
 class Card {
@@ -65,21 +70,15 @@ class Card {
 		if (cards[name] === undefined) name = "error";
 		this.name = name;
 		this.level = level;
-		this.order = -1;
-		// order
-		if (cards[name].rarity == "starter") this.order = 2;
-		else if (cards[name].rarity == "common") this.order = 1;
-		else if (cards[name].rarity == "rare") this.order = 0;
-		else this.order = -1;
 	};
 };
 
 Array.prototype.cardSort = function() {
 	return this.sort(function compareFn(a, b) {
-		if (a.order < b.order) {
+		if (cards[a.name].rarity > cards[b.name].rarity) {
 			return -1;
 		};
-		if (a.order > b.order) {
+		if (cards[a.name].rarity < cards[b.name].rarity) {
 			return 1;
 		};
 		if (cards[a.name].attributes[0] < cards[b.name].attributes[0]) {

@@ -230,9 +230,9 @@ const draw = {
 		let x = game.handPos[index], img = card.error;
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
 		const rarity = cards[cardObject.name].rarity;
-		if (rarity == "starter") img = card.starter[cardObject.name];
-		else if (rarity == "common") img = card.common[cardObject.name];
-		else if (rarity == "rare") img = card.rare[cardObject.name];
+		if (rarity == 0) img = card.starter[cardObject.name];
+		else if (rarity == 1) img = card.common[cardObject.name];
+		else if (rarity == 2) img = card.rare[cardObject.name];
 		if (cardObject.name != "error") draw.image(card.back, x + 2, y + 2);
 		const type = cards[cardObject.name].attributes[0];
 		if (type == "attack") draw.image(card.outline.attack, x + 3, y + 3);
@@ -242,10 +242,10 @@ const draw = {
 		else if (type == "magic") draw.image(card.outline.magic, x + 3, y + 3);
 		if (selected) {
 			if (cards[cardObject.name].attributes.includes("unplayable")) {
-				if (rarity == "rare") draw.image(select.card_rare_unplayable, x - 3, y - 3);
+				if (rarity == 2) draw.image(select.card_rare_unplayable, x - 3, y - 3);
 				else draw.image(select.card_unplayable, x + 1, y + 1);
 			} else {
-				if (rarity == "rare") draw.image(select.card_rare, x - 3, y - 3);
+				if (rarity == 2) draw.image(select.card_rare, x - 3, y - 3);
 				else draw.image(select.card_normal, x - 1, y - 1);
 			};
 		};
@@ -263,8 +263,8 @@ const draw = {
 			});
 		};
 		draw.lore(x + 6, y + 55, desc, {"text-small": true});
-		draw.lore(x + 33, y + 89.5, rarity + "|" + type, {"text-align": "center", "text-small": true});
-		if (rarity == "rare") {
+		draw.lore(x + 33, y + 89.5, rarities[rarity] + "|" + type, {"text-align": "center", "text-small": true});
+		if (rarity == 2) {
 			draw.image(card.rarity.rare, x - 2, y - 2);
 		};
 		if (!cards[cardObject.name].attributes.includes("unplayable")) {

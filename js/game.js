@@ -180,7 +180,7 @@ function playerTurn() {
 	if (action == "enter" && game.select[0] == "hand") {
 		let selected = game.hand[game.select[1]], name = selected.name;
 		if (cards[name].attributes.includes("unplayable")) {
-			if (cards[game.hand[game.select[1]].name].rarity == "rare") notif = [game.select[1], 0, "unplayable", -2];
+			if (cards[game.hand[game.select[1]].name].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
 			else notif = [game.select[1], 0, "unplayable", 0];
 			actionTimer = 1;
 		} else if (game.energy >= cards[name].cost) {
@@ -218,7 +218,7 @@ function playerTurn() {
 				actionTimer = 5;
 			};
 		} else {
-			if (cards[game.hand[game.select[1]].name].rarity == "rare") notif = [game.select[1], 0, "not enough energy", -2];
+			if (cards[game.hand[game.select[1]].name].rarity == 2) notif = [game.select[1], 0, "not enough energy", -2];
 			else notif = [game.select[1], 0, "not enough energy", 0];
 			actionTimer = 1;
 		};
