@@ -70,6 +70,8 @@ const cards = { // card attributes format: [type, ...special];
 		attributes: ["attack"],
 		rarity: 0,
 		cost: 1,
+		anim: "attack",
+		damage: 5,
 	},
 	3000: {
 		name: "war cry",

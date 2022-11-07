@@ -136,19 +136,16 @@ function playerTurn() {
 	if (!actionTimer || actionTimer < -1) actionTimer = -1;
 	// attack enemy
 	if (action == "enter" && game.select[0] == "attack_enemy") {
-		if (game.enemyAtt.id == 1000) {
-			game.energy--;
-			startAnim.player("attack");
-		};
+		game.energy -= cards[game.enemyAtt.id].cost;
+		startAnim.player(cards[game.enemyAtt.id].anim);
 		if (game.auraBlades) {
 			game.auraBlades--;
-			game.attackEffect = 4000;
+			game.attackEffect = "aura blade";
 		} else {
 			game.attackEffect = "none";
 		};
 		game.enemyAttFin = true;
-		game.discard.push(game.hand[game.activeCard]);
-		game.hand.splice(game.activeCard, 1);
+		game.discard.push(game.hand.splice(game.select[1], 1)[0]);
 		game.enemyAttSel = game.select[1];
 		if (game.prevCard) game.select = ["hand", game.prevCard - 1];
 		else game.select = ["hand", 0];
@@ -156,19 +153,16 @@ function playerTurn() {
 		return;
 	};
 	if (game.enemyAttFin) {
-		let damage = 0, shield = game.enemies[game.enemyAttSel].shield;
-		if (game.enemyAtt.id == 1000) {
-			damage = 5;
+		let damage = +cards[game.enemyAtt.id].damage;
+		if (game.attackEffect == "aura blade") {
+			damage += 5 + (game.auraBlades + 1);
 		};
-		if (game.attackEffect == 4000) {
-			damage += 6 + game.auraBlades;
-		};
-		if (shield > damage) {
+		if (game.enemies[game.enemyAttSel].shield > damage) {
 			game.enemies[game.enemyAttSel].shield -= damage;
 			damage = 0;
-		} else if (shield) {
+		} else if (game.enemies[game.enemyAttSel].shield) {
+			damage -= game.enemies[game.enemyAttSel].shield;
 			game.enemies[game.enemyAttSel].shield = 0;
-			damage -= shield;
 		};
 		game.enemies[game.enemyAttSel].health -= damage;
 		game.enemyAtt = "none";
