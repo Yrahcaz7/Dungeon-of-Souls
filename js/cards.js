@@ -22,6 +22,9 @@ const cards = { // card attributes format: [type, ...special];
 		attributes: ["magic"],
 		rarity: 1,
 		cost: 1,
+		effect() {
+			game.auraBlades++;
+		},
 	},
 	2000: {
 		name: "block",
@@ -29,6 +32,9 @@ const cards = { // card attributes format: [type, ...special];
 		attributes: ["defense"],
 		rarity: 0,
 		cost: 1,
+		effect() {
+			game.shield += 4;
+		},
 	},
 	0: {
 		name: "error",
@@ -43,6 +49,9 @@ const cards = { // card attributes format: [type, ...special];
 		attributes: ["defense"],
 		rarity: 2,
 		cost: 2,
+		effect() {
+			game.reinforces += 3;
+		},
 	},
 	2001: {
 		name: "reinforce",
@@ -50,6 +59,10 @@ const cards = { // card attributes format: [type, ...special];
 		attributes: ["defense"],
 		rarity: 1,
 		cost: 1,
+		effect() {
+			game.shield += 1;
+			game.reinforces++;
+		},
 	},
 	1000: {
 		name: "slash",
@@ -64,6 +77,13 @@ const cards = { // card attributes format: [type, ...special];
 		attributes: ["skill"],
 		rarity: 1,
 		cost: 1,
+		effect() {
+			startAnim.effect("war cry");
+			for (let index = 0; index < game.enemies.length; index++) {
+				game.enemies[index].intent = "defend";
+				game.enemies[index].intentHistory[0] = "defend";
+			};
+		},
 	},
 }, rarities = {
 	"-1": "error",

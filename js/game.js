@@ -184,30 +184,11 @@ function playerTurn() {
 			else notif = [game.select[1], 0, "unplayable", 0];
 			actionTimer = 1;
 		} else if (game.energy >= cards[id].cost) {
-			let activate = true;
-			// effects of cards that activate right away
-			if (id == 2000) {
-				game.shield += 4;
-			} else if (id == 2001) {
-				game.shield += 1;
-				game.reinforces++;
-			} else if (id == 2002) {
-				game.reinforces += 3;
-			} else if (id == 4000) {
-				game.auraBlades++;
-			} else if (id == 3000) {
-				startAnim.effect("war cry");
-				for (let index = 0; index < game.enemies.length; index++) {
-					game.enemies[index].intent = "defend";
-					game.enemies[index].intentHistory[0] = "defend";
-				};
-			} else {
-				activate = false;
-			};
-			if (activate) {
+			if (cards[id].effect) {
+				// effects of cards that activate right away
+				cards[id].effect();
 				game.energy -= cards[id].cost;
-				game.discard.push(game.hand[game.select[1]]);
-				game.hand.splice(game.select[1], 1);
+				game.discard.push(game.hand.splice(game.select[1], 1)[0]);
 				if (game.prevCard) game.select = ["hand", game.prevCard - 1];
 				else game.select = ["hand", 0];
 				actionTimer = 2;
