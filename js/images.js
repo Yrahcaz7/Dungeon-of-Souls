@@ -50,6 +50,7 @@ const player = {
 	},
 	rare: {
 		"everlasting shield": new Image,
+		"heat wave": new Image,
 	},
 }, enemy = {
 	slime: {
@@ -166,6 +167,7 @@ card.common["war cry"].src = "images/cards/common/war_cry.png";
 
 // rare cards
 card.rare["everlasting shield"].src = "images/cards/rare/everlasting_shield.png";
+card.rare["heat wave"].src = "images/cards/rare/heat_wave.png";
 
 // card outlines
 for (const image in card.outline) {

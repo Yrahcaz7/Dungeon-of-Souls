@@ -73,6 +73,21 @@ const cards = { // card attributes format: [type, ...special];
 		anim: "attack",
 		damage: 5,
 	},
+	1001: {
+		name: "heat wave",
+		desc: "Deal 7 damage to\nan enemy, and apply\n2 burn to all\nenemies.",
+		attributes: ["attack"],
+		rarity: 2,
+		cost: 2,
+		anim: "attack",
+		damage: 7,
+		attack() {
+			for (let index = 0; index < game.enemies.length; index++) {
+				if (game.enemies[index].eff.burn) game.enemies[index].eff.burn += 2;
+				else game.enemies[index].eff.burn = 2;
+			};
+		},
+	},
 	3000: {
 		name: "war cry",
 		desc: "All enemies (except\nbosses) switch\ntheir intents to\ndefense.",

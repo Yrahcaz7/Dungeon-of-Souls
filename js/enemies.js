@@ -25,7 +25,7 @@ class Enemy {
 			this.shield = override.shield;
 			this.attackPower = override.attackPower;
 			this.defendPower = override.defendPower;
-			this.reinforces = override.reinforces;
+			this.eff = override.eff;
 			this.intent = override.intent;
 			this.intentHistory = override.intentHistory;
 			return;
@@ -40,7 +40,7 @@ class Enemy {
 		this.shield = 0;
 		this.attackPower = Math.round(((power / 2) + 1) * 5 - 0.25);
 		this.defendPower = Math.round(((power / 2) + 1) * 5 + 1);
-		this.reinforces = 0;
+		this.eff = {};
 		this.intent = chance(3/5)?"attack":"defend";
 		this.intentHistory = [this.intent];
 		game.enemyIndex++;

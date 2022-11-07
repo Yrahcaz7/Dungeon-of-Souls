@@ -113,10 +113,14 @@ function startTurn() {
 
 function endTurn() {
 	for (let index = 0; index < game.enemies.length; index++) {
-		if (game.enemies[index].reinforces) {
-			game.enemies[index].reinforces--;
+		if (game.enemies[index].eff.reinforces) {
+			game.enemies[index].eff.reinforces--;
 		} else {
 			game.enemies[index].shield = 0;
+		};
+		if (game.enemies[index].eff.burn) {
+			game.enemies[index].health -= game.enemies[index].eff.burn;
+			game.enemies[index].eff.burn--;
 		};
 	};
 	if (game.hand.length >= 1) {
@@ -146,6 +150,7 @@ function playerTurn() {
 			game.enemies[game.enemyAttSel].shield = 0;
 		};
 		game.enemies[game.enemyAttSel].health -= damage;
+		if (cards[game.enemyAtt.id].attack) cards[game.enemyAtt.id].attack();
 		game.enemyAtt = "none";
 		game.enemyAttFin = false;
 	};
