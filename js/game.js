@@ -65,7 +65,6 @@ var global = {
 	activeCard: -1,
 	discard: [],
 	auraBlades: 0,
-	auraBladePos: [[65, 10], [80, 25], [40, 0], [25, 35]],
 	reinforces: 0,
 	attackEffect: "none",
 	room: [],
