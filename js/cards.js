@@ -16,43 +16,50 @@
  */
 
 const cards = { // card attributes format: [type, ...special];
-	"aura blade": {
+	4000: {
+		name: "aura blade",
 		desc: "Gain 1 aura blade.",
 		attributes: ["magic"],
 		rarity: 1,
 		cost: 1,
 	},
-	"block": {
+	2000: {
+		name: "block",
 		desc: "Gain 4 shield.",
 		attributes: ["defense"],
 		rarity: 0,
 		cost: 1,
 	},
-	"error": {
+	0: {
+		name: "error",
 		desc: "Unplayable.",
 		attributes: ["error", "unplayable"],
 		rarity: -1,
 		cost: 0,
 	},
-	"everlasting shield": {
+	2002: {
+		name: "everlasting shield",
 		desc: "Gain 3 reinforces.",
 		attributes: ["defense"],
 		rarity: 2,
 		cost: 2,
 	},
-	"reinforce": {
+	2001: {
+		name: "reinforce",
 		desc: "Gain 1 shield and\n1 reinforce.",
 		attributes: ["defense"],
 		rarity: 1,
 		cost: 1,
 	},
-	"slash": {
+	1000: {
+		name: "slash",
 		desc: "Deal 5 damage.",
 		attributes: ["attack"],
 		rarity: 0,
 		cost: 1,
 	},
-	"war cry": {
+	3000: {
+		name: "war cry",
 		desc: "All enemies (except\nbosses) switch\ntheir intents to\ndefense.",
 		attributes: ["skill"],
 		rarity: 1,
@@ -66,35 +73,44 @@ const cards = { // card attributes format: [type, ...special];
 };
 
 class Card {
-	constructor(name, level = 0) {
-		if (cards[name] === undefined) name = "error";
-		this.name = name;
+	constructor(id, level = 0) {
+		if (cards[id] === undefined) this.id = 0;
+		else this.id = id;
 		this.level = level;
 	};
 };
 
 Array.prototype.cardSort = function() {
 	return this.sort(function compareFn(a, b) {
-		if (cards[a.name].rarity > cards[b.name].rarity) {
+		if (cards[a.id].rarity > cards[b.id].rarity) {
 			return -1;
 		};
-		if (cards[a.name].rarity < cards[b.name].rarity) {
+		if (cards[a.id].rarity < cards[b.id].rarity) {
 			return 1;
 		};
-		if (cards[a.name].attributes[0] < cards[b.name].attributes[0]) {
+		if (cards[a.id].attributes[0] < cards[b.id].attributes[0]) {
 			return -1;
 		};
-		if (cards[a.name].attributes[0] > cards[b.name].attributes[0]) {
+		if (cards[a.id].attributes[0] > cards[b.id].attributes[0]) {
 			return 1;
 		};
-		if (a.name < b.name) {
+		if (cards[a.id].name < cards[b.id].name) {
 			return -1;
 		};
-		if (a.name > b.name) {
+		if (cards[a.id].name > cards[b.id].name) {
 			return 1;
 		};
 		return 0;
 	});
+};
+
+const cardNames = {};
+
+function constructNames() {
+	const entries = Object.entries(cards);
+	for (let index = 0; index < entries.length; index++) {
+		cardNames[entries[index][1].name] = +entries[index][0];
+	};
 };
 
 function randomCardSet(length = 0) {
@@ -108,30 +124,32 @@ function randomCardSet(length = 0) {
 
 function randomCard(notInclude = []) {
 	const common = Object.keys(card.common), rare = Object.keys(card.rare);
-	let not = notInclude.toString(), bool = true;
-	if (not) {
-		for (let index = 0; index < common.length; index++) {
-			if (!not.includes(common[index])) bool = false;
-		};
-		for (let index = 0; index < rare.length; index++) {
-			if (!not.includes(rare[index])) bool = false;
+	let bool = true;
+	if (Object.keys(cardNames).length === 0) constructNames();
+	if (notInclude.length > 0) {
+		for (const key in cards) {
+			if (Object.hasOwnProperty.call(cards, key)) {
+				if (cards[key].rarity > 0 && !notInclude.includes(+key)) {
+					bool = false;
+				};
+			};
 		};
 	};
 	if (bool) {
 		let result;
 		if (chance(7/10)) {
-			result = common[randomInt(0, Object.keys(card.common).length - 1)];
+			result = cardNames[common[randomInt(0, Object.keys(card.common).length - 1)]];
 		} else {
-			result = rare[randomInt(0, Object.keys(card.rare).length - 1)];			
+			result = cardNames[rare[randomInt(0, Object.keys(card.rare).length - 1)]];			
 		};
 		return result;
 	};
 	let result;
 	while (!result || notInclude.includes(result)) {
 		if (chance(7/10)) {
-			result = common[randomInt(0, Object.keys(card.common).length - 1)];
+			result = cardNames[common[randomInt(0, Object.keys(card.common).length - 1)]];
 		} else {
-			result = rare[randomInt(0, Object.keys(card.rare).length - 1)];			
+			result = cardNames[rare[randomInt(0, Object.keys(card.rare).length - 1)]];			
 		};
 	};
 	return result;

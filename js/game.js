@@ -16,7 +16,7 @@
  */
 
 var global = {
-	unlockedCards: ["aura blade", "everlasting shield", "reinforce", "war cry"],
+	unlockedCards: [4000, 2002, 2001, 3000],
 	options: {
 		music: true,
 		sticky_cards: false,
@@ -53,8 +53,8 @@ var global = {
 	enemyNum: 0,
 	enemyStage: "none",
 	artifacts: ["iron will"],
-	deck: [new Card("reinforce"), new Card("aura blade"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block")],
-	deckLocal: [new Card("reinforce"), new Card("aura blade"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("slash"), new Card("block"), new Card("block"), new Card("block"), new Card("block")],
+	deck: [new Card(2001), new Card(4000), new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000)],
+	deckLocal: [new Card(2001), new Card(4000), new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000)],
 	deckProxy: "",
 	deckPos: 0,
 	deckMove: "none",
@@ -136,13 +136,13 @@ function playerTurn() {
 	if (!actionTimer || actionTimer < -1) actionTimer = -1;
 	// attack enemy
 	if (action == "enter" && game.select[0] == "attack_enemy") {
-		if (game.enemyAtt.name == "slash") {
+		if (game.enemyAtt.id == 1000) {
 			game.energy--;
 			startAnim.player("attack");
 		};
 		if (game.auraBlades) {
 			game.auraBlades--;
-			game.attackEffect = "aura blade";
+			game.attackEffect = 4000;
 		} else {
 			game.attackEffect = "none";
 		};
@@ -157,10 +157,10 @@ function playerTurn() {
 	};
 	if (game.enemyAttFin) {
 		let damage = 0, shield = game.enemies[game.enemyAttSel].shield;
-		if (game.enemyAtt.name == "slash") {
+		if (game.enemyAtt.id == 1000) {
 			damage = 5;
 		};
-		if (game.attackEffect == "aura blade") {
+		if (game.attackEffect == 4000) {
 			damage += 6 + game.auraBlades;
 		};
 		if (shield > damage) {
@@ -178,24 +178,24 @@ function playerTurn() {
 	};
 	// play card
 	if (action == "enter" && game.select[0] == "hand") {
-		let selected = game.hand[game.select[1]], name = selected.name;
-		if (cards[name].attributes.includes("unplayable")) {
-			if (cards[game.hand[game.select[1]].name].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
+		let selected = game.hand[game.select[1]], id = selected.id;
+		if (cards[id].attributes.includes("unplayable")) {
+			if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
 			else notif = [game.select[1], 0, "unplayable", 0];
 			actionTimer = 1;
-		} else if (game.energy >= cards[name].cost) {
+		} else if (game.energy >= cards[id].cost) {
 			let activate = true;
 			// effects of cards that activate right away
-			if (name == "block") {
+			if (id == 2000) {
 				game.shield += 4;
-			} else if (name == "reinforce") {
+			} else if (id == 2001) {
 				game.shield += 1;
 				game.reinforces++;
-			} else if (name == "everlasting shield") {
+			} else if (id == 2002) {
 				game.reinforces += 3;
-			} else if (name == "aura blade") {
+			} else if (id == 4000) {
 				game.auraBlades++;
-			} else if (name == "war cry") {
+			} else if (id == 3000) {
 				startAnim.effect("war cry");
 				for (let index = 0; index < game.enemies.length; index++) {
 					game.enemies[index].intent = "defend";
@@ -205,20 +205,20 @@ function playerTurn() {
 				activate = false;
 			};
 			if (activate) {
-				game.energy -= cards[name].cost;
+				game.energy -= cards[id].cost;
 				game.discard.push(game.hand[game.select[1]]);
 				game.hand.splice(game.select[1], 1);
 				if (game.prevCard) game.select = ["hand", game.prevCard - 1];
 				else game.select = ["hand", 0];
 				actionTimer = 2;
-			} else if (cards[name].attributes[0] == "attack") {
+			} else if (cards[id].attributes[0] == "attack") {
 				game.activeCard = game.select[1];
 				game.select = ["attack_enemy", game.enemies.length - 1];
 				game.enemyAtt = game.hand[game.activeCard];
 				actionTimer = 5;
 			};
 		} else {
-			if (cards[game.hand[game.select[1]].name].rarity == 2) notif = [game.select[1], 0, "not enough energy", -2];
+			if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "not enough energy", -2];
 			else notif = [game.select[1], 0, "not enough energy", 0];
 			actionTimer = 1;
 		};
@@ -630,7 +630,7 @@ function selection() {
 		let confirm = false;
 		if (game.hand.length >= 1) {
 			for (let index = 0; index < game.hand.length; index++) {
-				if (cards[game.hand[index].name].cost <= game.energy) {
+				if (cards[game.hand[index].id].cost <= game.energy) {
 					confirm = true;
 					break;
 				};

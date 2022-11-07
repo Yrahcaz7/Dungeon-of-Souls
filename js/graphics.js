@@ -229,19 +229,19 @@ const draw = {
 		if (!(cardObject instanceof Object)) cardObject = new Card("" + cardObject);
 		let x = game.handPos[index], img = card.error;
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
-		const rarity = cards[cardObject.name].rarity;
-		if (rarity == 0) img = card.starter[cardObject.name];
-		else if (rarity == 1) img = card.common[cardObject.name];
-		else if (rarity == 2) img = card.rare[cardObject.name];
-		if (cardObject.name != "error") draw.image(card.back, x + 2, y + 2);
-		const type = cards[cardObject.name].attributes[0];
+		const rarity = cards[cardObject.id].rarity, name = cards[cardObject.id].name;
+		if (rarity === 0) img = card.starter[name];
+		else if (rarity == 1) img = card.common[name];
+		else if (rarity == 2) img = card.rare[name];
+		if (cardObject.id !== 0) draw.image(card.back, x + 2, y + 2);
+		const type = cards[cardObject.id].attributes[0];
 		if (type == "attack") draw.image(card.outline.attack, x + 3, y + 3);
 		else if (type == "curse") draw.image(card.outline.curse, x + 3, y + 3);
 		else if (type == "defense") draw.image(card.outline.defense, x + 3, y + 3);
 		else if (type == "skill") draw.image(card.outline.skill, x + 3, y + 3);
 		else if (type == "magic") draw.image(card.outline.magic, x + 3, y + 3);
 		if (selected) {
-			if (cards[cardObject.name].attributes.includes("unplayable")) {
+			if (cards[cardObject.id].attributes.includes("unplayable")) {
 				if (rarity == 2) draw.image(select.card_rare_unplayable, x - 3, y - 3);
 				else draw.image(select.card_unplayable, x + 1, y + 1);
 			} else {
@@ -251,12 +251,12 @@ const draw = {
 		};
 		if (img == card.error) draw.image(card.error, x + 2, y + 2);
 		else draw.image(img, x + 7, y + 7);
-		if (cardObject.name.length >= 11) {
-			draw.lore(x + 32, y + 44, cardObject.name.title(), {"text-align": "center", "text-small": true});
+		if (name.length >= 11) {
+			draw.lore(x + 32, y + 44, name.title(), {"text-align": "center", "text-small": true});
 		} else {
-			draw.lore(x + 32, y + 42, cardObject.name.title(), {"text-align": "center"});
+			draw.lore(x + 32, y + 42, name.title(), {"text-align": "center"});
 		};
-		let desc = cards[cardObject.name].desc;
+		let desc = cards[cardObject.id].desc;
 		if (game.auraBlades) {
 			desc = desc.replace(/([Dd]eal\s)(\d+)(\sdamage)/g, (substring, pre, number, post) => {
 				return pre + "<light-green>" + (parseInt(number) + 5 + game.auraBlades) + "</light-green>" + post;
@@ -267,9 +267,9 @@ const draw = {
 		if (rarity == 2) {
 			draw.image(card.rarity.rare, x - 2, y - 2);
 		};
-		if (!cards[cardObject.name].attributes.includes("unplayable")) {
+		if (!cards[cardObject.id].attributes.includes("unplayable")) {
 			draw.image(card.energy, x, y);
-			draw.lore(x + 4, y + 2, cards[cardObject.name].cost);
+			draw.lore(x + 4, y + 2, cards[cardObject.id].cost);
 		};
 	},
 	textBox(x, y, width, string, style = {"color": "black", "text-align": "right", "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
@@ -769,24 +769,24 @@ function target() {
 			info("iron will", "artifact");
 		};
 	} else if (game.select[0] == "hand") {
-		let name = game.hand[game.select[1]].name;
-		if (name == "reinforce" || name == "everlasting shield") {
+		const desc = cards[game.hand[game.select[1]].id].desc;
+		if (desc.includes("reinforce")) {
 			info("reinforce", "card");
-		} else if (name == "aura blade") {
+		} else if (desc.includes("aura blade")) {
 			info("aura blades", "card");
 		};
 	} else if (game.select[0] == "deck" && game.select[1] == 1 && game.deckProxy != "[]") {
-		let proxy = JSON.parse(game.deckProxy).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].name;
-		if (proxy == "reinforce" || proxy == "everlasting shield") {
+		const desc = cards[JSON.parse(game.deckProxy).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].id].desc;
+		if (desc.includes("reinforce")) {
 			info("reinforce", "deck");
-		} else if (proxy == "aura blade") {
+		} else if (desc.includes("aura blade")) {
 			info("aura blades", "deck");
 		};
 	} else if (game.select[0] == "discard" && game.select[1] == 1 && game.discard.length > 0) {
-		let proxy = game.discard[game.cardSelect[0] + (game.cardSelect[1] * 6)].name;
-		if (proxy == "reinforce" || proxy == "everlasting shield") {
+		const desc = cards[game.discard[game.cardSelect[0] + (game.cardSelect[1] * 6)].id].desc;
+		if (desc.includes("reinforce")) {
 			info("reinforce", "deck");
-		} else if (proxy == "aura blade") {
+		} else if (desc.includes("aura blade")) {
 			info("aura blades", "deck");
 		};
 	};
