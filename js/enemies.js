@@ -81,10 +81,12 @@ class Enemy {
 	finishAction() {
 		this.intent = chance(3/5)?"attack":"defend";
 		this.intentHistory.push(this.intent);
-		if (overrideIntent("attack", this.intentHistory, game.enemyNum)) {
+		if (overrideIntent("attack", this.intentHistory)) {
 			this.intent = "defend";
-		} else if (overrideIntent("defend", this.intentHistory, game.enemyNum)) {
+			this.intentHistory.push(this.intent);
+		} else if (overrideIntent("defend", this.intentHistory)) {
 			this.intent = "attack";
+			this.intentHistory.push(this.intent);
 		};
 		if (game.enemyNum == game.enemies.length - 1) {
 			game.enemyNum = 0;
@@ -96,15 +98,15 @@ class Enemy {
 	};
 };
 
-function overrideIntent(type, history, location) {
+function overrideIntent(type, history = []) {
 	if (!type || !history) return false;
 	let location0 = history.indexOf(type), location1, location2;
 	if (location0 !== -1) {
 		location1 = history.indexOf(type, location0 + 1);
 		if (location1 - 1 === location0) {
-			location2 = history.indexOf(type, location0 + 1);
+			location2 = history.indexOf(type, location1 + 1);
 			if (location2 - 1 === location1) {
-				game.enemies[location].intentHistory = [];
+				game.enemies[game.enemyNum].intentHistory = [];
 				return true;
 			};
 		};

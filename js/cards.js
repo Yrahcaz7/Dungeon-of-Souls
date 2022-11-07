@@ -81,7 +81,7 @@ const cards = { // card attributes format: [type, ...special];
 			startAnim.effect("war cry");
 			for (let index = 0; index < game.enemies.length; index++) {
 				game.enemies[index].intent = "defend";
-				game.enemies[index].intentHistory[0] = "defend";
+				game.enemies[index].intentHistory[game.enemies[index].intentHistory.length - 1] = "defend";
 			};
 		},
 	},
