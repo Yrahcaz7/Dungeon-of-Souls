@@ -109,8 +109,6 @@ changelog = ""
 	+ " - still needs a lot of polishing and such\n"
 	+ " - next update will probably make it more playable";
 
-var bladeFloat = [0, "up", 2.5, "up", 3, "down", 0.5, "down"];
-
 function updateData() {
 	// hide
 	hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "discard" || game.select[0] == "map") && game.select[1];
@@ -137,15 +135,6 @@ function updateData() {
 	else if (number == 10) game.handPos = [x - 320 + 135, x - 256 + 105, x - 192 + 75, x - 128 + 45, x - 64 + 15, x - 15, x + 64 - 45, x + 128 - 75, x + 192 - 105, x + 256 - 135];
 	else if (number == 11) game.handPos = [x - 352 + 170, x - 288 + 136, x - 224 + 102, x - 160 + 68, x - 96 + 34, x - 32, x + 32 - 34, x + 96 - 68, x + 160 - 102, x + 224 - 136, x + 288 - 170];
 	else if (number == 12) game.handPos = [x - 384 + 198, x - 320 + 162, x - 256 + 126, x - 192 + 90, x - 128 + 54, x - 64 + 18, x - 18, x + 64 - 54, x + 128 - 90, x + 192 - 126, x + 256 - 162, x + 320 - 198];
-	// AuraBladeAnim
-	auraBladeAnim = [[65, 10], [80, 25], [40, 0], [25, 35]];
-	for (let num = 0; num < auraBladeAnim.length && num <= 4; num++) {
-		auraBladeAnim[num][1] += Math.round(bladeFloat[num * 2]);
-		if (bladeFloat[num * 2 + 1] == "up") bladeFloat[num * 2] += (Math.random() + 0.5) * 0.05;
-		else bladeFloat[num * 2] -= (Math.random() + 0.5) * 0.05;
-		if (bladeFloat[num * 2] >= 4) bladeFloat[num * 2 + 1] = "down";
-		else if (bladeFloat[num * 2] <= 0) bladeFloat[num * 2 + 1] = "up";
-	};
 	// info
 	if (infPos <= 0) infPos = 0;
 	if (infLimit <= 0) infLimit = 0;

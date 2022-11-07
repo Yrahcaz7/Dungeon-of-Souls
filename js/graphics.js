@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, "none", "normal", -1], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], primeAnim = 0, auraBladeAnim = [[65, 10], [80, 25], [40, 0], [25, 35]], invNum = -1, popups = [], infPos = 0, infLimit = 0;
+var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, "none", "normal", -1], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], primeAnim = 0, auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]], auraBladeAnim = [0, "up", 2.5, "up", 3, "down", 0.5, "down"], invNum = -1, popups = [], infPos = 0, infLimit = 0;
 
 const draw = {
 	// basic - first order
@@ -390,6 +390,7 @@ function playerGraphics() {
 		};
 	};
 	if (game.auraBlades) {
+		// icon
 		if (game.reinforces) x += 17;
 		if (game.shield) {
 			draw.image(icon.aura_blade, x + 23, y + 104);
@@ -398,9 +399,18 @@ function playerGraphics() {
 			draw.image(icon.aura_blade, x + 23, y + 93);
 			draw.lore(x + 34, y + 101, game.auraBlades, {"color": "white", "text-align": "left"});
 		};
-		if (game.reinforces) x -= 17;
+		// floating blades
+		x = 15;
+		auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]];
+		for (let num = 0; num < auraBladePos.length && num <= 4; num++) {
+			auraBladePos[num][1] += Math.round(auraBladeAnim[num * 2]);
+			if (auraBladeAnim[num * 2 + 1] == "up") auraBladeAnim[num * 2] += (Math.random() + 0.5) * 0.05;
+			else auraBladeAnim[num * 2] -= (Math.random() + 0.5) * 0.05;
+			if (auraBladeAnim[num * 2] >= 4) auraBladeAnim[num * 2 + 1] = "down";
+			else if (auraBladeAnim[num * 2] <= 0) auraBladeAnim[num * 2 + 1] = "up";
+		};
 		for (let blade = 1; blade <= game.auraBlades && blade <= 4; blade++) {
-			draw.image(aura_blade, x + auraBladeAnim[blade - 1][0], y + auraBladeAnim[blade - 1][1]);
+			draw.image(aura_blade, x + auraBladePos[blade - 1][0], y + auraBladePos[blade - 1][1]);
 		};
 	};
 	draw.imageSector(player[playerAnim[1]], Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
