@@ -23,7 +23,7 @@ const cards = { // card attributes format: [type, ...special];
 		rarity: 1,
 		cost: 1,
 		effect() {
-			game.auraBlades++;
+			game.eff.auraBlades++;
 		},
 	},
 	2000: {
@@ -50,7 +50,7 @@ const cards = { // card attributes format: [type, ...special];
 		rarity: 2,
 		cost: 2,
 		effect() {
-			game.reinforces += 3;
+			game.eff.reinforces += 3;
 		},
 	},
 	2001: {
@@ -61,7 +61,7 @@ const cards = { // card attributes format: [type, ...special];
 		cost: 1,
 		effect() {
 			game.shield += 1;
-			game.reinforces++;
+			game.eff.reinforces++;
 		},
 	},
 	1000: {

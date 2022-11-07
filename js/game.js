@@ -64,8 +64,10 @@ var global = {
 	prevCard: -1,
 	activeCard: -1,
 	discard: [],
-	auraBlades: 0,
-	reinforces: 0,
+	eff: {
+		auraBlades: 0,
+		reinforces: 0,
+	},
 	attackEffect: "none",
 	room: [],
 	firstRoom: mapPiece(0, "1stbattle"),
@@ -89,16 +91,16 @@ function enterBattle() {
 	game.hand = [];
 	game.discard = [];
 	game.shield = 0;
-	game.auraBlades = 0;
-	game.reinforces = 0;
+	game.eff.auraBlades = 0;
+	game.eff.reinforces = 0;
 	startTurn();
 };
 
 function startTurn() {
 	drawHand();
 	game.turn = "player";
-	if (game.reinforces) {
-		game.reinforces--;
+	if (game.eff.reinforces) {
+		game.eff.reinforces--;
 	} else {
 		game.shield = 0;
 	};
@@ -134,7 +136,7 @@ function playerTurn() {
 	if (game.enemyAttFin && playerAnim[1] == "idle") {
 		let damage = +cards[game.enemyAtt.id].damage;
 		if (game.attackEffect == "aura blade") {
-			damage += 5 + (game.auraBlades + 1);
+			damage += 5 + (game.eff.auraBlades + 1);
 		};
 		if (game.enemies[game.enemyAttSel].shield > damage) {
 			game.enemies[game.enemyAttSel].shield -= damage;
@@ -154,8 +156,8 @@ function playerTurn() {
 	if (action == "enter" && game.select[0] == "attack_enemy") {
 		game.energy -= cards[game.enemyAtt.id].cost;
 		startAnim.player(cards[game.enemyAtt.id].anim);
-		if (game.auraBlades) {
-			game.auraBlades--;
+		if (game.eff.auraBlades) {
+			game.eff.auraBlades--;
 			game.attackEffect = "aura blade";
 		} else {
 			game.attackEffect = "none";

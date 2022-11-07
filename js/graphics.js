@@ -256,9 +256,9 @@ const draw = {
 			draw.lore(x + 32, y + 42, name.title(), {"text-align": "center"});
 		};
 		let desc = cards[cardObject.id].desc;
-		if (game.auraBlades) {
+		if (game.eff.auraBlades) {
 			desc = desc.replace(/([Dd]eal\s)(\d+)(\sdamage)/g, (substring, pre, number, post) => {
-				return pre + "<light-green>" + (parseInt(number) + 5 + game.auraBlades) + "</light-green>" + post;
+				return pre + "<light-green>" + (parseInt(number) + 5 + game.eff.auraBlades) + "</light-green>" + post;
 			});
 		};
 		draw.lore(x + 6, y + 55, desc, {"text-small": true});
@@ -306,7 +306,7 @@ const startAnim = {
 	player(type) {
 		type = "" + type;
 		if (!type) return;
-		if (game.auraBlades && (type == "attack" || type == "attack_2")) type += "_aura";
+		if (game.eff.auraBlades && (type == "attack" || type == "attack_2")) type += "_aura";
 		playerAnim = [0, type];
 	},
 	effect(type) {
@@ -380,27 +380,7 @@ function foregrounds() {
 
 function playerGraphics() {
 	let x = 15, y = 30;
-	if (game.reinforces) {
-		if (game.shield) {
-			draw.image(icon.reinforce, x + 23, y + 104);
-			draw.lore(x + 34, y + 112, game.reinforces, {"color": "white", "text-align": "left"});
-		} else {
-			draw.image(icon.reinforce, x + 23, y + 93);
-			draw.lore(x + 34, y + 101, game.reinforces, {"color": "white", "text-align": "left"});
-		};
-	};
-	if (game.auraBlades) {
-		// icon
-		if (game.reinforces) x += 17;
-		if (game.shield) {
-			draw.image(icon.aura_blade, x + 23, y + 104);
-			draw.lore(x + 34, y + 112, game.auraBlades, {"color": "white", "text-align": "left"});
-		} else {
-			draw.image(icon.aura_blade, x + 23, y + 93);
-			draw.lore(x + 34, y + 101, game.auraBlades, {"color": "white", "text-align": "left"});
-		};
-		// floating blades
-		x = 15;
+	if (game.eff.auraBlades) {
 		auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]];
 		for (let num = 0; num < auraBladePos.length && num <= 4; num++) {
 			auraBladePos[num][1] += Math.round(auraBladeAnim[num * 2]);
@@ -409,10 +389,28 @@ function playerGraphics() {
 			if (auraBladeAnim[num * 2] >= 4) auraBladeAnim[num * 2 + 1] = "down";
 			else if (auraBladeAnim[num * 2] <= 0) auraBladeAnim[num * 2 + 1] = "up";
 		};
-		for (let blade = 1; blade <= game.auraBlades && blade <= 4; blade++) {
-			draw.image(aura_blade, x + auraBladePos[blade - 1][0], y + auraBladePos[blade - 1][1]);
+		for (let blade = 0; blade < game.eff.auraBlades && blade < 4; blade++) {
+			draw.image(aura_blade, x + auraBladePos[blade][0], y + auraBladePos[blade][1]);
 		};
 	};
+	for (const key in game.eff) {
+		if (Object.hasOwnProperty.call(game.eff, key)) {
+			let img = new Image();
+			if (key == "auraBlades") img = icon.aura_blade;
+			else if (key == "reinforces") img = icon.reinforce;
+			if (game.eff[key]) {
+				if (game.shield) {
+					draw.image(img, x + 23, y + 104);
+					draw.lore(x + 34, y + 112, game.eff[key], {"color": "white", "text-align": "left"});
+				} else {
+					draw.image(img, x + 23, y + 93);
+					draw.lore(x + 34, y + 101, game.eff[key], {"color": "white", "text-align": "left"});
+				};
+				x += 17;
+			};
+		};
+	};
+	x = 15;
 	draw.imageSector(player[playerAnim[1]], Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
 	if (playerAnim[1] == "idle") {
 		playerAnim[0] += 0.25;
@@ -699,8 +697,8 @@ function info(type, location = "player", xPlus = 0) {
 			};
 			draw.textBox(x + 69, y, 24, infoText.reinforce, {"text-small": true});
 		} else if (location == "player") {
-			let pos = 71, desc = "You have " + game.reinforces + " reinforce";
-			if (game.reinforces >= 2) desc += "s.";
+			let pos = 71, desc = "You have " + game.eff.reinforces + " reinforce";
+			if (game.eff.reinforces >= 2) desc += "s.";
 			else desc += ".";
 			draw.textBox(85 + xPlus, pos, desc.length, desc, {"text-small": true});
 			draw.textBox(85 + xPlus, pos + 11, 24, infoText.reinforce, {"text-small": true});
@@ -719,9 +717,9 @@ function info(type, location = "player", xPlus = 0) {
 			};
 			draw.textBox(x + 70, y, 24, infoText.aura_blade, {"text-small": true});
 		} else if (location == "player") {
-			let pos = 71, desc = "You have " + game.auraBlades + " aura blade";
-			if (game.reinforces) pos += 44;
-			if (game.auraBlades >= 2) desc += "s.";
+			let pos = 71, desc = "You have " + game.eff.auraBlades + " aura blade";
+			if (game.eff.reinforces) pos += 44;
+			if (game.eff.auraBlades >= 2) desc += "s.";
 			else desc += ".";
 			draw.textBox(85 + xPlus, pos, desc.length, desc, {"text-small": true});
 			draw.textBox(85 + xPlus, pos + 11, 24, infoText.aura_blade, {"text-small": true});
@@ -766,10 +764,10 @@ function target() {
 			if (global.charStage.knight == 0) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the forgotten one", {"color": "white", "text-align": "center", "text-small": true});
 			else if (global.charStage.knight == 1) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the true knight", {"color": "white", "text-align": "center", "text-small": true});
 		};
-		if (game.reinforces) {
+		if (game.eff.reinforces) {
 			info("reinforce", "player", coor[0] + coor[2] - 80);
 		};
-		if (game.auraBlades) {
+		if (game.eff.auraBlades) {
 			info("aura blades", "player", coor[0] + coor[2] - 80);
 		};
 	} else if (game.select[0] == "artifacts") {
