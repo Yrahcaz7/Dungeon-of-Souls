@@ -742,18 +742,18 @@ function target() {
 		const pos = game.enemyPos[game.select[1]];
 		let coords = [], name = "";
 		if (enemyType == "slime_small") {
-			coords = [19, 35, 26, 29, 27.5];
+			coords = [19, 35, 26, 29];
 			name = "small slime";
 		} else if (enemyType == "slime_big" || (enemyType == "slime_prime" && primeAnim != -1 && primeAnim < 5)) {
-			coords = [5, 25, 54, 39, 17.5];
+			coords = [5, 25, 54, 39];
 			name = "big slime";
 		} else if (enemyType == "slime_prime") {
-			coords = [0, 5, 63, 59, -2.5];
+			coords = [0, 5, 63, 59];
 			name = "prime slime";
 		};
 		if (coords) {
 			draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
-			draw.lore(pos[0] + 31, pos[1] + coords[4], name, {"color": "white", "text-align": "center", "text-small": true});
+			draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "white", "text-align": "center", "text-small": true});
 			if (game.select[1] == 0 && game.enemies.length > 1) draw.lore(pos[0] + coords[0] - 5.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-align": "left", "text-small": true});
 			else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-small": true});
 			/*if (enemy.eff.burn) {
