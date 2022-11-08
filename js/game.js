@@ -580,6 +580,10 @@ function selection() {
 	if (action == "enter" && (game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "discard")) {
 		if (game.select[1] == 0) game.select[1] = 1;
 		else game.select[1] = 0;
+		if (game.select[0] == "deck" || game.select[0] == "discard") {
+			game.deckPos = 0;
+			game.deckMove = "none";
+		};
 		actionTimer = 2;
 		return;
 	} else if (action == "enter" && game.select[0] == "map") {
