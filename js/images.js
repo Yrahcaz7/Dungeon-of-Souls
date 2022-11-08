@@ -118,9 +118,10 @@ const player = {
 	map: new Image,
 	seed: new Image,
 }, icon = {
-	reinforce: new Image,
 	aura_blade: new Image,
+	burn: new Image,
 	iron_will: new Image,
+	reinforce: new Image,
 }, intent = {
 	defend: [new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image],
 	attack: [new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image],

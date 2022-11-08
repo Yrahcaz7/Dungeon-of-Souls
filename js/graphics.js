@@ -469,18 +469,30 @@ function enemyGraphics() {
 	for (let index = 0; index < game.enemies.length; index++) {
 		let select = game.enemies[index], pos = game.enemyPos[index];
 		draw.bars(pos[0], pos[1], select.health, select.maxHealth, select.shield, select.maxShield);
+		let x = +pos[0], y = +pos[1];
+		for (const key in select.eff) {
+			if (Object.hasOwnProperty.call(select.eff, key)) {
+				let img = new Image();
+				if (key == "burn") img = icon.burn;
+				else if (key == "reinforces") img = icon.reinforce;
+				if (select.eff[key]) {
+					if (select.shield) {
+						draw.image(img, x, y + 89);
+						draw.lore(x + 11, y + 97, select.eff[key], {"color": "white", "text-align": "left"});
+					} else {
+						draw.image(img, x, y + 78);
+						draw.lore(x + 11, y + 86, select.eff[key], {"color": "white", "text-align": "left"});
+					};
+					x += 17;
+				};
+			};
+		};
 	};
 	for (let index = 0; index < game.enemies.length; index++) {
 		let select = game.enemies[index], pos = game.enemyPos[index];
 		if (select.health <= 0) {
 			game.enemies.splice(index, 1);
 			if (tempAnim[3] >= index) tempAnim[3]--;
-			for (let a = index; a < game.enemies.length; a++) {
-				let ref = game.enemies[a];
-				ref.location = a;
-				game.enemies[a] = new Enemy(undefined, undefined, ref);
-				console.log("refresh enemy " + a);
-			};
 		};
 		if (!pos) return;
 		if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
