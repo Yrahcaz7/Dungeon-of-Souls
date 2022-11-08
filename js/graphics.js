@@ -690,7 +690,7 @@ function renderCards() {
 	};
 };
 
-function info(type, location = "none", xPlus = 0) {
+function info(type, location = "none", xPlus = 0, yPlus = 0) {
 	if (location == "card") {
 		let x = game.handPos[game.select[1]] + xPlus, y = 147 - Math.floor(cardAnim[game.select[1]]);
 		if (game.select[1] == game.hand.length - 1 && game.hand.length >= 4) {
@@ -719,6 +719,14 @@ function info(type, location = "none", xPlus = 0) {
 			else desc += ".";
 			draw.textBox(85 + xPlus, pos, desc.length, desc, {"text-small": true});
 			draw.textBox(85 + xPlus, pos + 11, 24, infoText.reinforce, {"text-small": true});
+		};
+	} else if (location == "enemy") {
+		if (type == "burn") {
+			const enemy = game.enemies[game.select[1]];
+			const pos = game.enemyPos[game.select[1]];
+			let desc = "This enemy has " + enemy.eff.burn + " burn.";
+			draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, pos[1] + yPlus, desc.length, desc, {"text-small": true});
+			draw.textBox(pos[0] - 72.5 + xPlus, pos[1] + yPlus + 11, 24, infoText.burn, {"text-small": true});
 		};
 	} else if (location == "artifact") {
 		if (type == "the map") {
@@ -756,9 +764,10 @@ function target() {
 			draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "white", "text-align": "center", "text-small": true});
 			if (game.select[1] == 0 && game.enemies.length > 1) draw.lore(pos[0] + coords[0] - 5.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-align": "left", "text-small": true});
 			else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-small": true});
-			/*if (enemy.eff.burn) {
-				info("burn", "enemy");
-			};*/
+			if (enemy.eff.burn) {
+				if (game.select[1] == 0 && game.enemies.length > 1) info("burn", "enemy", coords[0] - 5.5, coords[1] + 11);
+				else info("burn", "enemy", coords[0] - 5.5, coords[1] - 2);
+			};
 		};
 	} else if (game.select[0] == "lookat_you") {
 		let coor = [60, 72, 20, 39];
