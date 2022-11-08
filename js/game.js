@@ -332,14 +332,9 @@ function selection() {
 		return;
 	};
 	// map
-	if (game.select[0] == "in_map" && game.state == "event_fin") {
-		if (action == "up" && game.mapSelect == "exit") {
-			game.mapOn = game.paths[game.location].length - 1;
-			game.mapSelect = game.paths[game.location][game.mapOn];
-			actionTimer = 1;
-			return;
-		} else if (action == "up" && game.mapSelect != "seed" && game.mapSelect != "seed-on") {
-			if (game.mapOn) {
+	if (game.select[0] == "in_map" && game.state == "event_fin" && game.paths[game.location]) {
+		if ((action == "up" || action == "right") && game.mapSelect != "seed" && game.mapSelect != "seed-on") {
+			if (game.mapOn > 0) {
 				game.mapOn = game.mapOn - 1;
 				game.mapSelect = game.paths[game.location][game.mapOn];
 			} else {
@@ -348,42 +343,12 @@ function selection() {
 			};
 			actionTimer = 1;
 			return;
-		} else if (action == "left" && game.mapSelect == "seed") {
-			game.mapOn = 0;
-			game.mapSelect = game.paths[game.location][0];
-			actionTimer = 1;
-			return;
-		} else if (action == "left" && game.mapSelect != "exit" && game.mapSelect != "seed-on" && game.floor) {
-			game.mapOn = -1;
-			game.mapSelect = "exit";
-			actionTimer = 1;
-			return;
-		} else if (action == "right" && game.mapSelect == "exit") {
-			if (game.floor) {
-				game.mapOn = game.paths[game.location].length - 1;
-				game.mapSelect = game.paths[game.location][game.mapOn];
-			} else {
-				game.mapOn = -1;
-				game.mapSelect = "seed";
-			};
-			actionTimer = 1;
-			return;
-		} else if (action == "right" && game.mapSelect != "exit" && game.mapSelect != "seed" && game.mapSelect != "seed-on") {
-			game.mapOn = -1;
-			game.mapSelect = "seed";
-			actionTimer = 1;
-			return;
-		} else if (action == "down" && game.mapSelect == "seed") {
-			game.mapOn = 0;
-			game.mapSelect = game.paths[game.location][0];
-			actionTimer = 1;
-			return;
-		} else if (action == "down" && game.mapSelect != "exit" && game.mapSelect != "seed-on") {
+		} else if ((action == "left" || action == "down") && game.mapSelect != "exit" && game.mapSelect != "seed-on") {
 			if (game.mapOn < game.paths[game.location].length - 1) {
 				game.mapOn = game.mapOn + 1;
 				game.mapSelect = game.paths[game.location][game.mapOn];
 			} else {
-				game.mapOn = -1;
+				game.mapOn = game.paths[game.location].length;
 				game.mapSelect = "exit";
 			};
 			actionTimer = 1;
