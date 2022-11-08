@@ -18,7 +18,7 @@
 var death_zones = 0, rowFalses = 0, rowNodes = 0, twoRow = false;
 
 function weaker(row) {
-	return ", " + Math.round(0.5 + (row * 0.05), 2);
+	return ", " + (Math.round((0.5 + (row * 0.05)) * 100) / 100);
 };
 
 function mapPiece(row, attribute = "none") {

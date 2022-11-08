@@ -906,31 +906,47 @@ function mapGraphics(onlyCalc = false) {
 		draw.lore(1, 1, info, {"color": "red"});
 		// seed snippet
 		if (push <= 126) {
-			seed = JSON.stringify(game.firstRoom) + " " + JSON.stringify(game.map);
-			// constants
-			seed = seed.slice(30, seed.length - 2).replace("]] [[false", " ");
-			// true and false
-			seed = seed.replace(/false/g, "\\0").replace(/true/g, "\\1");
-			// enemies
-			seed = seed.replace(/"slime_small"/g, "\\ss'").replace(/"slime_big"/g, "\\sb'").replace(/"slime_prime"/g, "\\sp'");
-			seed = seed.replace(/"slime_small, /g, "\\ss+").replace(/"slime_big, /g, "\\sb+").replace(/"slime_prime, /g, "\\sp+");
-			// cards
-			seed = seed.replace(/"aura blade"/g, "\\aur_b").replace(/"block"/g, "\\blo").replace(/"error"/g, "\\err").replace(/"everlasting shield"/g, "\\eve_s").replace(/"reinforce"/g, "\\rei").replace(/"slash"/g, "\\sla").replace(/"war cry"/g, "\\war_c");
-			// map nodes
-			seed = seed.replace(/"battle",/g, "\\B").replace(/"treasure",/g, "\\T").replace(/"battle_prime",/g, "\\P");
-			// map attributes
-			seed = seed.replace(/"closed",|"open",/g, "\\C");
-			// numbers
-			seed = seed.replace(/\+0./g, "=").replace(/\+1./g, "^");
-			// technical
-			seed = seed.replace(/\[\[/g, "(").replace(/\]\]/g, ")").replace(/\[\\/g, "{").replace(/"\]/g, "}").replace(/,\\/g, "/").replace(/\),/g, "~").replace(/\],/g, "&").replace(/'\//g, "!").replace(/'&/g, "*").replace(/\)\/0/g, "#").replace(/,\{/g, "$").replace(/\},/g, "%").replace(/~\{/g, "@").replace(/\(\\/g, "`").replace(/\)&/g, "?").replace(/\?`/g, ";").replace(/#\$/g, "|").replace(/#&`/g, ">").replace(/\?\{0/g, "<").replace(/#&\{/g, "'");
-			// duplicate numbers
-			seed = seed.replace(/0\/0\/0\/0/g, "0:4").replace(/0\/0\/0/g, "0:3").replace(/0\/0/g, "0:2").replace(/#\/0/g, "-0");
-			// duplicate enemies
-			seed = seed.replace(/ss!ss/g, "ss:2").replace(/sb!sb/g, "sb:2");
-			// encode
-			seed = btoa(seed);
-			// print
+			let arr = JSON.stringify(game.map).split(",");
+			let ignore = 1;
+			for (let index = 0; index < arr.length; index++) {
+				if (ignore) {
+					ignore--;
+					continue;
+				};
+				const element = arr[index].replace(/"|\s|\[/g, "");
+				if (element.startsWith("false")) {
+					seed += "F";
+				} else if (element == "battle") {
+					seed += "B";
+					ignore = 2;
+				} else if (element == "treasure") {
+					seed += "T";
+					ignore = 2;
+				} else if (element == "battle_prime") {
+					seed += "D";
+					ignore = 2;
+				} else if (element.includes("slime_small")) {
+					seed += "ss";
+					pastEnemy = true;
+				} else if (element.includes("slime_big")) {
+					seed += "sb";
+					pastEnemy = true;
+				} else if (element.includes("slime_prime")) {
+					seed += "sp";
+					pastEnemy = true;
+				} else if (element.charAt(4) == "]" && element.charAt(5) == "]") {
+					seed += element.replace(/\]/g, "");
+				} else if (element != "open" && element != "closed") {
+					seed += element;
+				};
+			};
+			seed = seed.replace(/0\./g, ".").replace(/\d{21,}/g, substring => {
+				let str = "";
+				for (let index = 0; index < (substring.length / 15); index++) {
+					str += ":" + (+substring.slice(index * 15, (index + 1) * 15)).toString(36);
+				};
+				return str;
+			}).replace(/\]:/g, ":");
 			draw.lore(396, 1, "seed: " + seed.slice(0, 126 - push) + "\n" + seed.slice(126 - push, 255 - (push * 2)) + "...", {"color": "white", "text-align": "left", "text-small": true});
 		};
 	};
