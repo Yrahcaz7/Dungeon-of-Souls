@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-var death_zones = 0, rowFalses = 0, rowNodes = 0;
+var death_zones = 0, rowFalses = 0, rowNodes = 0, twoRow = false;
 
 function weaker(row) {
 	return ", " + Math.round(0.5 + (row * 0.05), 2);
@@ -26,7 +26,7 @@ function mapPiece(row, attribute = "none") {
 	if (attribute == "treasure") return ["treasure", randomInt(-5, 5), randomInt(-5, 5), "closed", randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
 	if (attribute == "prime") return ["battle_prime", 0, 0, ["slime_small" + weaker(row), "slime_prime", "slime_small" + weaker(row)], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
 	let type = chance(3/5)?"battle":false;
-	if (rowFalses >= 4 || (row == 0 && rowFalses >= 2)) type = "battle";
+	if (rowFalses >= 4 || (twoRow && rowFalses >= 3) || (row == 0 && rowFalses >= 2)) type = "battle";
 	if (type) rowNodes++;
 	else rowFalses++;
 	if (!type || rowNodes == 6) return false;
@@ -113,6 +113,7 @@ function generateMap() {
 	death_zones = 0;
 	for (let index = 0; index < 8; index++) {
 		game.map.push(mapRow(index));
+		if (rowNodes == 2) twoRow = true;
 	};
 	if (death_zones === 0) {
 		let rand = randomInt(0, 5), past = [];
