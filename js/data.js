@@ -16,9 +16,10 @@
  */
 
 const infoText = {
-	reinforce: "At the start of each\nturn, one reinforce is\nused up to retain your\nblock (even if you have\nno block left.)",
 	aura_blade: "Every time you attack,\none of your aura blades\nis used up for 5 + X\nextra damage, X being\nthe number of aura\nblades you have.",
+	burn: "At the end of each\nturn, each burn deals 1\ndamage to what it is on,\nthen one burn on that\ngoes away.",
 	iron_will: "Every time a battle\nends, you heal 2 health.",
+	reinforce: "At the start of each\nturn, one reinforce is\nused up to retain your\nblock (even if you have\nno block left.)",
 	the_map: "Every time a battle\nends, you can choose\nwhere you go next.",
 }, overview = ""
 	+ "<b>Storyline:<s>"
