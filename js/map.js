@@ -15,13 +15,14 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-var death_zones = 0, rowFalses = 0, rowNodes = 0, twoRow = false;
+var mapProg = 0, mapTotal = 52, death_zones = 0, rowFalses = 0, rowNodes = 0, twoRow = false;
 
 function weaker(row) {
 	return ", " + (Math.round((0.5 + (row * 0.05)) * 100) / 100);
 };
 
 function mapPiece(row, attribute = "none") {
+	mapProg++;
 	if (attribute == "1stbattle") return ["battle", 0, 0, ["slime_small"], randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5)];
 	if (attribute == "treasure") return ["treasure", randomInt(-5, 5), randomInt(-5, 5), "closed", randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
 	if (attribute == "prime") return ["battle_prime", 0, 0, ["slime_small" + weaker(row), "slime_prime", "slime_small" + weaker(row)], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
@@ -108,15 +109,25 @@ function mapRow(row) {
 	return arr;
 };
 
-function generateMap() {
+function updateMapProg() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	draw.lore(200, 100, "Generating Map...\n" + (mapProg / mapTotal * 100).toFixed(2) + "%", {"color": "white", "text-align": "center"});
+};
+
+async function generateMap() {
 	game.firstRoom = mapPiece(0, "1stbattle");
 	game.map = [];
 	death_zones = 0;
 	for (let index = 0; index < 8; index++) {
 		game.map.push(mapRow(index));
+		updateMapProg();
+		await new Promise(r => setTimeout(r, 0));
 		if (rowNodes == 2) twoRow = true;
 	};
 	if (death_zones === 0) {
+		mapProg++;
+		updateMapProg();
+		await new Promise(r => setTimeout(r, 0));
 		let rand = randomInt(0, 5), past = [];
 		const setRand = () => {
 			rand = randomInt(0, 5);
@@ -133,6 +144,9 @@ function generateMap() {
 			};
 		};
 		if (death_zones === 0) {
+			mapProg++;
+			updateMapProg();
+			await new Promise(r => setTimeout(r, 0));
 			rand = randomInt(0, 5);
 			past = [];
 			while (past.length < 6) {
@@ -148,4 +162,7 @@ function generateMap() {
 		};
 	};
 	mapGraphics(true);
+	musicPopups();
+	updateVisuals();
+	loaded = true;
 };

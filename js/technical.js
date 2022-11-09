@@ -68,13 +68,10 @@ window.onload = () => {
 	canvasData();
 	mapGraphics(true);
 	if (game.map.length === 0) {
-		draw.lore(200, 100, "Generating Map...", {"color": "white", "text-align": "center"});
+		updateMapProg();
 		setTimeout(function() {
 			generateMap();
-			musicPopups();
-			updateVisuals();
-			loaded = true;
-		}, 100);
+		}, 0);
 	} else {
 		musicPopups();
 		updateVisuals();
