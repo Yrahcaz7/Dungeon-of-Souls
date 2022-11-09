@@ -255,10 +255,11 @@ const draw = {
 		} else {
 			draw.lore(x + 32, y + 42, name.title(), {"text-align": "center"});
 		};
-		let desc = cards[cardObject.id].desc;
-		if (game.eff.auraBlades) {
+		let desc = cards[cardObject.id].desc, exDamage = 0;
+		if (game.eff.auraBlades) exDamage += 5 + game.eff.auraBlades;
+		if (exDamage && game.select[0] != "card_rewards") {
 			desc = desc.replace(/([Dd]eal\s)(\d+)(\sdamage)/g, (substring, pre, number, post) => {
-				return pre + "<light-green>" + (parseInt(number) + 5 + game.eff.auraBlades) + "</light-green>" + post;
+				return pre + "<light-green>" + (parseInt(number) + exDamage) + "</light-green>" + post;
 			});
 		};
 		draw.lore(x + 6, y + 55, desc, {"text-small": true});
@@ -698,6 +699,13 @@ function info(type, location = "none", xPlus = 0, yPlus = 0) {
 		};
 		if (type == "aura blades") draw.textBox(x + 69, y, 24, infoText.aura_blade, {"text-small": true});
 		else draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});
+	} else if (location == "reward") {
+		let x = game.handPos[game.select[1]] + xPlus;
+		if (game.select[1] == game.cardRewardChoices - 1 && game.cardRewardChoices >= 4) {
+			x -= 146;
+		};
+		if (type == "aura blades") draw.textBox(x + 69, 50, 24, infoText.aura_blade, {"text-small": true});
+		else draw.textBox(x + 69, 50, 24, infoText[type], {"text-small": true});
 	} else if (location == "deck") {
 		let x = 3 + (game.cardSelect[0] * 66) + xPlus, y = 15 + (game.cardSelect[1] * 98) - game.deckPos;
 		if (game.cardSelect[0] >= 4) {
@@ -813,6 +821,15 @@ function target() {
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "deck");
 		};
+	} else if (game.select[0] == "card_rewards") {
+		const desc = cards[game.room[5][game.select[1]]].desc;
+		if (desc.includes("aura blade")) {
+			info("aura blades", "reward");
+		} else if (desc.includes("burn")) {
+			info("burn", "reward");
+		} else if (desc.includes("reinforce")) {
+			info("reinforce", "reward");
+		};
 	};
 };
 
@@ -870,8 +887,9 @@ function rewardGraphics(focused = true) {
 function cardRewardGraphics(focused = true) {
 	let x = 199 - (game.cardRewardChoices * 68 / 2), y = 20, width = (game.cardRewardChoices * 68) + 2, height = 160;
 	draw.box(x, y, width, height);
-	if (game.cardRewardChoices == 1) draw.lore(x + (width / 2), y + 1, "Choose your\ncard reward:", {"text-align": "center"});
-	else draw.lore(x + (width / 2), y + 1, "Choose your card reward:", {"text-align": "center"});
+	if (game.cardRewardChoices == 2) draw.lore(200 - 2, y + 1, "Choose your card\nreward:", {"text-align": "center"});
+	else if (game.cardRewardChoices == 1) draw.lore(200 - 2, y + 1, "Choose your\ncard reward", {"text-align": "center"});
+	else draw.lore(200 - 2, y + 1, "Choose your card reward:", {"text-align": "center"});
 	game.handPos = [];
 	for (let index = 0; index < game.cardRewardChoices; index++) {
 		game.handPos.push((199 - (game.cardRewardChoices * 68 / 2)) + 1 + (index * 68));

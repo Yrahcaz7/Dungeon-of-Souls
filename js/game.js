@@ -769,10 +769,7 @@ function updateVisuals() {
 		effectGraphics();
 	};
 	foregrounds();
-	if (!hide) {
-		renderCards();
-		if (game.select[0] != "deck" || !game.select[1]) target();
-	};
+	if (!hide) renderCards();
 	if (game.select[0] == "in_map") {
 		mapGraphics();
 	} else if (game.select[0] == "confirm_end") {
@@ -827,6 +824,7 @@ function updateVisuals() {
 		deckPos = 0;
 		deckMove = "none";
 	};
+	if (!hide) target();
 	popupGraphics();
 };
 
