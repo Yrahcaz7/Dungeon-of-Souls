@@ -77,7 +77,6 @@ const player = {
 	white: new Image,
 	deep_red: new Image,
 	light_green: new Image,
-	black_fade: [new Image, new Image, new Image],
 	red_fade: [new Image, new Image, new Image],
 }, bar = {
 	health_empty: new Image,
@@ -212,9 +211,6 @@ for (const image in letters) {
 		letters[image].src = "images/letters/" + image + ".png";
 	};
 };
-letters.black_fade[0].src = "images/letters/black_fade_0.png";
-letters.black_fade[1].src = "images/letters/black_fade_1.png";
-letters.black_fade[2].src = "images/letters/black_fade_2.png";
 letters.red_fade[0].src = "images/letters/red_fade_0.png";
 letters.red_fade[1].src = "images/letters/red_fade_1.png";
 letters.red_fade[2].src = "images/letters/red_fade_2.png";
