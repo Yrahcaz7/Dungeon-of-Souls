@@ -354,14 +354,6 @@ function selection() {
 			};
 			actionTimer = 1;
 			return;
-		} else if (action == "enter" && game.mapSelect == "seed-on") {
-			game.mapSelect = "seed";
-			actionTimer = 1;
-			return;
-		} else if (action == "enter" && game.mapSelect == "seed") {
-			game.mapSelect = "seed-on";
-			actionTimer = 1;
-			return;
 		} else if (action == "enter" && game.mapSelect != "exit") {
 			game.location = game.mapSelect;
 			let coor = game.mapSelect.split(", ");
@@ -383,15 +375,7 @@ function selection() {
 				game.mapSelect = "exit";
 				actionTimer = 1;
 				return;
-			} else if (action == "enter" && game.mapSelect == "seed-on") {
-				game.mapSelect = "seed";
-				actionTimer = 1;
-				return;
-			} else if (action == "enter" && game.mapSelect == "seed") {
-				game.mapSelect = "seed-on";
-				actionTimer = 1;
-				return;
-			}
+			};
 		};
 		game.mapOn = -1;
 	};

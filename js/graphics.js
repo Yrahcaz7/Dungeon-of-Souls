@@ -884,7 +884,7 @@ function cardRewardGraphics(focused = true) {
 };
 
 function mapGraphics(onlyCalc = false) {
-	let render = !onlyCalc, seed = "";
+	let render = !onlyCalc;
 	if (render) {
 		draw.rect("#000");
 		draw.image(map.top, 3, 12);
@@ -993,15 +993,5 @@ function mapGraphics(onlyCalc = false) {
 	};
 	for (let item in game.paths) {
 		game.paths[item].sort();
-	};
-	if (render && game.mapSelect == "seed-on") {
-		draw.rect("#000c");
-		for (let line = 0; line < seed.length / 132; line++) {
-			let indexes = [line * 132, (line + 1) * 132];
-			draw.lore(1, 14 + (line * 5.5), seed.slice(indexes[0], indexes[1]), {"color": "white", "text-small": true});
-		};
-		draw.rect("#0004", 0, 0, 400, 13);
-		draw.lore(200, 1, "Seed", {"color": "white", "text-align": "center"});
-		draw.rect("#fff", 1, 12, 398, 1);
 	};
 };
