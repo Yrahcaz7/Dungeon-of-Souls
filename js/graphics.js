@@ -68,10 +68,16 @@ const draw = {
 			for (let index = 0; index < array.length; index++) {
 				if (array[index].includes("s>") || array[index].includes("small>")) {
 					array[index] = array[index].replace(/s>|small>/, "");
-					space += draw.lore(x, y + space, array[index], {"color": color, "text-align": position, "text-small": true});
+					let obj = {};
+					Object.assign(obj, style);
+					obj["text-small"] = true;
+					space += draw.lore(x, y + space, array[index], obj);
 				} else if (array[index].includes("b>") || array[index].includes("big>")) {
 					array[index] = array[index].replace(/b>|big>/, "");
-					space += draw.lore(x, y + space, array[index], {"color": color, "text-align": position, "text-small": false});
+					let obj = {};
+					Object.assign(obj, style);
+					obj["text-small"] = false;
+					space += draw.lore(x, y + space, array[index], obj);
 				} else {
 					space += draw.lore(x, y + space, array[index], style);
 				};
