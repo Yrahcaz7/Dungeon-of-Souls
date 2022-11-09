@@ -54,6 +54,10 @@ function randomInt(min, max) {
 	return Math.floor(random() * (max - min + 1)) + min;
 };
 
+function chance(chance = 0.5) {
+	return random()<chance;
+};
+
 // page setup
 
 var canvas, scale, ctx, action = "none", lastAction = "none", loaded = false;

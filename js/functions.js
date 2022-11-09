@@ -28,10 +28,6 @@ String.prototype.title = function() {
 
 // technical functions
 
-function chance(chance = 0.5) {
-	return Math.random()<chance;
-};
-
 function randomize(array) {
 	let index = array.length, randomIndex;
 	while (index != 0) {
