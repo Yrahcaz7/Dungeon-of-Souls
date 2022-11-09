@@ -136,6 +136,21 @@ function endTurn() {
 	game.turn = "enemy";
 };
 
+function endTurnConfirm() {
+	let confirm = false;
+	if (game.hand.length >= 1) {
+		for (let index = 0; index < game.hand.length; index++) {
+			if (cards[game.hand[index].id].cost <= game.energy) {
+				confirm = true;
+				break;
+			};
+		};
+	};
+	if (confirm) game.select = ["confirm_end", 0];
+	else endTurn();
+	actionTimer = 2;
+};
+
 function playerTurn() {
 	// finish attack enemy
 	if (game.enemyAttFin && playerAnim[1] == "idle") {
@@ -235,8 +250,10 @@ function selection() {
 			game.select[1] = 1;
 			actionTimer = 1;
 		} else if (action == "enter") {
-			if (!game.select[1]) endTurn();
-			game.select = ["end", 0];
+			if (!game.select[1]) {
+				endTurn();
+				game.select = ["end", 0];
+			} else if (game.hand.length > 0) game.select = ["hand", game.prevCard];
 			actionTimer = 2;
 		};
 		return;
@@ -565,18 +582,7 @@ function selection() {
 		actionTimer = 2;
 		return;
 	} else if (action == "enter" && game.select[0] == "end" && game.turn == "player") {
-		let confirm = false;
-		if (game.hand.length >= 1) {
-			for (let index = 0; index < game.hand.length; index++) {
-				if (cards[game.hand[index].id].cost <= game.energy) {
-					confirm = true;
-					break;
-				};
-			};
-		};
-		if (confirm) game.select = ["confirm_end", 0];
-		else endTurn();
-		actionTimer = 2;
+		endTurnConfirm();
 		return;
 	};
 	// scrolling

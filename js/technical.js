@@ -96,7 +96,21 @@ function canvasData() {
 
 document.addEventListener("keydown", (event) => {
 	const key = event.key, prevAction = "" + action;
-	if (key == " " || key == "Enter") action = "enter";
+	if (key == "E" || key == "e") {
+		if (game.select[0] != "confirm_end") endTurnConfirm();
+	} else if (key == "1") {
+		if (game.select[0] == "deck" && game.select[1]) {
+			if (game.hand.length > 0) game.select = ["hand", game.prevCard];
+			else if (game.state == "battle") game.select = ["end", 0];
+			else game.select = ["map", 0];
+		} else game.select = ["deck", 1];
+	} else if (key == "2") {
+		if (game.select[0] == "discard" && game.select[1]) {
+			if (game.hand.length > 0) game.select = ["hand", game.prevCard];
+			else if (game.state == "battle") game.select = ["end", 0];
+			else game.select = ["map", 0];
+		} else game.select = ["discard", 1];
+	} else if (key == " " || key == "Enter") action = "enter";
 	else if (key == "W" || key == "w" || key == "ArrowUp") action = "up";
 	else if (key == "A" || key == "a" || key == "ArrowLeft") action = "left";
 	else if (key == "S" || key == "s" || key == "ArrowDown") action = "down";
