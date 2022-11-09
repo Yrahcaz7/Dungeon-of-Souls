@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-var mapProg = 0, mapTotal = 52, death_zones = 0, rowFalses = 0, rowNodes = 0, twoRow = false;
+var mapProg = 0, mapTotal = 50, mapExProg = 0, death_zones = 0, rowFalses = 0, rowNodes = 0, twoRow = false;
 
 function weaker(row) {
 	return ", " + (Math.round((0.5 + (row * 0.05)) * 100) / 100);
@@ -109,9 +109,9 @@ function mapRow(row) {
 	return arr;
 };
 
-function updateMapProg() {
+function updateMapProg(extra = "") {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	draw.lore(200, 100, "Generating Map...\n" + (mapProg / mapTotal * 100).toFixed(2) + "%", {"color": "white", "text-align": "center"});
+	draw.lore(200, 100, "Generating Map...\n" + (mapProg / mapTotal * 100).toFixed(0) + "%\n" + extra, {"color": "white", "text-align": "center"});
 };
 
 async function generateMap() {
@@ -125,9 +125,6 @@ async function generateMap() {
 		if (rowNodes == 2) twoRow = true;
 	};
 	if (death_zones === 0) {
-		mapProg++;
-		updateMapProg();
-		await new Promise(r => setTimeout(r, 0));
 		let rand = randomInt(0, 5), past = [];
 		const setRand = () => {
 			rand = randomInt(0, 5);
@@ -139,14 +136,15 @@ async function generateMap() {
 				death_zones++;
 				break;
 			} else {
+				mapExProg++;
+				updateMapProg("check #1: " + mapExProg + " iterations");
+				await new Promise(r => setTimeout(r, 0));
 				if (!past.includes(rand)) past.push(rand);
 				if (past.length < 6) setRand();
 			};
 		};
 		if (death_zones === 0) {
-			mapProg++;
-			updateMapProg();
-			await new Promise(r => setTimeout(r, 0));
+			mapExProg = 0;
 			rand = randomInt(0, 5);
 			past = [];
 			while (past.length < 6) {
@@ -155,6 +153,9 @@ async function generateMap() {
 					death_zones++;
 					break;
 				} else {
+					mapExProg++;
+					updateMapProg("check #2: " + mapExProg + " iterations");
+					await new Promise(r => setTimeout(r, 0));
 					if (!past.includes(rand)) past.push(rand);
 					if (past.length < 6) setRand();
 				};
