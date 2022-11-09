@@ -44,13 +44,13 @@ const draw = {
 		ctx.stroke();
 	},
 	// complex - second order (uses basic)
-	lore(x, y, string, style = {"color": "black", "outline-color": "", "text-align": "right", "text-small": false}) {
+	lore(x, y, string, style = {"color": "black", "outline-color": "black", "text-align": "right", "text-small": false}) {
 		string = "" + string;
 		if (!style["color"]) style["color"] = "black";
-		if (!style["outline-color"]) style["outline-color"] = "";
+		if (!style["outline-color"]) style["outline-color"] = "black";
 		if (!style["text-align"]) style["text-align"] = "right";
 		if (!style["text-small"]) style["text-small"] = false;
-		const color = style["color"], outline = style["outline-color"], position = style["text-align"], small = style["text-small"];
+		let color = style["color"], outline = "", position = style["text-align"], small = style["text-small"];
 		string = string.replace(/<br>/g, "\n");
 		x = Math.round(x * 2) / 2;
 		y = Math.round(y * 2) / 2;
@@ -93,34 +93,54 @@ const draw = {
 		let defImg = img;
 		for (let a = 0; a < string.length; a++) {
 			if (string.charAt(a) == "<") {
-				if (string.indexOf("<red>") == a) {
+				if (string.indexOf("<red") == a) {
+					const next = string.indexOf(">", a);
+					if (next != -1 && string.slice(a, next).includes("outline")) outline = style["outline-color"];
+					else outline = "";
 					img = letters.red;
-					string = string.replace("<red>", "");
-				} else if (string.indexOf("<white>") == a) {
+					string = string.replace(/<red.*?>/, "");
+				} else if (string.indexOf("<white") == a) {
+					const next = string.indexOf(">", a);
+					if (next != -1 && string.slice(a, next).includes("outline")) outline = style["outline-color"];
+					else outline = "";
 					img = letters.white;
-					string = string.replace("<white>", "");
-				} else if (string.indexOf("<black>") == a) {
+					string = string.replace(/<white.*?>/, "");
+				} else if (string.indexOf("<black") == a) {
+					const next = string.indexOf(">", a);
+					if (next != -1 && string.slice(a, next).includes("outline")) outline = style["outline-color"];
+					else outline = "";
 					img = letters.black;
-					string = string.replace("<black>", "");
-				} else if (string.indexOf("<deep-red>") == a) {
+					string = string.replace(/<black.*?>/, "");
+				} else if (string.indexOf("<deep-red") == a) {
+					const next = string.indexOf(">", a);
+					if (next != -1 && string.slice(a, next).includes("outline")) outline = style["outline-color"];
+					else outline = "";
 					img = letters.deep_red;
-					string = string.replace("<deep-red>", "");
-				} else if (string.indexOf("<light-green>") == a) {
+					string = string.replace(/<deep-red.*?>/, "");
+				} else if (string.indexOf("<light-green") == a) {
+					const next = string.indexOf(">", a);
+					if (next != -1 && string.slice(a, next).includes("outline")) outline = style["outline-color"];
+					else outline = "";
 					img = letters.light_green;
-					string = string.replace("<light-green>", "");
+					string = string.replace(/<light-green.*?>/, "");
 				} else if (img == letters.red && string.indexOf("</red>") == a) {
+					outline = "";
 					img = defImg;
 					string = string.replace("</red>", "");
 				} else if (img == letters.white && string.indexOf("</white>") == a) {
+					outline = "";
 					img = defImg;
 					string = string.replace("</white>", "");
 				} else if (img == letters.black && string.indexOf("</black>") == a) {
+					outline = "";
 					img = defImg;
 					string = string.replace("</black>", "");
 				} else if (img == letters.deep_red && string.indexOf("</deep-red>") == a) {
+					outline = "";
 					img = defImg;
 					string = string.replace("</deep-red>", "");
 				} else if (img == letters.light_green && string.indexOf("</light-green>") == a) {
+					outline = "";
 					img = defImg;
 					string = string.replace("</light-green>", "");
 				};
@@ -259,7 +279,7 @@ const draw = {
 		if (game.eff.auraBlades) exDamage += 5 + game.eff.auraBlades;
 		if (exDamage && game.select[0] != "card_rewards") {
 			desc = desc.replace(/([Dd]eal\s)(\d+)(\sdamage)/g, (substring, pre, number, post) => {
-				return pre + "<light-green>" + (parseInt(number) + exDamage) + "</light-green>" + post;
+				return pre + "<light-green outline>" + (parseInt(number) + exDamage) + "</light-green>" + post;
 			});
 		};
 		draw.lore(x + 6, y + 55, desc, {"text-small": true});
