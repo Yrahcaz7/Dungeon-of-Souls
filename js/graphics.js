@@ -120,6 +120,9 @@ const draw = {
 				enters++;
 				enterIndex = a + 1;
 			};
+			// don't print if no color
+			if (color == "none") continue;
+			// stagger 'a' from line breaks
 			if (enters) {
 				a -= enterIndex;
 			};
@@ -600,17 +603,26 @@ function infoGraphics() {
 	draw.rect("#000c");
 	draw.image(extra.help, 381, 3);
 	draw.image(select.round, 380, 2);
-	draw.lore(1, 12 - infPos, "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-Souls\"", {"color": "red", "text-small": true});
-	if (game.select[1] == 3) {
-		draw.lore(1, 1 - infPos, "Dungeon of Souls - Changelog", {"color": "red"});
-		infLimit = (draw.lore(1, 23 - infPos, changelog, {"color": "white"}) + 23) - 200;
-	} else if (game.select[1] == 2) {
-		draw.lore(1, 1 - infPos, "Dungeon of Souls - How To Play", {"color": "red"});
-		infLimit = (draw.lore(1, 23 - infPos, gameplay, {"color": "white"}) + 23) - 200;
-	} else {
-		draw.lore(1, 1 - infPos, "Dungeon of Souls - Overview", {"color": "red"});
-		infLimit = (draw.lore(1, 23 - infPos, overview, {"color": "white"}) + 23) - 200;
+	const limit = (str) => {
+		let lim = (draw.lore(1, 23, str, {"color": "none"}) + 23) - 200;
+		if (lim < 0) lim = 0;
+		if (infPos > lim) infPos = lim;
+		return lim;
 	};
+	if (game.select[1] == 3) {
+		infLimit = limit(changelog);
+		draw.lore(1, 1 - infPos, "Dungeon of Souls - Changelog", {"color": "red"});
+		draw.lore(1, 23 - infPos, changelog, {"color": "white"});
+	} else if (game.select[1] == 2) {
+		infLimit = limit(gameplay);
+		draw.lore(1, 1 - infPos, "Dungeon of Souls - How To Play", {"color": "red"});
+		draw.lore(1, 23 - infPos, gameplay, {"color": "white"});
+	} else {
+		infLimit = limit(overview);
+		draw.lore(1, 1 - infPos, "Dungeon of Souls - Overview", {"color": "red"});
+		draw.lore(1, 23 - infPos, overview, {"color": "white"});
+	};
+	draw.lore(1, 12 - infPos, "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-Souls\"", {"color": "red", "text-small": true});
 	if (infLimit > 0) draw.image(arrows, 386, 22);
 };
 
@@ -645,7 +657,7 @@ function deckGraphics(overrideName = "deck") {
 		else game.deckPos = (98 * (selected[1] - 1)) + 11;
 	};
 	draw.rect("#0004", 0, 0, 400, 13);
-	draw.lore(200, 1, overrideName.title(), {"color": "white", "text-align": "center"});
+	draw.lore(200 - 2, 1, overrideName.title(), {"color": "white", "text-align": "center"});
 	draw.rect("#fff", 1, 12, 398, 1);
 };
 
@@ -861,8 +873,8 @@ function rewardGraphics(focused = true) {
 	draw.box(150, 20, 100, 160);
 	const place = game.location.split(", ");
 	const type = game.location=="-1" ? "battle" : game.map[place[0]][place[1]][0];
-	if (type == "battle") draw.lore(199, 21, "Battle loot!", {"text-align": "center"});
-	else if (type == "treasure") draw.lore(199, 21, "Treasure!", {"text-align": "center"});
+	if (type == "battle") draw.lore(200 - 2, 21, "Battle loot!", {"text-align": "center"});
+	else if (type == "treasure") draw.lore(200 - 2, 21, "Treasure!", {"text-align": "center"});
 	for (let index = 0; index < game.rewards.length; index++) {
 		let item = game.rewards[index];
 		draw.image(rewards.item, 151, 32 + (index * 19));

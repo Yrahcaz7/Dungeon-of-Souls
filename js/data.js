@@ -148,9 +148,8 @@ function updateData() {
 	else if (number == 11) game.handPos = [x - 352 + 170, x - 288 + 136, x - 224 + 102, x - 160 + 68, x - 96 + 34, x - 32, x + 32 - 34, x + 96 - 68, x + 160 - 102, x + 224 - 136, x + 288 - 170];
 	else if (number == 12) game.handPos = [x - 384 + 198, x - 320 + 162, x - 256 + 126, x - 192 + 90, x - 128 + 54, x - 64 + 18, x - 18, x + 64 - 54, x + 128 - 90, x + 192 - 126, x + 256 - 162, x + 320 - 198];
 	// info
-	if (infPos <= 0) infPos = 0;
-	if (infLimit <= 0) infLimit = 0;
-	if (infPos >= infLimit) infPos = infLimit;
+	if (infPos < 0) infPos = 0;
+	if (infPos > infLimit) infPos = infLimit;
 	// fixes
 	if (game.health < 0) game.health = 0;
 	else if (game.health > game.maxHealth) game.health = game.maxHealth;

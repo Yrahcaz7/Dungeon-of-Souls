@@ -587,9 +587,9 @@ function selection() {
 	};
 	// scrolling
 	if (action == "up" && game.select[0] == "help" && infPos > 0 && infLimit > 0) {
-		infPos -= infLimit / 6 + 0.5;
+		infPos -= infLimit / 8 + 0.5;
 	} else if (action == "down" && game.select[0] == "help") {
-		if (infPos < infLimit) infPos += infLimit / 6 + 0.5;
+		if (infPos < infLimit) infPos += infLimit / 8 + 0.5;
 		else infPos = infLimit;
 	};
 	// deselect extras
@@ -762,8 +762,8 @@ function updateVisuals() {
 	backgrounds();
 	if (menuLocation == "title") {
 		draw.image(title, (400 - title.width) / 2, 0);
-		draw.lore(200, 52, "Act 1: The Hands of Time", {"color": "red", "text-align": "center"});
-		if (new Date().getTime() % 1500 >= 700) draw.lore(200, 131, "PRESS START", {"color": "white", "text-align": "center"});
+		draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "red", "text-align": "center"});
+		if (new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "white", "text-align": "center"});
 	};
 	if (menuLocation != "none") {
 		draw.image(view);
@@ -813,7 +813,7 @@ function updateVisuals() {
 		} else {
 			draw.rect("#000c");
 			draw.rect("#0004", 0, 0, 400, 13);
-			draw.lore(200, 1, "Deck", {"color": "white", "text-align": "center"});
+			draw.lore(200 - 2, 1, "Deck", {"color": "white", "text-align": "center"});
 			draw.rect("#fff", 1, 12, 398, 1);
 		};
 	} else if (game.select[0] == "discard" && game.select[1]) {
@@ -822,7 +822,7 @@ function updateVisuals() {
 		} else {
 			draw.rect("#000c");
 			draw.rect("#0004", 0, 0, 400, 13);
-			draw.lore(200, 1, "Discard", {"color": "white", "text-align": "center"});
+			draw.lore(200 - 2, 1, "Discard", {"color": "white", "text-align": "center"});
 			draw.rect("#fff", 1, 12, 398, 1);
 		};
 	} else {
