@@ -73,8 +73,10 @@ const player = {
 	node: new Image,
 }, letters = {
 	black: new Image,
+	blue: new Image,
 	red: new Image,
 	white: new Image,
+	yellow: new Image,
 	deep_red: new Image,
 	light_green: new Image,
 	red_fade: [new Image, new Image, new Image],

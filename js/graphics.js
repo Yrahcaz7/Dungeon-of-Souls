@@ -93,56 +93,33 @@ const draw = {
 		let defImg = img;
 		for (let a = 0; a < string.length; a++) {
 			if (string.charAt(a) == "<") {
-				if (string.indexOf("<red") == a) {
-					const next = string.indexOf(">", a);
-					if (next != -1 && string.slice(a, next).includes("outline")) outline = style["outline-color"];
-					else outline = "";
-					img = letters.red;
-					string = string.replace(/<red.*?>/, "");
-				} else if (string.indexOf("<white") == a) {
-					const next = string.indexOf(">", a);
-					if (next != -1 && string.slice(a, next).includes("outline")) outline = style["outline-color"];
-					else outline = "";
-					img = letters.white;
-					string = string.replace(/<white.*?>/, "");
-				} else if (string.indexOf("<black") == a) {
-					const next = string.indexOf(">", a);
-					if (next != -1 && string.slice(a, next).includes("outline")) outline = style["outline-color"];
-					else outline = "";
-					img = letters.black;
-					string = string.replace(/<black.*?>/, "");
-				} else if (string.indexOf("<deep-red") == a) {
-					const next = string.indexOf(">", a);
-					if (next != -1 && string.slice(a, next).includes("outline")) outline = style["outline-color"];
-					else outline = "";
-					img = letters.deep_red;
-					string = string.replace(/<deep-red.*?>/, "");
-				} else if (string.indexOf("<light-green") == a) {
-					const next = string.indexOf(">", a);
-					if (next != -1 && string.slice(a, next).includes("outline")) outline = style["outline-color"];
-					else outline = "";
-					img = letters.light_green;
-					string = string.replace(/<light-green.*?>/, "");
-				} else if (img == letters.red && string.indexOf("</red>") == a) {
-					outline = "";
-					img = defImg;
-					string = string.replace("</red>", "");
-				} else if (img == letters.white && string.indexOf("</white>") == a) {
-					outline = "";
-					img = defImg;
-					string = string.replace("</white>", "");
-				} else if (img == letters.black && string.indexOf("</black>") == a) {
-					outline = "";
-					img = defImg;
-					string = string.replace("</black>", "");
-				} else if (img == letters.deep_red && string.indexOf("</deep-red>") == a) {
-					outline = "";
-					img = defImg;
-					string = string.replace("</deep-red>", "");
-				} else if (img == letters.light_green && string.indexOf("</light-green>") == a) {
-					outline = "";
-					img = defImg;
-					string = string.replace("</light-green>", "");
+				let broken = false;
+				for (const key in letters) {
+					if (Object.hasOwnProperty.call(letters, key)) {
+						if (letters[key] instanceof Array) continue;
+						if (string.indexOf("<" + key.replace("_", "-")) == a) {
+							const next = string.indexOf(">", a);
+							if (next != -1 && string.slice(a, next).includes("outline")) outline = style["outline-color"];
+							else outline = "";
+							img = letters[key];
+							string = string.replace(new RegExp("<" + key.replace("_", "-") + ".*?>"), "");
+							broken = true;
+							break;
+						};
+					};
+				};
+				if (!broken) {
+					for (const key in letters) {
+						if (Object.hasOwnProperty.call(letters, key)) {
+							if (letters[key] instanceof Array) continue;
+							if (img == letters[key] && string.indexOf("</" + key.replace("_", "-") + ">") == a) {
+								outline = "";
+								img = defImg;
+								string = string.replace("</" + key.replace("_", "-") + ">", "");
+								break;
+							};
+						};
+					};
 				};
 			};
 			let index = string.charCodeAt(a);
