@@ -338,7 +338,7 @@ function selection() {
 	};
 	// map
 	if (game.select[0] == "in_map" && game.state == "event_fin" && game.paths[game.location]) {
-		if ((action == "up" || action == "right") && game.mapSelect != "seed" && game.mapSelect != "seed-on") {
+		if ((action == "up" || action == "right") && game.mapSelect != "seed") {
 			if (game.mapOn > 0) {
 				game.mapOn = game.mapOn - 1;
 				game.mapSelect = game.paths[game.location][game.mapOn];
@@ -348,7 +348,7 @@ function selection() {
 			};
 			actionTimer = 1;
 			return;
-		} else if ((action == "left" || action == "down") && game.mapSelect != "exit" && game.mapSelect != "seed-on") {
+		} else if ((action == "left" || action == "down") && game.mapSelect != "exit") {
 			if (game.mapOn < game.paths[game.location].length - 1) {
 				game.mapOn = game.mapOn + 1;
 				game.mapSelect = game.paths[game.location][game.mapOn];
@@ -358,7 +358,7 @@ function selection() {
 			};
 			actionTimer = 1;
 			return;
-		} else if (action == "enter" && game.mapSelect != "exit") {
+		} else if (action == "enter" && game.mapSelect != "exit"&& game.mapSelect != "seed") {
 			game.location = game.mapSelect;
 			let coor = game.mapSelect.split(", ");
 			game.room = game.map[coor[0]][coor[1]];
