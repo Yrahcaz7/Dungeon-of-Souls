@@ -32,6 +32,8 @@ const infoText = {
 	+ "Use the arrow keys or WASD keys to select things.\n"
 	+ "Press enter or the space bar to perform an action.\n"
 	+ "Press tab to enter full screen, and escape to exit it.\n"
+	+ "There are also shortcut keys, like E, which ends your turn.\n"
+	+ "Two more are '0' to view your deck and '1' to view your discard.\n"
 	+ "<b>How to Play:<s>"
 	+ "You have a deck of cards, which you draw the top 5 from each turn.\n"
 	+ "You can play the cards in your hand for the effect(s) they say.\n"
