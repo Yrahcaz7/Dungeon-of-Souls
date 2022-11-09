@@ -16,7 +16,7 @@
  */
 
 var global = {
-	unlockedCards: [4000, 2002, 2001, 3000],
+	unlockedCards: [],
 	options: {
 		music: true,
 		sticky_cards: false,
@@ -750,9 +750,12 @@ function updateVisuals() {
 	updateData();
 	// visuals
 	backgrounds();
-	if (menuLocation != "none") {
+	if (menuLocation == "title") {
 		draw.image(title, (400 - title.width) / 2, 0);
 		draw.lore(200, 52, "Act 1: The Hands of Time", {"color": "red", "text-align": "center"});
+		if (new Date().getTime() % 1500 >= 700) draw.lore(200, 131, "PRESS START", {"color": "white", "text-align": "center"});
+	};
+	if (menuLocation != "none") {
 		draw.image(view);
 		return;
 	};
