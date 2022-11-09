@@ -170,6 +170,8 @@ function playerTurn() {
 		};
 		game.enemyAttFin = true;
 		game.discard.push(game.hand.splice(game.activeCard, 1)[0]);
+		cardAnim.splice(game.select[1], 1);
+		cardAnim.push(0);
 		game.enemyAttSel = game.select[1];
 		if (game.prevCard) game.select = ["hand", game.prevCard - 1];
 		else game.select = ["hand", 0];
@@ -189,6 +191,8 @@ function playerTurn() {
 				cards[id].effect();
 				game.energy -= cards[id].cost;
 				game.discard.push(game.hand.splice(game.select[1], 1)[0]);
+				cardAnim.splice(game.select[1], 1);
+				cardAnim.push(0);
 				if (game.prevCard) game.select = ["hand", game.prevCard - 1];
 				else game.select = ["hand", 0];
 				actionTimer = 2;
