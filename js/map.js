@@ -15,14 +15,13 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-var mapProg = 0, mapTotal = 50, mapExProg = 0, death_zones = 0, rowFalses = 0, rowNodes = 0, twoRow = false;
+var mapProg = 0, mapTotal = 8, death_zones = 0, rowFalses = 0, rowNodes = 0, twoRow = false;
 
 function weaker(row) {
 	return ", " + (Math.round((0.5 + (row * 0.05)) * 100) / 100);
 };
 
 function mapPiece(row, attribute = "none") {
-	mapProg++;
 	if (attribute == "1stbattle") return ["battle", 0, 0, ["slime_small"], randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5)];
 	if (attribute == "treasure") return ["treasure", randomInt(-5, 5), randomInt(-5, 5), "closed", randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
 	if (attribute == "prime") return ["battle_prime", 0, 0, ["slime_small" + weaker(row), "slime_prime", "slime_small" + weaker(row)], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
@@ -109,9 +108,10 @@ function mapRow(row) {
 	return arr;
 };
 
-function updateMapProg(extra = "") {
+function updateMapProg() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	draw.lore(200, 100, "Generating Map...\n" + (mapProg / mapTotal * 100).toFixed(0) + "%\n" + extra, {"color": "white", "text-align": "center"});
+	if (mapProg === mapTotal) draw.lore(200, 100, "Generating Map...\n100.0%\nrunning final checks...", {"color": "white", "text-align": "center"});
+	else draw.lore(200, 100, "Generating Map...\n" + (mapProg / mapTotal * 100).toFixed(1) + "%", {"color": "white", "text-align": "center"});
 };
 
 async function generateMap() {
@@ -120,6 +120,7 @@ async function generateMap() {
 	death_zones = 0;
 	for (let index = 0; index < 8; index++) {
 		game.map.push(mapRow(index));
+		mapProg++;
 		updateMapProg();
 		await new Promise(r => setTimeout(r, 0));
 		if (rowNodes == 2) twoRow = true;
@@ -136,9 +137,6 @@ async function generateMap() {
 				death_zones++;
 				break;
 			} else {
-				mapExProg++;
-				updateMapProg("check #1: " + mapExProg + " iterations");
-				await new Promise(r => setTimeout(r, 0));
 				if (!past.includes(rand)) past.push(rand);
 				if (past.length < 6) setRand();
 			};
@@ -153,9 +151,6 @@ async function generateMap() {
 					death_zones++;
 					break;
 				} else {
-					mapExProg++;
-					updateMapProg("check #2: " + mapExProg + " iterations");
-					await new Promise(r => setTimeout(r, 0));
 					if (!past.includes(rand)) past.push(rand);
 					if (past.length < 6) setRand();
 				};
