@@ -15,10 +15,40 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+function internalSeed(str) {
+	for (var k, i = 0, h = 2166136261 >>> 0; i < str.length; i++) {
+		k = Math.imul(str.charCodeAt(i), 3432918353); k = k << 15 | k >>> 17;
+		h ^= Math.imul(k, 461845907); h = h << 13 | h >>> 19;
+		h = Math.imul(h, 5) + 3864292196 | 0;
+	};
+	h ^= str.length;
+	return function() {
+		h ^= h >>> 16; h = Math.imul(h, 2246822507);
+		h ^= h >>> 13; h = Math.imul(h, 3266489909);
+		h ^= h >>> 16;
+		return h >>> 0;
+	};
+};
+
+var seed = internalSeed(game.seed);
+
+function internalRandom(a, b, c, d) {
+	return function() {
+		var t = b << 9, r = a * 5; r = (r << 7 | r >>> 25) * 9;
+		c ^= a; d ^= b;
+		b ^= c; a ^= d; c ^= t;
+		d = d << 11 | d >>> 21;
+		return (r >>> 0) / 4294967296;
+	};
+};
+
+const random = internalRandom(seed(), seed(), seed(), seed());
+
 var canvas, scale, ctx, action = "none", lastAction = "none", loaded = false;
 
 window.onload = () => {
 	load();
+	seed = internalSeed(game.seed);
 	canvasData();
 	mapGraphics(true);
 	if (game.map.length === 0) {

@@ -901,54 +901,8 @@ function mapGraphics(onlyCalc = false) {
 		draw.image(extra.seed, 362, 17);
 		if (game.mapSelect == "exit") draw.image(select.round, 21, 178);
 		if (game.mapSelect == "seed" || game.mapSelect == "seed-on") draw.image(select.round, 361, 16);
-		let info = "floor " + game.floor + " - " + game.gold + " gold";
-		let push = info.length * 2;
-		draw.lore(1, 1, info, {"color": "red"});
-		// seed snippet
-		if (push <= 126) {
-			let arr = JSON.stringify(game.map).split(",");
-			let ignore = 1;
-			for (let index = 0; index < arr.length; index++) {
-				if (ignore) {
-					ignore--;
-					continue;
-				};
-				const element = arr[index].replace(/"|\s|\[/g, "");
-				if (element.startsWith("false")) {
-					seed += "F";
-				} else if (element == "battle") {
-					seed += "B";
-					ignore = 2;
-				} else if (element == "treasure") {
-					seed += "T";
-					ignore = 2;
-				} else if (element == "battle_prime") {
-					seed += "D";
-					ignore = 2;
-				} else if (element.includes("slime_small")) {
-					seed += "ss";
-					pastEnemy = true;
-				} else if (element.includes("slime_big")) {
-					seed += "sb";
-					pastEnemy = true;
-				} else if (element.includes("slime_prime")) {
-					seed += "sp";
-					pastEnemy = true;
-				} else if (element.charAt(4) == "]" && element.charAt(5) == "]") {
-					seed += element.replace(/\]/g, "");
-				} else if (element != "open" && element != "closed") {
-					seed += element;
-				};
-			};
-			seed = seed.replace(/0\./g, ".").replace(/\d{21,}/g, substring => {
-				let str = "";
-				for (let index = 0; index < (substring.length / 15); index++) {
-					str += ":" + (+substring.slice(index * 15, (index + 1) * 15)).toString(36);
-				};
-				return str;
-			}).replace(/\]:/g, ":");
-			draw.lore(396, 1, "seed: " + seed.slice(0, 126 - push) + "\n" + seed.slice(126 - push, 255 - (push * 2)) + "...", {"color": "white", "text-align": "left", "text-small": true});
-		};
+		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "red"});
+		draw.lore(393, 1, "seed: " + game.seed, {"color": "white", "text-align": "left"});
 	};
 	let store = [];
 	for (let x = 0; x < game.map.length; x++) {
