@@ -78,6 +78,8 @@ const player = {
 	deep_red: new Image,
 	light_green: new Image,
 	red_fade: [new Image, new Image, new Image],
+	outline_black: new Image,
+	outline_white: new Image,
 }, bar = {
 	health_empty: new Image,
 	health_full: new Image,
@@ -207,7 +209,7 @@ for (const image in clock) {
 // letters
 for (const image in letters) {
 	if (Object.hasOwnProperty.call(letters, image)) {
-		if (letters[image].length instanceof Array) continue;
+		if (letters[image] instanceof Array) continue;
 		letters[image].src = "images/letters/" + image + ".png";
 	};
 };
@@ -225,7 +227,7 @@ for (const image in bar) {
 // selectors
 for (const image in select) {
 	if (Object.hasOwnProperty.call(select, image)) {
-		if (select[image].length instanceof Array) continue;
+		if (select[image] instanceof Array) continue;
 		select[image].src = "images/select/" + image + ".png";
 	};
 };

@@ -44,18 +44,17 @@ const draw = {
 		ctx.stroke();
 	},
 	// complex - second order (uses basic)
-	lore(x, y, string, style = {"color": "black", "text-align": "right", "text-small": false}) {
+	lore(x, y, string, style = {"color": "black", "outline-color": "", "text-align": "right", "text-small": false}) {
 		string = "" + string;
 		if (!style["color"]) style["color"] = "black";
+		if (!style["outline-color"]) style["outline-color"] = "";
 		if (!style["text-align"]) style["text-align"] = "right";
 		if (!style["text-small"]) style["text-small"] = false;
-		let color = style["color"];
-		let position = style["text-align"];
-		let small = style["text-small"];
+		const color = style["color"], outline = style["outline-color"], position = style["text-align"], small = style["text-small"];
 		string = string.replace(/<br>/g, "\n");
 		x = Math.round(x * 2) / 2;
 		y = Math.round(y * 2) / 2;
-		let img = letters.black, enters = 0, enterIndex = 0, len = string.replace(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<light-green>|<\/light-green>/g, "").length;
+		let img = letters.black, outImg = letters.outline_black, enters = 0, enterIndex = 0, len = string.replace(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<light-green>|<\/light-green>/g, "").length;
 		if (color == "red") img = letters.red;
 		else if (color == "white") img = letters.white;
 		else if (color == "deep-red") img = letters.deep_red;
@@ -63,6 +62,7 @@ const draw = {
 		else if (color == "red_fade_0") img = letters.red_fade[0];
 		else if (color == "red_fade_1") img = letters.red_fade[1];
 		else if (color == "red_fade_2") img = letters.red_fade[2];
+		if (outline == "white") outImg = letters.outline_white;
 		if (string.includes("<b>") || string.includes("<big>") || string.includes("<s>") || string.includes("<small>")) {
 			string = string.replace(/<\/b>|<\/big>|<\/s>|<\/small>/g, "");
 			let array = string.split("<");
@@ -139,10 +139,13 @@ const draw = {
 			if (small) {
 				if (position == "right") {
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 3), y + (enters * 5.5), 2.5, 5);
+					if (outline) draw.imageSector(outImg, (index - 32) * 8, 0, 7, 12, x + (a * 3) - 0.5, y + (enters * 5.5) - 0.5, 3.5, 6);
 				} else if (position == "left") {
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 3), y + (enters * 5.5), 2.5, 5);
+					if (outline) draw.imageSector(outImg, (index - 32) * 8, 0, 7, 12, x + ((a - len + 1) * 3) - 0.5, y + (enters * 5.5) - 0.5, 3.5, 6);
 				} else if (position == "center") {
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 3) - (len * 1.5) + 1, y + (enters * 5.5), 2.5, 5);
+					if (outline) draw.imageSector(outImg, (index - 32) * 8, 0, 7, 12, x + (a * 3) - (len * 1.5) + 1 - 0.5, y + (enters * 5.5) - 0.5, 3.5, 6);
 				};
 			} else {
 				if (position == "right") {
@@ -269,8 +272,9 @@ const draw = {
 			draw.lore(x + 4, y + 2, cards[cardObject.id].cost);
 		};
 	},
-	textBox(x, y, width, string, style = {"color": "black", "text-align": "right", "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
+	textBox(x, y, width, string, style = {"color": "black", "outline-color": "", "text-align": "right", "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
 		if (!style["color"]) style["color"] = "black";
+		if (!style["outline-color"]) style["outline-color"] = "";
 		if (!style["text-align"]) style["text-align"] = "right";
 		if (!style["text-small"]) style["text-small"] = false;
 		if (!style["background-color"]) style["background-color"] = "#ccc";
