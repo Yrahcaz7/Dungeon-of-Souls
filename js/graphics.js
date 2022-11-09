@@ -54,15 +54,12 @@ const draw = {
 		string = string.replace(/<br>/g, "\n");
 		x = Math.round(x * 2) / 2;
 		y = Math.round(y * 2) / 2;
-		let img = letters.black, outImg = letters.outline_black, enters = 0, enterIndex = 0, len = string.replace(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<light-green>|<\/light-green>/g, "").length;
-		if (color == "red") img = letters.red;
-		else if (color == "white") img = letters.white;
-		else if (color == "deep-red") img = letters.deep_red;
-		else if (color == "light-green") img = letters.light_green;
-		else if (color == "red_fade_0") img = letters.red_fade[0];
-		else if (color == "red_fade_1") img = letters.red_fade[1];
-		else if (color == "red_fade_2") img = letters.red_fade[2];
-		if (outline == "white") outImg = letters.outline_white;
+		let img = letters.black, outImg = letters.outline_black, enters = 0, enterIndex = 0, len = string.replace(/<.*?>/g, "").length;
+		// set images
+		if (letters[color.replace("_", "-")]) img = letters[color.replace("_", "-")];
+		else if (letters[color.slice(0, -2)] && letters[color.slice(0, -2)][color.slice(-1)]) img = letters[color.slice(0, -2)][color.slice(-1)];
+		if (letters["outline_" + style["outline-color"]]) outImg = letters["outline_" + style["outline-color"]];
+		// check for size tags
 		if (string.includes("<b>") || string.includes("<big>") || string.includes("<s>") || string.includes("<small>")) {
 			string = string.replace(/<\/b>|<\/big>|<\/s>|<\/small>/g, "");
 			let array = string.split(/<(?=b>|big>|s>|small>)/g);
@@ -81,6 +78,7 @@ const draw = {
 			};
 			return space;
 		};
+		// print multi-line right aligned text
 		if (string.includes("\n") && position != "right") {
 			let array = string.split("\n");
 			let space = 0;
@@ -90,41 +88,27 @@ const draw = {
 			};
 			return space;
 		};
+		// print all text
 		let defImg = img;
 		for (let a = 0; a < string.length; a++) {
+			// check for color tags
 			if (string.charAt(a) == "<") {
-				let broken = false;
-				for (const key in letters) {
-					if (Object.hasOwnProperty.call(letters, key)) {
-						if (letters[key] instanceof Array) continue;
-						if (string.indexOf("<" + key.replace("_", "-")) == a) {
-							const next = string.indexOf(">", a);
-							if (next != -1 && string.slice(a, next).includes("outline")) outline = style["outline-color"];
-							else outline = "";
-							img = letters[key];
-							string = string.replace(new RegExp("<" + key.replace("_", "-") + ".*?>"), "");
-							broken = true;
-							break;
-						};
-					};
-				};
-				if (!broken) {
-					for (const key in letters) {
-						if (Object.hasOwnProperty.call(letters, key)) {
-							if (letters[key] instanceof Array) continue;
-							if (img == letters[key] && string.indexOf("</" + key.replace("_", "-") + ">") == a) {
-								outline = "";
-								img = defImg;
-								string = string.replace("</" + key.replace("_", "-") + ">", "");
-								break;
-							};
-						};
-					};
+				const cut = string.slice(a + 1), tag = cut.slice(0, cut.indexOf(" ")==-1?cut.indexOf(">"):Math.min(cut.indexOf(">"), cut.indexOf(" ")));
+				if (letters[tag.replace("-", "_")]) {
+					if (cut.slice(0, cut.indexOf(">")).includes("outline")) outline = style["outline-color"];
+					else outline = "";
+					img = letters[tag.replace("-", "_")];
+					string = string.replace(new RegExp("<" + tag + ".*?>"), "");
+				} else if (img == letters[tag.slice(1).replace("-", "_")] && tag.startsWith("/")) {
+					outline = "";
+					img = defImg;
+					string = string.replace("<" + tag + ">", "");
 				};
 			};
+			// set things up
 			let index = string.charCodeAt(a);
-			if (string.replace(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<light-green>|<\/light-green>/g, "").includes("\n", enterIndex + 1)) {
-				len = string.replace(/<red>|<\/red>|<white>|<\/white>|<black>|<\/black>|<deep-red>|<\/deep-red>|<light-green>|<\/light-green>/g, "").indexOf("\n", enterIndex + 1);
+			if (string.replace(/<.*?>/g, "").includes("\n", enterIndex + 1)) {
+				len = string.replace(/<.*?>/g, "").indexOf("\n", enterIndex + 1);
 			};
 			if (index == 10) {
 				enters++;
@@ -133,6 +117,7 @@ const draw = {
 			if (enters) {
 				a -= enterIndex;
 			};
+			// print letter
 			if (small) {
 				if (position == "right") {
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 3), y + (enters * 5.5), 2.5, 5);
@@ -153,6 +138,7 @@ const draw = {
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (len * 3) + 2, y + (enters * 11), 5, 10);
 				};
 			};
+			// set 'a' back to normal
 			if (enters) {
 				a += enterIndex;
 			};
