@@ -70,7 +70,7 @@ var global = {
 	},
 	attackEffect: "none",
 	room: [],
-	firstRoom: mapPiece(0, "1stbattle"),
+	firstRoom: [],
 	map: [],
 	paths: {},
 	seed: "" + new Date().getTime().toString(36),

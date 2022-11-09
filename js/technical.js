@@ -15,6 +15,8 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// seeding and randomness
+
 function internalSeed(str) {
 	for (var k, i = 0, h = 2166136261 >>> 0; i < str.length; i++) {
 		k = Math.imul(str.charCodeAt(i), 3432918353); k = k << 15 | k >>> 17;
@@ -43,6 +45,16 @@ function internalRandom(a, b, c, d) {
 };
 
 const random = internalRandom(seed(), seed(), seed(), seed());
+
+function randomInt(min, max) {
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	if ((!min && min !== 0) || (!max && max !== 0)) return NaN;
+	if (min > max) [min, max] = [max, min];
+	return Math.floor(random() * (max - min + 1)) + min;
+};
+
+// page setup
 
 var canvas, scale, ctx, action = "none", lastAction = "none", loaded = false;
 
@@ -78,6 +90,8 @@ function canvasData() {
 	ctx.imageSmoothingEnabled = false;
 	return true;
 };
+
+// event listeners
 
 document.addEventListener("keydown", (event) => {
 	const key = event.key, prevAction = "" + action;

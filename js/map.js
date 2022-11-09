@@ -109,6 +109,7 @@ function mapRow(row) {
 };
 
 function generateMap() {
+	game.firstRoom = mapPiece(0, "1stbattle");
 	game.map = [];
 	death_zones = 0;
 	for (let index = 0; index < 8; index++) {
