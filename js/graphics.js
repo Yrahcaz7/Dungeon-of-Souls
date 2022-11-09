@@ -65,7 +65,7 @@ const draw = {
 		if (outline == "white") outImg = letters.outline_white;
 		if (string.includes("<b>") || string.includes("<big>") || string.includes("<s>") || string.includes("<small>")) {
 			string = string.replace(/<\/b>|<\/big>|<\/s>|<\/small>/g, "");
-			let array = string.split("<");
+			let array = string.split(/<(?=b>|big>|s>|small>)/g);
 			let space = 0;
 			if (!array[0]) array.splice(0, 1);
 			for (let index = 0; index < array.length; index++) {
