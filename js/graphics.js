@@ -699,30 +699,27 @@ function info(type, location = "none", xPlus = 0, yPlus = 0) {
 		if (game.select[1] == game.hand.length - 1 && game.hand.length >= 4) {
 			x -= 146;
 		};
-		if (type == "aura blades") draw.textBox(x + 69, y, 24, infoText.aura_blade, {"text-small": true});
-		else draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});
+		draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});
 	} else if (location == "reward") {
 		let x = game.handPos[game.select[1]] + xPlus;
 		if (game.select[1] == game.cardRewardChoices - 1 && game.cardRewardChoices >= 4) {
 			x -= 146;
 		};
-		if (type == "aura blades") draw.textBox(x + 69, 50, 24, infoText.aura_blade, {"text-small": true});
-		else draw.textBox(x + 69, 50, 24, infoText[type], {"text-small": true});
+		draw.textBox(x + 69, 51, 24, infoText[type], {"text-small": true});
 	} else if (location == "deck") {
-		let x = 3 + (game.cardSelect[0] * 66) + xPlus, y = 15 + (game.cardSelect[1] * 98) - game.deckPos;
+		let x = (game.cardSelect[0] * 66) + xPlus, y = 15 + (game.cardSelect[1] * 98) - game.deckPos;
 		if (game.cardSelect[0] >= 4) {
-			x -= 146;
+			x -= 145;
 		};
-		if (type == "aura blades") draw.textBox(x + 70, y, 24, infoText.aura_blade, {"text-small": true});
-		else draw.textBox(x + 70, y, 24, infoText[type], {"text-small": true});
+		draw.textBox(x + 71, y, 24, infoText[type], {"text-small": true});
 	} else if (location == "player") {
-		if (type == "aura blades") {
+		if (type == "aura blade") {
 			let pos = 71, desc = "You have " + game.eff.auraBlades + " aura blade";
 			if (game.eff.reinforces) pos += 44;
 			if (game.eff.auraBlades >= 2) desc += "s.";
 			else desc += ".";
 			draw.textBox(85 + xPlus, pos, desc.length, desc, {"text-small": true});
-			draw.textBox(85 + xPlus, pos + 11, 24, infoText.aura_blade, {"text-small": true});
+			draw.textBox(85 + xPlus, pos + 11, 24, infoText["aura blade"], {"text-small": true});
 		} else if (type == "reinforce") {
 			let pos = 71, desc = "You have " + game.eff.reinforces + " reinforce";
 			if (game.eff.reinforces >= 2) desc += "s.";
@@ -791,7 +788,7 @@ function target() {
 			info("reinforce", "player", coor[0] + coor[2] - 80);
 		};
 		if (game.eff.auraBlades) {
-			info("aura blades", "player", coor[0] + coor[2] - 80);
+			info("aura blade", "player", coor[0] + coor[2] - 80);
 		};
 	} else if (game.select[0] == "artifacts") {
 		let name = game.artifacts[game.select[1]];
@@ -799,36 +796,44 @@ function target() {
 	} else if (game.select[0] == "hand") {
 		const desc = cards[game.hand[game.select[1]].id].desc;
 		if (desc.includes("aura blade")) {
-			info("aura blades", "card");
+			info("aura blade", "card");
 		} else if (desc.includes("burn")) {
 			info("burn", "card");
+		} else if (desc.includes("Exhaust")) {
+			info("exhaust", "card");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "card");
 		};
 	} else if (game.select[0] == "deck" && game.select[1] == 1 && game.deckProxy != "[]") {
 		const desc = cards[JSON.parse(game.deckProxy).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].id].desc;
 		if (desc.includes("aura blade")) {
-			info("aura blades", "deck");
+			info("aura blade", "deck");
 		} else if (desc.includes("burn")) {
 			info("burn", "deck");
+		} else if (desc.includes("Exhaust")) {
+			info("exhaust", "deck");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "deck");
 		};
 	} else if (game.select[0] == "discard" && game.select[1] == 1 && game.discard.length > 0) {
 		const desc = cards[game.discard[game.cardSelect[0] + (game.cardSelect[1] * 6)].id].desc;
 		if (desc.includes("aura blade")) {
-			info("aura blades", "deck");
+			info("aura blade", "deck");
 		} else if (desc.includes("burn")) {
 			info("burn", "deck");
+		} else if (desc.includes("Exhaust")) {
+			info("exhaust", "deck");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "deck");
 		};
 	} else if (game.select[0] == "card_rewards") {
 		const desc = cards[game.room[5][game.select[1]]].desc;
 		if (desc.includes("aura blade")) {
-			info("aura blades", "reward");
+			info("aura blade", "reward");
 		} else if (desc.includes("burn")) {
 			info("burn", "reward");
+		} else if (desc.includes("Exhaust")) {
+			info("exhaust", "reward");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "reward");
 		};

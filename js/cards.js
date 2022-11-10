@@ -16,53 +16,12 @@
  */
 
 const cards = { // card attributes format: [type, ...special];
-	4000: {
-		name: "aura blade",
-		desc: "Gain 1 aura blade.",
-		attributes: ["magic"],
-		rarity: 1,
-		cost: 1,
-		effect() {
-			game.eff.auraBlades++;
-		},
-	},
-	2000: {
-		name: "block",
-		desc: "Gain 4 shield.",
-		attributes: ["defense"],
-		rarity: 0,
-		cost: 1,
-		effect() {
-			game.shield += 4;
-		},
-	},
 	0: {
 		name: "error",
 		desc: "Unplayable.",
 		attributes: ["error", "unplayable"],
 		rarity: -1,
 		cost: 0,
-	},
-	2002: {
-		name: "everlasting shield",
-		desc: "Gain 3 reinforces.",
-		attributes: ["defense"],
-		rarity: 2,
-		cost: 2,
-		effect() {
-			game.eff.reinforces += 3;
-		},
-	},
-	2001: {
-		name: "reinforce",
-		desc: "Gain 1 shield and\n1 reinforce.",
-		attributes: ["defense"],
-		rarity: 1,
-		cost: 1,
-		effect() {
-			game.shield += 1;
-			game.eff.reinforces++;
-		},
 	},
 	1000: {
 		name: "slash",
@@ -88,18 +47,59 @@ const cards = { // card attributes format: [type, ...special];
 			};
 		},
 	},
-	3000: {
-		name: "war cry",
-		desc: "All enemies (except\nbosses) switch\ntheir intents to\ndefense.",
-		attributes: ["skill"],
+	2000: {
+		name: "block",
+		desc: "Gain 4 shield.",
+		attributes: ["defense"],
+		rarity: 0,
+		cost: 1,
+		effect() {
+			game.shield += 4;
+		},
+	},
+	2001: {
+		name: "reinforce",
+		desc: "Gain 1 shield and\n1 reinforce.",
+		attributes: ["defense"],
 		rarity: 1,
 		cost: 1,
+		effect() {
+			game.shield += 1;
+			game.eff.reinforces++;
+		},
+	},
+	2002: {
+		name: "everlasting shield",
+		desc: "Gain 3 reinforces.",
+		attributes: ["defense"],
+		rarity: 2,
+		cost: 2,
+		effect() {
+			game.eff.reinforces += 3;
+		},
+	},
+	3000: {
+		name: "war cry",
+		desc: "All enemies (except\nbosses) switch\ntheir intents to\ndefense. Exhaust.",
+		attributes: ["skill", "exhaust"],
+		rarity: 1,
+		cost: 0,
 		effect() {
 			startAnim.effect("war cry");
 			for (let index = 0; index < game.enemies.length; index++) {
 				game.enemies[index].intent = "defend";
 				game.enemies[index].intentHistory[game.enemies[index].intentHistory.length - 1] = "defend";
 			};
+		},
+	},
+	4000: {
+		name: "aura blade",
+		desc: "Gain 1 aura blade.",
+		attributes: ["magic"],
+		rarity: 1,
+		cost: 1,
+		effect() {
+			game.eff.auraBlades++;
 		},
 	},
 }, rarities = {

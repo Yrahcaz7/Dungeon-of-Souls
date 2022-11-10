@@ -184,7 +184,8 @@ function playerTurn() {
 			game.attackEffect = "none";
 		};
 		game.enemyAttFin = true;
-		game.discard.push(game.hand.splice(game.activeCard, 1)[0]);
+		if (cards[game.enemyAtt.id].attributes.includes("exhaust")) game.hand.splice(game.activeCard, 1);
+		else game.discard.push(game.hand.splice(game.activeCard, 1)[0]);
 		cardAnim.splice(game.select[1], 1);
 		cardAnim.push(0);
 		game.enemyAttSel = game.select[1];
@@ -205,7 +206,8 @@ function playerTurn() {
 				// effects of cards that activate right away
 				cards[id].effect();
 				game.energy -= cards[id].cost;
-				game.discard.push(game.hand.splice(game.select[1], 1)[0]);
+				if (cards[id].attributes.includes("exhaust")) game.hand.splice(game.select[1], 1);
+				else game.discard.push(game.hand.splice(game.select[1], 1)[0]);
 				cardAnim.splice(game.select[1], 1);
 				cardAnim.push(0);
 				if (game.prevCard) game.select = ["hand", game.prevCard - 1];
