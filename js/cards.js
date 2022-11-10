@@ -109,6 +109,12 @@ const cards = { // card attributes format: [type, ...special];
 	2: "rare",
 };
 
+for (const key in cards) {
+	if (Object.hasOwnProperty.call(cards, key)) {
+		cards[key].desc = cards[key].desc.replace(/([Hh]ealth|[Dd]amage|[Aa]ttack)/g, "<red>$1</red>").replace(/([Ss]hield|[Dd]efense)/g, "<blue>$1</blue>");
+	};
+};
+
 class Card {
 	constructor(id, level = 0) {
 		if (cards[id] === undefined) this.id = 0;

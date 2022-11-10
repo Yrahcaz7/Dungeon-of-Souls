@@ -16,10 +16,10 @@
  */
 
 const infoText = {
-	"aura blade": "Every time you attack,\none of your aura blades\nis used up for 5 + X\nextra damage, X being\nthe number of aura\nblades you have.",
-	burn: "At the end of each\nturn, each burn deals 1\ndamage to what it is on,\nthen one burn on that\ngoes away.",
+	"aura blade": "Every time you <red>attack</red>,\none of your aura blades\nis used up for 5 + X\nextra <red>damage</red>, X being\nthe number of aura\nblades you have.",
+	burn: "At the end of each\nturn, each burn deals 1\n<red>damage</red> to what it is on,\nthen one burn on that\ngoes away.",
 	exhaust: "When played, card will\nbe exhausted (removed\nfrom the game) until\nthe battle ends.",
-	iron_will: "Every time a battle\nends, you heal 2 <red>health</red>.",
+	iron_will: "Every time a battle\nends, you <red>heal</red> 2 <red>health</red>.",
 	reinforce: "At the start of each\nturn, one reinforce is\nused up to retain your\n<blue>shield</blue> (even if you have\nno <blue>shield</blue> left.)",
 	the_map: "Every time a battle\nends, you can choose\nwhere you go next.",
 }, overview = ""
@@ -54,14 +54,14 @@ gameplay = ""
 	+ "Cards cost <yellow>energy</yellow> to play, which is the number in the big yellow circle.\n"
 	+ "The <yellow>energy cost</yellow> of each card is shown on their top-left corner.\n"
 	+ "When you play a card, it does what it says on the card (effects are listed below).\n"
-	+ " - Damage reduces enemies' <red>health</red>, while <blue>shield</blue> protects your <red>health</red> from attacks.\n"
+	+ " - <red>Damage</red> reduces enemies' <red>health</red>, while <blue>shield</blue> protects your <red>health</red> from attacks.\n"
 	+ " - Take note that <blue>shield</blue> goes away at the end of your turn unless something says otherwise.\n"
 	+ " - Also, <blue>shield</blue> on enemies acts the same and goes away at the start of the enemy turn.\n"
 	+ " - Most other effects are more complex, and have a tooltip that says what they do.\n"
 	+ "<b>Enemy Intents<s>"
 	+ "Take note of what's floating above the enemies' heads. That is their intent.\n"
 	+ "An enemy's intent shows what it intends to do on its next turn.\n"
-	+ "<deep-red>Red</deep-red> with spikes or stars is attack, <deep-blue>blue</deep-blue> and shield shape means <blue>shield</blue>.\n"
+	+ "<deep-red>Red</deep-red> with spikes or stars is <red>attack</red>, <deep-blue>blue</deep-blue> and shield shape means <blue>defense</blue> (gain <blue>shield</blue>.)\n"
 	+ "There are others later, but you can look at the tooltips to see what they are.\n"
 	+ "Use the enemies' predictableness to strategize what cards you play.\n"
 	+ "<b>Building a Deck<s>"
@@ -72,7 +72,7 @@ gameplay = ""
 	+ "<b>Artifacts<s>"
 	+ "Artifacts are very important. You start with two, <light-brown>The Map</light-brown> and Iron Will.\n"
 	+ "<light-brown>The map</light-brown> you always have, and it lets you pick where you go next after a battle.\n"
-	+ "Iron Will heals you a bit after every battle, which is very useful (especially for beginners.)\n"
+	+ "Iron Will <red>heals</red> you a bit after every battle, which is very useful (especially for beginners.)\n"
 	+ "More artifacts will appear later, and you can always look at the tooltip to see what it does.\n"
 	+ "<b>The Map<s>"
 	+ "When you open <light-brown>the map</light-brown>, you will see a tree of paths you can take.\n"
