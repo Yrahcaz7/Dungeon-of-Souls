@@ -121,7 +121,6 @@ const player = {
 	deck: new Image,
 	discard: new Image,
 	map: new Image,
-	seed: new Image,
 }, icon = {
 	aura_blade: new Image,
 	burn: new Image,

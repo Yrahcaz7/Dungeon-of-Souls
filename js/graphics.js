@@ -826,7 +826,7 @@ function target() {
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "deck");
 		};
-	} else if (game.select[0] == "card_rewards") {
+	} else if (game.select[0] == "card_rewards" && game.select[1] > -1 && game.select[1] < game.cardRewardChoices) {
 		const desc = cards[game.room[5][game.select[1]]].desc;
 		if (desc.includes("aura blade")) {
 			info("aura blade", "reward");
@@ -923,9 +923,7 @@ function mapGraphics(onlyCalc = false) {
 			else draw.image(map.select, 13 + (+game.location.split(", ")[0] * 32), 12);
 		};
 		draw.image(extra.end, 22, 179);
-		draw.image(extra.seed, 362, 17);
 		if (game.mapSelect == "exit") draw.image(select.round, 21, 178);
-		if (game.mapSelect == "seed" || game.mapSelect == "seed-on") draw.image(select.round, 361, 16);
 		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "red"});
 		draw.lore(393, 1, "seed: " + game.seed, {"color": "white", "text-align": "left"});
 	};
