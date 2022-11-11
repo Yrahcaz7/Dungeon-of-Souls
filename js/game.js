@@ -72,7 +72,7 @@ var global = {
 	firstRoom: [],
 	map: [],
 	paths: {},
-	seed: "" + new Date().getTime().toString(36),
+	seed: "" + new Date().getTime().toString(36).shuffle(),
 	saveNum: 0,
 }, actionTimer = -1, notif = [-1, 0, "", 0], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "map") && game.select[1], menuLocation = "title";
 

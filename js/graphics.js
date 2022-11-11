@@ -226,7 +226,7 @@ const draw = {
 		else if (rarity == 2) img = card.rare[name];
 		if (cardObject.id !== 0) draw.image(card.back, x + 2, y + 2);
 		const type = types[Math.floor(cardObject.id / 1000)];
-		draw.image(card.outline[type], x + 3, y + 3);
+		if (card.outline[type]) draw.image(card.outline[type], x + 3, y + 3);
 		if (selected) {
 			if (attributes.unplayable.includes(cardObject.id)) {
 				if (rarity == 2) draw.image(select.card_rare_unplayable, x - 3, y - 3);

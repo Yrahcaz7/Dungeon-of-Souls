@@ -26,6 +26,15 @@ String.prototype.title = function() {
 	return result;
 };
 
+String.prototype.shuffle = function() {
+	var a = this.split("");
+	for (var i = a.length - 1; i > 0; i--) {
+		var j = Math.floor(Math.random() * (i + 1));
+		[a[i], a[j]] = [a[j], a[i]];
+	};
+	return a.join("");
+}
+
 // technical functions
 
 function randomize(array) {
