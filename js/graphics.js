@@ -923,7 +923,7 @@ function mapGraphics(onlyCalc = false) {
 			else draw.image(map.select, 13 + (+game.location.split(", ")[0] * 32), 12);
 		};
 		draw.image(extra.end, 22, 179);
-		if (game.mapSelect == "exit") draw.image(select.round, 21, 178);
+		if (game.mapSelect == -1) draw.image(select.round, 21, 178);
 		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "red"});
 		draw.lore(393, 1, "seed: " + game.seed, {"color": "white", "text-align": "left"});
 	};
@@ -971,9 +971,10 @@ function mapGraphics(onlyCalc = false) {
 			};
 		};
 	};
-	let coordSel = game.mapSelect.split(", ");
-	let coordOn = game.location.split(", ");
 	if (render) {
+		const str = game.paths[game.location][game.mapSelect];
+		const coordSel = str?str.split(", "):[];
+		const coordOn = game.location.split(", ");
 		for (let x = 0; x < game.map.length; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
 				if (!game.map[x][y]) continue;

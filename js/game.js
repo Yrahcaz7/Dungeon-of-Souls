@@ -40,8 +40,7 @@ var global = {
 	turn: "none",
 	select: ["none", 0],
 	cardSelect: [0, 0],
-	mapSelect: "exit",
-	mapOn: -1,
+	mapSelect: -1,
 	enemyAtt: "none",
 	enemyAttSel: 0,
 	enemyAttFin: false,
@@ -358,40 +357,34 @@ function selection() {
 	// map
 	if (game.select[0] == "in_map" && game.state == "event_fin" && game.paths[game.location]) {
 		if ((action == "up" || action == "right")) {
-			if (game.mapOn == -1) {
-				game.mapOn = game.paths[game.location].length - 1;
-				game.mapSelect = game.paths[game.location][game.mapOn];
+			if (game.mapSelect == -1) {
+				game.mapSelect = game.paths[game.location].length - 1;
 				actionTimer = 1;
 				return;
-			} else if (game.mapOn > 0) {
-				game.mapOn = game.mapOn - 1;
-				game.mapSelect = game.paths[game.location][game.mapOn];
+			} else if (game.mapSelect > 0) {
+				game.mapSelect = game.mapSelect - 1;
 				actionTimer = 1;
 				return;
 			};
-		} else if ((action == "left" || action == "down") && game.mapSelect != "exit") {
-			if (game.mapOn < game.paths[game.location].length - 1) {
-				game.mapOn = game.mapOn + 1;
-				game.mapSelect = game.paths[game.location][game.mapOn];
+		} else if ((action == "left" || action == "down") && game.mapSelect != -1) {
+			if (game.mapSelect < game.paths[game.location].length - 1) {
+				game.mapSelect = game.mapSelect + 1;
 			} else {
-				game.mapOn = game.paths[game.location].length;
-				game.mapSelect = "exit";
+				game.mapSelect = -1;
 			};
 			actionTimer = 1;
 			return;
-		} else if (action == "enter" && game.mapSelect != "exit") {
-			game.location = game.mapSelect;
-			let coor = game.mapSelect.split(", ");
+		} else if (action == "enter" && game.paths[game.location][game.mapSelect]) {
+			game.location = game.paths[game.location][game.mapSelect];
+			let coor = game.location.split(", ");
 			game.room = game.map[coor[0]][coor[1]];
 			game.select = ["none", 0];
-			game.mapSelect = "exit";
+			game.mapSelect = -1;
 			game.state = "enter";
 			game.floor++;
 			actionTimer = 1;
 			return;
 		};
-	} else {
-		game.mapOn = -1;
 	};
 	// select hand
 	if (game.select[0] == "none") game.select = ["hand", 0];
@@ -554,7 +547,7 @@ function selection() {
 		game.select = ["in_map", 0];
 		actionTimer = 2;
 		return;
-	} else if (action == "enter" && game.select[0] == "in_map" && game.mapSelect == "exit") {
+	} else if (action == "enter" && game.select[0] == "in_map" && game.mapSelect == -1) {
 		game.select = ["map", 0];
 		actionTimer = 2;
 		return;
