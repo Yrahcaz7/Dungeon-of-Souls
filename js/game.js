@@ -843,7 +843,7 @@ const gameloop = setInterval(function() {
 	let time = document.getElementById("music").currentTime;
 	if (global.options.music) {
 		if (time === 0 && menuLocation != "title") {
-			document.getElementById("music").play().catch(() => {console.log("Audio not playing. Interact with page first.")});
+			document.getElementById("music").play();
 		} else if (time > document.getElementById("music").duration - 0.1) {
 			document.getElementById("music").currentTime = 0;
 		};

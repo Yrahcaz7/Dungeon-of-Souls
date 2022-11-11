@@ -18,25 +18,25 @@
 class Enemy {
 	constructor(type, power = 1, override = {}) {
 		if (Object.keys(override).length) {
-			this.type = override.type;
-			this.maxHealth = override.maxHealth;
-			this.health = override.health;
-			this.maxShield = override.maxShield;
-			this.shield = override.shield;
-			this.attackPower = override.attackPower;
-			this.defendPower = override.defendPower;
+			this.type = "" + override.type;
+			this.maxHealth = +override.maxHealth;
+			this.health = +override.health;
+			this.maxShield = +override.maxShield;
+			this.shield = +override.shield;
+			this.attackPower = +override.attackPower;
+			this.defendPower = +override.defendPower;
 			this.eff = override.eff;
-			this.intent = override.intent;
+			this.intent = "" + override.intent;
 			this.intentHistory = override.intentHistory;
 			return;
 		};
 		if (type == "slime_small") power--;
 		if (("" + type).includes("prime")) power++;
 		power += game.floor * 0.05;
-		this.type = type;
-		this.maxHealth = Math.round(((Math.random() / 10) + 0.95) * ((power * 10) + 20));
+		this.type = "" + type;
+		this.maxHealth = Math.round(((random() / 10) + 0.95) * ((power * 10) + 20));
 		this.health = this.maxHealth;
-		this.maxShield = Math.round(((Math.random() / 10) + 0.95) * ((power * 5) + 10));
+		this.maxShield = Math.round(((random() / 10) + 0.95) * ((power * 5) + 10));
 		this.shield = 0;
 		this.attackPower = Math.round(((power / 2) + 1) * 5 - 0.25);
 		this.defendPower = Math.round(((power / 2) + 1) * 5 + 1);
@@ -45,7 +45,7 @@ class Enemy {
 		this.intentHistory = [this.intent];
 		game.enemyIndex++;
 	};
-	startAction() {
+	startAction = () => {
 		if (this.intent == "attack") {
 			if (game.shield && playerAnim[1] != "shield" && playerAnim[1] != "shield_reinforced") {
 				if (game.eff.reinforces) startAnim.player("shield_reinforced");
@@ -62,7 +62,7 @@ class Enemy {
 			this.middleAction(); // teporary
 		};
 	};
-	middleAction() {
+	middleAction = () => {
 		if (this.intent == "attack") {
 			var damage = this.attackPower;
 			if (game.shield <= damage) {
@@ -78,13 +78,13 @@ class Enemy {
 			this.finishAction(); // teporary
 		};
 	};
-	finishAction() {
+	finishAction = () => {
 		this.intent = chance(3/5)?"attack":"defend";
 		this.intentHistory.push(this.intent);
-		if (overrideIntent("attack", this.intentHistory)) {
+		if (this.overrideIntent("attack")) {
 			this.intent = "defend";
 			this.intentHistory.push(this.intent);
-		} else if (overrideIntent("defend", this.intentHistory)) {
+		} else if (this.overrideIntent("defend")) {
 			this.intent = "attack";
 			this.intentHistory.push(this.intent);
 		};
@@ -96,20 +96,18 @@ class Enemy {
 		};
 		game.enemyStage = "none";
 	};
-};
-
-function overrideIntent(type, history = []) {
-	if (!type || !history) return false;
-	let location0 = history.indexOf(type), location1, location2;
-	if (location0 !== -1) {
-		location1 = history.indexOf(type, location0 + 1);
-		if (location1 - 1 === location0) {
-			location2 = history.indexOf(type, location1 + 1);
-			if (location2 - 1 === location1) {
-				game.enemies[game.enemyNum].intentHistory = [];
-				return true;
+	overrideIntent = (type) => {
+		const location0 = this.intentHistory.indexOf(type);
+		if (location0 !== -1) {
+			const location1 = this.intentHistory.indexOf(type, location0 + 1);
+			if (location1 - 1 === location0) {
+				const location2 = this.intentHistory.indexOf(type, location1 + 1);
+				if (location2 - 1 === location1) {
+					this.intentHistory = [];
+					return true;
+				};
 			};
 		};
+		return false;
 	};
-	return false;
 };
