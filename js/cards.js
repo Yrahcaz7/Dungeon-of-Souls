@@ -15,18 +15,21 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const cards = { // card attributes format: [type, ...special];
+const attributes = {
+	unplayable: [0],
+	exhaust: [3000],
+}, cards = { // card attributes format: [type, ...special];
 	0: {
 		name: "error",
 		desc: "Unplayable.",
-		attributes: ["error", "unplayable"],
+		type: "error",
 		rarity: -1,
 		cost: 0,
 	},
 	1000: {
 		name: "slash",
 		desc: "Deal 5 damage.",
-		attributes: ["attack"],
+		type: "attack",
 		rarity: 0,
 		cost: 1,
 		anim: "attack",
@@ -35,7 +38,7 @@ const cards = { // card attributes format: [type, ...special];
 	1001: {
 		name: "heat wave",
 		desc: "Deal 7 damage to\nan enemy, and apply\n2 burn to all\nenemies.",
-		attributes: ["attack"],
+		type: "attack",
 		rarity: 2,
 		cost: 2,
 		anim: "attack",
@@ -50,7 +53,7 @@ const cards = { // card attributes format: [type, ...special];
 	2000: {
 		name: "block",
 		desc: "Gain 4 shield.",
-		attributes: ["defense"],
+		type: "defense",
 		rarity: 0,
 		cost: 1,
 		effect() {
@@ -60,7 +63,7 @@ const cards = { // card attributes format: [type, ...special];
 	2001: {
 		name: "reinforce",
 		desc: "Gain 1 shield and\n1 reinforce.",
-		attributes: ["defense"],
+		type: "defense",
 		rarity: 1,
 		cost: 1,
 		effect() {
@@ -71,7 +74,7 @@ const cards = { // card attributes format: [type, ...special];
 	2002: {
 		name: "everlasting shield",
 		desc: "Gain 3 reinforces.",
-		attributes: ["defense"],
+		type: "defense",
 		rarity: 2,
 		cost: 2,
 		effect() {
@@ -81,7 +84,7 @@ const cards = { // card attributes format: [type, ...special];
 	3000: {
 		name: "war cry",
 		desc: "All enemies (except\nbosses) switch\ntheir intents to\ndefense. Exhaust.",
-		attributes: ["skill", "exhaust"],
+		type: "skill",
 		rarity: 1,
 		cost: 0,
 		effect() {
@@ -95,7 +98,7 @@ const cards = { // card attributes format: [type, ...special];
 	4000: {
 		name: "aura blade",
 		desc: "Gain 1 aura blade.",
-		attributes: ["magic"],
+		type: "magic",
 		rarity: 1,
 		cost: 1,
 		effect() {
@@ -131,10 +134,10 @@ Array.prototype.cardSort = function() {
 		if (cards[a.id].rarity < cards[b.id].rarity) {
 			return 1;
 		};
-		if (cards[a.id].attributes[0] < cards[b.id].attributes[0]) {
+		if (cards[a.id].type < cards[b.id].type) {
 			return -1;
 		};
-		if (cards[a.id].attributes[0] > cards[b.id].attributes[0]) {
+		if (cards[a.id].type > cards[b.id].type) {
 			return 1;
 		};
 		if (cards[a.id].name < cards[b.id].name) {

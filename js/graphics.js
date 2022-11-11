@@ -225,14 +225,14 @@ const draw = {
 		else if (rarity == 1) img = card.common[name];
 		else if (rarity == 2) img = card.rare[name];
 		if (cardObject.id !== 0) draw.image(card.back, x + 2, y + 2);
-		const type = cards[cardObject.id].attributes[0];
+		const type = cards[cardObject.id].type;
 		if (type == "attack") draw.image(card.outline.attack, x + 3, y + 3);
 		else if (type == "curse") draw.image(card.outline.curse, x + 3, y + 3);
 		else if (type == "defense") draw.image(card.outline.defense, x + 3, y + 3);
 		else if (type == "skill") draw.image(card.outline.skill, x + 3, y + 3);
 		else if (type == "magic") draw.image(card.outline.magic, x + 3, y + 3);
 		if (selected) {
-			if (cards[cardObject.id].attributes.includes("unplayable")) {
+			if (attributes.unplayable.includes(cardObject.id)) {
 				if (rarity == 2) draw.image(select.card_rare_unplayable, x - 3, y - 3);
 				else draw.image(select.card_unplayable, x + 1, y + 1);
 			} else {
@@ -257,7 +257,7 @@ const draw = {
 		if (rarity == 2) {
 			draw.image(card.rarity.rare, x - 2, y - 2);
 		};
-		if (!cards[cardObject.id].attributes.includes("unplayable")) {
+		if (!attributes.unplayable.includes(cardObject.id)) {
 			draw.image(card.energy, x, y);
 			draw.lore(x + 4, y + 2, cards[cardObject.id].cost);
 		};

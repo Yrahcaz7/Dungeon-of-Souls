@@ -183,7 +183,7 @@ function playerTurn() {
 			game.attackEffect = "none";
 		};
 		game.enemyAttFin = true;
-		if (cards[game.enemyAtt.id].attributes.includes("exhaust")) game.hand.splice(game.activeCard, 1);
+		if (attributes.exhaust.includes(game.enemyAtt.id)) game.hand.splice(game.activeCard, 1);
 		else game.discard.push(game.hand.splice(game.activeCard, 1)[0]);
 		cardAnim.splice(game.select[1], 1);
 		cardAnim.push(0);
@@ -196,7 +196,7 @@ function playerTurn() {
 	// play card
 	if (action == "enter" && game.select[0] == "hand") {
 		let selected = game.hand[game.select[1]], id = selected.id;
-		if (cards[id].attributes.includes("unplayable")) {
+		if (attributes.unplayable.includes(id)) {
 			if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
 			else notif = [game.select[1], 0, "unplayable", 0];
 			actionTimer = 1;
@@ -205,14 +205,14 @@ function playerTurn() {
 				// effects of cards that activate right away
 				cards[id].effect();
 				game.energy -= cards[id].cost;
-				if (cards[id].attributes.includes("exhaust")) game.hand.splice(game.select[1], 1);
+				if (attributes.exhaust.includes(id)) game.hand.splice(game.select[1], 1);
 				else game.discard.push(game.hand.splice(game.select[1], 1)[0]);
 				cardAnim.splice(game.select[1], 1);
 				cardAnim.push(0);
 				if (game.prevCard) game.select = ["hand", game.prevCard - 1];
 				else game.select = ["hand", 0];
 				actionTimer = 2;
-			} else if (cards[id].attributes[0] == "attack") {
+			} else if (cards[id].type == "attack") {
 				game.activeCard = game.select[1];
 				game.select = ["attack_enemy", game.enemies.length - 1];
 				game.enemyAtt = game.hand[game.activeCard];
