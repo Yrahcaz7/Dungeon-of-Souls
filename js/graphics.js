@@ -250,7 +250,7 @@ const draw = {
 		let desc = cards[cardObject.id].desc, exDamage = 0;
 		if (game.eff.auraBlades) exDamage += 5 + game.eff.auraBlades;
 		if (exDamage && game.select[0] != "card_rewards") {
-			desc = desc.replace(/([Dd]eal\s)(\d+)(\sdamage)/g, (substring, pre, number, post) => {
+			desc = desc.replace(/([Dd]eal\s)(\d+)(\s<red>damage<\/red>)/g, (substring, pre, number, post) => {
 				return pre + "<light-green outline>" + (parseInt(number) + exDamage) + "</light-green>" + post;
 			});
 		};
