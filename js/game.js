@@ -201,8 +201,7 @@ function playerTurn() {
 			else notif = [game.select[1], 0, "unplayable", 0];
 			actionTimer = 1;
 		} else if (game.energy >= cards[id].cost) {
-			if (cards[id].effect) {
-				// effects of cards that activate right away
+			if (cards[id].effect) { // effects of cards that activate right away
 				cards[id].effect();
 				game.energy -= cards[id].cost;
 				if (attributes.exhaust.includes(id)) game.hand.splice(game.select[1], 1);
@@ -212,7 +211,7 @@ function playerTurn() {
 				if (game.prevCard) game.select = ["hand", game.prevCard - 1];
 				else game.select = ["hand", 0];
 				actionTimer = 2;
-			} else if (cards[id].type == "attack") {
+			} else if (id >= 1000 && id < 2000) { // effects of attack cards
 				game.activeCard = game.select[1];
 				game.select = ["attack_enemy", game.enemies.length - 1];
 				game.enemyAtt = game.hand[game.activeCard];

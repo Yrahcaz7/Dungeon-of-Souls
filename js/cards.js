@@ -18,18 +18,16 @@
 const attributes = {
 	unplayable: [0],
 	exhaust: [3000],
-}, cards = { // card attributes format: [type, ...special];
+}, cards = {
 	0: {
 		name: "error",
 		desc: "Unplayable.",
-		type: "error",
 		rarity: -1,
 		cost: 0,
 	},
 	1000: {
 		name: "slash",
 		desc: "Deal 5 damage.",
-		type: "attack",
 		rarity: 0,
 		cost: 1,
 		anim: "attack",
@@ -38,7 +36,6 @@ const attributes = {
 	1001: {
 		name: "heat wave",
 		desc: "Deal 7 damage to\nan enemy, and apply\n2 burn to all\nenemies.",
-		type: "attack",
 		rarity: 2,
 		cost: 2,
 		anim: "attack",
@@ -53,7 +50,6 @@ const attributes = {
 	2000: {
 		name: "block",
 		desc: "Gain 4 shield.",
-		type: "defense",
 		rarity: 0,
 		cost: 1,
 		effect() {
@@ -63,7 +59,6 @@ const attributes = {
 	2001: {
 		name: "reinforce",
 		desc: "Gain 1 shield and\n1 reinforce.",
-		type: "defense",
 		rarity: 1,
 		cost: 1,
 		effect() {
@@ -74,7 +69,6 @@ const attributes = {
 	2002: {
 		name: "everlasting shield",
 		desc: "Gain 3 reinforces.",
-		type: "defense",
 		rarity: 2,
 		cost: 2,
 		effect() {
@@ -84,7 +78,6 @@ const attributes = {
 	3000: {
 		name: "war cry",
 		desc: "All enemies (except\nbosses) switch\ntheir intents to\ndefense. Exhaust.",
-		type: "skill",
 		rarity: 1,
 		cost: 0,
 		effect() {
@@ -98,7 +91,6 @@ const attributes = {
 	4000: {
 		name: "aura blade",
 		desc: "Gain 1 aura blade.",
-		type: "magic",
 		rarity: 1,
 		cost: 1,
 		effect() {
@@ -110,7 +102,7 @@ const attributes = {
 	0: "starter",
 	1: "common",
 	2: "rare",
-};
+}, types = ["error", "attack", "defense", "skill", "magic"];
 
 for (const key in cards) {
 	if (Object.hasOwnProperty.call(cards, key)) {
@@ -134,10 +126,10 @@ Array.prototype.cardSort = function() {
 		if (cards[a.id].rarity < cards[b.id].rarity) {
 			return 1;
 		};
-		if (cards[a.id].type < cards[b.id].type) {
+		if (types[Math.floor(a.id / 1000)] < types[Math.floor(b.id / 1000)]) {
 			return -1;
 		};
-		if (cards[a.id].type > cards[b.id].type) {
+		if (types[Math.floor(a.id / 1000)] > types[Math.floor(b.id / 1000)]) {
 			return 1;
 		};
 		if (cards[a.id].name < cards[b.id].name) {
