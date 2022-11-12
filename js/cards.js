@@ -17,7 +17,7 @@
 
 const attributes = {
 	unplayable: [0],
-	exhaust: [3000],
+	"one use": [3000],
 }, cards = {
 	0: {
 		name: "error",
@@ -77,7 +77,7 @@ const attributes = {
 	},
 	3000: {
 		name: "war cry",
-		desc: "All enemies (except\nbosses) switch\ntheir intents to\ndefense. Exhaust.",
+		desc: "All enemies (except\nbosses) switch\ntheir intents to\ndefense. One use.",
 		rarity: 1,
 		cost: 0,
 		effect() {

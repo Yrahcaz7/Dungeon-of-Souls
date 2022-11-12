@@ -349,6 +349,7 @@ function foregrounds() {
 	else draw.imageSector(extra.music, 0, 0, 16, 16, 343, 3);
 	draw.image(extra.end, 3, 163);
 	draw.image(extra.deck, 3, 182);
+	if (game.void.length > 0) draw.image(extra.void, 383, 163);
 	draw.image(extra.discard, 383, 182);
 	draw.image(extra.map, 2, 12);
 	if (game.artifacts.includes("iron will")) {
@@ -361,6 +362,7 @@ function foregrounds() {
 	else if (game.select[0] == "music") draw.image(select.round, 342, 2);
 	else if (game.select[0] == "end") draw.image(select.round, 2, 162);
 	else if (game.select[0] == "deck") draw.image(select.deck, 2, 181);
+	else if (game.select[0] == "void") draw.image(select.round, 382, 162);
 	else if (game.select[0] == "discard") draw.image(select.discard, 382, 181);
 	else if (game.select[0] == "map") draw.image(select.map, 1, 11);
 	draw.lore(1, 1, "floor " + game.floor, {"color": "red"});
@@ -623,7 +625,8 @@ function infoGraphics() {
 function deckGraphics(overrideName = "deck") {
 	draw.rect("#000c");
 	let tempDeck = JSON.parse(game.deckProxy).cardSort(), selected;
-	if (overrideName == "discard") tempDeck = game.discard;
+	if (overrideName == "void") tempDeck = game.void;
+	else if (overrideName == "discard") tempDeck = game.discard;
 	for (let x = 0, y = 0; x + (y * 6) < tempDeck.length; x++) {
 		if (x == game.cardSelect[0] && y == game.cardSelect[1]) {
 			selected = [x, y];
@@ -691,13 +694,13 @@ function info(type, location = "none", xPlus = 0, yPlus = 0) {
 	if (location == "card") {
 		let x = game.handPos[game.select[1]] + xPlus, y = 147 - Math.floor(cardAnim[game.select[1]]);
 		if (game.select[1] == game.hand.length - 1 && game.hand.length >= 4) {
-			x -= 146;
+			x -= 145;
 		};
 		draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});
 	} else if (location == "reward") {
 		let x = game.handPos[game.select[1]] + xPlus;
 		if (game.select[1] == game.cardRewardChoices - 1 && game.cardRewardChoices >= 4) {
-			x -= 146;
+			x -= 145;
 		};
 		draw.textBox(x + 69, 51, 24, infoText[type], {"text-small": true});
 	} else if (location == "deck") {
@@ -793,8 +796,8 @@ function target() {
 			info("aura blade", "card");
 		} else if (desc.includes("burn")) {
 			info("burn", "card");
-		} else if (desc.includes("Exhaust")) {
-			info("exhaust", "card");
+		} else if (desc.includes("One use")) {
+			info("one use", "card");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "card");
 		};
@@ -804,19 +807,19 @@ function target() {
 			info("aura blade", "deck");
 		} else if (desc.includes("burn")) {
 			info("burn", "deck");
-		} else if (desc.includes("Exhaust")) {
-			info("exhaust", "deck");
+		} else if (desc.includes("One use")) {
+			info("one use", "deck");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "deck");
 		};
-	} else if (game.select[0] == "discard" && game.select[1] == 1 && game.discard.length > 0) {
-		const desc = cards[game.discard[game.cardSelect[0] + (game.cardSelect[1] * 6)].id].desc;
+	} else if ((game.select[0] == "void" || game.select[0] == "discard") && game.select[1] == 1 && game[game.select[0]].length > 0) {
+		const desc = cards[game[game.select[0]][game.cardSelect[0] + (game.cardSelect[1] * 6)].id].desc;
 		if (desc.includes("aura blade")) {
 			info("aura blade", "deck");
 		} else if (desc.includes("burn")) {
 			info("burn", "deck");
-		} else if (desc.includes("Exhaust")) {
-			info("exhaust", "deck");
+		} else if (desc.includes("One use")) {
+			info("one use", "deck");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "deck");
 		};
@@ -826,8 +829,8 @@ function target() {
 			info("aura blade", "reward");
 		} else if (desc.includes("burn")) {
 			info("burn", "reward");
-		} else if (desc.includes("Exhaust")) {
-			info("exhaust", "reward");
+		} else if (desc.includes("One use")) {
+			info("one use", "reward");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "reward");
 		};

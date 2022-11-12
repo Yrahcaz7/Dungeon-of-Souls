@@ -120,6 +120,7 @@ const player = {
 	end: new Image,
 	deck: new Image,
 	discard: new Image,
+	void: new Image,
 	map: new Image,
 }, icon = {
 	aura_blade: new Image,

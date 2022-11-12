@@ -18,8 +18,8 @@
 const infoText = {
 	"aura blade": "Every time you <red>attack</red>,\none of your aura blades\nis used up for 5 + X\nextra <red>damage</red>, X being\nthe number of aura\nblades you have.",
 	burn: "At the end of each\nturn, each burn deals 1\n<red>damage</red> to what it is on,\nthen one burn on that\ngoes away.",
-	exhaust: "When played, card will\nbe exhausted (removed\nfrom the game) until\nthe battle ends.",
 	iron_will: "Every time a battle\nends, you <red>heal</red> 2 <red>health</red>.",
+	"one use": "When a one use card is\nplayed, it will be sent\nto the void instead of\nthe discard.",
 	reinforce: "At the start of each\nturn, one reinforce is\nused up to retain your\n<blue>shield</blue> (even if you have\nno <blue>shield</blue> left.)",
 	the_map: "Every time a battle\nends, you can choose\nwhere you go next.",
 }, overview = ""
