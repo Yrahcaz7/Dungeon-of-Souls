@@ -44,21 +44,20 @@ const draw = {
 		ctx.stroke();
 	},
 	// complex - second order (uses basic)
-	lore(x, y, string, style = {"color": "black", "outline-color": "black", "text-align": "right", "text-small": false}) {
+	lore(x, y, string, style = {"color": "black", "highlight-color": "black", "text-align": "right", "text-small": false}) {
 		string = "" + string;
 		if (!style["color"]) style["color"] = "black";
-		if (!style["outline-color"]) style["outline-color"] = "black";
+		if (!style["highlight-color"]) style["highlight-color"] = "black";
 		if (!style["text-align"]) style["text-align"] = "right";
 		if (!style["text-small"]) style["text-small"] = false;
-		let color = style["color"], outline = "", position = style["text-align"], small = style["text-small"];
+		let color = style["color"], highlight = "", position = style["text-align"], small = style["text-small"];
 		string = string.replace(/<br>/g, "\n");
 		x = Math.round(x * 2) / 2;
 		y = Math.round(y * 2) / 2;
-		let img = letters.black, outImg = letters.outline_black, enters = 0, enterIndex = 0, len = string.replace(/<.*?>/g, "").length;
+		let img = letters.black, enters = 0, enterIndex = 0, len = string.replace(/<.*?>/g, "").length;
 		// set images
 		if (letters[color.replace("_", "-")]) img = letters[color.replace("_", "-")];
 		else if (letters[color.slice(0, -2)] && letters[color.slice(0, -2)][color.slice(-1)]) img = letters[color.slice(0, -2)][color.slice(-1)];
-		if (letters["outline_" + style["outline-color"]]) outImg = letters["outline_" + style["outline-color"]];
 		// check for size tags
 		if (string.includes("<b>") || string.includes("<big>") || string.includes("<s>") || string.includes("<small>")) {
 			string = string.replace(/<\/b>|<\/big>|<\/s>|<\/small>/g, "");
@@ -101,12 +100,12 @@ const draw = {
 			if (string.charAt(a) == "<") {
 				const cut = string.slice(a + 1), tag = cut.slice(0, cut.indexOf(" ")==-1?cut.indexOf(">"):Math.min(cut.indexOf(">"), cut.indexOf(" ")));
 				if (letters[tag.replace("-", "_")]) {
-					if (cut.slice(0, cut.indexOf(">")).includes("outline")) outline = style["outline-color"];
-					else outline = "";
+					if (cut.slice(0, cut.indexOf(">")).includes("highlight")) highlight = style["highlight-color"];
+					else highlight = "";
 					img = letters[tag.replace("-", "_")];
 					string = string.replace(new RegExp("<" + tag + ".*?>"), "");
 				} else if (img == letters[tag.slice(1).replace("-", "_")] && tag.startsWith("/")) {
-					outline = "";
+					highlight = "";
 					img = defImg;
 					string = string.replace("<" + tag + ">", "");
 				};
@@ -129,14 +128,14 @@ const draw = {
 			// print letter
 			if (small) {
 				if (position == "right") {
+					if (highlight) draw.rect(highlight, x + (a * 3) - 0.5, y + (enters * 5.5) - 0.5, 3.5, 5.5);
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 3), y + (enters * 5.5), 2.5, 5);
-					if (outline) draw.imageSector(outImg, (index - 32) * 8, 0, 7, 12, x + (a * 3) - 0.5, y + (enters * 5.5) - 0.5, 3.5, 6);
 				} else if (position == "left") {
+					if (highlight) draw.rect(highlight, x + ((a - len + 1) * 3) - 0.5, y + (enters * 5.5) - 0.5, 3.5, 5.5);
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 3), y + (enters * 5.5), 2.5, 5);
-					if (outline) draw.imageSector(outImg, (index - 32) * 8, 0, 7, 12, x + ((a - len + 1) * 3) - 0.5, y + (enters * 5.5) - 0.5, 3.5, 6);
 				} else if (position == "center") {
+					if (highlight) draw.rect(highlight, x + (a * 3) - (len * 1.5) + 1 - 0.5, y + (enters * 5.5) - 0.5, 3.5, 5.5);
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 3) - (len * 1.5) + 1, y + (enters * 5.5), 2.5, 5);
-					if (outline) draw.imageSector(outImg, (index - 32) * 8, 0, 7, 12, x + (a * 3) - (len * 1.5) + 1 - 0.5, y + (enters * 5.5) - 0.5, 3.5, 6);
 				};
 			} else {
 				if (position == "right") {
@@ -246,7 +245,7 @@ const draw = {
 		let desc = cards[cardObject.id].desc, exDamage = 0;
 		if (game.eff.auraBlades) exDamage += 5 + game.eff.auraBlades;
 		if (exDamage && game.select[0] != "card_rewards") {
-			desc = desc.replace(/([Dd]eal\s)(\d+)(\s<red>damage<\/red>)/g, (substring, pre, number, post) => pre + "<light-green outline>" + (parseInt(number) + exDamage) + "</light-green>" + post);
+			desc = desc.replace(/([Dd]eal\s)(\d+)(\s<red>damage<\/red>)/g, (substring, pre, number, post) => pre + "<light-green highlight>" + (parseInt(number) + exDamage) + "</light-green>" + post);
 		};
 		draw.lore(x + 6, y + 55, desc, {"text-small": true});
 		draw.lore(x + 33, y + 89.5, rarities[rarity] + "|" + type, {"text-align": "center", "text-small": true});
@@ -258,9 +257,9 @@ const draw = {
 			draw.lore(x + 4, y + 2, cards[cardObject.id].cost);
 		};
 	},
-	textBox(x, y, width, string, style = {"color": "black", "outline-color": "", "text-align": "right", "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
+	textBox(x, y, width, string, style = {"color": "black", "highlight-color": "", "text-align": "right", "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
 		if (!style["color"]) style["color"] = "black";
-		if (!style["outline-color"]) style["outline-color"] = "";
+		if (!style["highlight-color"]) style["highlight-color"] = "";
 		if (!style["text-align"]) style["text-align"] = "right";
 		if (!style["text-small"]) style["text-small"] = false;
 		if (!style["background-color"]) style["background-color"] = "#ccc";

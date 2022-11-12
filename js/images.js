@@ -82,8 +82,6 @@ const player = {
 	light_brown: new Image,
 	light_green: new Image,
 	red_fade: [new Image, new Image, new Image],
-	outline_black: new Image,
-	outline_white: new Image,
 }, bar = {
 	health_empty: new Image,
 	health_full: new Image,
