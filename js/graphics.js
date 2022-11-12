@@ -290,10 +290,10 @@ const draw = {
 };
 
 const startAnim = {
-	player(type) {
+	player(type, noAura = false) {
 		type = "" + type;
 		if (!type) return;
-		if (game.eff.auraBlades && (type == "attack" || type == "attack_2")) type += "_aura";
+		if (!noAura && game.eff.auraBlades && (type == "attack" || type == "attack_2")) type += "_aura";
 		playerAnim = [0, type];
 	},
 	effect(type) {
@@ -799,6 +799,8 @@ function target() {
 			info("one use", "card");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "card");
+		} else if (desc.includes("static damage") || desc.includes("static\ndamage")) {
+			info("static damage", "card");
 		};
 	} else if (game.select[0] == "deck" && game.select[1] == 1 && game.deckProxy != "[]") {
 		const desc = cards[JSON.parse(game.deckProxy).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].id].desc;
@@ -810,6 +812,8 @@ function target() {
 			info("one use", "deck");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "deck");
+		} else if (desc.includes("static damage") || desc.includes("static\ndamage")) {
+			info("static damage", "deck");
 		};
 	} else if ((game.select[0] == "void" || game.select[0] == "discard") && game.select[1] == 1 && game[game.select[0]].length > 0) {
 		const desc = cards[game[game.select[0]][game.cardSelect[0] + (game.cardSelect[1] * 6)].id].desc;
@@ -821,6 +825,8 @@ function target() {
 			info("one use", "deck");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "deck");
+		} else if (desc.includes("static damage") || desc.includes("static\ndamage")) {
+			info("static damage", "deck");
 		};
 	} else if (game.select[0] == "card_rewards" && game.select[1] > -1 && game.select[1] < game.cardRewardChoices) {
 		const desc = cards[game.room[5][game.select[1]]].desc;
@@ -832,6 +838,8 @@ function target() {
 			info("one use", "reward");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "reward");
+		} else if (desc.includes("static damage") || desc.includes("static\ndamage")) {
+			info("static damage", "reward");
 		};
 	};
 };

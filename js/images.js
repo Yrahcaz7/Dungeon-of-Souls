@@ -44,8 +44,9 @@ const player = {
 		"block": new Image,
 	},
 	common: {
-		"reinforce": new Image,
 		"aura blade": new Image,
+		"reinforce": new Image,
+		"sweeping slash": new Image,
 		"war cry": new Image,
 	},
 	rare: {
@@ -165,8 +166,9 @@ card.starter["slash"].src = "images/cards/starter/slash.png";
 card.starter["block"].src = "images/cards/starter/block.png";
 
 // common cards
-card.common["reinforce"].src = "images/cards/common/reinforce.png";
 card.common["aura blade"].src = "images/cards/common/aura_blade.png";
+card.common["reinforce"].src = "images/cards/common/reinforce.png";
+card.common["sweeping slash"].src = "images/cards/common/sweeping_slash.png";
 card.common["war cry"].src = "images/cards/common/war_cry.png";
 
 // rare cards

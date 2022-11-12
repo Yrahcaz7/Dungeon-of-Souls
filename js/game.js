@@ -154,18 +154,20 @@ function endTurnConfirm() {
 function playerTurn() {
 	// finish attack enemy
 	if (game.enemyAttFin && playerAnim[1] == "idle") {
-		let damage = +cards[game.enemyAtt.id].damage;
-		if (game.attackEffect == "aura blade") {
-			damage += 5 + (game.eff.auraBlades + 1);
+		if (!attributes["NO SELECT"].includes(game.enemyAtt.id)) {
+			let damage = +cards[game.enemyAtt.id].damage;
+			if (game.attackEffect == "aura blade") {
+				damage += 5 + (game.eff.auraBlades + 1);
+			};
+			if (game.enemies[game.enemyAttSel].shield > damage) {
+				game.enemies[game.enemyAttSel].shield -= damage;
+				damage = 0;
+			} else if (game.enemies[game.enemyAttSel].shield) {
+				damage -= game.enemies[game.enemyAttSel].shield;
+				game.enemies[game.enemyAttSel].shield = 0;
+			};
+			game.enemies[game.enemyAttSel].health -= damage;
 		};
-		if (game.enemies[game.enemyAttSel].shield > damage) {
-			game.enemies[game.enemyAttSel].shield -= damage;
-			damage = 0;
-		} else if (game.enemies[game.enemyAttSel].shield) {
-			damage -= game.enemies[game.enemyAttSel].shield;
-			game.enemies[game.enemyAttSel].shield = 0;
-		};
-		game.enemies[game.enemyAttSel].health -= damage;
 		if (cards[game.enemyAtt.id].attack) cards[game.enemyAtt.id].attack();
 		game.enemyAtt = "none";
 		game.enemyAttFin = false;
@@ -213,10 +215,25 @@ function playerTurn() {
 				else game.select = ["hand", 0];
 				actionTimer = 2;
 			} else if (id >= 1000 && id < 2000) { // effects of attack cards
-				game.activeCard = game.select[1];
-				game.select = ["attack_enemy", game.enemies.length - 1];
-				game.enemyAtt = game.hand[game.activeCard];
-				actionTimer = 5;
+				if (attributes["NO SELECT"].includes(id)) {
+					game.energy -= cards[id].cost;
+					game.enemyAtt = game.hand[game.select[1]];
+					if (cards[id].anim.endsWith("-noAura")) startAnim.player(cards[id].anim.split("-")[0], true);
+					else startAnim.player(cards[id].anim);
+					game.enemyAttFin = true;
+					if (attributes["one use"].includes(id)) game.void.push(game.hand.splice(game.select[1], 1)[0]);
+					else game.discard.push(game.hand.splice(game.select[1], 1)[0]);
+					cardAnim.splice(game.select[1], 1);
+					cardAnim.push(0);
+					if (game.prevCard) game.select = ["hand", game.prevCard - 1];
+					else game.select = ["hand", 0];
+					actionTimer = 2;
+				} else {
+					game.activeCard = game.select[1];
+					game.select = ["attack_enemy", game.enemies.length - 1];
+					game.enemyAtt = game.hand[game.activeCard];
+					actionTimer = 4;
+				};
 			};
 		} else {
 			if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "not enough energy", -2];

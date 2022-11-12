@@ -16,8 +16,11 @@
  */
 
 const attributes = {
+	// gameplay
 	unplayable: [0],
 	"one use": [3000],
+	// technical
+	"NO SELECT": [1002],
 }, cards = {
 	0: {
 		name: "error",
@@ -44,6 +47,26 @@ const attributes = {
 			for (let index = 0; index < game.enemies.length; index++) {
 				if (game.enemies[index].eff.burn) game.enemies[index].eff.burn += 2;
 				else game.enemies[index].eff.burn = 2;
+			};
+		},
+	},
+	1002: {
+		name: "sweeping slash",
+		desc: "Deal 3 static\ndamage to all\nenemies.",
+		rarity: 1,
+		cost: 1,
+		anim: "attack_2-noAura",
+		attack() {
+			for (let index = 0; index < game.enemies.length; index++) {
+				let damage = 3;
+				if (game.enemies[game.enemyAttSel].shield > damage) {
+					game.enemies[game.enemyAttSel].shield -= damage;
+					damage = 0;
+				} else if (game.enemies[game.enemyAttSel].shield) {
+					damage -= game.enemies[game.enemyAttSel].shield;
+					game.enemies[game.enemyAttSel].shield = 0;
+				};
+				game.enemies[game.enemyAttSel].health -= damage;
 			};
 		},
 	},
@@ -106,7 +129,7 @@ const attributes = {
 
 for (const key in cards) {
 	if (Object.hasOwnProperty.call(cards, key)) {
-		cards[key].desc = cards[key].desc.replace(/([Hh]ealth|[Dd]amage|[Aa]ttack)/g, "<red>$1</red>").replace(/([Ss]hield|[Dd]efense)/g, "<blue>$1</blue>");
+		cards[key].desc = cards[key].desc.replace(/([Hh]ealth|[Dd]amage|[Ss]tatic\sdamage|[Aa]ttack)/g, "<red>$1</red>").replace(/([Ss]hield|[Dd]efense)/g, "<blue>$1</blue>");
 	};
 };
 
