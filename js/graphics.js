@@ -349,7 +349,7 @@ function foregrounds() {
 	else draw.imageSector(extra.music, 0, 0, 16, 16, 343, 3);
 	draw.image(extra.end, 3, 163);
 	draw.image(extra.deck, 3, 182);
-	if (game.void.length > 0) draw.image(extra.void, 383, 163);
+	if (game.void.length > 0) draw.image(extra.void, 381, 163);
 	draw.image(extra.discard, 383, 182);
 	draw.image(extra.map, 2, 12);
 	if (game.artifacts.includes("iron will")) {
@@ -362,7 +362,7 @@ function foregrounds() {
 	else if (game.select[0] == "music") draw.image(select.round, 342, 2);
 	else if (game.select[0] == "end") draw.image(select.round, 2, 162);
 	else if (game.select[0] == "deck") draw.image(select.deck, 2, 181);
-	else if (game.select[0] == "void") draw.image(select.round, 382, 162);
+	else if (game.select[0] == "void") draw.image(select.round, 380, 162);
 	else if (game.select[0] == "discard") draw.image(select.discard, 382, 181);
 	else if (game.select[0] == "map") draw.image(select.map, 1, 11);
 	draw.lore(1, 1, "floor " + game.floor, {"color": "red"});

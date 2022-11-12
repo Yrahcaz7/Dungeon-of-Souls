@@ -98,18 +98,27 @@ document.addEventListener("keydown", (event) => {
 	const key = event.key, prevAction = "" + action;
 	if (key == "E" || key == "e") {
 		if (game.select[0] != "confirm_end") endTurnConfirm();
-	} else if (key == "1") {
+	} else if (key == "1" && actionTimer == -1) {
 		if (game.select[0] == "deck" && game.select[1]) {
 			if (game.hand.length > 0) game.select = ["hand", game.prevCard];
 			else if (game.state == "battle") game.select = ["end", 0];
 			else game.select = ["map", 0];
 		} else game.select = ["deck", 1];
-	} else if (key == "2") {
+		actionTimer = 2;
+	} else if (key == "2" && actionTimer == -1) {
+		if (game.select[0] == "void" && game.select[1]) {
+			if (game.hand.length > 0) game.select = ["hand", game.prevCard];
+			else if (game.state == "battle") game.select = ["end", 0];
+			else game.select = ["map", 0];
+		} else if (game.void.length > 0) game.select = ["void", 1];
+		actionTimer = 2;
+	} else if (key == "3" && actionTimer == -1) {
 		if (game.select[0] == "discard" && game.select[1]) {
 			if (game.hand.length > 0) game.select = ["hand", game.prevCard];
 			else if (game.state == "battle") game.select = ["end", 0];
 			else game.select = ["map", 0];
 		} else game.select = ["discard", 1];
+		actionTimer = 2;
 	} else if (key == " " || key == "Enter") action = "enter";
 	else if (key == "W" || key == "w" || key == "ArrowUp") action = "up";
 	else if (key == "A" || key == "a" || key == "ArrowLeft") action = "left";
@@ -119,7 +128,7 @@ document.addEventListener("keydown", (event) => {
 	if (key == "Escape") fullscreen("exit");
 	else if (key == "Tab") fullscreen();
 	if (!event.repeat && prevAction == "none" && lastAction == action && global.options.allow_fast_movement) {
-		if (action != "enter") selection();
+		if (action != "enter" && key != "1" && key != "2" && key != "3") selection();
 		updateVisuals();
 	};
 	if (action != "none") lastAction = action;
