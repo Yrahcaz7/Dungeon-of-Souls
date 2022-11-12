@@ -120,7 +120,15 @@ function endTurn() {
 			game.enemies[index].shield = 0;
 		};
 		if (game.enemies[index].eff.burn) {
-			game.enemies[index].health -= game.enemies[index].eff.burn;
+			let damage = game.enemies[index].eff.burn;
+			if (game.enemies[index].shield > damage) {
+				game.enemies[index].shield -= damage;
+				damage = 0;
+			} else if (game.enemies[index].shield) {
+				damage -= game.enemies[index].shield;
+				game.enemies[index].shield = 0;
+			};
+			game.enemies[index].health -= damage;
 			game.enemies[index].eff.burn--;
 		};
 	};

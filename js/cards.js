@@ -59,14 +59,14 @@ const attributes = {
 		attack() {
 			for (let index = 0; index < game.enemies.length; index++) {
 				let damage = 3;
-				if (game.enemies[game.enemyAttSel].shield > damage) {
-					game.enemies[game.enemyAttSel].shield -= damage;
+				if (game.enemies[index].shield > damage) {
+					game.enemies[index].shield -= damage;
 					damage = 0;
-				} else if (game.enemies[game.enemyAttSel].shield) {
-					damage -= game.enemies[game.enemyAttSel].shield;
-					game.enemies[game.enemyAttSel].shield = 0;
+				} else if (game.enemies[index].shield) {
+					damage -= game.enemies[index].shield;
+					game.enemies[index].shield = 0;
 				};
-				game.enemies[game.enemyAttSel].health -= damage;
+				game.enemies[index].health -= damage;
 			};
 		},
 	},
