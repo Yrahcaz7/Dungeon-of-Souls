@@ -16,7 +16,7 @@
  */
 
 var global = {
-	unlockedCards: [],
+	// unlockedCards: [],
 	options: {
 		music: true,
 		sticky_cards: false,
@@ -73,9 +73,9 @@ var global = {
 	firstRoom: [],
 	map: [],
 	paths: {},
-	seed: "" + new Date().getTime().toString(36).shuffle(),
+	seed: "" + new Date().getTime().toString(36).substring(1).shuffle(),
 	saveNum: 0,
-}, actionTimer = -1, notif = [-1, 0, "", 0], hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "void" || game.select[0] == "discard" || game.select[0] == "map") && game.select[1], menuLocation = "title";
+}, actionTimer = -1, notif = [-1, 0, "", 0], hide = (game.select[0] == "looker" || game.select[0] == "help" || game.select[0] == "options" || game.select[0] == "deck" || game.select[0] == "void" || game.select[0] == "discard" || game.select[0] == "map") && game.select[1], menuLocation = "title";
 
 function musicPopups() {
 	let src = document.getElementById("music").src;
@@ -415,7 +415,7 @@ function selection() {
 	if (game.select[0] == "none") game.select = ["hand", 0];
 	// select extras
 	if (action == "up" && game.select[0] == "lookat_enemy") {
-		game.select = ["music", 0];
+		game.select = ["looker", 0];
 		actionTimer = 1;
 		return;
 	};
@@ -426,7 +426,7 @@ function selection() {
 		return;
 	} else if (action == "up" && game.select[0] == "void" && !game.select[1]) {
 		if (popups[0]) game.select = ["popups", 0];
-		else if (!game.enemies.length) game.select = ["music", 0];
+		else if (!game.enemies.length) game.select = ["looker", 0];
 		else game.select = ["lookat_enemy", 0];
 		actionTimer = 1;
 		return;
@@ -437,7 +437,7 @@ function selection() {
 	} else if (action == "up" && game.select[0] == "discard" && !game.select[1]) {
 		if (game.void.length > 0) game.select = ["void", 0];
 		else if (popups[0]) game.select = ["popups", 0];
-		else if (!game.enemies.length) game.select = ["music", 0];
+		else if (!game.enemies.length) game.select = ["looker", 0];
 		else game.select = ["lookat_enemy", 0];
 		actionTimer = 1;
 		return;
@@ -514,7 +514,7 @@ function selection() {
 			return;
 		} else if (action == "up") {
 			if (game.select[1] >= popups.length - 1 || game.select[1] >= 6) {
-				game.select = ["music", 0];
+				game.select = ["looker", 0];
 			} else {
 				game.select[1]++;
 			};
@@ -586,13 +586,11 @@ function selection() {
 		};
 	};
 	// activate / deactivate extras
-	if (action == "enter" && (game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "void" || game.select[0] == "discard")) {
+	if (action == "enter" && (game.select[0] == "deck" || game.select[0] == "void" || game.select[0] == "discard")) {
 		if (game.select[1] == 0) game.select[1] = 1;
 		else game.select[1] = 0;
-		if (game.select[0] == "deck" || game.select[0] == "void" || game.select[0] == "discard") {
-			game.deckPos = 0;
-			game.deckMove = "none";
-		};
+		game.deckPos = 0;
+		game.deckMove = "none";
 		actionTimer = 2;
 		return;
 	} else if (action == "enter" && game.select[0] == "map") {
@@ -603,20 +601,19 @@ function selection() {
 		game.select = ["map", 0];
 		actionTimer = 2;
 		return;
+	} else if (action == "enter" && game.select[0] == "looker") {
+		if (game.select[1] == 0) game.select[1] = 1;
+		else game.select[1] = 0;
+		actionTimer = 2;
+		return;
 	} else if (action == "enter" && game.select[0] == "help") {
 		if (game.select[1] <= 2) game.select[1]++;
 		else game.select[1] = 0;
 		actionTimer = 2;
 		return;
-	} else if (action == "enter" && game.select[0] == "music") {
-		if (global.options.music) {
-			document.getElementById("music").pause();
-			global.options.music = false;
-		} else {
-			document.getElementById("music").play();
-			global.options.music = true;
-		};
-		musicPopups();
+	} else if (action == "enter" && game.select[0] == "options" && game.select[1] <= 1) {
+		if (game.select[1] === 0) game.select[1] = 1;
+		else game.select[1] = 0;
 		actionTimer = 2;
 		return;
 	} else if (action == "enter" && game.select[0] == "end" && game.turn == "player") {
@@ -630,32 +627,54 @@ function selection() {
 		if (infPos < infLimit) infPos += infLimit / 8 + 0.5;
 		else infPos = infLimit;
 	};
-	// deselect extras
-	if ((game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "music" || game.select[0] == "map") && !game.select[1]) {
-		if (action == "left" && game.select[0] == "music") {
-			if (game.artifacts.length) game.select = ["artifacts", game.artifacts.length - 1];
-			else game.select = ["map", 0];
+	// select options
+	if (game.select[0] == "options") {
+		if (action == "up" && game.select[1] > 1) {
+			game.select[1]--;
 			actionTimer = 1;
 			return;
-		} else if (action == "left" && game.select[0] == "looker") {
-			game.select = ["music", 0];
+		} else if (action == "down" && game.select[1] > 0 && game.select[1] <= Object.keys(global.options).length) {
+			game.select[1]++;
+			actionTimer = 1;
+			return;
+		} else if (action == "enter") {
+			const option = Object.keys(global.options)[game.select[1] - 2];
+			if (option) global.options[option] = !global.options[option];
+			if (option == "music") {
+				if (global.options.music) document.getElementById("music").play();
+				else document.getElementById("music").pause();
+				musicPopups();
+			};
+			actionTimer = 2;
+			return;
+		};
+	};
+	// deselect extras
+	if ((game.select[0] == "looker" || game.select[0] == "help" || game.select[0] == "options" || game.select[0] == "map") && !game.select[1]) {
+		if (action == "left" && game.select[0] == "looker") {
+			if (game.artifacts.length) game.select = ["artifacts", game.artifacts.length - 1];
+			else game.select = ["map", 0];
 			actionTimer = 1;
 			return;
 		} else if (action == "left" && game.select[0] == "help") {
 			game.select = ["looker", 0];
 			actionTimer = 1;
 			return;
-		} else if (action == "right" && game.select[0] == "music") {
-			game.select = ["looker", 0];
-			actionTimer = 1;
-			return;
-		} else if (action == "right" && game.select[0] == "map") {
-			if (game.artifacts[0]) game.select = ["artifacts", 0];
-			else game.select = ["music", 0];
+		} else if (action == "left" && game.select[0] == "options") {
+			game.select = ["help", 0];
 			actionTimer = 1;
 			return;
 		} else if (action == "right" && game.select[0] == "looker") {
 			game.select = ["help", 0];
+			actionTimer = 1;
+			return;
+		} else if (action == "right" && game.select[0] == "map") {
+			if (game.artifacts[0]) game.select = ["artifacts", 0];
+			else game.select = ["looker", 0];
+			actionTimer = 1;
+			return;
+		} else if (action == "right" && game.select[0] == "help") {
+			game.select = ["options", 0];
 			actionTimer = 1;
 			return;
 		} else if (action == "down") {
@@ -677,7 +696,7 @@ function selection() {
 			actionTimer = 1;
 			return;
 		} else if (action == "right") {
-			if (game.select[1] == game.artifacts.length - 1) game.select = ["music", 0];
+			if (game.select[1] == game.artifacts.length - 1) game.select = ["looker", 0];
 			else game.select[1]++;
 			actionTimer = 1;
 			return;
@@ -850,6 +869,21 @@ function updateVisuals() {
 		cardRewardGraphics();
 	} else if (game.select[0] == "help" && game.select[1]) {
 		infoGraphics();
+	} else if (game.select[0] == "options" && game.select[1]) {
+		const options = Object.keys(global.options);
+		let text = "";
+		for (let index = 0; index < options.length; index++) {
+			if (game.select[1] - 2 === index) text += "<yellow>" + options[index] + ": " + (global.options[options[index]] ? "ON" : "OFF") + "</yellow>\n";
+			else text += options[index] + ": " + (global.options[options[index]] ? "ON" : "OFF") + "\n";
+		};
+		draw.rect("#000c");
+		draw.rect("#0004", 0, 0, 400, 13);
+		draw.lore(200 - 2, 1, "Options", {"color": "white", "text-align": "center"});
+		draw.rect("#fff", 1, 12, 380, 1);
+		draw.lore(200 - 2, 15, text.trim(), {"color": "white", "text-align": "center"});
+		draw.image(extra.options, 381, 3);
+		if (game.select[1] == 1) draw.image(select.options_yellow, 380, 2);
+		else draw.image(select.options, 380, 2);
 	} else if (game.select[0] == "deck" && game.select[1]) {
 		if (game.deckProxy != "[]") {
 			deckGraphics();

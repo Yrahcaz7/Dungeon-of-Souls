@@ -20,7 +20,7 @@
 String.prototype.title = function() {
 	let result = "";
 	for (let num = 0; num < this.length; num++) {
-		if (num == 0 || this.charAt(num - 1) == " " || this.charAt(num - 1) == "\n") result += this.charAt(num).toUpperCase();
+		if (num === 0 || this.charAt(num - 1) == " " || this.charAt(num - 1) == "\n") result += this.charAt(num).toUpperCase();
 		else result += this.charAt(num);
 	};
 	return result;

@@ -26,7 +26,7 @@ function mapPiece(row, attribute = "none") {
 	if (attribute == "treasure") return ["treasure", randomInt(-5, 5), randomInt(-5, 5), "closed", randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
 	if (attribute == "prime") return ["battle_prime", 0, 0, ["slime_small" + weaker(row), "slime_prime", "slime_small" + weaker(row)], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
 	let type = chance(3/5)?"battle":false;
-	if (rowFalses >= 4 || (twoRow && rowFalses >= 3) || (row == 0 && rowFalses >= 2)) type = "battle";
+	if (rowFalses >= 4 || (twoRow && rowFalses >= 3) || (row === 0 && rowFalses >= 2)) type = "battle";
 	if (type) rowNodes++;
 	else rowFalses++;
 	if (!type || rowNodes == 6) return false;

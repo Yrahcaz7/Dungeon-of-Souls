@@ -92,6 +92,8 @@ const player = {
 	energy_full: new Image,
 }, select = {
 	round: new Image,
+	options: new Image,
+	options_yellow: new Image,
 	card_normal: new Image,
 	card_unplayable: new Image,
 	card_rare: new Image,
@@ -113,9 +115,9 @@ const player = {
 	item_green: new Image,
 	item_border: new Image,
 }, extra = {
+	options: new Image,
 	help: new Image,
 	looker: new Image,
-	music: new Image,
 	end: new Image,
 	deck: new Image,
 	discard: new Image,

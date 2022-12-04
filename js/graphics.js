@@ -345,11 +345,10 @@ function backgrounds() {
 
 function foregrounds() {
 	draw.image(view);
-	draw.image(extra.help, 381, 3);
-	if (game.select[0] == "looker" && game.select[1] == 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 362, 3);
-	else draw.imageSector(extra.looker, 0, 0, 16, 16, 362, 3);
-	if (!global.options.music) draw.imageSector(extra.music, 15, 0, 16, 16, 343, 3);
-	else draw.imageSector(extra.music, 0, 0, 16, 16, 343, 3);
+	if (game.select[0] == "looker" && game.select[1] == 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 343, 3);
+	else draw.imageSector(extra.looker, 0, 0, 16, 16, 343, 3);
+	draw.image(extra.help, 362, 3);
+	draw.image(extra.options, 381, 3);
 	draw.image(extra.end, 3, 163);
 	draw.image(extra.deck, 3, 182);
 	if (game.void.length > 0) draw.image(extra.void, 381, 163);
@@ -360,9 +359,9 @@ function foregrounds() {
 		draw.image(icon.iron_will, 20 + (index * 18), 12);
 		if (game.select[0] == "artifacts" && game.select[1] == index) draw.image(select.iron_will, 19 + (index * 18), 11);
 	};
-	if (game.select[0] == "help") draw.image(select.round, 380, 2);
-	else if (game.select[0] == "looker") draw.image(select.round, 361, 2);
-	else if (game.select[0] == "music") draw.image(select.round, 342, 2);
+	if (game.select[0] == "looker") draw.image(select.round, 342, 2);
+	else if (game.select[0] == "help") draw.image(select.round, 361, 2);
+	else if (game.select[0] == "options") draw.image(select.options, 380, 2);
 	else if (game.select[0] == "end") draw.image(select.round, 2, 162);
 	else if (game.select[0] == "deck") draw.image(select.deck, 2, 181);
 	else if (game.select[0] == "void") draw.image(select.round, 380, 162);
@@ -600,8 +599,8 @@ function enemyGraphics() {
 
 function infoGraphics() {
 	draw.rect("#000c");
-	draw.image(extra.help, 381, 3);
-	draw.image(select.round, 380, 2);
+	draw.image(extra.help, 362, 3);
+	draw.image(select.round, 361, 2);
 	const limit = (str) => {
 		let lim = (draw.lore(1, 23, str, {"color": "none"}) + 23) - 200;
 		if (lim < 0) lim = 0;
@@ -622,7 +621,10 @@ function infoGraphics() {
 		draw.lore(1, 23 - infPos, overview, {"color": "white"});
 	};
 	draw.lore(1, 12 - infPos, "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-Souls\"", {"color": "red", "text-small": true});
-	if (infLimit > 0) draw.image(arrows, 386, 22);
+	if (infLimit > 0) {
+		draw.lore(360, 26, "Scrollable", {"color": "white", "text-align": "left"});
+		draw.image(arrows, 367, 22);
+	};
 };
 
 function deckGraphics(overrideName = "deck") {
@@ -769,10 +771,10 @@ function target() {
 		if (coords) {
 			draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
 			draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "white", "text-align": "center", "text-small": true});
-			if (game.select[1] == 0 && game.enemies.length > 1) draw.lore(pos[0] + coords[0] - 5.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-align": "left", "text-small": true});
+			if (game.select[1] === 0 && game.enemies.length > 1) draw.lore(pos[0] + coords[0] - 5.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-align": "left", "text-small": true});
 			else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-small": true});
 			if (enemy.eff.burn) {
-				if (game.select[1] == 0 && game.enemies.length > 1) info("burn", "enemy", coords[0] - 5.5, coords[1] + 11);
+				if (game.select[1] === 0 && game.enemies.length > 1) info("burn", "enemy", coords[0] - 5.5, coords[1] + 11);
 				else info("burn", "enemy", coords[0] - 5.5, coords[1] - 2);
 			};
 		};
@@ -781,7 +783,7 @@ function target() {
 		if (playerAnim[1] == "shield" || playerAnim[1] == "shield_reinforced") coor = [58, 72, 23, 39];
 		draw.selector(coor[0], coor[1], coor[2], coor[3]);
 		if (game.character == "knight") {
-			if (global.charStage.knight == 0) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the forgotten one", {"color": "white", "text-align": "center", "text-small": true});
+			if (global.charStage.knight === 0) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the forgotten one", {"color": "white", "text-align": "center", "text-small": true});
 			else if (global.charStage.knight == 1) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the true knight", {"color": "white", "text-align": "center", "text-small": true});
 		};
 		if (game.eff.reinforces) {

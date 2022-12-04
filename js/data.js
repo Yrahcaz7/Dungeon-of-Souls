@@ -89,12 +89,11 @@ gameplay = ""
 	+ "Then, you can use your new knowledge and cards to reach higher heights next time.",
 changelog = ""
 	+ "<b>Version 1.0 - Inception (in progress)<s>"
-	+ " - working on a 'game over' screen\n"
 	+ " - finally added a title screen\n"
+	+ " - finally added an options menu\n"
 	+ " - added treasure chambers and death zones\n"
 	+ " - added shortcut keys for various things\n"
-	+ " - two new cards, with a totally new effect\n"
-	+ " - some card balancing, including another new effect\n"
+	+ " - two new cards and some card balancing\n"
 	+ " - polished up the map generator\n"
 	+ "<b>Version 0.4 - Formulation<s>"
 	+ " - enemies now die upon reaching 0 health\n"
@@ -127,7 +126,7 @@ changelog = ""
 
 function updateData() {
 	// hide
-	hide = (game.select[0] == "help" || game.select[0] == "looker" || game.select[0] == "deck" || game.select[0] == "void" || game.select[0] == "discard" || game.select[0] == "map") && game.select[1];
+	hide = (game.select[0] == "looker" || game.select[0] == "help" || game.select[0] == "options" || game.select[0] == "deck" || game.select[0] == "void" || game.select[0] == "discard" || game.select[0] == "map") && game.select[1];
 	// enemyPos
 	let number = game.enemies.length, x = 400, y = 50;
 	if (number == 1) game.enemyPos = [[x - 105, y]];

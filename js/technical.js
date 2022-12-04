@@ -55,7 +55,7 @@ function randomInt(min, max) {
 };
 
 function chance(chance = 0.5) {
-	return random()<chance;
+	return random() < chance;
 };
 
 // page setup
@@ -69,7 +69,7 @@ window.onload = () => {
 	mapGraphics(true);
 	if (game.map.length === 0) {
 		updateMapProg();
-		setTimeout(function() {
+		setTimeout(() => {
 			generateMap();
 		}, 0);
 	} else {
