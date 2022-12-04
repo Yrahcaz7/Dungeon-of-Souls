@@ -879,11 +879,10 @@ function updateVisuals() {
 		draw.rect("#000c");
 		draw.rect("#0004", 0, 0, 400, 13);
 		draw.lore(200 - 2, 1, "Options", {"color": "white", "text-align": "center"});
-		draw.rect("#fff", 1, 12, 380, 1);
+		draw.rect("#fff", 1, 12, 378, 1);
 		draw.lore(200 - 2, 15, text.trim(), {"color": "white", "text-align": "center"});
-		draw.image(extra.options, 381, 3);
-		if (game.select[1] == 1) draw.image(select.options_yellow, 380, 2);
-		else draw.image(select.options, 380, 2);
+		draw.image(extra.options, 380, 2);
+		if (game.select[1] == 1) draw.image(select.options, 380, 2);
 	} else if (game.select[0] == "deck" && game.select[1]) {
 		if (game.deckProxy != "[]") {
 			deckGraphics();

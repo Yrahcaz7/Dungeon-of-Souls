@@ -93,7 +93,6 @@ const player = {
 }, select = {
 	round: new Image,
 	options: new Image,
-	options_yellow: new Image,
 	card_normal: new Image,
 	card_unplayable: new Image,
 	card_rare: new Image,
