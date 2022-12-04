@@ -21,7 +21,6 @@ const infoText = {
 	burn: "At the end of each\nturn, each burn deals 1\n<red>damage</red> to what it is on,\nthen one burn on that\ngoes away.",
 	"one use": "When a one use card is\nplayed, it will be sent\nto the void instead of\nthe discard.",
 	reinforce: "At the start of each\nturn, one reinforce is\nused up to retain your\n<blue>shield</blue> (even if you have\nno <blue>shield</blue> left.)",
-	"static damage": "<red>Static damage</red> is not\naffected by any <red>extra\ndamage</red> effects.",
 	// artifacts
 	iron_will: "Every time a battle\nends, you <red>heal</red> 2 <red>health</red>.",
 	the_map: "Every time a battle\nends, you can choose\nwhere you go next.",

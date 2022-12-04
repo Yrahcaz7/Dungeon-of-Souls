@@ -216,16 +216,18 @@ const draw = {
 		draw.lore(x + 34, y + 78, maxShield);
 	},
 	card(cardObject, index, y, selected = false, overrideX = NaN) {
+		// setup
 		if (!(cardObject instanceof Object)) cardObject = new Card(cardObject);
 		let x = game.handPos[index], img = card.error;
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
-		const rarity = cards[cardObject.id].rarity, name = cards[cardObject.id].name;
-		if (rarity === 0) img = card.starter[name];
-		else if (rarity == 1) img = card.common[name];
-		else if (rarity == 2) img = card.rare[name];
+		const rarity = +cards[cardObject.id].rarity, name = cards[cardObject.id].name, exMod = +cards[cardObject.id].exMod;
+		if (card[rarities[rarity]]) img = card[rarities[rarity]][name];
+		// card back
 		if (cardObject.id !== 0) draw.image(card.back, x + 2, y + 2);
+		// card outline
 		const type = types[Math.floor(cardObject.id / 1000)];
 		if (card.outline[type]) draw.image(card.outline[type], x + 3, y + 3);
+		// card selector
 		if (selected) {
 			if (attributes.unplayable.includes(cardObject.id)) {
 				if (rarity == 2) draw.image(select.card_rare_unplayable, x - 3, y - 3);
@@ -235,18 +237,20 @@ const draw = {
 				else draw.image(select.card_normal, x - 1, y - 1);
 			};
 		};
+		// card image
 		if (img == card.error) draw.image(card.error, x + 2, y + 2);
 		else draw.image(img, x + 7, y + 7);
-		if (name.length >= 11) {
-			draw.lore(x + 32, y + 44, name.title(), {"text-align": "center", "text-small": true});
-		} else {
-			draw.lore(x + 32, y + 42, name.title(), {"text-align": "center"});
-		};
+		// card title
+		if (name.length >= 11) draw.lore(x + 32, y + 44, name.title(), {"text-align": "center", "text-small": true});
+		else draw.lore(x + 32, y + 42, name.title(), {"text-align": "center"});
+		// card description
 		let desc = cards[cardObject.id].desc, exDamage = 0;
 		if (game.eff.auraBlades) exDamage += 5 + game.eff.auraBlades;
+		if (exMod) exDamage = Math.floor(exDamage * exMod);
 		if (exDamage && game.select[0] != "card_rewards") {
 			desc = desc.replace(/([Dd]eal\s)(\d+)(\s<red>damage<\/red>)/g, (substring, pre, number, post) => pre + "<light-green highlight>" + (parseInt(number) + exDamage) + "</light-green>" + post);
 		};
+		// other
 		draw.lore(x + 6, y + 55, desc, {"text-small": true});
 		draw.lore(x + 33, y + 89.5, rarities[rarity] + "|" + type, {"text-align": "center", "text-small": true});
 		if (rarity == 2) {
@@ -799,8 +803,6 @@ function target() {
 			info("one use", "card");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "card");
-		} else if (desc.includes("static damage") || desc.includes("static\ndamage")) {
-			info("static damage", "card");
 		};
 	} else if (game.select[0] == "deck" && game.select[1] == 1 && game.deckProxy != "[]") {
 		const desc = cards[JSON.parse(game.deckProxy).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].id].desc;
@@ -812,8 +814,6 @@ function target() {
 			info("one use", "deck");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "deck");
-		} else if (desc.includes("static damage") || desc.includes("static\ndamage")) {
-			info("static damage", "deck");
 		};
 	} else if ((game.select[0] == "void" || game.select[0] == "discard") && game.select[1] == 1 && game[game.select[0]].length > 0) {
 		const desc = cards[game[game.select[0]][game.cardSelect[0] + (game.cardSelect[1] * 6)].id].desc;
@@ -825,8 +825,6 @@ function target() {
 			info("one use", "deck");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "deck");
-		} else if (desc.includes("static damage") || desc.includes("static\ndamage")) {
-			info("static damage", "deck");
 		};
 	} else if (game.select[0] == "card_rewards" && game.select[1] > -1 && game.select[1] < game.cardRewardChoices) {
 		const desc = cards[game.room[5][game.select[1]]].desc;
@@ -838,8 +836,6 @@ function target() {
 			info("one use", "reward");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "reward");
-		} else if (desc.includes("static damage") || desc.includes("static\ndamage")) {
-			info("static damage", "reward");
 		};
 	};
 };

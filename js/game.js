@@ -137,7 +137,7 @@ function endTurn() {
 		for (let index = 0; index < game.hand.length; iteration++) {
 			game.discard.push(game.hand[index]);
 			game.hand.splice(index, 1);
-			if (iteration >= 100) break;
+			if (iteration >= 1000) break;
 		};
 	};
 	cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -162,11 +162,16 @@ function endTurnConfirm() {
 function playerTurn() {
 	// finish attack enemy
 	if (game.enemyAttFin && playerAnim[1] == "idle") {
+		const attCard = cards[game.enemyAtt.id];
 		if (!attributes["NO SELECT"].includes(game.enemyAtt.id)) {
-			let damage = +cards[game.enemyAtt.id].damage;
+			// calculate damage
+			let damage = +attCard.damage;
+			let exDamage = 0;
 			if (game.attackEffect == "aura blade") {
-				damage += 5 + (game.eff.auraBlades + 1);
+				exDamage += 5 + (game.eff.auraBlades + 1);
 			};
+			if (attCard.exMod) exDamage = Math.floor(exDamage * attCard.exMod);
+			// damage enemy
 			if (game.enemies[game.enemyAttSel].shield > damage) {
 				game.enemies[game.enemyAttSel].shield -= damage;
 				damage = 0;
@@ -176,7 +181,7 @@ function playerTurn() {
 			};
 			game.enemies[game.enemyAttSel].health -= damage;
 		};
-		if (cards[game.enemyAtt.id].attack) cards[game.enemyAtt.id].attack();
+		if (typeof attCard.attack == "function") attCard.attack();
 		game.enemyAtt = "none";
 		game.enemyAttFin = false;
 	};
@@ -187,12 +192,7 @@ function playerTurn() {
 	if (action == "enter" && game.select[0] == "attack_enemy") {
 		game.energy -= cards[game.enemyAtt.id].cost;
 		startAnim.player(cards[game.enemyAtt.id].anim);
-		if (game.eff.auraBlades) {
-			game.eff.auraBlades--;
-			game.attackEffect = "aura blade";
-		} else {
-			game.attackEffect = "none";
-		};
+		activateAttackEffects();
 		game.enemyAttFin = true;
 		if (attributes["one use"].includes(game.enemyAtt.id)) game.void.push(game.hand.splice(game.activeCard, 1)[0]);
 		else game.discard.push(game.hand.splice(game.activeCard, 1)[0]);
@@ -226,8 +226,8 @@ function playerTurn() {
 				if (attributes["NO SELECT"].includes(id)) {
 					game.energy -= cards[id].cost;
 					game.enemyAtt = game.hand[game.select[1]];
-					if (cards[id].anim.endsWith("-noAura")) startAnim.player(cards[id].anim.split("-")[0], true);
-					else startAnim.player(cards[id].anim);
+					startAnim.player(cards[id].anim);
+					activateAttackEffects();
 					game.enemyAttFin = true;
 					if (attributes["one use"].includes(id)) game.void.push(game.hand.splice(game.select[1], 1)[0]);
 					else game.discard.push(game.hand.splice(game.select[1], 1)[0]);

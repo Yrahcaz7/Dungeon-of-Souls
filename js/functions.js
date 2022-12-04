@@ -101,3 +101,12 @@ function drawHand() {
 		};
 	};
 };
+
+function activateAttackEffects() {
+	if (game.eff.auraBlades) {
+		game.eff.auraBlades--;
+		game.attackEffect = "aura blade";
+	} else {
+		game.attackEffect = "none";
+	};
+};

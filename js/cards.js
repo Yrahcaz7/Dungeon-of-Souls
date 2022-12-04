@@ -52,13 +52,19 @@ const attributes = {
 	},
 	1002: {
 		name: "sweeping slash",
-		desc: "Deal 3 static\ndamage to all\nenemies.",
+		desc: "Deal 3 damage to\nall enemies. All\nextra damage is\nhalved, rounded\ndown.",
 		rarity: 1,
 		cost: 1,
-		anim: "attack_2-noAura",
+		anim: "attack_2",
+		exMod: 0.5,
 		attack() {
+			let exDamage = 0;
+			if (game.attackEffect == "aura blade") {
+				exDamage += 5 + (game.eff.auraBlades + 1);
+			};
+			exDamage = Math.floor(exDamage * this.exMod);
 			for (let index = 0; index < game.enemies.length; index++) {
-				let damage = 3;
+				let damage = 3 + exDamage;
 				if (game.enemies[index].shield > damage) {
 					game.enemies[index].shield -= damage;
 					damage = 0;
@@ -129,7 +135,8 @@ const attributes = {
 
 for (const key in cards) {
 	if (Object.hasOwnProperty.call(cards, key)) {
-		cards[key].desc = cards[key].desc.replace(/([Hh]ealth|[Dd]amage|[Ss]tatic\sdamage|[Aa]ttack)/g, "<red>$1</red>").replace(/([Ss]hield|[Dd]efense)/g, "<blue>$1</blue>");
+		cards[key].desc = cards[key].desc.replace(/([Hh]ealth|[Dd]amage(?!<\/red>)|[Ee]xtra\sdamage|[Aa]ttack)/g, "<red>$1</red>").replace(/([Ss]hield|[Dd]efense)/g, "<blue>$1</blue>");
+		if (Math.floor(key / 1000) == 1 && cards[key].exMod === undefined) cards[key].exMod = 1;
 	};
 };
 
