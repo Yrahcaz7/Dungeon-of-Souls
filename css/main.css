@@ -17,6 +17,8 @@
 
 * {
 	overscroll-behavior: none;
+	overscroll-behavior-block: none;
+	overscroll-behavior-inline: none;
 }
 
 :root {
