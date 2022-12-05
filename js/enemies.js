@@ -43,7 +43,6 @@ class Enemy {
 		this.eff = {};
 		this.intent = chance(3/5)?"attack":"defend";
 		this.intentHistory = [this.intent];
-		game.enemyIndex++;
 	};
 	startAction = () => {
 		if (this.intent == "attack") {

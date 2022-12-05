@@ -57,6 +57,27 @@ function hidden() {
 	return !!((game.select[0] == "looker" || game.select[0] == "help" || game.select[0] == "options" || game.select[0] == "deck" || game.select[0] == "void" || game.select[0] == "discard") && game.select[1]) || game.select[0] == "in_map";
 };
 
+// value getter functions
+
+const get = {
+	handSize() {
+		let size = 5;
+		return size;
+	},
+	maxHealth() {
+		let max = 60;
+		return max;
+	},
+	maxShield() {
+		let max = 60;
+		return max;
+	},
+	maxEnergy() {
+		let max = 3;
+		return max;
+	},
+};
+
 // reset functions
 
 function hardReset() {
@@ -90,14 +111,15 @@ function shuffleDeck(...newCards) {
 };
 
 function drawHand() {
+	const handSize = get.handSize();
 	let index = 0, len = game.deckLocal.length;
 	if (game.deckLocal.length) {
-		for (; index < game.handSize && index < len; index++) {
+		for (; index < handSize && index < len; index++) {
 			game.hand.push(game.deckLocal[0]);
 			game.deckLocal.splice(0, 1);
 		};
 	};
-	if (index != game.handSize) {
+	if (index != handSize) {
 		len = game.discard.length;
 		for (let a = 0; a < len; a++) {
 			game.deckLocal.push(game.discard[a]);
@@ -105,7 +127,7 @@ function drawHand() {
 		game.discard = [];
 		shuffleDeck();
 		len = game.deckLocal.length;
-		for (; index < game.handSize && index < len; index++) {
+		for (; index < handSize && index < len; index++) {
 			game.hand.push(game.deckLocal[0]);
 			game.deckLocal.splice(0, 1);
 		};

@@ -28,9 +28,7 @@ var global = {
 }, game = {
 	character: "knight",
 	health: 60,
-	maxHealth: 60,
 	shield: 0,
-	maxShield: 60,
 	floor: 0,
 	location: "-1",
 	rewards: [],
@@ -45,17 +43,14 @@ var global = {
 	enemyAttSel: 0,
 	enemyAttFin: false,
 	energy: 3,
-	maxEnergy: 3,
 	enemies: [],
-	enemyIndex: 0,
 	enemyNum: 0,
 	enemyStage: "none",
 	artifacts: ["iron will"],
-	deck: [new Card(2001), new Card(4000), new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000)],
-	deckLocal: [new Card(2001), new Card(4000), new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000)],
+	deck: [new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000), new Card(2001), new Card(4000)],
+	deckLocal: [],
 	deckPos: 0,
 	hand: [],
-	handSize: 5,
 	prevCard: -1,
 	activeCard: -1,
 	discard: [],
@@ -100,7 +95,7 @@ function startTurn() {
 	} else {
 		game.shield = 0;
 	};
-	game.energy = game.maxEnergy;
+	game.energy = get.maxEnergy();
 	game.select = ["hand", 0];
 	if (playerAnim[1] != "idle") {
 		startAnim.player("idle");
@@ -776,7 +771,7 @@ function manageGameplay() {
 		game.rewards = [];
 		if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
 		if (game.cardRewardChoices > 0) game.rewards.push("1 card");
-		if (game.room[0] == "battle_prime") game.rewards.push((game.maxHealth * 0.9) + " health");
+		if (game.room[0] == "battle_prime") game.rewards.push((get.maxHealth() * 0.9) + " health");
 		game.rewards.push("finish");
 		if (game.artifacts.includes("iron will")) game.health += 2;
 	};
@@ -785,7 +780,6 @@ function manageGameplay() {
 	if (game.state == "enter") {
 		if (game.location == "-1" || game.map[place[0]][place[1]][0] == "battle" || game.map[place[0]][place[1]][0] == "battle_prime") {
 			if (game.location == "-1") game.room = game.firstRoom;
-			game.enemyIndex = 0;
 			for (let index = 0; index < game.room[3].length; index++) {
 				let item = game.room[3][index].split(", ");
 				if (item[1]) game.enemies.push(new Enemy(item[0], item[1]));

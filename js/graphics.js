@@ -432,18 +432,18 @@ function playerGraphics() {
 		playerAnim[0] += 0.5;
 		if (playerAnim[0] >= 10) playerAnim[0] = 9;
 	};
-	draw.bars(x + 22, y + 15, game.health, game.maxHealth, game.shield, game.maxShield);
-	let cutoff, energy = game.energy, percentage = energy / game.maxEnergy;
+	draw.bars(x + 22, y + 15, game.health, get.maxHealth(), game.shield, get.maxShield());
+	let cutoff, energy = game.energy, percentage = energy / get.maxEnergy();
 	if (percentage < 0) cutoff = 0;
 	else if (percentage > 1) cutoff = 30;
 	else cutoff = Math.round(percentage * 30);
-	if (energy < 10 && game.maxEnergy >= 10) {
+	if (energy < 10 && get.maxEnergy() >= 10) {
 		energy = "0" + energy;
 	};
 	draw.imageSector(bar.energy_full, 0, 0, cutoff + 1, 32, x, y + 16);
 	draw.imageSector(bar.energy_empty, cutoff + 1, 0, 32 - (cutoff + 1), 32, x + (cutoff + 1), y + 16);
 	draw.lore(x + 9, y + 28, energy, {"text-align": "left"});
-	draw.lore(x + 18, y + 28, game.maxEnergy);
+	draw.lore(x + 18, y + 28, get.maxEnergy());
 };
 
 function effectGraphics() {

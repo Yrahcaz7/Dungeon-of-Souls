@@ -23,6 +23,10 @@ function save() {
 };
 
 function load(saveNum = 0) {
+	if (saveNum !== 0 && !loaded) {
+		console.log("game not finished loading. please wait and try again.");
+		return;
+	};
 	let get = localStorage.getItem(id + "/" + saveNum), reSave = false;
 	if (get && atob(get) && JSON.parse(atob(get))) {
 		let obj = JSON.parse(atob(get));
@@ -57,5 +61,5 @@ function load(saveNum = 0) {
 };
 
 window.onbeforeunload = () => {
-	save();
+	if (loaded) save();
 };
