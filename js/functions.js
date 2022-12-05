@@ -47,6 +47,10 @@ function randomize(array) {
 	return array;
 };
 
+function hidden() {
+	return !!((game.select[0] == "looker" || game.select[0] == "help" || game.select[0] == "options" || game.select[0] == "deck" || game.select[0] == "void" || game.select[0] == "discard") && game.select[1]) || game.select[0] == "in_map";
+};
+
 // reset functions
 
 function hardReset() {

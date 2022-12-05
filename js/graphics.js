@@ -627,6 +627,22 @@ function infoGraphics() {
 	};
 };
 
+function optionsGraphics() {
+	const options = Object.keys(global.options);
+	let text = "";
+	for (let index = 0; index < options.length; index++) {
+		if (game.select[1] - 2 === index) text += "<yellow>" + options[index].title() + ": " + (global.options[options[index]] ? "ON" : "OFF") + "</yellow>\n";
+		else text += options[index].title() + ": " + (global.options[options[index]] ? "ON" : "OFF") + "\n";
+	};
+	draw.rect("#000c");
+	draw.rect("#0004", 0, 0, 400, 13);
+	draw.lore(200 - 2, 1, "Options", {"color": "white", "text-align": "center"});
+	draw.rect("#fff", 1, 12, 378, 1);
+	draw.lore(200 - 2, 15, text.trim().replace(/_/g, " "), {"color": "white", "text-align": "center"});
+	draw.image(extra.options, 380, 2);
+	if (game.select[1] == 1) draw.image(select.options, 380, 2);
+};
+
 function deckGraphics(overrideName = "deck") {
 	draw.rect("#000c");
 	let tempDeck = JSON.parse(game.deckProxy).cardSort(), selected;
@@ -846,7 +862,7 @@ function target() {
 			info("reinforce", "reward");
 		};
 	};
-	if (game.select[0] != "hand" && game.select[0] != "attack_enemy" && game.select[0] != "lookat_enemy" && !hide && global.options.sticky_cards) {
+	if (game.select[0] != "hand" && game.select[0] != "attack_enemy" && game.select[0] != "lookat_enemy" && !hidden() && global.options.sticky_cards) {
 		const desc = cards[game.hand[game.prevCard].id].desc;
 		if (desc.includes("aura blade")) {
 			info("aura blade", "sticky-card");
