@@ -40,7 +40,7 @@ function mapPiece(row, attribute = "none") {
 };
 
 function pathHasSpecial(coords = "", front = false) {
-	const entries = Object.entries(game.paths);
+	const entries = Object.entries(paths);
 	let boolean = false;
 	const looping = front ? (location = "", first = false) => {
 		let loc = location.split(", ");
@@ -48,8 +48,8 @@ function pathHasSpecial(coords = "", front = false) {
 			boolean = true;
 			return;
 		};
-		for (let index = 0; index < game.paths[location].length; index++) {
-			if (game.paths[game.paths[location][index]]) looping(game.paths[location][index]);
+		for (let index = 0; index < paths[location].length; index++) {
+			if (paths[paths[location][index]]) looping(paths[location][index]);
 		};
 	} : (location = "", first = false) => {
 		let loc = location.split(", ");

@@ -218,7 +218,7 @@ const draw = {
 	card(cardObject, index, y, selected = false, overrideX = NaN) {
 		// setup
 		if (!(cardObject instanceof Object)) cardObject = new Card(cardObject);
-		let x = game.handPos[index], img = card.error;
+		let x = handPos[index], img = card.error;
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
 		const rarity = +cards[cardObject.id].rarity, name = cards[cardObject.id].name, exMod = +cards[cardObject.id].exMod;
 		if (card[rarities[rarity]]) img = card[rarities[rarity]][name];
@@ -459,7 +459,7 @@ function enemyGraphics() {
 		game.enemies.splice(6);
 	};
 	for (let index = 0; index < game.enemies.length; index++) {
-		let select = game.enemies[index], pos = game.enemyPos[index];
+		let select = game.enemies[index], pos = enemyPos[index];
 		draw.bars(pos[0], pos[1], select.health, select.maxHealth, select.shield, select.maxShield);
 		let x = +pos[0], y = +pos[1];
 		for (const key in select.eff) {
@@ -481,7 +481,7 @@ function enemyGraphics() {
 		};
 	};
 	for (let index = 0; index < game.enemies.length; index++) {
-		let select = game.enemies[index], pos = game.enemyPos[index];
+		let select = game.enemies[index], pos = enemyPos[index];
 		if (select.health <= 0) {
 			game.enemies.splice(index, 1);
 			if (tempAnim[3] >= index) tempAnim[3]--;
@@ -509,7 +509,7 @@ function enemyGraphics() {
 		enemyAnim[index] += (Math.random() + 0.5) * 0.1;
 	};
 	if (tempAnim[3] != -1) {
-		let pos = game.enemyPos[tempAnim[3]];
+		let pos = enemyPos[tempAnim[3]];
 		if (tempAnim[1] == "slime_ball") {
 			let phase = (tempAnim[0] / 10),
 				posX = Math.round(((pos[0] - 80)) * phase),
@@ -575,7 +575,7 @@ function enemyGraphics() {
 		} else invNum = -1;
 	};
 	for (let index = 0; index < game.enemies.length; index++) {
-		let select = game.enemies[index], pos = game.enemyPos[index];
+		let select = game.enemies[index], pos = enemyPos[index];
 		if (starAnim[index] >= 4) starAnim[index] = 0;
 		if (index !== tempAnim[3] && (game.turn == "player" || game.enemyNum !== index)) {
 			let y = Math.round(pos[1] + Math.abs(starAnim[index] - 2));
@@ -664,12 +664,12 @@ function deckGraphics(name = "deck") {
 			draw.card(tempDeck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66));
 		};
 		target();
-		if (game.deckMove == "up") {
+		if (deckMove == "up") {
 			let speed = Math.abs(Math.round(((98 * selected[1]) - game.deckPos) / 20) - 5);
 			if (game.deckPos <= (98 * selected[1]) - 5) game.deckPos += speed;
 			else if (game.deckPos >= (98 * selected[1]) + 5) game.deckPos -= speed;
 			else game.deckPos = (98 * selected[1]);
-		} else if (game.deckMove == "down") {
+		} else if (deckMove == "down") {
 			let speed = Math.abs(Math.round(((98 * (selected[1] - 1)) + 11 - game.deckPos) / 20) + 5);
 			if (game.deckPos <= (98 * (selected[1] - 1)) + 11 - 5) game.deckPos += speed;
 			else if (game.deckPos >= (98 * (selected[1] - 1)) + 12 + 5) game.deckPos -= speed;
@@ -707,7 +707,7 @@ function renderCards() {
 		if (notif[1] >= 9) color = "red_fade_2";
 		else if (notif[1] >= 7) color = "red_fade_1";
 		else if (notif[1] >= 5) color = "red_fade_0";
-		draw.lore(game.handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1] + notif[3], notif[2], {"color": color, "text-align": "center"});
+		draw.lore(handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1] + notif[3], notif[2], {"color": color, "text-align": "center"});
 		notif[1]++;
 		if (notif[1] > 11) notif = [-1, 0];
 	};
@@ -715,19 +715,19 @@ function renderCards() {
 
 function info(type, location = "none", xPlus = 0, yPlus = 0) {
 	if (location == "card") {
-		let x = game.handPos[game.select[1]] + xPlus, y = 147 - Math.floor(cardAnim[game.select[1]]);
+		let x = handPos[game.select[1]] + xPlus, y = 147 - Math.floor(cardAnim[game.select[1]]);
 		if (game.select[1] == game.hand.length - 1 && game.hand.length >= 4) {
 			x -= 145;
 		};
 		draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});
 	} else if (location == "sticky-card") {
-		let x = game.handPos[game.prevCard] + xPlus, y = 147 - Math.floor(cardAnim[game.prevCard]);
+		let x = handPos[game.prevCard] + xPlus, y = 147 - Math.floor(cardAnim[game.prevCard]);
 		if (game.prevCard == game.hand.length - 1 && game.hand.length >= 4) {
 			x -= 145;
 		};
 		draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});
 	} else if (location == "reward") {
-		let x = game.handPos[game.select[1]] + xPlus;
+		let x = handPos[game.select[1]] + xPlus;
 		if (game.select[1] == game.cardRewardChoices - 1 && game.cardRewardChoices >= 4) {
 			x -= 145;
 		};
@@ -756,7 +756,7 @@ function info(type, location = "none", xPlus = 0, yPlus = 0) {
 	} else if (location == "enemy") {
 		if (type == "burn") {
 			const enemy = game.enemies[game.select[1]];
-			const pos = game.enemyPos[game.select[1]];
+			const pos = enemyPos[game.select[1]];
 			let desc = "This enemy has " + enemy.eff.burn + " burn.";
 			draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, pos[1] + yPlus, desc.length, desc, {"text-small": true});
 			draw.textBox(pos[0] - 72.5 + xPlus, pos[1] + yPlus + 11, 24, infoText.burn, {"text-small": true});
@@ -780,7 +780,7 @@ function target() {
 	} else if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") {
 		const enemy = game.enemies[game.select[1]];
 		const enemyType = enemy.type;
-		const pos = game.enemyPos[game.select[1]];
+		const pos = enemyPos[game.select[1]];
 		let coords = [], name = "";
 		if (enemyType == "slime_small") {
 			coords = [19, 35, 26, 29];
@@ -935,9 +935,9 @@ function cardRewardGraphics(focused = true) {
 	if (game.cardRewardChoices == 2) draw.lore(200 - 2, y + 1, "Choose your card\nreward:", {"text-align": "center"});
 	else if (game.cardRewardChoices == 1) draw.lore(200 - 2, y + 1, "Choose your\ncard reward", {"text-align": "center"});
 	else draw.lore(200 - 2, y + 1, "Choose your card reward:", {"text-align": "center"});
-	game.handPos = [];
+	handPos = [];
 	for (let index = 0; index < game.cardRewardChoices; index++) {
-		game.handPos.push((199 - (game.cardRewardChoices * 68 / 2)) + 1 + (index * 68));
+		handPos.push((199 - (game.cardRewardChoices * 68 / 2)) + 1 + (index * 68));
 		if (game.select[1] == index && focused) draw.card(new Card(game.room[5][index]), index, 50, true);
 		else draw.card(new Card(game.room[5][index]), index, 50, false);
 	};
@@ -1010,7 +1010,7 @@ function mapGraphics(onlyCalc = false) {
 		};
 	};
 	if (render) {
-		const str = game.paths[game.location][game.mapSelect];
+		const str = paths[game.location][game.mapSelect];
 		const coordSel = str?str.split(", "):[];
 		const coordOn = game.location.split(", ");
 		for (let x = 0; x < game.map.length; x++) {
@@ -1039,23 +1039,23 @@ function mapGraphics(onlyCalc = false) {
 			};
 		};
 	};
-	game.paths = {};
+	paths = {};
 	for (let num = 0; num < store.length; num++) {
 		if (store[num][2] > store[num][0]) {
-			if (!(game.paths["" + store[num][0] + ", " + store[num][1]])) game.paths["" + store[num][0] + ", " + store[num][1]] = [];
-			if (!(game.paths["" + store[num][0] + ", " + store[num][1]].includes("" + store[num][2] + ", " + store[num][3]))) game.paths["" + store[num][0] + ", " + store[num][1]].push("" + store[num][2] + ", " + store[num][3]);
+			if (!(paths["" + store[num][0] + ", " + store[num][1]])) paths["" + store[num][0] + ", " + store[num][1]] = [];
+			if (!(paths["" + store[num][0] + ", " + store[num][1]].includes("" + store[num][2] + ", " + store[num][3]))) paths["" + store[num][0] + ", " + store[num][1]].push("" + store[num][2] + ", " + store[num][3]);
 		} else if (store[num][0] > store[num][2]) {
-			if (!(game.paths["" + store[num][2] + ", " + store[num][3]])) game.paths["" + store[num][2] + ", " + store[num][3]] = [];
-			if (!(game.paths["" + store[num][2] + ", " + store[num][3]].includes("" + store[num][0] + ", " + store[num][1]))) game.paths["" + store[num][2] + ", " + store[num][3]].push("" + store[num][0] + ", " + store[num][1]);
+			if (!(paths["" + store[num][2] + ", " + store[num][3]])) paths["" + store[num][2] + ", " + store[num][3]] = [];
+			if (!(paths["" + store[num][2] + ", " + store[num][3]].includes("" + store[num][0] + ", " + store[num][1]))) paths["" + store[num][2] + ", " + store[num][3]].push("" + store[num][0] + ", " + store[num][1]);
 		};
 		if (store[num][0] === 0) {
-			if (!(game.paths["-1"])) game.paths["-1"] = [];
-			if (!(game.paths["-1"].includes("" + store[num][0] + ", " + store[num][1]))) game.paths["-1"].push("" + store[num][0] + ", " + store[num][1]);
+			if (!(paths["-1"])) paths["-1"] = [];
+			if (!(paths["-1"].includes("" + store[num][0] + ", " + store[num][1]))) paths["-1"].push("" + store[num][0] + ", " + store[num][1]);
 		};
 	};
-	for (const item in game.paths) {
-		if (Object.hasOwnProperty.call(game.paths, item)) {
-			game.paths[item].sort();
+	for (const item in paths) {
+		if (Object.hasOwnProperty.call(paths, item)) {
+			paths[item].sort();
 		};
 	}
 };

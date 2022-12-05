@@ -47,7 +47,6 @@ var global = {
 	energy: 3,
 	maxEnergy: 3,
 	enemies: [],
-	enemyPos: [],
 	enemyIndex: 0,
 	enemyNum: 0,
 	enemyStage: "none",
@@ -55,10 +54,8 @@ var global = {
 	deck: [new Card(2001), new Card(4000), new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000)],
 	deckLocal: [new Card(2001), new Card(4000), new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000)],
 	deckPos: 0,
-	deckMove: "none",
 	hand: [],
 	handSize: 5,
-	handPos: [],
 	prevCard: -1,
 	activeCard: -1,
 	discard: [],
@@ -71,10 +68,9 @@ var global = {
 	room: [],
 	firstRoom: [],
 	map: [],
-	paths: {},
 	seed: "" + new Date().getTime().toString(36).substring(1).shuffle(),
 	saveNum: 0,
-}, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = "title";
+}, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = "title", enemyPos = [], handPos = [], paths = {}, deckMove = "none";
 
 function musicPopups() {
 	let src = document.getElementById("music").src;
@@ -379,10 +375,10 @@ function selection() {
 		return;
 	};
 	// map
-	if (game.select[0] == "in_map" && game.state == "event_fin" && game.paths[game.location]) {
+	if (game.select[0] == "in_map" && game.state == "event_fin" && paths[game.location]) {
 		if ((action == "up" || action == "right")) {
 			if (game.mapSelect == -1) {
-				game.mapSelect = game.paths[game.location].length - 1;
+				game.mapSelect = paths[game.location].length - 1;
 				actionTimer = 1;
 				return;
 			} else if (game.mapSelect > 0) {
@@ -391,15 +387,15 @@ function selection() {
 				return;
 			};
 		} else if ((action == "left" || action == "down") && game.mapSelect != -1) {
-			if (game.mapSelect < game.paths[game.location].length - 1) {
+			if (game.mapSelect < paths[game.location].length - 1) {
 				game.mapSelect = game.mapSelect + 1;
 			} else {
 				game.mapSelect = -1;
 			};
 			actionTimer = 1;
 			return;
-		} else if (action == "enter" && game.paths[game.location][game.mapSelect]) {
-			game.location = game.paths[game.location][game.mapSelect];
+		} else if (action == "enter" && paths[game.location][game.mapSelect]) {
+			game.location = paths[game.location][game.mapSelect];
 			let coor = game.location.split(", ");
 			game.room = game.map[coor[0]][coor[1]];
 			game.select = ["none", 0];
@@ -558,7 +554,7 @@ function selection() {
 			} else if (coor[1] > 0) {
 				game.cardSelect[0] = 5;
 				game.cardSelect[1]--;
-				game.deckMove = "up";
+				deckMove = "up";
 			};
 			actionTimer = 1;
 			return;
@@ -568,18 +564,18 @@ function selection() {
 			} else if (coor[0] + (coor[1] * 6) < len - 1) {
 				game.cardSelect[0] = 0;
 				game.cardSelect[1]++;
-				game.deckMove = "down";
+				deckMove = "down";
 			};
 			actionTimer = 1;
 			return;
 		} else if (action == "up" && coor[1] > 0) {
 			game.cardSelect[1]--;
-			game.deckMove = "up";
+			deckMove = "up";
 			actionTimer = 1;
 			return;
 		} else if (action == "down" && coor[1] < Math.floor(len / 6) && (coor[0] < len % 6 || coor[1] < Math.floor(len / 6) - 1)) {
 			game.cardSelect[1]++;
-			game.deckMove = "down";
+			deckMove = "down";
 			actionTimer = 1;
 			return;
 		};
@@ -589,7 +585,7 @@ function selection() {
 		if (game.select[1] == 0) game.select[1] = 1;
 		else game.select[1] = 0;
 		game.deckPos = 0;
-		game.deckMove = "none";
+		deckMove = "none";
 		actionTimer = 2;
 		return;
 	} else if (action == "enter" && game.select[0] == "map") {
@@ -723,14 +719,14 @@ function selection() {
 			} else if (action == "up") {
 				let to = -1, distance = -1;
 				for (let index = 0; index < game.enemies.length; index++) {
-					if (game.enemyPos[index][1] > distance) {
-						distance = game.enemyPos[index][1];
+					if (enemyPos[index][1] > distance) {
+						distance = enemyPos[index][1];
 						to = index;
 					};
 				};
 				for (let index = 0; index < game.enemies.length; index++) {
-					if (game.enemyPos[index][0] < distance) {
-						distance = game.enemyPos[index][0];
+					if (enemyPos[index][0] < distance) {
+						distance = enemyPos[index][0];
 						to = index;
 					};
 				};
