@@ -52,6 +52,8 @@ Inspired by ***Slay the Spire*** and ***Die in the Dungeon***.
 
 Most player sprites taken from or based off of the ones found [**here**](https://aamatniekss.itch.io/fantasy-knight-free-pixelart-animated-character).
 
+All other art (and music, too!) is entirely my original work.
+
 ## *An ominous feeling...*
 
 *When the hands align,*
