@@ -63,7 +63,7 @@ var global = {
 	room: [],
 	firstRoom: [],
 	map: [],
-	seed: "" + new Date().getTime().toString(36).substring(1).shuffle(),
+	seed: "" + (new Date().getTime() % 1000000).toString().shuffle(),
 	saveNum: 0,
 }, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = "title", enemyPos = [], handPos = [], paths = {}, deckMove = "none";
 
