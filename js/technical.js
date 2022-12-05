@@ -64,7 +64,7 @@ var canvas, scale, ctx, action = "none", lastAction = "none", loaded = false;
 
 window.onload = () => {
 	load();
-	if (game.select[0] = "game_fin") game.select[1] = 0;
+	if (game.select[0] == "game_fin") game.select[1] = 0;
 	seed = internalSeed(game.seed);
 	canvasData();
 	mapGraphics(true);

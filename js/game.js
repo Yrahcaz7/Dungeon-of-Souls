@@ -933,7 +933,7 @@ function updateVisuals() {
 				let num = Math.round(interval(4/3, 2));
 				draw.image(victorious, 168, 42 + num, victorious.width * 2, victorious.height * 2);
 				draw.rect("#0004");
-				draw.lore(200 - 2, 50, "YOU WON THE GAME!\n\nThank you for playing!\n\nMore content coming soon, such as:<small>\n- More cards!\n- More enemies!\n- A boss battle!\n- And much more!<big>\n\nPRESS ENTER TO START A NEW RUN", {"color": "light green", "text-align": "center"});
+				draw.lore(200 - 2, 50, "YOU WON THE GAME!\n\nThank you for playing!\n\nMore content coming soon, such as:<s>\n- More cards!\n- More enemies!\n- A boss battle!\n- And much more!<b>\n\nPRESS ENTER TO START A NEW RUN", {"color": "light green", "text-align": "center"});
 				if (actionTimer <= -1) {
 					if (action == "enter") restartRun();
 				} else actionTimer -= 0.1;

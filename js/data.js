@@ -126,6 +126,7 @@ changelog = ""
 	+ " - next update will probably make it more playable";
 
 function updateData() {
+	if (!loaded) return;
 	// enemyPos
 	let number = game.enemies.length, x = 400, y = 50;
 	if (number == 1) enemyPos = [[x - 105, y]];
@@ -170,6 +171,7 @@ function updateData() {
 		game.state = "game_over";
 		game.select = ["game_over", 0];
 	};
+	// game won
 	if (game.floor == 8 && game.state == "event_fin" && game.select[0] == "in_map") {
 		game.turn = "none";
 		game.state = "game_fin";
