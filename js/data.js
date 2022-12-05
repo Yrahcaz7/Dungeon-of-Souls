@@ -168,7 +168,6 @@ function updateData() {
 		game.turn = "game_over";
 	};
 	// other
-	game.deckProxy = JSON.stringify(game.deckLocal);
 	game.deck.cardSort();
 	game.discard.cardSort();
 	if (game.select[0] == "hand") {

@@ -100,21 +100,21 @@ document.addEventListener("keydown", (event) => {
 		if (game.select[0] != "confirm_end") endTurnConfirm();
 	} else if (key == "1" && actionTimer == -1) {
 		if (game.select[0] == "deck" && game.select[1]) {
-			if (game.hand.length > 0) game.select = ["hand", game.prevCard];
+			if (game.hand.length) game.select = ["hand", game.prevCard];
 			else if (game.state == "battle") game.select = ["end", 0];
 			else game.select = ["map", 0];
 		} else game.select = ["deck", 1];
 		actionTimer = 2;
 	} else if (key == "2" && actionTimer == -1) {
 		if (game.select[0] == "void" && game.select[1]) {
-			if (game.hand.length > 0) game.select = ["hand", game.prevCard];
+			if (game.hand.length) game.select = ["hand", game.prevCard];
 			else if (game.state == "battle") game.select = ["end", 0];
 			else game.select = ["map", 0];
-		} else if (game.void.length > 0) game.select = ["void", 1];
+		} else if (game.void.length) game.select = ["void", 1];
 		actionTimer = 2;
 	} else if (key == "3" && actionTimer == -1) {
 		if (game.select[0] == "discard" && game.select[1]) {
-			if (game.hand.length > 0) game.select = ["hand", game.prevCard];
+			if (game.hand.length) game.select = ["hand", game.prevCard];
 			else if (game.state == "battle") game.select = ["end", 0];
 			else game.select = ["map", 0];
 		} else game.select = ["discard", 1];

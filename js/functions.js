@@ -27,13 +27,19 @@ String.prototype.title = function() {
 };
 
 String.prototype.shuffle = function() {
-	var a = this.split("");
-	for (var i = a.length - 1; i > 0; i--) {
-		var j = Math.floor(Math.random() * (i + 1));
-		[a[i], a[j]] = [a[j], a[i]];
+	let arr = this.split("");
+	for (let index = arr.length - 1; index > 0; index--) {
+		let rand = Math.floor(Math.random() * (index + 1));
+		[arr[index], arr[rand]] = [arr[rand], arr[index]];
 	};
-	return a.join("");
-}
+	return arr.join("");
+};
+
+Object.prototype.deepCopy = function(o, keepProto = false) {
+	let object = JSON.parse(JSON.stringify(o));
+	if (keepProto) Object.setPrototypeOf(object, Object.getPrototypeOf(o));
+	return object;
+};
 
 // technical functions
 

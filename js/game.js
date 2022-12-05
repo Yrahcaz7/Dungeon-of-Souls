@@ -54,7 +54,6 @@ var global = {
 	artifacts: ["iron will"],
 	deck: [new Card(2001), new Card(4000), new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000)],
 	deckLocal: [new Card(2001), new Card(4000), new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000)],
-	deckProxy: "",
 	deckPos: 0,
 	deckMove: "none",
 	hand: [],
@@ -279,7 +278,7 @@ function selection() {
 			if (!game.select[1]) {
 				endTurn();
 				game.select = ["end", 0];
-			} else if (game.hand.length > 0) game.select = ["hand", game.prevCard];
+			} else if (game.hand.length) game.select = ["hand", game.prevCard];
 			actionTimer = 2;
 		};
 		return;
@@ -435,7 +434,7 @@ function selection() {
 		actionTimer = 1;
 		return;
 	} else if (action == "up" && game.select[0] == "discard" && !game.select[1]) {
-		if (game.void.length > 0) game.select = ["void", 0];
+		if (game.void.length) game.select = ["void", 0];
 		else if (popups[0]) game.select = ["popups", 0];
 		else if (!game.enemies.length) game.select = ["looker", 0];
 		else game.select = ["lookat_enemy", 0];
@@ -453,7 +452,7 @@ function selection() {
 			actionTimer = 1;
 			return;
 		} else if (game.select[0] == "discard" && !game.select[1]) {
-			if (game.void.length > 0) game.select = ["void", 0];
+			if (game.void.length) game.select = ["void", 0];
 			else if (!game.enemies.length) game.select = ["lookat_you", 0];
 			else if (!game.hand[0]) game.select = ["lookat_enemy", 0];
 			else game.select = ["hand", game.prevCard];
@@ -463,7 +462,7 @@ function selection() {
 	} else if (action == "right") {
 		if (game.select[0] == "lookat_you") {
 			if (!game.enemies.length) {
-				if (game.void.length > 0) game.select = ["void", 0];
+				if (game.void.length) game.select = ["void", 0];
 				else game.select = ["discard", 0];
 			} else if (!game.hand[0]) game.select = ["lookat_enemy", game.enemies.length - 1];
 			else game.select = ["hand", game.prevCard];
@@ -473,7 +472,7 @@ function selection() {
 			if (popups[0]) {
 				game.select = ["popups", 0];
 			} else {
-				if (game.void.length > 0) game.select = ["void", 0];
+				if (game.void.length) game.select = ["void", 0];
 				else game.select = ["discard", 0];
 			};
 			actionTimer = 1;
@@ -505,7 +504,7 @@ function selection() {
 	if (game.select[0] == "popups") {
 		if (popups.length == 0) {
 			if (!game.hand.length) {
-				if (game.void.length > 0) game.select = ["void", 0];
+				if (game.void.length) game.select = ["void", 0];
 				else game.select = ["discard", 0];
 			} else game.select = ["hand", game.prevCard];
 			return;
@@ -522,7 +521,7 @@ function selection() {
 			return;
 		} else if (action == "down") {
 			if (!game.select[1]) {
-				if (game.void.length > 0) game.select = ["void", 0];
+				if (game.void.length) game.select = ["void", 0];
 				else game.select = ["discard", 0];
 			} else {
 				game.select[1]--;
@@ -538,7 +537,7 @@ function selection() {
 			popups.splice(game.select[1], 1);
 			if (popups.length == 0) {
 				if (!game.hand.length) {
-					if (game.void.length > 0) game.select = ["void", 0];
+					if (game.void.length) game.select = ["void", 0];
 					else game.select = ["discard", 0];
 				} else game.select = ["hand", game.prevCard];
 			} else if (game.select[1] > 0) {
@@ -681,7 +680,7 @@ function selection() {
 			if (game.select[0] == "map") game.select = ["lookat_you", 0];
 			else if (popups.length) game.select = ["popups", popups.length - 1];
 			else if (!game.enemies.length) {
-				if (game.void.length > 0) game.select = ["void", 0];
+				if (game.void.length) game.select = ["void", 0];
 				else game.select = ["discard", 0];
 			} else game.select = ["lookat_enemy", 0];
 			actionTimer = 1;
@@ -752,13 +751,13 @@ function selection() {
 			return;
 		} else if (action == "right") {
 			if (game.select[1]) game.select[1]--;
-			else if (game.void.length > 0) game.select = ["void", 0];
+			else if (game.void.length) game.select = ["void", 0];
 			else game.select = ["discard", 0];
 			actionTimer = 1;
 			return;
 		} else if (action == "down" && game.select[0] == "lookat_enemy") {
 			if (!game.hand[0]) {
-				if (game.void.length > 0) game.select = ["void", 0];
+				if (game.void.length) game.select = ["void", 0];
 				else game.select = ["discard", 0];
 			} else game.select = ["hand", game.prevCard];
 			actionTimer = 1;
@@ -872,32 +871,11 @@ function updateVisuals() {
 	} else if (game.select[0] == "options" && game.select[1]) {
 		optionsGraphics();
 	} else if (game.select[0] == "deck" && game.select[1]) {
-		if (game.deckProxy != "[]") {
-			deckGraphics();
-		} else {
-			draw.rect("#000c");
-			draw.rect("#0004", 0, 0, 400, 13);
-			draw.lore(200 - 2, 1, "Deck", {"color": "white", "text-align": "center"});
-			draw.rect("#fff", 1, 12, 398, 1);
-		};
+		deckGraphics();
 	} else if (game.select[0] == "void" && game.select[1]) {
-		if (game.void.length > 0) {
-			deckGraphics("void");
-		} else {
-			draw.rect("#000c");
-			draw.rect("#0004", 0, 0, 400, 13);
-			draw.lore(200 - 2, 1, "Void", {"color": "white", "text-align": "center"});
-			draw.rect("#fff", 1, 12, 398, 1);
-		};
+		deckGraphics("void");
 	} else if (game.select[0] == "discard" && game.select[1]) {
-		if (game.discard.length > 0) {
-			deckGraphics("discard");
-		} else {
-			draw.rect("#000c");
-			draw.rect("#0004", 0, 0, 400, 13);
-			draw.lore(200 - 2, 1, "Discard", {"color": "white", "text-align": "center"});
-			draw.rect("#fff", 1, 12, 398, 1);
-		};
+		deckGraphics("discard");
 	} else {
 		game.cardSelect = [0, 0];
 		deckPos = 0;

@@ -351,7 +351,7 @@ function foregrounds() {
 	draw.image(extra.options, 380, 2);
 	draw.image(extra.end, 3, 163);
 	draw.image(extra.deck, 3, 182);
-	if (game.void.length > 0) draw.image(extra.void, 381, 163);
+	if (game.void.length) draw.image(extra.void, 381, 163);
 	draw.image(extra.discard, 383, 182);
 	draw.image(extra.map, 2, 12);
 	if (game.artifacts.includes("iron will")) {
@@ -643,39 +643,41 @@ function optionsGraphics() {
 	if (game.select[1] == 1) draw.image(select.options, 380, 2);
 };
 
-function deckGraphics(overrideName = "deck") {
+function deckGraphics(name = "deck") {
 	draw.rect("#000c");
-	let tempDeck = JSON.parse(game.deckProxy).cardSort(), selected;
-	if (overrideName == "void") tempDeck = game.void;
-	else if (overrideName == "discard") tempDeck = game.discard;
-	for (let x = 0, y = 0; x + (y * 6) < tempDeck.length; x++) {
-		if (x == game.cardSelect[0] && y == game.cardSelect[1]) {
-			selected = [x, y];
-		} else {
-			draw.card(tempDeck[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66));
+	let tempDeck = Object.deepCopy(game.deckLocal).cardSort(), selected;
+	if (name == "void") tempDeck = game.void;
+	else if (name == "discard") tempDeck = game.discard;
+	if (tempDeck.length) {
+		for (let x = 0, y = 0; x + (y * 6) < tempDeck.length; x++) {
+			if (x == game.cardSelect[0] && y == game.cardSelect[1]) {
+				selected = [x, y];
+			} else {
+				draw.card(tempDeck[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66));
+			};
+			if (x >= 5) {
+				x = -1;
+				y++;
+			};
 		};
-		if (x >= 5) {
-			x = -1;
-			y++;
+		if (selected) {
+			draw.card(tempDeck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66));
 		};
-	};
-	if (selected) {
-		draw.card(tempDeck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66));
-	};
-	target();
-	if (game.deckMove == "up") {
-		let speed = Math.abs(Math.round(((98 * selected[1]) - game.deckPos) / 20) - 5);
-		if (game.deckPos <= (98 * selected[1]) - 5) game.deckPos += speed;
-		else if (game.deckPos >= (98 * selected[1]) + 5) game.deckPos -= speed;
-		else game.deckPos = (98 * selected[1]);
-	} else if (game.deckMove == "down") {
-		let speed = Math.abs(Math.round(((98 * (selected[1] - 1)) + 11 - game.deckPos) / 20) + 5);
-		if (game.deckPos <= (98 * (selected[1] - 1)) + 11 - 5) game.deckPos += speed;
-		else if (game.deckPos >= (98 * (selected[1] - 1)) + 12 + 5) game.deckPos -= speed;
-		else game.deckPos = (98 * (selected[1] - 1)) + 11;
+		target();
+		if (game.deckMove == "up") {
+			let speed = Math.abs(Math.round(((98 * selected[1]) - game.deckPos) / 20) - 5);
+			if (game.deckPos <= (98 * selected[1]) - 5) game.deckPos += speed;
+			else if (game.deckPos >= (98 * selected[1]) + 5) game.deckPos -= speed;
+			else game.deckPos = (98 * selected[1]);
+		} else if (game.deckMove == "down") {
+			let speed = Math.abs(Math.round(((98 * (selected[1] - 1)) + 11 - game.deckPos) / 20) + 5);
+			if (game.deckPos <= (98 * (selected[1] - 1)) + 11 - 5) game.deckPos += speed;
+			else if (game.deckPos >= (98 * (selected[1] - 1)) + 12 + 5) game.deckPos -= speed;
+			else game.deckPos = (98 * (selected[1] - 1)) + 11;
+		};
 	};
 	draw.rect("#0004", 0, 0, 400, 13);
-	draw.lore(200 - 2, 1, overrideName.title(), {"color": "white", "text-align": "center"});
+	draw.lore(200 - 2, 1, name.title(), {"color": "white", "text-align": "center"});
 	draw.rect("#fff", 1, 12, 398, 1);
 };
 
@@ -828,8 +830,8 @@ function target() {
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "card");
 		};
-	} else if (game.select[0] == "deck" && game.select[1] == 1 && game.deckProxy != "[]") {
-		const desc = cards[JSON.parse(game.deckProxy).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].id].desc;
+	} else if (game.select[0] == "deck" && game.select[1] == 1 && game.deckLocal.length) {
+		const desc = cards[Object.deepCopy(game.deckLocal).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].id].desc;
 		if (desc.includes("aura blade")) {
 			info("aura blade", "deck");
 		} else if (desc.includes("burn")) {
@@ -839,7 +841,7 @@ function target() {
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "deck");
 		};
-	} else if ((game.select[0] == "void" || game.select[0] == "discard") && game.select[1] == 1 && game[game.select[0]].length > 0) {
+	} else if ((game.select[0] == "void" || game.select[0] == "discard") && game.select[1] == 1 && game[game.select[0]].length) {
 		const desc = cards[game[game.select[0]][game.cardSelect[0] + (game.cardSelect[1] * 6)].id].desc;
 		if (desc.includes("aura blade")) {
 			info("aura blade", "deck");
@@ -1051,7 +1053,9 @@ function mapGraphics(onlyCalc = false) {
 			if (!(game.paths["-1"].includes("" + store[num][0] + ", " + store[num][1]))) game.paths["-1"].push("" + store[num][0] + ", " + store[num][1]);
 		};
 	};
-	for (let item in game.paths) {
-		game.paths[item].sort();
-	};
+	for (const item in game.paths) {
+		if (Object.hasOwnProperty.call(game.paths, item)) {
+			game.paths[item].sort();
+		};
+	}
 };

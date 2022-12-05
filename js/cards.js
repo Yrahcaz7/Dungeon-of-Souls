@@ -194,7 +194,7 @@ function randomCard(notInclude = []) {
 	const common = Object.keys(card.common), rare = Object.keys(card.rare);
 	let bool = true;
 	if (Object.keys(cardNames).length === 0) constructNames();
-	if (notInclude.length > 0) {
+	if (notInclude.length) {
 		for (const key in cards) {
 			if (Object.hasOwnProperty.call(cards, key)) {
 				if (cards[key].rarity > 0 && !notInclude.includes(+key)) {
