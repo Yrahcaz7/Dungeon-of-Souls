@@ -292,6 +292,22 @@ function selection() {
 		};
 		return;
 	};
+	if (game.select[0] == "confirm_restart") {
+		if (action == "left" && game.select[1]) {
+			game.select[1] = 0;
+			actionTimer = 1;
+		} else if (action == "right" && !game.select[1]) {
+			game.select[1] = 1;
+			actionTimer = 1;
+		} else if (action == "enter") {
+			if (!game.select[1]) {
+				restartRun();
+				game.select = ["options", 0];
+			} else game.select = ["options", Object.keys(global.options).length + 2];
+			actionTimer = 2;
+		};
+		return;
+	};
 	// menus
 	if (menuLocation == "title") {
 		if (action == "enter") {
@@ -623,13 +639,14 @@ function selection() {
 			game.select[1]--;
 			actionTimer = 1;
 			return;
-		} else if (action == "down" && game.select[1] > 0 && game.select[1] <= Object.keys(global.options).length) {
+		} else if (action == "down" && game.select[1] > 0 && game.select[1] - 2 < Object.keys(global.options).length) {
 			game.select[1]++;
 			actionTimer = 1;
 			return;
 		} else if (action == "enter") {
 			const option = Object.keys(global.options)[game.select[1] - 2];
 			if (option) global.options[option] = !global.options[option];
+			else game.select = ["confirm_restart", 1];
 			if (option == "music") {
 				if (global.options.music) document.getElementById("music").play();
 				else document.getElementById("music").pause();
@@ -846,6 +863,18 @@ function updateVisuals() {
 		draw.rect("#0008");
 		draw.box(x + 1, y + 1, 154, 26);
 		draw.lore(x + 2, y + 2, "Are you sure you want to finish collecting rewards?\nThere are still rewards left unclaimed.", {"text-small": true});
+		if (!game.select[1]) draw.rect("#fff", x + 1, y + 13, 23, 14);
+		else draw.rect("#fff", x + 23, y + 13, 17, 14);
+		draw.box(x + 3, y + 15, 19, 10);
+		draw.box(x + 25, y + 15, 13, 10);
+		draw.lore(x + 4, y + 16, "YES");
+		draw.lore(x + 26, y + 16, "NO");
+	} else if (game.select[0] == "confirm_restart") {
+		optionsGraphics(false);
+		let x = 123, y = 83;
+		draw.rect("#0008");
+		draw.box(x + 1, y + 1, 152, 26);
+		draw.lore(x + 2, y + 2, "Are you sure you want to restart your current run?\nThe map will also be different next time.", {"text-small": true});
 		if (!game.select[1]) draw.rect("#fff", x + 1, y + 13, 23, 14);
 		else draw.rect("#fff", x + 23, y + 13, 17, 14);
 		draw.box(x + 3, y + 15, 19, 10);

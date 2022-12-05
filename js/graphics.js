@@ -627,20 +627,22 @@ function infoGraphics() {
 	};
 };
 
-function optionsGraphics() {
+function optionsGraphics(focused = true) {
 	const options = Object.keys(global.options);
 	let text = "";
 	for (let index = 0; index < options.length; index++) {
-		if (game.select[1] - 2 === index) text += "<yellow>" + options[index].title() + ": " + (global.options[options[index]] ? "ON" : "OFF") + "</yellow>\n";
+		if (game.select[1] - 2 === index && focused) text += "<yellow>" + options[index].title() + ": " + (global.options[options[index]] ? "ON" : "OFF") + "</yellow>\n";
 		else text += options[index].title() + ": " + (global.options[options[index]] ? "ON" : "OFF") + "\n";
 	};
+	if (game.select[1] - 2 === options.length && focused) text += "\n<yellow>RESTART RUN</yellow>";
+	else text += "\nRESTART RUN";
 	draw.rect("#000c");
 	draw.rect("#0004", 0, 0, 400, 13);
 	draw.lore(200 - 2, 1, "Options", {"color": "white", "text-align": "center"});
 	draw.rect("#fff", 1, 12, 378, 1);
 	draw.lore(200 - 2, 15, text.trim().replace(/_/g, " "), {"color": "white", "text-align": "center"});
 	draw.image(extra.options, 380, 2);
-	if (game.select[1] == 1) draw.image(select.options, 380, 2);
+	if (game.select[1] == 1 && focused) draw.image(select.options, 380, 2);
 };
 
 function deckGraphics(name = "deck") {
