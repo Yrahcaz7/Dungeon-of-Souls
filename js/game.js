@@ -20,6 +20,7 @@ var global = {
 	options: {
 		music: true,
 		sticky_cards: false,
+		pixel_perfect_screen: false,
 		allow_fast_movement: true,
 	},
 	charStage: {
@@ -660,6 +661,9 @@ function selection() {
 				if (global.options.music) document.getElementById("music").play();
 				else document.getElementById("music").pause();
 				musicPopups();
+			} else if (option == "pixel_perfect_screen") {
+				if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: 800px";
+				else document.getElementById("canvas").style = "";
 			};
 			actionTimer = 2;
 			return;

@@ -63,10 +63,15 @@ function chance(chance = 0.5) {
 var canvas, scale, ctx, action = "none", lastAction = "none", loaded = false;
 
 window.onload = () => {
+	// prep things
 	load();
-	if (game.select[0] == "game_fin") game.select[1] = 0;
 	seed = internalSeed(game.seed);
 	canvasData();
+	// set things
+	if (game.select[0] == "game_fin") game.select[1] = 0;
+	if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: 800px";
+	else document.getElementById("canvas").style = "";
+	// calculate things
 	mapGraphics(true);
 	if (game.map.length === 0) {
 		updateMapProg();
