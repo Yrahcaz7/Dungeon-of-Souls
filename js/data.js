@@ -126,7 +126,7 @@ changelog = ""
 
 function updateData() {
 	// hide
-	hide = (game.select[0] == "looker" || game.select[0] == "help" || game.select[0] == "options" || game.select[0] == "deck" || game.select[0] == "void" || game.select[0] == "discard" || game.select[0] == "map") && game.select[1];
+	hide = ((game.select[0] == "looker" || game.select[0] == "help" || game.select[0] == "options" || game.select[0] == "deck" || game.select[0] == "void" || game.select[0] == "discard") && game.select[1]) || game.select[0] == "in_map";
 	// enemyPos
 	let number = game.enemies.length, x = 400, y = 50;
 	if (number == 1) game.enemyPos = [[x - 105, y]];

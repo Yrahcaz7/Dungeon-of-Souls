@@ -671,7 +671,7 @@ function renderCards() {
 	let temp = -1;
 	for (let index = 0; index < game.hand.length; index++) {
 		let card = game.hand[index];
-		if (game.select[0] == "hand" && game.select[1] == index || (game.prevCard == index && global.options.stickyCards)) {
+		if ((game.select[0] == "hand" && game.select[1] == index) || (index == game.prevCard && global.options.sticky_cards)) {
 			temp = index;
 		} else {
 			if (cardAnim[index] > 0) cardAnim[index] -= 6 + Math.random();
@@ -699,6 +699,12 @@ function info(type, location = "none", xPlus = 0, yPlus = 0) {
 	if (location == "card") {
 		let x = game.handPos[game.select[1]] + xPlus, y = 147 - Math.floor(cardAnim[game.select[1]]);
 		if (game.select[1] == game.hand.length - 1 && game.hand.length >= 4) {
+			x -= 145;
+		};
+		draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});
+	} else if (location == "sticky-card") {
+		let x = game.handPos[game.prevCard] + xPlus, y = 147 - Math.floor(cardAnim[game.prevCard]);
+		if (game.prevCard == game.hand.length - 1 && game.hand.length >= 4) {
 			x -= 145;
 		};
 		draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});
@@ -838,6 +844,18 @@ function target() {
 			info("one use", "reward");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "reward");
+		};
+	};
+	if (game.select[0] != "hand" && game.select[0] != "attack_enemy" && game.select[0] != "lookat_enemy" && !hide && global.options.sticky_cards) {
+		const desc = cards[game.hand[game.prevCard].id].desc;
+		if (desc.includes("aura blade")) {
+			info("aura blade", "sticky-card");
+		} else if (desc.includes("burn")) {
+			info("burn", "sticky-card");
+		} else if (desc.includes("One use")) {
+			info("one use", "sticky-card");
+		} else if (desc.includes("reinforce")) {
+			info("reinforce", "sticky-card");
 		};
 	};
 };

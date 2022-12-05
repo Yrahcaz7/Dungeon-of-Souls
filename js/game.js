@@ -75,7 +75,7 @@ var global = {
 	paths: {},
 	seed: "" + new Date().getTime().toString(36).substring(1).shuffle(),
 	saveNum: 0,
-}, actionTimer = -1, notif = [-1, 0, "", 0], hide = (game.select[0] == "looker" || game.select[0] == "help" || game.select[0] == "options" || game.select[0] == "deck" || game.select[0] == "void" || game.select[0] == "discard" || game.select[0] == "map") && game.select[1], menuLocation = "title";
+}, actionTimer = -1, notif = [-1, 0, "", 0], hide = ((game.select[0] == "looker" || game.select[0] == "help" || game.select[0] == "options" || game.select[0] == "deck" || game.select[0] == "void" || game.select[0] == "discard") && game.select[1]) || game.select[0] == "in_map", menuLocation = "title";
 
 function musicPopups() {
 	let src = document.getElementById("music").src;
@@ -873,14 +873,14 @@ function updateVisuals() {
 		const options = Object.keys(global.options);
 		let text = "";
 		for (let index = 0; index < options.length; index++) {
-			if (game.select[1] - 2 === index) text += "<yellow>" + options[index] + ": " + (global.options[options[index]] ? "ON" : "OFF") + "</yellow>\n";
-			else text += options[index] + ": " + (global.options[options[index]] ? "ON" : "OFF") + "\n";
+			if (game.select[1] - 2 === index) text += "<yellow>" + options[index].title() + ": " + (global.options[options[index]] ? "ON" : "OFF") + "</yellow>\n";
+			else text += options[index].title() + ": " + (global.options[options[index]] ? "ON" : "OFF") + "\n";
 		};
 		draw.rect("#000c");
 		draw.rect("#0004", 0, 0, 400, 13);
 		draw.lore(200 - 2, 1, "Options", {"color": "white", "text-align": "center"});
 		draw.rect("#fff", 1, 12, 378, 1);
-		draw.lore(200 - 2, 15, text.trim().title().replace(/_/g, " "), {"color": "white", "text-align": "center"});
+		draw.lore(200 - 2, 15, text.trim().replace(/_/g, " "), {"color": "white", "text-align": "center"});
 		draw.image(extra.options, 380, 2);
 		if (game.select[1] == 1) draw.image(select.options, 380, 2);
 	} else if (game.select[0] == "deck" && game.select[1]) {
