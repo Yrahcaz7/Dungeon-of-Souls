@@ -96,6 +96,11 @@ function canvasData() {
 
 // event listeners
 
+window.onresize = () => {
+	if (window.innerHeight <= window.innerWidth / 2) document.getElementById("canvas").className = "fixed";
+	else document.getElementById("canvas").className = "";
+};
+
 document.addEventListener("keydown", (event) => {
 	const key = event.key, prevAction = "" + action;
 	if (key == "E" || key == "e") {

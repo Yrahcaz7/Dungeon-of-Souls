@@ -21,17 +21,19 @@
 	overscroll-behavior-inline: none;
 }
 
-:root {
+html {
 	cursor: none;
 	background-color: black;
 }
 
 canvas {
+	position: absolute;
 	top: 0;
 	left: 0;
+	bottom: 0;
+	right: 0;
 	width: 100%;
-	position: absolute;
-	z-index: -999;
+	margin: auto;
 	-ms-interpolation-mode: nearest-neighbor;
 	image-rendering: -moz-crisp-edges;
 	image-rendering: -o-crisp-edges;
@@ -40,7 +42,8 @@ canvas {
 	image-rendering: -ms-crisp-edges;
 	image-rendering: crisp-edges;
 	image-rendering: pixelated;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
+}
+
+.fixed {
+	margin: 0px !important;
 }
