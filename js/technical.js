@@ -64,6 +64,7 @@ var canvas, scale, ctx, action = "none", lastAction = "none", loaded = false;
 
 window.onload = () => {
 	load();
+	if (game.select[0] = "game_fin") game.select[1] = 0;
 	seed = internalSeed(game.seed);
 	canvasData();
 	mapGraphics(true);
@@ -82,8 +83,9 @@ window.onload = () => {
 function canvasData() {
 	let canv = document.getElementById("canvas");
 	if (!canv) return false;
+	scale = canv.width / 400;
+	canv.height = canv.width / 2;
 	canvas = canv;
-	scale = canvas.width / 400;
 	ctx = canvas.getContext("2d");
 	ctx.mozImageSmoothingEnabled = false;
 	ctx.webkitImageSmoothingEnabled = false;
@@ -127,7 +129,7 @@ document.addEventListener("keydown", (event) => {
 	else action = "none";
 	if (key == "Escape") fullscreen("exit");
 	else if (key == "Tab") fullscreen();
-	if (!event.repeat && prevAction == "none" && lastAction == action && global.options.allow_fast_movement) {
+	if (!event.repeat && prevAction == "none" && lastAction == action && global.options.allow_fast_movement && loaded) {
 		if (action != "enter" && key != "1" && key != "2" && key != "3") selection();
 		updateVisuals();
 	};

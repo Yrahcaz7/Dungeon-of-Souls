@@ -917,6 +917,28 @@ function updateVisuals() {
 		draw.rect("#000000" + (num.length < 2 ? "0" : "") + num);
 		if (game.select[1] < 204) game.select[1] += 10;
 		else draw.lore(200 - 2, 53, "GAME OVER\n\nTOP FLOOR: " + game.floor + "\n\nEND GOLD: " + game.gold + "\n\nPRESS ENTER TO START A NEW RUN", {"color": "deep red", "text-align": "center"});
+	} else if (game.select[0] == "game_fin") {
+		if (game.select[1] > 255) game.select[1] = 255;
+		const num = Math.floor(game.select[1]).toString(16);
+		draw.rect("#000000" + (num.length < 2 ? "0" : "") + num);
+		if (game.select[1] < 255) game.select[1] += 10;
+		else {
+			save();
+			loaded = false;
+			game.state = "game_won";
+			game.select = ["game_won", 0];
+			actionTimer = 4;
+			setInterval(() => {
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				let num = Math.round(interval(4/3, 2));
+				draw.image(victorious, 168, 42 + num, victorious.width * 2, victorious.height * 2);
+				draw.rect("#0004");
+				draw.lore(200 - 2, 50, "YOU WON THE GAME!\n\nThank you for playing!\n\nMore content coming soon, such as:<small>\n- More cards!\n- More enemies!\n- A boss battle!\n- And much more!<big>\n\nPRESS ENTER TO START A NEW RUN", {"color": "light green", "text-align": "center"});
+				if (actionTimer <= -1) {
+					if (action == "enter") restartRun();
+				} else actionTimer -= 0.1;
+			}, 10);
+		};
 	};
 };
 

@@ -166,8 +166,14 @@ function updateData() {
 	// game over
 	if (game.health === 0 && playerAnim[1] != "death") {
 		startAnim.player("death");
-		game.turn = "game_over";
+		game.turn = "none";
+		game.state = "game_over";
 		game.select = ["game_over", 0];
+	};
+	if (game.floor == 8 && game.state == "event_fin" && game.select[0] == "in_map") {
+		game.turn = "none";
+		game.state = "game_fin";
+		game.select = ["game_fin", 0];
 	};
 	// other
 	game.deck.cardSort();

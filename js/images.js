@@ -148,7 +148,7 @@ const player = {
 	item: new Image,
 	back: new Image,
 },
-view = new Image, title = new Image, aura_blade = new Image, arrows = new Image, war_cry = new Image; // other
+view = new Image, title = new Image, aura_blade = new Image, arrows = new Image, war_cry = new Image, victorious = new Image; // other
 
 // player
 for (const image in player) {
@@ -288,3 +288,4 @@ title.src = "images/title.png";
 aura_blade.src = "images/aura_blade.png";
 arrows.src = "images/arrows.png";
 war_cry.src = "images/war_cry.png";
+victorious.src = "images/victorious.png";
