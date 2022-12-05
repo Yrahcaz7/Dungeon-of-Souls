@@ -82,6 +82,7 @@ function enterBattle() {
 	game.deckLocal = randomize(game.deck.slice(0));
 	game.hand = [];
 	game.discard = [];
+	game.void = [];
 	game.shield = 0;
 	game.eff.auraBlades = 0;
 	game.eff.reinforces = 0;
@@ -154,7 +155,7 @@ function playerTurn() {
 	// finish attack enemy
 	if (game.enemyAttFin && playerAnim[1] == "idle") {
 		const attCard = cards[game.enemyAtt.id];
-		if (!attributes["NO SELECT"].includes(game.enemyAtt.id)) {
+		if (!attributes["NO SELECT"].includes(game.enemyAtt.id) && attCard.damage) {
 			// calculate damage
 			let damage = +attCard.damage;
 			let exDamage = 0;
@@ -184,7 +185,7 @@ function playerTurn() {
 	if (action == "enter" && game.select[0] == "attack_enemy") {
 		game.energy -= cards[game.enemyAtt.id].cost;
 		startAnim.player(cards[game.enemyAtt.id].anim);
-		activateAttackEffects();
+		activateAttackEffects(game.enemyAtt.id);
 		game.enemyAttFin = true;
 		if (attributes["one use"].includes(game.enemyAtt.id)) game.void.push(game.hand.splice(game.activeCard, 1)[0]);
 		else game.discard.push(game.hand.splice(game.activeCard, 1)[0]);
@@ -214,12 +215,12 @@ function playerTurn() {
 				if (game.prevCard) game.select = ["hand", game.prevCard - 1];
 				else game.select = ["hand", 0];
 				actionTimer = 2;
-			} else if (id >= 1000 && id < 2000) { // effects of attack cards
+			} else if (cards[id].damage || cards[id].attack) { // effects of attack cards
 				if (attributes["NO SELECT"].includes(id)) {
 					game.energy -= cards[id].cost;
 					game.enemyAtt = game.hand[game.select[1]];
 					startAnim.player(cards[id].anim);
-					activateAttackEffects();
+					activateAttackEffects(id);
 					game.enemyAttFin = true;
 					if (attributes["one use"].includes(id)) game.void.push(game.hand.splice(game.select[1], 1)[0]);
 					else game.discard.push(game.hand.splice(game.select[1], 1)[0]);

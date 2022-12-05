@@ -18,9 +18,10 @@
 const attributes = {
 	// gameplay
 	unplayable: [0],
-	"one use": [3000],
+	"one use": [3000, 3001],
 	// technical
 	"NO SELECT": [1002],
+	"NO ATTACK EFFECTS": [3001],
 }, cards = {
 	0: {
 		name: "error",
@@ -117,6 +118,23 @@ const attributes = {
 			};
 		},
 	},
+	3001: {
+		name: "rage",
+		desc: "Kill a non-boss\nenemy. Take damage\nequal to its\nhealth. One use.",
+		rarity: 1,
+		cost: 0,
+		attack() {
+			let damage = game.enemies[game.enemyAttSel].health;
+			if (game.shield <= damage) {
+				damage -= game.shield;
+				game.shield = 0;
+				game.health -= damage;
+			} else {
+				game.shield -= damage;
+			};
+			game.enemies[game.enemyAttSel].health = 0;
+		},
+	},
 	4000: {
 		name: "aura blade",
 		desc: "Gain 1 aura blade.",
@@ -136,7 +154,7 @@ const attributes = {
 for (const key in cards) {
 	if (Object.hasOwnProperty.call(cards, key)) {
 		cards[key].desc = cards[key].desc.replace(/([Hh]ealth|[Dd]amage(?!<\/red>)|[Ee]xtra\sdamage|[Aa]ttack)/g, "<red>$1</red>").replace(/([Ss]hield|[Dd]efense)/g, "<blue>$1</blue>");
-		if (Math.floor(key / 1000) == 1 && cards[key].exMod === undefined) cards[key].exMod = 1;
+		if (cards[key].exMod === undefined && (cards[key].damage || cards[key].attack)) cards[key].exMod = 1;
 	};
 };
 

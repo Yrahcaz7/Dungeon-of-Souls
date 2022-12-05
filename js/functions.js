@@ -138,7 +138,8 @@ function drawHand() {
 	};
 };
 
-function activateAttackEffects() {
+function activateAttackEffects(id) {
+	if (attributes["NO ATTACK EFFECTS"].includes(id)) return;
 	if (game.eff.auraBlades) {
 		game.eff.auraBlades--;
 		game.attackEffect = "aura blade";

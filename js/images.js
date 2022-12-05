@@ -45,6 +45,7 @@ const player = {
 	},
 	common: {
 		"aura blade": new Image,
+		"rage": new Image,
 		"reinforce": new Image,
 		"sweeping slash": new Image,
 		"war cry": new Image,
@@ -162,29 +163,16 @@ card.energy.src = "images/cards/energy.png";
 card.back.src = "images/cards/back.png";
 card.error.src = "images/cards/error.png";
 
-// starter cards
-card.starter["slash"].src = "images/cards/starter/slash.png";
-card.starter["block"].src = "images/cards/starter/block.png";
-
-// common cards
-card.common["aura blade"].src = "images/cards/common/aura_blade.png";
-card.common["reinforce"].src = "images/cards/common/reinforce.png";
-card.common["sweeping slash"].src = "images/cards/common/sweeping_slash.png";
-card.common["war cry"].src = "images/cards/common/war_cry.png";
-
-// rare cards
-card.rare["everlasting shield"].src = "images/cards/rare/everlasting_shield.png";
-card.rare["heat wave"].src = "images/cards/rare/heat_wave.png";
-
-// card outlines
-for (const image in card.outline) {
-	if (Object.hasOwnProperty.call(card.outline, image)) {
-		card.outline[image].src = "images/cards/outline/" + image + ".png";
+// cards
+for (const folder in card) {
+	if (Object.hasOwnProperty.call(card, folder)) {
+		for (const image in card[folder]) {
+			if (Object.hasOwnProperty.call(card[folder], image)) {
+				card[folder][image].src = "images/cards/" + folder + "/" + image.replace(/\s/g, "_") + ".png";
+			};
+		};
 	};
 };
-
-// card rarities
-card.rarity.rare.src = "images/cards/rarity/rare.png";
 
 // enemies
 for (const folder in enemy) {
