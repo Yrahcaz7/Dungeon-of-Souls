@@ -56,7 +56,7 @@ const draw = {
 		y = Math.round(y * 2) / 2;
 		let img = letters.black, enters = 0, enterIndex = 0, len = string.replace(/<.*?>/g, "").length;
 		// set images
-		if (letters[color.replace("_", "-")]) img = letters[color.replace("_", "-")];
+		if (letters[color.replace(/-|\s/, "_")]) img = letters[color.replace(/-|\s/, "_")];
 		else if (letters[color.slice(0, -2)] && letters[color.slice(0, -2)][color.slice(-1)]) img = letters[color.slice(0, -2)][color.slice(-1)];
 		// check for size tags
 		if (string.includes("<b>") || string.includes("<big>") || string.includes("<s>") || string.includes("<small>")) {
@@ -151,7 +151,7 @@ const draw = {
 				a += enterIndex;
 			};
 		};
-		return small?(enters+1)*5.5:(enters+1)*11;
+		return small ? (enters + 1) * 5.5 : (enters + 1) * 11;
 	},
 	selector(x, y, width, height) {
 		draw.image(select.selector[0], x - 2, y - 2);

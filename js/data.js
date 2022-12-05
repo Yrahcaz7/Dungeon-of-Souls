@@ -89,12 +89,13 @@ gameplay = ""
 	+ "Then, you can use your new knowledge and cards to reach higher heights next time.",
 changelog = ""
 	+ "<b>Version 1.0 - Inception (in progress)<s>"
-	+ " - finally added a title screen\n"
+	+ " - finally added title and game over screens\n"
 	+ " - finally added an options menu\n"
 	+ " - added treasure chambers and death zones\n"
 	+ " - added shortcut keys for various things\n"
 	+ " - two new cards and some card balancing\n"
-	+ " - polished up the map generator\n"
+	+ " - polished up the map generator (and fixed seeds)\n"
+	+ " - even more things that I didn't list here\n"
 	+ "<b>Version 0.4 - Formulation<s>"
 	+ " - enemies now die upon reaching 0 health\n"
 	+ " - added the map (upper-left corner)\n"
@@ -163,9 +164,10 @@ function updateData() {
 		if (enemy.shield > enemy.maxShield) game.enemies[a].shield = enemy.maxShield;
 	};
 	// game over
-	if (game.health === 0) {
-		if (playerAnim[1] != "death") startAnim.player("death");
+	if (game.health === 0 && playerAnim[1] != "death") {
+		startAnim.player("death");
 		game.turn = "game_over";
+		game.select = ["game_over", 0];
 	};
 	// other
 	game.deck.cardSort();

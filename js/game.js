@@ -308,6 +308,14 @@ function selection() {
 		};
 		return;
 	};
+	// game end
+	if (game.select[0] == "game_over" && game.select[1] == 204) {
+		if (action == "enter") {
+			restartRun();
+			actionTimer = 2;
+		};
+		return;
+	};
 	// menus
 	if (menuLocation == "title") {
 		if (action == "enter") {
@@ -895,6 +903,12 @@ function updateVisuals() {
 		deckGraphics("void");
 	} else if (game.select[0] == "discard" && game.select[1]) {
 		deckGraphics("discard");
+	} else if (game.select[0] == "game_over") {
+		if (game.select[1] > 204) game.select[1] = 204;
+		const num = Math.floor(game.select[1]).toString(16);
+		draw.rect("#000000" + (num.length < 2 ? "0" : "") + num);
+		if (game.select[1] < 204) game.select[1] += 10;
+		else draw.lore(200 - 2, 53, "GAME OVER\n\nTOP FLOOR: " + game.floor + "\n\nEND GOLD: " + game.gold + "\n\nPRESS ENTER TO START A NEW RUN", {"color": "deep red", "text-align": "center"});
 	} else {
 		game.cardSelect = [0, 0];
 		deckPos = 0;
