@@ -296,7 +296,7 @@ const draw = {
 const startAnim = {
 	player(type, noAura = false) {
 		type = "" + type;
-		if (!type) return;
+		if (!player[type]) return;
 		if (!noAura && game.eff.auraBlades && (type == "attack" || type == "attack_2")) type += "_aura";
 		playerAnim = [0, type];
 	},
@@ -403,7 +403,7 @@ function playerGraphics() {
 		};
 	};
 	x = 15;
-	draw.imageSector(player[playerAnim[1]], Math.floor(playerAnim[0]) * 120, 0, 120, 80, x, y, 120, 80);
+	draw.imageSector(player[playerAnim[1]], Math.floor(playerAnim[0]) * 120, 0, 120, player[playerAnim[1]].height, x, y, 120);
 	if (playerAnim[1] == "idle") {
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 10) playerAnim[0] = 0;
@@ -904,7 +904,7 @@ function popupGraphics() {
 			if (popups[a][2] < stopPoint) popups[a][2] = stopPoint;
 			if (popups[a][2] == stopPoint) popups[a][3] += 0.025;
 			draw.image(popup.back, popups[a][2], 150 - (a * 21));
-			draw.lore(popups[a][2] + 13, 150 - (a * 21) + 8, !!popups[a][4]?popups[a][1]+"<br>"+popups[a][4]:popups[a][1], {"text-small": !!popups[a][4]});
+			draw.lore(popups[a][2] + 13, 150 - (a * 21) + 8, popups[a][4] ? popups[a][1] + "\n" + popups[a][4] : popups[a][1], {"text-small": !!popups[a][4]});
 			if (popups[a][0] == "music") draw.image(popup.music, popups[a][2] + 4, 150 - (a * 21) + 3);
 			else if (popups[a][0] == "go") draw.image(popup.go, popups[a][2] + 2, 150 - (a * 21) + 3);
 			if (game.select[0] == "popups" && game.select[1] == a) {
@@ -1012,8 +1012,8 @@ function mapGraphics(onlyCalc = false) {
 		};
 	};
 	if (render) {
-		const str = paths[game.location][game.mapSelect];
-		const coordSel = str?str.split(", "):[];
+		const str = paths[game.location] ? paths[game.location][game.mapSelect] : undefined;
+		const coordSel = str ? str.split(", ") : [];
 		const coordOn = game.location.split(", ");
 		for (let x = 0; x < game.map.length; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
