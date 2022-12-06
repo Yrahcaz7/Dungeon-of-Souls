@@ -143,11 +143,11 @@ const attributes = {
 	},
 	4001: {
 		name: "aura blaze",
-		desc: "Gain 3 aura blades.",
+		desc: "Gain 4 aura blades.",
 		rarity: 2,
-		cost: 2,
+		cost: 3,
 		effect() {
-			game.eff.aura_blades += 3;
+			game.eff.aura_blades += 4;
 		},
 	},
 }, rarities = {

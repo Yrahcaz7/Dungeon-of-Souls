@@ -861,7 +861,7 @@ function target() {
 			info("weakness", "reward");
 		};
 	};
-	if (game.select[0] == "hand" || (game.select[0] != "attack_enemy" && game.select[0] != "lookat_enemy" && !hidden() && global.options.sticky_cards)) {
+	if (game.select[0] == "hand" || (game.select[0] != "attack_enemy" && game.select[0] != "lookat_enemy" && !hidden() && global.options.sticky_cards) && game.hand.length && game.prevCard < game.hand.length) {
 		const desc = cards[game.hand[game.prevCard].id].desc;
 		if (desc.includes("aura blade")) {
 			info("aura blade", "card");
