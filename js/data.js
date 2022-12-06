@@ -89,7 +89,12 @@ gameplay = ""
 	+ "However, you earn <yellow>XP</yellow>, and when you get enough you can unlock new cards.\n"
 	+ "Then, you can use your new knowledge and cards to reach higher heights next time.",
 changelog = ""
-	+ "<b>Version 1.0 - Inception (in progress)<s>"
+	+ "<b>Version 1.1 - Perception (in progress)<s>"
+	+ " - added a new option: pixel perfect screen\n"
+	+ " - two new cards, and a new effect\n"
+	+ " - updated/adjusted some pixel art\n"
+	+ " - more bugfixes of course :)\n"
+	+ "<b>Version 1.0 - Inception<s>"
 	+ " - finally added title and game over screens\n"
 	+ " - finally added an options menu\n"
 	+ " - added treasure chambers and death zones\n"
@@ -136,6 +141,7 @@ function updateData() {
 	else if (number == 4) enemyPos = [[x - 70, y + 30], [x - 140, y + 30], [x - 110, y - 36], [x - 200, y - 20]];
 	else if (number == 5) enemyPos = [[x - 70, y + 30], [x - 140, y + 30], [x - 100, y - 36], [x - 170, y - 36], [x - 210, y + 30]];
 	else if (number == 6) enemyPos = [[x - 70, y + 30], [x - 140, y + 30], [x - 100, y - 36], [x - 170, y - 36], [x - 210, y + 30], [x - 240, y - 36]];
+	else enemyPos = [];
 	// handPos
 	if (game.hand.length > 12) game.hand.splice(12);
 	number = game.hand.length;

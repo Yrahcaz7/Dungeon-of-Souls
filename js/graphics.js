@@ -626,7 +626,7 @@ function infoGraphics() {
 		draw.lore(1, 1 - infPos, "Dungeon of Souls - Overview", {"color": "red"});
 		draw.lore(1, 23 - infPos, overview, {"color": "white"});
 	};
-	draw.lore(1, 12 - infPos, "Source can be found at \"https://github.com/Yrahcaz7/Dungeon-of-Souls\"", {"color": "red", "text-small": true});
+	draw.lore(1, 12 - infPos, 'Source can be found at "https://github.com/Yrahcaz7/Dungeon-of-Souls"', {"color": "red", "text-small": true});
 	if (infLimit > 0) {
 		draw.lore(360, 26, "Scrollable", {"color": "white", "text-align": "left"});
 		draw.image(arrows, 367, 22);
