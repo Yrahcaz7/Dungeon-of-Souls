@@ -37,7 +37,7 @@ var global = {
 	gold: 0,
 	state: "enter",
 	turn: "none",
-	select: ["none", 0],
+	select: ["welcome", 0],
 	cardSelect: [0, 0],
 	mapSelect: -1,
 	enemyAtt: "none",
@@ -259,8 +259,7 @@ function selection() {
 			actionTimer = 2;
 		};
 		return;
-	};
-	if (game.select[0] == "confirm_exit") {
+	} else if (game.select[0] == "confirm_exit") {
 		if (action == "left" && game.select[1]) {
 			game.select[1] = 0;
 			actionTimer = 1;
@@ -277,8 +276,7 @@ function selection() {
 			actionTimer = 2;
 		};
 		return;
-	};
-	if (game.select[0] == "confirm_restart") {
+	} else if (game.select[0] == "confirm_restart") {
 		if (action == "left" && game.select[1]) {
 			game.select[1] = 0;
 			actionTimer = 1;
@@ -303,7 +301,13 @@ function selection() {
 		return;
 	};
 	// menus
-	if (menuLocation == "title") {
+	if (game.select[0] == "welcome") {
+		if (action == "enter") {
+			game.select = ["none", 0];
+			actionTimer = 2;
+		};
+		return;
+	} else if (menuLocation == "title") {
 		if (action == "enter") {
 			menuLocation = "none";
 			actionTimer = 2;
@@ -349,8 +353,7 @@ function selection() {
 			actionTimer = 2;
 		};
 		return;
-	};
-	if (game.select[0] == "card_rewards") {
+	} else if (game.select[0] == "card_rewards") {
 		if (action == "right" && game.select[1] < game.cardRewardChoices) {
 			game.select[1]++;
 			actionTimer = 1;
@@ -832,6 +835,10 @@ function updateVisuals() {
 	};
 	if (menuLocation != "none") {
 		draw.image(view);
+		if (game.select[0] == "welcome") {
+			draw.box(80, 83, 240, 34);
+			draw.lore(200 - 2, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": "center"});
+		};
 		return;
 	};
 	if (!hidden()) {
