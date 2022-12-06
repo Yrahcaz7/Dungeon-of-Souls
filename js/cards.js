@@ -18,7 +18,7 @@
 const attributes = {
 	// gameplay
 	unplayable: [0],
-	"one use": [3000, 3001],
+	"one use": [3000],
 	// technical
 	"NO SELECT": [1002],
 	"NO ATTACK EFFECTS": [3001],
@@ -120,7 +120,7 @@ const attributes = {
 	},
 	3001: {
 		name: "rage",
-		desc: "Kill a non-boss\nenemy. Take damage\nequal to its\nhealth. One use.",
+		desc: "Kill a non-boss\nenemy. Take damage\nequal to its\nhealth.",
 		rarity: 1,
 		cost: 0,
 		attack() {

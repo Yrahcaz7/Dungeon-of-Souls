@@ -717,12 +717,6 @@ function renderCards() {
 
 function info(type, location = "none", xPlus = 0, yPlus = 0) {
 	if (location == "card") {
-		let x = handPos[game.select[1]] + xPlus, y = 147 - Math.floor(cardAnim[game.select[1]]);
-		if (game.select[1] == game.hand.length - 1 && game.hand.length >= 4) {
-			x -= 145;
-		};
-		draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});
-	} else if (location == "sticky-card") {
 		let x = handPos[game.prevCard] + xPlus, y = 147 - Math.floor(cardAnim[game.prevCard]);
 		if (game.prevCard == game.hand.length - 1 && game.hand.length >= 4) {
 			x -= 145;
@@ -821,17 +815,6 @@ function target() {
 	} else if (game.select[0] == "artifacts") {
 		let name = game.artifacts[game.select[1]];
 		info(name, "artifact");
-	} else if (game.select[0] == "hand") {
-		const desc = cards[game.hand[game.select[1]].id].desc;
-		if (desc.includes("aura blade")) {
-			info("aura blade", "card");
-		} else if (desc.includes("burn")) {
-			info("burn", "card");
-		} else if (desc.includes("One use")) {
-			info("one use", "card");
-		} else if (desc.includes("reinforce")) {
-			info("reinforce", "card");
-		};
 	} else if (game.select[0] == "deck" && game.select[1] == 1 && game.deckLocal.length) {
 		const desc = cards[Object.deepCopy(game.deckLocal).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].id].desc;
 		if (desc.includes("aura blade")) {
@@ -866,16 +849,16 @@ function target() {
 			info("reinforce", "reward");
 		};
 	};
-	if (game.select[0] != "hand" && game.select[0] != "attack_enemy" && game.select[0] != "lookat_enemy" && !hidden() && global.options.sticky_cards) {
+	if (game.select[0] == "hand" || (game.select[0] != "attack_enemy" && game.select[0] != "lookat_enemy" && !hidden() && global.options.sticky_cards)) {
 		const desc = cards[game.hand[game.prevCard].id].desc;
 		if (desc.includes("aura blade")) {
-			info("aura blade", "sticky-card");
+			info("aura blade", "card");
 		} else if (desc.includes("burn")) {
-			info("burn", "sticky-card");
+			info("burn", "card");
 		} else if (desc.includes("One use")) {
-			info("one use", "sticky-card");
+			info("one use", "card");
 		} else if (desc.includes("reinforce")) {
-			info("reinforce", "sticky-card");
+			info("reinforce", "card");
 		};
 	};
 };

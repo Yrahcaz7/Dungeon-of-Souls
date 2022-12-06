@@ -136,6 +136,7 @@ function updateData() {
 	else if (number == 5) enemyPos = [[x - 70, y + 30], [x - 140, y + 30], [x - 100, y - 36], [x - 170, y - 36], [x - 210, y + 30]];
 	else if (number == 6) enemyPos = [[x - 70, y + 30], [x - 140, y + 30], [x - 100, y - 36], [x - 170, y - 36], [x - 210, y + 30], [x - 240, y - 36]];
 	// handPos
+	if (game.hand.length > 12) game.hand.splice(12);
 	number = game.hand.length;
 	x = 198;
 	if (number == 1) handPos = [x - 32];
@@ -143,13 +144,14 @@ function updateData() {
 	else if (number == 3) handPos = [x - 96 - 2, x - 32, x + 32 + 2];
 	else if (number == 4) handPos = [x - 128 - 3, x - 64 - 1, x + 1, x + 64 + 3];
 	else if (number == 5) handPos = [x - 160 - 4, x - 96 - 2, x - 32, x + 32 + 2, x + 96 + 4];
-	else if (number == 6) handPos = [x - 192 + 10, x - 128 + 6, x - 64 + 2, x - 2, x + 64 - 6, x + 128 - 10];
-	else if (number == 7) handPos = [x - 224 + 42, x - 160 + 28, x - 96 + 14, x - 32, x + 32 - 14, x + 96 - 28, x + 160 - 42];
+	else if (number == 6) handPos = [x - 192 + 15, x - 128 + 9, x - 64 + 3, x - 3, x + 64 - 9, x + 128 - 15];
+	else if (number == 7) handPos = [x - 224 + 45, x - 160 + 30, x - 96 + 15, x - 32, x + 32 - 15, x + 96 - 30, x + 160 - 45];
 	else if (number == 8) handPos = [x - 256 + 77, x - 192 + 55, x - 128 + 33, x - 64 + 11, x - 11, x + 64 - 33, x + 128 - 55, x + 192 - 77];
-	else if (number == 9) handPos = [x - 288 + 104, x - 224 + 78, x - 160 + 52, x - 96 + 26, x - 32, x + 32 - 26, x + 96 - 52, x + 160 - 78, x + 224 - 104];
-	else if (number == 10) handPos = [x - 320 + 135, x - 256 + 105, x - 192 + 75, x - 128 + 45, x - 64 + 15, x - 15, x + 64 - 45, x + 128 - 75, x + 192 - 105, x + 256 - 135];
-	else if (number == 11) handPos = [x - 352 + 170, x - 288 + 136, x - 224 + 102, x - 160 + 68, x - 96 + 34, x - 32, x + 32 - 34, x + 96 - 68, x + 160 - 102, x + 224 - 136, x + 288 - 170];
-	else if (number == 12) handPos = [x - 384 + 198, x - 320 + 162, x - 256 + 126, x - 192 + 90, x - 128 + 54, x - 64 + 18, x - 18, x + 64 - 54, x + 128 - 90, x + 192 - 126, x + 256 - 162, x + 320 - 198];
+	else if (number == 9) handPos = [x - 288 + 108, x - 224 + 81, x - 160 + 54, x - 96 + 27, x - 32, x + 32 - 27, x + 96 - 54, x + 160 - 81, x + 224 - 108];
+	else if (number == 10) handPos = [x - 320 + 144, x - 256 + 112, x - 192 + 80, x - 128 + 48, x - 64 + 16, x - 16, x + 64 - 48, x + 128 - 80, x + 192 - 112, x + 256 - 144];
+	else if (number == 11) handPos = [x - 352 + 175, x - 288 + 140, x - 224 + 105, x - 160 + 70, x - 96 + 35, x - 32, x + 32 - 35, x + 96 - 70, x + 160 - 105, x + 224 - 140, x + 288 - 175];
+	else if (number == 12) handPos = [x - 384 + 209, x - 320 + 171, x - 256 + 133, x - 192 + 95, x - 128 + 57, x - 64 + 19, x - 19, x + 64 - 57, x + 128 - 95, x + 192 - 133, x + 256 - 171, x + 320 - 209];
+	else handPos = [];
 	// info
 	if (infPos < 0) infPos = 0;
 	if (infPos > infLimit) infPos = infLimit;
