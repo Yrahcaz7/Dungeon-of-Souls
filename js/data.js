@@ -20,7 +20,7 @@ const infoText = {
 	"aura blade": "Every time you <red>attack</red>,\none of your aura blades\nis used up for 5 + X\n<red>extra damage</red>, X being\nthe number of aura\nblades you have.",
 	burn: "At the end of each\nturn, each burn deals 1\n<red>damage</red> to what it is on,\nthen one burn on that\ngoes away.",
 	"one use": "When a one use card is\nplayed, it will be sent\nto the void instead of\nthe discard.",
-	reinforce: "At the start of each\nturn, one reinforce is\nused up to retain your\n<blue>shield</blue> (even if you have\nno <blue>shield</blue> left.)",
+	reinforce: "At the start of each\nturn, one reinforce is\nused up to retain your\n<blue>shield</blue> (even if you have\nno <blue>shield</blue> left).",
 	weakness: "While something has\nweakness, its <red>attack</red> is\n75% of normal, rounded\ndown. At the end of each\nturn, one weakness will\ngo away.",
 	// artifacts
 	iron_will: "Every time a battle\nends, you <red>heal</red> 2 <red>health</red>.",
@@ -64,8 +64,8 @@ gameplay = ""
 	+ "<b>Enemy Intents<s>"
 	+ "Take note of what's floating above the enemies' heads. That is their intent.\n"
 	+ "An enemy's intent shows what it intends to do on its next turn.\n"
-	+ "<deep-red>Red</deep-red> with spikes or stars is <red>attack</red>, <deep-blue>blue</deep-blue> and shield shape means <blue>defense</blue> (gain <blue>shield</blue>.)\n"
-	+ "There are others later, but you can look at the tooltips to see what they are.\n"
+	+ "<deep-red>Red</deep-red> with spikes or stars is <red>attack</red>, <deep-blue>blue</deep-blue> and shield shape means <blue>defense</blue> (gain <blue>shield</blue>).\n"
+	+ "There are others later (not implemented yet), but you can look at the tooltips to see what they are.\n"
 	+ "Use the enemies' predictableness to strategize what cards you play.\n"
 	+ "<b>Building a Deck<s>"
 	+ "After each battle, you will get rewards, including a choice of 3 cards.\n"
@@ -75,8 +75,8 @@ gameplay = ""
 	+ "<b>Artifacts<s>"
 	+ "Artifacts are very important. You start with two, <light-brown>The Map</light-brown> and Iron Will.\n"
 	+ "<light-brown>The map</light-brown> you always have, and it lets you pick where you go next after a battle.\n"
-	+ "Iron Will <red>heals</red> you a bit after every battle, which is very useful (especially for beginners.)\n"
-	+ "More artifacts will appear later, and you can always look at the tooltip to see what it does.\n"
+	+ "Iron Will <red>heals</red> you a bit after every battle, which is very useful (especially for beginners).\n"
+	+ "More artifacts will appear later (not implemented yet), and you can always look at the tooltip to see what it does.\n"
 	+ "<b>The Map<s>"
 	+ "When you open <light-brown>the map</light-brown>, you will see a tree of paths you can take.\n"
 	+ "You will see some chests, which symbolize <yellow>treasure chambers</yellow>.\n"
@@ -86,7 +86,7 @@ gameplay = ""
 	+ "However, the rewards you get are even better than ones from <yellow>treasure chambers</yellow>.\n"
 	+ "<b>Losing the Game<s>"
 	+ "If you reach 0 <red>health</red>, you will <deep-red>die</deep-red> and lose your progress.\n"
-	+ "However, you earn <yellow>XP</yellow>, and when you get enough you can unlock new cards.\n"
+	+ "However, you earn <yellow>XP</yellow> (not implemented yet), and when you get enough you can unlock new cards.\n"
 	+ "Then, you can use your new knowledge and cards to reach higher heights next time.",
 changelog = ""
 	+ "<b>Version 1.1 - Perception (in progress)<s>"
