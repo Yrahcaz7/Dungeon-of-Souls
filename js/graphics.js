@@ -19,7 +19,7 @@ var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5
 
 const draw = {
 	// basic - first order
-	image(image, x = 0, y = 0, width = +image.width, height = +image.height) {
+	image(image, x = 0, y = 0, width = image ? +image.width : undefined, height = image ? +image.height : undefined) {
 		if (!image || (!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
 		ctx.drawImage(image, x * scale, y * scale, width * scale, height * scale);
 	},
@@ -44,10 +44,10 @@ const draw = {
 		ctx.stroke();
 	},
 	// complex - second order (uses basic)
-	lore(x, y, string, style = {"color": "black", "highlight-color": "black", "text-align": "right", "text-small": false}) {
+	lore(x, y, string, style = {"color": "black", "highlight-color": "#000", "text-align": "right", "text-small": false}) {
 		string = "" + string;
 		if (!style["color"]) style["color"] = "black";
-		if (!style["highlight-color"]) style["highlight-color"] = "black";
+		if (!style["highlight-color"]) style["highlight-color"] = "#000";
 		if (!style["text-align"]) style["text-align"] = "right";
 		if (!style["text-small"]) style["text-small"] = false;
 		let color = style["color"], highlight = "", position = style["text-align"], small = style["text-small"];
@@ -244,14 +244,26 @@ const draw = {
 		if (name.length >= 11) draw.lore(x + 32, y + 44, name.title(), {"text-align": "center", "text-small": true});
 		else draw.lore(x + 32, y + 42, name.title(), {"text-align": "center"});
 		// card description
-		let desc = cards[cardObject.id].desc, exDamage = 0;
-		if (game.eff.auraBlades) exDamage += 5 + game.eff.auraBlades;
+		let desc = cards[cardObject.id].desc, exDamage = 0, mulDamage = 1, valueIsLess = false;
+		if (game.eff.aura_blades) exDamage += 5 + game.eff.aura_blades;
 		if (exMod) exDamage = Math.floor(exDamage * exMod);
-		if (exDamage && game.select[0] != "card_rewards") {
-			desc = desc.replace(/([Dd]eal\s)(\d+)(\s<red>damage<\/red>)/g, (substring, pre, number, post) => pre + "<light-green highlight>" + (parseInt(number) + exDamage) + "</light-green>" + post);
+		if (game.eff.weakness) mulDamage = 0.75;
+		if ((exDamage || mulDamage !== 1) && game.select[0] != "card_rewards") {
+			desc = desc.replace(/([Dd]eal\s)(\d+)(\s<red>damage<\/red>)/g, (substring, pre, number, post) => {
+				const original = parseInt(number);
+				let damage = Math.floor((original + exDamage) * mulDamage);
+				if (damage > original) {
+					return pre + "<light-green highlight>" + damage + "</light-green>" + post;
+				} else if (damage < original) {
+					valueIsLess = true;
+					return pre + "<white highlight>" + damage + "</white>" + post;
+				} else {
+					return pre + damage + post;
+				};
+			});
 		};
 		// other
-		draw.lore(x + 6, y + 55, desc, {"text-small": true});
+		draw.lore(x + 6, y + 55, desc, {"highlight-color": (valueIsLess ? "#f00" : "#000"), "text-small": true});
 		draw.lore(x + 33, y + 89.5, rarities[rarity] + "|" + type, {"text-align": "center", "text-small": true});
 		if (rarity == 2) {
 			draw.image(card.rarity.rare, x - 2, y - 2);
@@ -294,10 +306,11 @@ const draw = {
 };
 
 const startAnim = {
-	player(type, noAura = false) {
+	player(type) {
 		type = "" + type;
 		if (!player[type]) return;
-		if (!noAura && game.eff.auraBlades && (type == "attack" || type == "attack_2")) type += "_aura";
+		if (game.eff.aura_blades && (type == "attack" || type == "attack_2")) type += "_aura";
+		if (game.eff.reinforces && (type == "shield" || type == "crouch_shield")) type += "_reinforced";
 		playerAnim = [0, type];
 	},
 	effect(type) {
@@ -372,7 +385,7 @@ function foregrounds() {
 
 function playerGraphics() {
 	let x = 15, y = 30;
-	if (game.eff.auraBlades) {
+	if (game.eff.aura_blades) {
 		auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]];
 		for (let num = 0; num < auraBladePos.length && num <= 4; num++) {
 			auraBladePos[num][1] += Math.round(auraBladeAnim[num * 2]);
@@ -381,16 +394,14 @@ function playerGraphics() {
 			if (auraBladeAnim[num * 2] >= 4) auraBladeAnim[num * 2 + 1] = "down";
 			else if (auraBladeAnim[num * 2] <= 0) auraBladeAnim[num * 2 + 1] = "up";
 		};
-		for (let blade = 0; blade < game.eff.auraBlades && blade < 4; blade++) {
+		for (let blade = 0; blade < game.eff.aura_blades && blade < 4; blade++) {
 			draw.image(aura_blade, x + auraBladePos[blade][0], y + auraBladePos[blade][1]);
 		};
 	};
 	for (const key in game.eff) {
 		if (Object.hasOwnProperty.call(game.eff, key)) {
-			let img = new Image();
-			if (key == "auraBlades") img = icon.aura_blade;
-			else if (key == "reinforces") img = icon.reinforce;
 			if (game.eff[key]) {
+				let img = icon[key.endsWith("s") && !key.endsWith("ss") ? key.slice(0, -1) : key];
 				if (game.shield) {
 					draw.image(img, x + 23, y + 104);
 					draw.lore(x + 34, y + 112, game.eff[key], {"color": "white", "text-align": "left"});
@@ -407,24 +418,18 @@ function playerGraphics() {
 	if (playerAnim[1] == "idle") {
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 10) playerAnim[0] = 0;
-	} else if (playerAnim[1] == "attack") {
+	} else if (playerAnim[1] == "attack" || playerAnim[1] == "attack_aura") {
 		playerAnim[0]++;
 		if (playerAnim[0] >= 4) playerAnim = [0, "idle"];
-	} else if (playerAnim[1] == "attack_aura") {
-		playerAnim[0]++;
-		if (playerAnim[0] >= 4) playerAnim = [0, "idle"];
-	} else if (playerAnim[1] == "attack_2") {
+	} else if (playerAnim[1] == "attack_2" || playerAnim[1] == "attack_2_aura") {
 		playerAnim[0]++;
 		if (playerAnim[0] >= 6) playerAnim = [0, "idle"];
-	} else if (playerAnim[1] == "attack_2_aura") {
-		playerAnim[0]++;
-		if (playerAnim[0] >= 6) playerAnim = [0, "idle"];
-	} else if (playerAnim[1] == "shield") {
+	} else if (playerAnim[1] == "shield" || playerAnim[1] == "shield_reinforced") {
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 3) playerAnim[0] = 2;
-	} else if (playerAnim[1] == "shield_reinforced") {
+	} else if (playerAnim[1] == "crouch_shield" || playerAnim[1] == "crouch_shield_reinforced") {
 		playerAnim[0] += 0.25;
-		if (playerAnim[0] >= 3) playerAnim[0] = 2;
+		if (playerAnim[0] >= 4) playerAnim[0] = 3;
 	} else if (playerAnim[1] == "hit") {
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
@@ -736,9 +741,9 @@ function info(type, location = "none", xPlus = 0, yPlus = 0) {
 		draw.textBox(x + 71, y, 24, infoText[type], {"text-small": true});
 	} else if (location == "player") {
 		if (type == "aura blade") {
-			let pos = 71, desc = "You have " + game.eff.auraBlades + " aura blade";
+			let pos = 71, desc = "You have " + game.eff.aura_blades + " aura blade";
 			if (game.eff.reinforces) pos += 44;
-			if (game.eff.auraBlades >= 2) desc += "s.";
+			if (game.eff.aura_blades >= 2) desc += "s.";
 			else desc += ".";
 			draw.textBox(85 + xPlus, pos, desc.length, desc, {"text-small": true});
 			draw.textBox(85 + xPlus, pos + 11, 24, infoText["aura blade"], {"text-small": true});
@@ -809,7 +814,7 @@ function target() {
 		if (game.eff.reinforces) {
 			info("reinforce", "player", coor[0] + coor[2] - 80);
 		};
-		if (game.eff.auraBlades) {
+		if (game.eff.aura_blades) {
 			info("aura blade", "player", coor[0] + coor[2] - 80);
 		};
 	} else if (game.select[0] == "artifacts") {
@@ -825,6 +830,8 @@ function target() {
 			info("one use", "deck");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "deck");
+		} else if (desc.includes("weakness")) {
+			info("weakness", "deck");
 		};
 	} else if ((game.select[0] == "void" || game.select[0] == "discard") && game.select[1] == 1 && game[game.select[0]].length) {
 		const desc = cards[game[game.select[0]][game.cardSelect[0] + (game.cardSelect[1] * 6)].id].desc;
@@ -836,6 +843,8 @@ function target() {
 			info("one use", "deck");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "deck");
+		} else if (desc.includes("weakness")) {
+			info("weakness", "deck");
 		};
 	} else if (game.select[0] == "card_rewards" && game.select[1] > -1 && game.select[1] < game.cardRewardChoices) {
 		const desc = cards[game.room[5][game.select[1]]].desc;
@@ -847,6 +856,8 @@ function target() {
 			info("one use", "reward");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "reward");
+		} else if (desc.includes("weakness")) {
+			info("weakness", "reward");
 		};
 	};
 	if (game.select[0] == "hand" || (game.select[0] != "attack_enemy" && game.select[0] != "lookat_enemy" && !hidden() && global.options.sticky_cards)) {
@@ -859,6 +870,8 @@ function target() {
 			info("one use", "card");
 		} else if (desc.includes("reinforce")) {
 			info("reinforce", "card");
+		} else if (desc.includes("weakness")) {
+			info("weakness", "card");
 		};
 	};
 };

@@ -140,8 +140,8 @@ function drawHand() {
 
 function activateAttackEffects(id) {
 	if (attributes["NO ATTACK EFFECTS"].includes(id)) return;
-	if (game.eff.auraBlades) {
-		game.eff.auraBlades--;
+	if (game.eff.aura_blades) {
+		game.eff.aura_blades--;
 		game.attackEffect = "aura blade";
 	} else {
 		game.attackEffect = "none";

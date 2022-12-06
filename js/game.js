@@ -57,8 +57,9 @@ var global = {
 	discard: [],
 	void: [],
 	eff: {
-		auraBlades: 0,
+		aura_blades: 0,
 		reinforces: 0,
+		weakness: 0,
 	},
 	attackEffect: "none",
 	room: [],
@@ -84,7 +85,7 @@ function enterBattle() {
 	game.discard = [];
 	game.void = [];
 	game.shield = 0;
-	game.eff.auraBlades = 0;
+	game.eff.aura_blades = 0;
 	game.eff.reinforces = 0;
 	startTurn();
 };
@@ -92,11 +93,9 @@ function enterBattle() {
 function startTurn() {
 	drawHand();
 	game.turn = "player";
-	if (game.eff.reinforces) {
-		game.eff.reinforces--;
-	} else {
-		game.shield = 0;
-	};
+	if (game.eff.reinforces) game.eff.reinforces--;
+	else game.shield = 0;
+	if (game.eff.weakness) game.eff.weakness--;
 	game.energy = get.maxEnergy();
 	game.select = ["hand", 0];
 	if (playerAnim[1] != "idle") {
@@ -160,7 +159,7 @@ function playerTurn() {
 			let damage = +attCard.damage;
 			let exDamage = 0;
 			if (game.attackEffect == "aura blade") {
-				exDamage += 5 + (game.eff.auraBlades + 1);
+				exDamage += 5 + (game.eff.aura_blades + 1);
 			};
 			if (attCard.exMod) exDamage = Math.floor(exDamage * attCard.exMod);
 			damage += exDamage;

@@ -61,7 +61,7 @@ const attributes = {
 		attack() {
 			let exDamage = 0;
 			if (game.attackEffect == "aura blade") {
-				exDamage += 5 + (game.eff.auraBlades + 1);
+				exDamage += 5 + (game.eff.aura_blades + 1);
 			};
 			exDamage = Math.floor(exDamage * this.exMod);
 			for (let index = 0; index < game.enemies.length; index++) {
@@ -105,6 +105,16 @@ const attributes = {
 			game.eff.reinforces += 3;
 		},
 	},
+	2003: {
+		name: "cower",
+		desc: "Gain 8 shield and\n2 weakness.",
+		rarity: 1,
+		cost: 1,
+		effect() {
+			game.shield += 8;
+			game.eff.weakness += 2;
+		},
+	},
 	3000: {
 		name: "war cry",
 		desc: "All enemies (except\nbosses) switch\ntheir intents to\ndefense. One use.",
@@ -141,7 +151,7 @@ const attributes = {
 		rarity: 1,
 		cost: 1,
 		effect() {
-			game.eff.auraBlades++;
+			game.eff.aura_blades++;
 		},
 	},
 }, rarities = {

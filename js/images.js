@@ -23,6 +23,8 @@ const player = {
 	attack_2_aura: new Image,
 	shield: new Image,
 	shield_reinforced: new Image,
+	crouch_shield: new Image,
+	crouch_shield_reinforced: new Image,
 	hit: new Image,
 	death: new Image,
 }, card = {
@@ -45,6 +47,7 @@ const player = {
 	},
 	common: {
 		"aura blade": new Image,
+		"cower": new Image,
 		"rage": new Image,
 		"reinforce": new Image,
 		"sweeping slash": new Image,
@@ -128,6 +131,7 @@ const player = {
 	burn: new Image,
 	iron_will: new Image,
 	reinforce: new Image,
+	weakness: new Image,
 }, intent = {
 	defend: [new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image],
 	attack: [new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image],

@@ -46,8 +46,8 @@ class Enemy {
 	};
 	startAction = () => {
 		if (this.intent == "attack") {
-			if (game.shield && playerAnim[1] != "shield" && playerAnim[1] != "shield_reinforced") {
-				if (game.eff.reinforces) startAnim.player("shield_reinforced");
+			if (game.shield && !playerAnim[1].includes("shield")) {
+				if (game.eff.weakness) startAnim.player("crouch_shield");
 				else startAnim.player("shield");
 			};
 			if (this.type == "slime_big") startAnim.enemy(game.enemyNum, "slime_ball");
