@@ -742,10 +742,10 @@ function info(type, location = "none", xPlus = 0, yPlus = 0) {
 		draw.textBox(x + 71, y, 24, infoText[type], {"text-small": true});
 	} else if (location == "player" && typeof type == "string") {
 		const thing = game.eff[type.replace(/\s/g, "_") + (type.endsWith("s") ? "" : "s")];
-		let pos = 71 + yPlus, desc = "You have " + thing + " " + type + (thing >= 2 ? "s." : ".");
-		pos += draw.textBox(85 + xPlus, pos, desc.length, desc, {"text-small": true});
-		pos += draw.textBox(85 + xPlus, pos, 24, infoText[type], {"text-small": true});
-		return pos - 71;
+		let pos = 71 + yPlus, desc = "You have " + thing + " " + type + (thing >= 2 ? "s." : "."), move = 0;
+		move += draw.textBox(85 + xPlus, pos + move, desc.length, desc, {"text-small": true});
+		move += draw.textBox(85 + xPlus, pos + move, 24, infoText[type], {"text-small": true});
+		return move;
 	} else if (location == "enemy") {
 		if (type == "burn") {
 			const enemy = game.enemies[game.select[1]];
@@ -808,7 +808,13 @@ function target() {
 		for (const key in game.eff) {
 			if (Object.hasOwnProperty.call(game.eff, key)) {
 				if (game.eff[key]) {
-					y += info((key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " ")), "player", x, y);
+					let type = key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " ");
+					let height = Math.ceil(((infoText[type]).match(/\n/g) || []).length * 5.5 + 22);
+					if (y + height >= 200 - 71) {
+						y = 0;
+						x += 77;
+					};
+					y += info(type, "player", x, y);
 				};
 			};
 		};
