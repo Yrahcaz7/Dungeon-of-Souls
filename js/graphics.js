@@ -273,9 +273,9 @@ const draw = {
 			draw.lore(x + 4, y + 2, cards[cardObject.id].cost);
 		};
 	},
-	textBox(x, y, width, string, style = {"color": "black", "highlight-color": "", "text-align": "right", "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
+	textBox(x, y, width, string, style = {"color": "black", "highlight-color": "#000", "text-align": "right", "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
 		if (!style["color"]) style["color"] = "black";
-		if (!style["highlight-color"]) style["highlight-color"] = "";
+		if (!style["highlight-color"]) style["highlight-color"] = "#000";
 		if (!style["text-align"]) style["text-align"] = "right";
 		if (!style["text-small"]) style["text-small"] = false;
 		if (!style["background-color"]) style["background-color"] = "#ccc";
@@ -283,7 +283,7 @@ const draw = {
 		if (!style["border-color"]) style["border-color"] = "#000";
 		let small = style["text-small"];
 		let position = style["text-align"];
-		let lines = (string.match(/\n/g) || []).length, height = small?7:12;
+		let lines = (("" + string).match(/\n/g) || []).length, height = small?7:12;
 		if (small) {
 			width = Math.ceil(width * 3 + 0.5);
 			height = Math.ceil(lines * 5.5 + 7);
@@ -302,6 +302,7 @@ const draw = {
 			else x -= 6;
 		};
 		draw.lore(x + 1, y + 1, string, style);
+		return height + 4;
 	},
 };
 
@@ -739,21 +740,12 @@ function info(type, location = "none", xPlus = 0, yPlus = 0) {
 			x -= 145;
 		};
 		draw.textBox(x + 71, y, 24, infoText[type], {"text-small": true});
-	} else if (location == "player") {
-		if (type == "aura blade") {
-			let pos = 71, desc = "You have " + game.eff.aura_blades + " aura blade";
-			if (game.eff.reinforces) pos += 44;
-			if (game.eff.aura_blades >= 2) desc += "s.";
-			else desc += ".";
-			draw.textBox(85 + xPlus, pos, desc.length, desc, {"text-small": true});
-			draw.textBox(85 + xPlus, pos + 11, 24, infoText["aura blade"], {"text-small": true});
-		} else if (type == "reinforce") {
-			let pos = 71, desc = "You have " + game.eff.reinforces + " reinforce";
-			if (game.eff.reinforces >= 2) desc += "s.";
-			else desc += ".";
-			draw.textBox(85 + xPlus, pos, desc.length, desc, {"text-small": true});
-			draw.textBox(85 + xPlus, pos + 11, 24, infoText.reinforce, {"text-small": true});
-		};
+	} else if (location == "player" && typeof type == "string") {
+		const thing = game.eff[type.replace(/\s/g, "_") + (type.endsWith("s") ? "" : "s")];
+		let pos = 71 + yPlus, desc = "You have " + thing + " " + type + (thing >= 2 ? "s." : ".");
+		pos += draw.textBox(85 + xPlus, pos, desc.length, desc, {"text-small": true});
+		pos += draw.textBox(85 + xPlus, pos, 24, infoText[type], {"text-small": true});
+		return pos - 71;
 	} else if (location == "enemy") {
 		if (type == "burn") {
 			const enemy = game.enemies[game.select[1]];
@@ -804,18 +796,21 @@ function target() {
 			};
 		};
 	} else if (game.select[0] == "lookat_you") {
-		let coor = [60, 72, 20, 39];
+		let coor = [59, 72, 21, 39];
 		if (playerAnim[1] == "shield" || playerAnim[1] == "shield_reinforced") coor = [58, 72, 23, 39];
+		else if (playerAnim[1] == "crouch_shield" || playerAnim[1] == "crouch_shield_reinforced") coor = [58, 72, 22, 39];
 		draw.selector(coor[0], coor[1], coor[2], coor[3]);
 		if (game.character == "knight") {
 			if (global.charStage.knight === 0) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the forgotten one", {"color": "white", "text-align": "center", "text-small": true});
 			else if (global.charStage.knight == 1) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the true knight", {"color": "white", "text-align": "center", "text-small": true});
 		};
-		if (game.eff.reinforces) {
-			info("reinforce", "player", coor[0] + coor[2] - 80);
-		};
-		if (game.eff.aura_blades) {
-			info("aura blade", "player", coor[0] + coor[2] - 80);
+		let x = coor[0] + coor[2] - 80, y = 0;
+		for (const key in game.eff) {
+			if (Object.hasOwnProperty.call(game.eff, key)) {
+				if (game.eff[key]) {
+					y += info((key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " ")), "player", x, y);
+				};
+			};
 		};
 	} else if (game.select[0] == "artifacts") {
 		let name = game.artifacts[game.select[1]];

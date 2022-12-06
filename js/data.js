@@ -21,7 +21,7 @@ const infoText = {
 	burn: "At the end of each\nturn, each burn deals 1\n<red>damage</red> to what it is on,\nthen one burn on that\ngoes away.",
 	"one use": "When a one use card is\nplayed, it will be sent\nto the void instead of\nthe discard.",
 	reinforce: "At the start of each\nturn, one reinforce is\nused up to retain your\n<blue>shield</blue> (even if you have\nno <blue>shield</blue> left.)",
-	weakness: "While something has\nweakness, its attack is\n75% of normal, rounded\ndown. At the end of each\nturn, one weakness will\ngo away.",
+	weakness: "While something has\nweakness, its <red>attack</red> is\n75% of normal, rounded\ndown. At the end of each\nturn, one weakness will\ngo away.",
 	// artifacts
 	iron_will: "Every time a battle\nends, you <red>heal</red> 2 <red>health</red>.",
 	the_map: "Every time a battle\nends, you can choose\nwhere you go next.",
