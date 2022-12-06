@@ -94,11 +94,11 @@ const attributes = {
 	},
 	2003: {
 		name: "cower",
-		desc: "Gain 8 shield and\n2 weakness.",
+		desc: "Gain 9 shield and\n2 weakness.",
 		rarity: 1,
 		cost: 1,
 		effect() {
-			game.shield += 8;
+			game.shield += 9;
 			game.eff.weakness += 2;
 		},
 	},
@@ -139,6 +139,15 @@ const attributes = {
 		cost: 1,
 		effect() {
 			game.eff.aura_blades++;
+		},
+	},
+	4001: {
+		name: "aura blaze",
+		desc: "Gain 3 aura blades.",
+		rarity: 2,
+		cost: 2,
+		effect() {
+			game.eff.aura_blades += 3;
 		},
 	},
 }, rarities = {

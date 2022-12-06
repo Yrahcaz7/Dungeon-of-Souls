@@ -54,6 +54,7 @@ const player = {
 		"war cry": new Image,
 	},
 	rare: {
+		"aura blaze": new Image,
 		"everlasting shield": new Image,
 		"heat wave": new Image,
 	},
