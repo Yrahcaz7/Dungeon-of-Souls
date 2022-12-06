@@ -155,23 +155,7 @@ function playerTurn() {
 	if (game.enemyAttFin && playerAnim[1] == "idle") {
 		const attCard = cards[game.enemyAtt.id];
 		if (!attributes["NO SELECT"].includes(game.enemyAtt.id) && attCard.damage) {
-			// calculate damage
-			let damage = +attCard.damage;
-			let exDamage = 0;
-			if (game.attackEffect == "aura blade") {
-				exDamage += 5 + (game.eff.aura_blades + 1);
-			};
-			if (attCard.exMod) exDamage = Math.floor(exDamage * attCard.exMod);
-			damage += exDamage;
-			// damage enemy
-			if (game.enemies[game.enemyAttSel].shield > damage) {
-				game.enemies[game.enemyAttSel].shield -= damage;
-				damage = 0;
-			} else if (game.enemies[game.enemyAttSel].shield) {
-				damage -= game.enemies[game.enemyAttSel].shield;
-				game.enemies[game.enemyAttSel].shield = 0;
-			};
-			game.enemies[game.enemyAttSel].health -= damage;
+			dealDamage(attCard.damage, attCard.exMod);
 		};
 		if (typeof attCard.attack == "function") attCard.attack();
 		game.enemyAtt = "none";

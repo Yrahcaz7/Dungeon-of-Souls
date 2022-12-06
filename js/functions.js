@@ -138,6 +138,28 @@ function drawHand() {
 	};
 };
 
+function dealDamage(amount, exMod = 1, enemy = game.enemyAttSel) {
+	// extra damage
+	let exDamage = 0;
+	if (game.attackEffect == "aura blade") {
+		exDamage += 5 + (game.eff.aura_blades + 1);
+	};
+	if (exMod) exDamage = Math.floor(exDamage * exMod);
+	let damage = amount + exDamage;
+	// multiply damage
+	let mulDamage = 1;
+	if (game.eff.weakness) mulDamage = 0.75;
+	damage = Math.floor(damage * mulDamage);
+	// damage enemy
+	if (damage < game.enemies[enemy].shield) {
+		game.enemies[enemy].shield -= damage;
+	} else {
+		damage -= game.enemies[enemy].shield;
+		game.enemies[enemy].shield = 0;
+		game.enemies[enemy].health -= damage;
+	};
+};
+
 function activateAttackEffects(id) {
 	if (attributes["NO ATTACK EFFECTS"].includes(id)) return;
 	if (game.eff.aura_blades) {

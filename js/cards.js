@@ -59,21 +59,8 @@ const attributes = {
 		anim: "attack_2",
 		exMod: 0.5,
 		attack() {
-			let exDamage = 0;
-			if (game.attackEffect == "aura blade") {
-				exDamage += 5 + (game.eff.aura_blades + 1);
-			};
-			exDamage = Math.floor(exDamage * this.exMod);
 			for (let index = 0; index < game.enemies.length; index++) {
-				let damage = 3 + exDamage;
-				if (game.enemies[index].shield > damage) {
-					game.enemies[index].shield -= damage;
-					damage = 0;
-				} else if (game.enemies[index].shield) {
-					damage -= game.enemies[index].shield;
-					game.enemies[index].shield = 0;
-				};
-				game.enemies[index].health -= damage;
+				dealDamage(3, this.exMod, index);
 			};
 		},
 	},
