@@ -161,6 +161,12 @@ for (const key in cards) {
 	if (Object.hasOwnProperty.call(cards, key)) {
 		cards[key].desc = cards[key].desc.replace(/([Hh]ealth|[Dd]amage(?!<\/red>)|[Ee]xtra\sdamage|[Aa]ttack)/g, "<red>$1</red>").replace(/([Ss]hield|[Dd]efense)/g, "<blue>$1</blue>");
 		if (cards[key].exMod === undefined && (cards[key].damage || cards[key].attack)) cards[key].exMod = 1;
+		cards[key].keywords = [];
+		if (/[Aa]ura[ \n]blade/.test(cards[key].desc)) cards[key].keywords.push("aura blade");
+		if (/[Bb]urn/.test(cards[key].desc)) cards[key].keywords.push("burn");
+		if (/[Oo]ne[ \n]use/.test(cards[key].desc)) cards[key].keywords.push("one use");
+		if (/[Rr]einforce/.test(cards[key].desc)) cards[key].keywords.push("reinforce");
+		if (/[Ww]eakness/.test(cards[key].desc)) cards[key].keywords.push("weakness");
 	};
 };
 

@@ -723,28 +723,28 @@ function renderCards() {
 
 function info(type, location = "none", xPlus = 0, yPlus = 0) {
 	if (location == "card") {
-		let x = handPos[game.prevCard] + xPlus, y = 147 - Math.floor(cardAnim[game.prevCard]);
+		let x = handPos[game.prevCard] + xPlus, y = 147 - Math.floor(cardAnim[game.prevCard]) + yPlus;
 		if (game.prevCard == game.hand.length - 1 && game.hand.length >= 4) {
 			x -= 145;
 		};
-		draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});
+		return draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});
 	} else if (location == "reward") {
 		let x = handPos[game.select[1]] + xPlus;
 		if (game.select[1] == game.cardRewardChoices - 1 && game.cardRewardChoices >= 4) {
 			x -= 145;
 		};
-		draw.textBox(x + 69, 51, 24, infoText[type], {"text-small": true});
+		return draw.textBox(x + 69, 51 + yPlus, 24, infoText[type], {"text-small": true});
 	} else if (location == "deck") {
-		let x = (game.cardSelect[0] * 66) + xPlus, y = 15 + (game.cardSelect[1] * 98) - game.deckPos;
+		let x = (game.cardSelect[0] * 66) + xPlus, y = 15 + (game.cardSelect[1] * 98) - game.deckPos + yPlus;
 		if (game.cardSelect[0] >= 4) {
 			x -= 145;
 		};
-		draw.textBox(x + 71, y, 24, infoText[type], {"text-small": true});
+		return draw.textBox(x + 71, y, 24, infoText[type], {"text-small": true});
 	} else if (location == "player" && typeof type == "string") {
 		const thing = game.eff[type.replace(/\s/g, "_") + (type.endsWith("s") ? "" : "s")];
-		let pos = 71 + yPlus, desc = "You have " + thing + " " + type + (thing >= 2 ? "s." : "."), move = 0;
-		move += draw.textBox(85 + xPlus, pos + move, desc.length, desc, {"text-small": true});
-		move += draw.textBox(85 + xPlus, pos + move, 24, infoText[type], {"text-small": true});
+		let y = 71 + yPlus, desc = "You have " + thing + " " + type + (thing >= 2 ? "s." : "."), move = 0;
+		move += draw.textBox(85 + xPlus, y + move, desc.length, desc, {"text-small": true});
+		move += draw.textBox(85 + xPlus, y + move, 24, infoText[type], {"text-small": true});
 		return move;
 	} else if (location == "enemy") {
 		if (type == "burn") {
@@ -756,11 +756,11 @@ function info(type, location = "none", xPlus = 0, yPlus = 0) {
 		};
 	} else if (location == "artifact") {
 		if (type == "the map") {
-			let x = 21 + xPlus, y = 12;
+			let x = 21 + xPlus, y = 12 + yPlus;
 			draw.textBox(x, y, 12, "The Map", {"text-align": "center"});
 			draw.textBox(x, y + 13, 24, infoText.the_map, {"text-small": true});
 		} else if (type == "iron will") {
-			let x = 39 + (game.select[1] * 18) + xPlus, y = 12;
+			let x = 39 + (game.select[1] * 18) + xPlus, y = 12 + yPlus;
 			draw.textBox(x, y, 12, "Iron Will", {"text-align": "center"});
 			draw.textBox(x, y + 13, 24, infoText.iron_will, {"text-small": true});
 		};
@@ -822,57 +822,41 @@ function target() {
 		let name = game.artifacts[game.select[1]];
 		info(name, "artifact");
 	} else if (game.select[0] == "deck" && game.select[1] == 1 && game.deckLocal.length) {
-		const desc = cards[Object.deepCopy(game.deckLocal).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].id].desc;
-		if (desc.includes("aura blade")) {
-			info("aura blade", "deck");
-		} else if (desc.includes("burn")) {
-			info("burn", "deck");
-		} else if (desc.includes("One use")) {
-			info("one use", "deck");
-		} else if (desc.includes("reinforce")) {
-			info("reinforce", "deck");
-		} else if (desc.includes("weakness")) {
-			info("weakness", "deck");
+		const keywords = cards[Object.deepCopy(game.deckLocal).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].id]?.keywords;
+		let x = 0, y = 0;
+		if (keywords instanceof Array) {
+			for (let index = 0; index < keywords.length; index++) {
+				const key = "" + keywords[index];
+				if (key) y += info(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), "deck", x, y);
+			};
 		};
 	} else if ((game.select[0] == "void" || game.select[0] == "discard") && game.select[1] == 1 && game[game.select[0]].length) {
-		const desc = cards[game[game.select[0]][game.cardSelect[0] + (game.cardSelect[1] * 6)].id].desc;
-		if (desc.includes("aura blade")) {
-			info("aura blade", "deck");
-		} else if (desc.includes("burn")) {
-			info("burn", "deck");
-		} else if (desc.includes("One use")) {
-			info("one use", "deck");
-		} else if (desc.includes("reinforce")) {
-			info("reinforce", "deck");
-		} else if (desc.includes("weakness")) {
-			info("weakness", "deck");
+		const keywords = cards[game[game.select[0]][game.cardSelect[0] + (game.cardSelect[1] * 6)].id]?.keywords;
+		let x = 0, y = 0;
+		if (keywords instanceof Array) {
+			for (let index = 0; index < keywords.length; index++) {
+				const key = "" + keywords[index];
+				if (key) y += info(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), "deck", x, y);
+			};
 		};
 	} else if (game.select[0] == "card_rewards" && game.select[1] > -1 && game.select[1] < game.cardRewardChoices) {
-		const desc = cards[game.room[5][game.select[1]]].desc;
-		if (desc.includes("aura blade")) {
-			info("aura blade", "reward");
-		} else if (desc.includes("burn")) {
-			info("burn", "reward");
-		} else if (desc.includes("One use")) {
-			info("one use", "reward");
-		} else if (desc.includes("reinforce")) {
-			info("reinforce", "reward");
-		} else if (desc.includes("weakness")) {
-			info("weakness", "reward");
+		const keywords = cards[game.room[5][game.select[1]]]?.keywords;
+		let x = 0, y = 0;
+		if (keywords instanceof Array) {
+			for (let index = 0; index < keywords.length; index++) {
+				const key = "" + keywords[index];
+				if (key) y += info(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), "reward", x, y);
+			};
 		};
 	};
 	if (game.select[0] == "hand" || (game.select[0] != "attack_enemy" && game.select[0] != "lookat_enemy" && !hidden() && global.options.sticky_cards) && game.hand.length && game.prevCard < game.hand.length) {
-		const desc = cards[game.hand[game.prevCard].id].desc;
-		if (desc.includes("aura blade")) {
-			info("aura blade", "card");
-		} else if (desc.includes("burn")) {
-			info("burn", "card");
-		} else if (desc.includes("One use")) {
-			info("one use", "card");
-		} else if (desc.includes("reinforce")) {
-			info("reinforce", "card");
-		} else if (desc.includes("weakness")) {
-			info("weakness", "card");
+		const keywords = cards[game.hand[game.prevCard].id]?.keywords;
+		let x = 0, y = 0;
+		if (keywords instanceof Array) {
+			for (let index = 0; index < keywords.length; index++) {
+				const key = "" + keywords[index];
+				if (key) y += info(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), "card", x, y);
+			};
 		};
 	};
 };
