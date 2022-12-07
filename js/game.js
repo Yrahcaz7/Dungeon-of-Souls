@@ -98,9 +98,7 @@ function startTurn() {
 	if (game.eff.weakness) game.eff.weakness--;
 	game.energy = get.maxEnergy();
 	game.select = ["hand", 0];
-	if (playerAnim[1] != "idle") {
-		startAnim.player("idle");
-	};
+	if (playerAnim[1] != "idle") startAnim.player("idle");
 };
 
 function endTurn() {
@@ -778,7 +776,7 @@ function manageGameplay() {
 	// update data
 	updateData();
 	// actions
-	if (game.turn == "player" && menuLocation == "none") playerTurn();
+	if (game.turn == "player") playerTurn();
 	// end battle
 	if (game.state == "battle" && !game.enemies.length) {
 		endTurn();
@@ -816,7 +814,7 @@ function manageGameplay() {
 	// update data again
 	updateData();
 	// enemy actions
-	if (game.turn == "enemy" && menuLocation == "none") enemyTurn();
+	if (game.turn == "enemy") enemyTurn();
 };
 
 function updateVisuals() {
@@ -952,7 +950,7 @@ const gameloop = setInterval(function() {
 	};
 	if (loaded) {
 		// gameplay
-		manageGameplay();
+		if (menuLocation == "none") manageGameplay();
 		// selection
 		selection();
 		// visuals
