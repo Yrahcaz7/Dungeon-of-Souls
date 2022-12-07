@@ -108,7 +108,7 @@ window.onresize = () => {
 
 document.addEventListener("keydown", (event) => {
 	const key = event.key, prevAction = "" + action;
-	if (key == "E" || key == "e") {
+	if (key == "E" || key == "e" && game.turn == "player") {
 		if (game.select[0] != "confirm_end") endTurnConfirm();
 	} else if (key == "1" && actionTimer == -1) {
 		if (game.select[0] == "deck" && game.select[1]) {
@@ -140,7 +140,7 @@ document.addEventListener("keydown", (event) => {
 			action = "none";
 		};
 		actionTimer = 2;
-	} else if ((key == " " || key == "Enter") && !game.select[2]) action = "enter";
+	} else if ((key == " " || key == "Enter") && !(game.select[2] && menuLocation == "none")) action = "enter";
 	else if (key == "W" || key == "w" || key == "ArrowUp") action = "up";
 	else if (key == "A" || key == "a" || key == "ArrowLeft") action = "left";
 	else if (key == "S" || key == "s" || key == "ArrowDown") action = "down";

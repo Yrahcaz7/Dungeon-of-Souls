@@ -358,6 +358,11 @@ function backgrounds() {
 };
 
 function foregrounds() {
+	const past = game.select[2];
+	if (past) {
+		if (past[0] == "rewards") rewardGraphics(false);
+		else if (past[0] == "card_rewards") cardRewardGraphics(false);
+	};
 	draw.image(view);
 	if (game.select[0] == "looker" && game.select[1] == 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 343, 3);
 	else draw.imageSector(extra.looker, 0, 0, 16, 16, 343, 3);
@@ -898,9 +903,10 @@ function popupGraphics() {
 function rewardGraphics(focused = true) {
 	draw.box(150, 20, 100, 160);
 	const place = game.location.split(", ");
-	const type = game.location=="-1" ? "battle" : game.map[place[0]][place[1]][0];
+	const type = game.location == "-1" ? "battle" : game.map[place[0]][place[1]][0];
 	if (type == "battle") draw.lore(200 - 2, 21, "Battle loot!", {"text-align": "center"});
 	else if (type == "treasure") draw.lore(200 - 2, 21, "Treasure!", {"text-align": "center"});
+	else draw.lore(200 - 2, 21, "Rewards!", {"text-align": "center"});
 	for (let index = 0; index < game.rewards.length; index++) {
 		let item = game.rewards[index];
 		draw.image(rewards.item, 151, 32 + (index * 19));
