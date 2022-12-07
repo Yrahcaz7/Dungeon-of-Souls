@@ -79,7 +79,7 @@ window.onload = () => {
 			generateMap();
 		}, 0);
 	} else {
-		musicPopups();
+		musicPopup();
 		updateVisuals();
 		loaded = true;
 	};
@@ -108,7 +108,7 @@ window.onresize = () => {
 
 document.addEventListener("keydown", (event) => {
 	const key = event.key, prevAction = "" + action;
-	if (key == "E" || key == "e" && game.turn == "player") {
+	if ((key == "E" || key == "e") && game.turn == "player") {
 		if (game.select[0] != "confirm_end") endTurnConfirm();
 	} else if (key == "1" && actionTimer == -1) {
 		if (game.select[0] == "deck" && game.select[1]) {

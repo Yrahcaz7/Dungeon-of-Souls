@@ -158,7 +158,7 @@ async function generateMap() {
 		};
 	};
 	mapGraphics(true);
-	musicPopups();
+	musicPopup();
 	updateVisuals();
 	loaded = true;
 };

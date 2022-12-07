@@ -875,6 +875,9 @@ function showPopup(type, description, secondLine = "") {
 };
 
 function popupGraphics() {
+	if (popups.length > 7) {
+		popups.shift();
+	};
 	if (popups.length >= 1) {
 		for (let a = 0; a < popups.length && a <= 6; a++) {
 			let stopPoint = (popups[a][1].length * 6) + 13;

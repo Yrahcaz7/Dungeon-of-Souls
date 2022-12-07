@@ -69,7 +69,7 @@ var global = {
 	saveNum: 0,
 }, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = "title", enemyPos = [], handPos = [], paths = {}, deckMove = "none", gameWon = false;
 
-function musicPopups() {
+function musicPopup() {
 	let src = document.getElementById("music").src;
 	if (!global.options.music) {
 		showPopup("music", "music is off");
@@ -645,7 +645,7 @@ function selection() {
 			if (option == "music") {
 				if (global.options.music) document.getElementById("music").play();
 				else document.getElementById("music").pause();
-				musicPopups();
+				musicPopup();
 			} else if (option == "pixel_perfect_screen") {
 				if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: 800px";
 				else document.getElementById("canvas").style = "";
