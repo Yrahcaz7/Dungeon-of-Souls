@@ -67,7 +67,7 @@ var global = {
 	map: [],
 	seed: "" + (new Date().getTime() % 1000000).toString().shuffle(),
 	saveNum: 0,
-}, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = "title", enemyPos = [], handPos = [], paths = {}, deckMove = "none";
+}, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = "title", enemyPos = [], handPos = [], paths = {}, deckMove = "none", gameWon = false;
 
 function musicPopups() {
 	let src = document.getElementById("music").src;
@@ -923,6 +923,7 @@ function updateVisuals() {
 			game.state = "game_won";
 			game.select = ["game_won", 0];
 			actionTimer = 4;
+			gameWon = true;
 			setInterval(() => {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 				let num = Math.round(interval(4/3, 2));
@@ -934,6 +935,9 @@ function updateVisuals() {
 				} else actionTimer -= 0.1;
 			}, 10);
 		};
+	} else if (game.select[0] == "game_won" && !gameWon) {
+		game.state = "game_fin";
+		game.select = ["game_fin", 0];
 	};
 };
 
