@@ -70,10 +70,10 @@ class Enemy {
 		this.intentHistory.push(this.intent);
 		if (this.overrideIntent("attack")) {
 			this.intent = "defend";
-			this.intentHistory.push(this.intent);
+			this.intentHistory = ["defend"];
 		} else if (this.overrideIntent("defend")) {
 			this.intent = "attack";
-			this.intentHistory.push(this.intent);
+			this.intentHistory = ["attack"];
 		};
 		if (game.enemyNum == game.enemies.length - 1) {
 			game.enemyNum = 0;
@@ -84,12 +84,12 @@ class Enemy {
 		game.enemyStage = "none";
 	};
 	overrideIntent = (type) => {
-		const location0 = this.intentHistory.indexOf(type);
+		const location0 = this.intentHistory.lastIndexOf(type);
 		if (location0 !== -1) {
-			const location1 = this.intentHistory.indexOf(type, location0 + 1);
-			if (location1 - 1 === location0) {
-				const location2 = this.intentHistory.indexOf(type, location1 + 1);
-				if (location2 - 1 === location1) {
+			const location1 = this.intentHistory.lastIndexOf(type, location0 - 1);
+			if (location1 + 1 === location0) {
+				const location2 = this.intentHistory.lastIndexOf(type, location1 - 1);
+				if (location2 + 1 === location1) {
 					this.intentHistory = [];
 					return true;
 				};

@@ -434,7 +434,7 @@ function playerGraphics() {
 		playerAnim[0] += 0.25;
 		if (playerAnim[0] >= 3) playerAnim[0] = 2;
 	} else if (playerAnim[1] == "crouch_shield" || playerAnim[1] == "crouch_shield_reinforced") {
-		playerAnim[0] += 0.25;
+		playerAnim[0] += 0.5;
 		if (playerAnim[0] >= 4) playerAnim[0] = 3;
 	} else if (playerAnim[1] == "hit") {
 		playerAnim[0] += 0.25;
