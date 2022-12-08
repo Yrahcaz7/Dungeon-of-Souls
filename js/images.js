@@ -80,6 +80,7 @@ const player = {
 }, letters = {
 	black: new Image,
 	blue: new Image,
+	gray: new Image,
 	red: new Image,
 	white: new Image,
 	yellow: new Image,

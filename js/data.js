@@ -46,7 +46,7 @@ const infoText = {
 	+ "If you reach 0 health, you die and lose your progress.\n"
 	+ "However, you can use your new knowledge to reach higher heights next time.\n"
 	+ "Note: go to the next page for more details on how to play.\n"
-	+ "<b>An ominous feeling...<s>"
+	+ "<b><gray>An ominous feeling...<s><gray>"
 	+ "When the hands align,\n"
 	+ "find the fragment of time.\n"
 	+ "Else, at the edge of the sky,\n"
