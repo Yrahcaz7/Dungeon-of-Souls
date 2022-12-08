@@ -23,6 +23,7 @@ var global = {
 		pixel_perfect_screen: false,
 		allow_fast_movement: true,
 	},
+	difficulty: 0,
 	charStage: {
 		knight: 0,
 	},
@@ -67,7 +68,7 @@ var global = {
 	map: [],
 	seed: "" + (new Date().getTime() % 1000000).toString().shuffle(),
 	saveNum: 0,
-}, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = "title", enemyPos = [], handPos = [], paths = {}, deckMove = "none", gameWon = false;
+}, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = "title", menuSelect = 0, enemyPos = [], handPos = [], paths = {}, deckMove = "none", gameWon = false;
 
 function musicPopup() {
 	let src = document.getElementById("music").src;
@@ -299,6 +300,30 @@ function selection() {
 	} else if (menuLocation == "title") {
 		if (action == "enter") {
 			menuLocation = "none";
+			actionTimer = 2;
+		} else if (action == "left" && global.difficulty === 1) {
+			menuLocation = "difficulty_change";
+			menuSelect = 1;
+			actionTimer = 2;
+		} else if (action == "right" && global.difficulty === 0) {
+			menuLocation = "difficulty_change";
+			menuSelect = 1;
+			actionTimer = 2;
+		};
+		return;
+	} else if (menuLocation == "difficulty_change") {
+		if (action == "left" && menuSelect) {
+			menuSelect = 0;
+			actionTimer = 1;
+		} else if (action == "right" && !menuSelect) {
+			menuSelect = 1;
+			actionTimer = 1;
+		} else if (action == "enter") {
+			if (!menuSelect) {
+				if (global.difficulty === 0) global.difficulty++;
+				else global.difficulty--;
+				restartRun();
+			} else menuLocation = "title";
 			actionTimer = 2;
 		};
 		return;
@@ -818,16 +843,31 @@ function updateVisuals() {
 	updateData();
 	// visuals
 	backgrounds();
-	if (menuLocation == "title") {
+	if (menuLocation == "title" || menuLocation == "difficulty_change") {
 		draw.image(title, (400 - title.width) / 2, 0);
 		draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "red", "text-align": "center"});
 		if (new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "white", "text-align": "center"});
+		if (global.difficulty === undefined) global.difficulty = 0;
+		draw.imageSector(difficulty, 0, global.difficulty * 16, 64, 16, 168, 146);
 	};
 	if (menuLocation != "none") {
 		draw.image(view);
 		if (game.select[0] == "welcome") {
 			draw.box(80, 83, 240, 34);
-			draw.lore(200 - 2, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": "center"});
+			if (global.difficulty === 0) draw.lore(200 - 2, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": "center"});
+			else draw.lore(200 - 2, 84, "Hello there! Welcome to <deep-red>hard mode!</deep-red><s>In hard mode, enemies start stronger from the beginning.\nAdditionally, the enemies get stronger twice as fast as easy mode.\nOtherwise, this is the same as easy mode, but more changes may be made later.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": "center"});
+		} else if (menuLocation == "difficulty_change") {
+			let x = 116, y = 83;
+			draw.rect("#0008");
+			draw.box(x + 1, y + 1, 166, 26);
+			if (global.difficulty === 0) draw.lore(x + 2, y + 2, "Are you sure you want to change the difficulty to hard?\nThis will also reset your current run.", {"text-small": true});
+			else draw.lore(x + 2, y + 2, "Are you sure you want to change the difficulty to easy?\nThis will also reset your current run.", {"text-small": true});
+			if (!menuSelect) draw.rect("#fff", x + 1, y + 13, 23, 14);
+			else draw.rect("#fff", x + 23, y + 13, 17, 14);
+			draw.box(x + 3, y + 15, 19, 10);
+			draw.box(x + 25, y + 15, 13, 10);
+			draw.lore(x + 4, y + 16, "YES");
+			draw.lore(x + 26, y + 16, "NO");
 		};
 		return;
 	};

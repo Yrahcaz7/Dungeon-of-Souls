@@ -19,7 +19,8 @@ class Enemy {
 	constructor(type, power = 1) {
 		if (type == "slime_small") power--;
 		if (("" + type).includes("prime")) power++;
-		power += game.floor * 0.05;
+		power += global.difficulty;
+		power += game.floor * 0.05 * (2 ** global.difficulty);
 		this.type = "" + type;
 		this.maxHealth = Math.round(((random() / 10) + 0.95) * ((power * 10) + 20));
 		this.health = this.maxHealth;
