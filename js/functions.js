@@ -139,7 +139,7 @@ function drawHand() {
 };
 
 function discardHand() {
-	for (let index = 0; index < game.hand.length; iteration++) {
+	for (let index = 0; index < game.hand.length; ) {
 		game.discard.push(game.hand[index]);
 		game.hand.splice(index, 1);
 	};
