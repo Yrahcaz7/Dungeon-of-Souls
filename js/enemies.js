@@ -46,7 +46,7 @@ class Enemy {
 				this.finishAction();
 			};
 		} else if (this.intent == "defend") {
-			this.middleAction(); // teporary
+			this.middleAction();
 		};
 	};
 	middleAction = () => {
@@ -62,11 +62,11 @@ class Enemy {
 			if (game.shield < 1) startAnim.player("hit");
 		} else if (this.intent == "defend") {
 			this.shield += this.defendPower;
-			this.finishAction(); // teporary
+			this.finishAction();
 		};
 	};
 	finishAction = () => {
-		this.intent = chance(3/5)?"attack":"defend";
+		this.intent = chance(3/5) ? "attack" : "defend";
 		this.intentHistory.push(this.intent);
 		if (this.overrideIntent("attack")) {
 			this.intent = "defend";
