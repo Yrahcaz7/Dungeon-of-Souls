@@ -640,6 +640,7 @@ function selection() {
 			} else if (option == "pixel_perfect_screen") {
 				if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: 800px";
 				else document.getElementById("canvas").style = "";
+				fixCanvas();
 			};
 			actionTimer = 2;
 			return;

@@ -99,11 +99,20 @@ function canvasData() {
 	return true;
 };
 
+function fixCanvas() {
+	if (global.options.pixel_perfect_screen) {
+		if (window.innerHeight <= document.getElementById("canvas").height) document.getElementById("canvas").className = "fixed";
+		else document.getElementById("canvas").className = "";
+	} else {
+		if (window.innerHeight <= window.innerWidth / 2) document.getElementById("canvas").className = "fixed";
+		else document.getElementById("canvas").className = "";
+	};
+};
+
 // event listeners
 
 window.onresize = () => {
-	if (window.innerHeight <= window.innerWidth / 2) document.getElementById("canvas").className = "fixed";
-	else document.getElementById("canvas").className = "";
+	fixCanvas();
 };
 
 document.addEventListener("keydown", (event) => {
