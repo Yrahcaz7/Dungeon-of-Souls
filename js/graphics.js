@@ -930,8 +930,10 @@ function cardRewardGraphics(focused = true) {
 	handPos = [];
 	for (let index = 0; index < game.cardRewardChoices; index++) {
 		handPos.push((199 - (game.cardRewardChoices * 68 / 2)) + 1 + (index * 68));
-		if (game.select[1] == index && focused) draw.card(new Card(game.room[5][index]), index, 50, true);
-		else draw.card(new Card(game.room[5][index]), index, 50, false);
+		draw.card(new Card(game.room[5][index]), index, 50);
+	};
+	if (game.select[1] > -1 && game.select[1] < game.cardRewardChoices && focused) {
+		draw.card(new Card(game.room[5][game.select[1]]), game.select[1], 50, true);
 	};
 	if ((game.select[1] == -1 || game.select[1] == game.cardRewardChoices) && focused) draw.rect("#fff", x, y + height - 14, width, 14);
 	draw.box(x + 2, y + height - 12, width - 4, 10);
