@@ -16,20 +16,7 @@
  */
 
 class Enemy {
-	constructor(type, power = 1, override = {}) {
-		if (Object.keys(override).length) {
-			this.type = "" + override.type;
-			this.maxHealth = +override.maxHealth;
-			this.health = +override.health;
-			this.maxShield = +override.maxShield;
-			this.shield = +override.shield;
-			this.attackPower = +override.attackPower;
-			this.defendPower = +override.defendPower;
-			this.eff = override.eff;
-			this.intent = "" + override.intent;
-			this.intentHistory = override.intentHistory;
-			return;
-		};
+	constructor(type, power = 1) {
 		if (type == "slime_small") power--;
 		if (("" + type).includes("prime")) power++;
 		power += game.floor * 0.05;
@@ -109,4 +96,14 @@ class Enemy {
 		};
 		return false;
 	};
+};
+
+function classifyEnemy(object = {}) {
+	let instance = new Enemy("", NaN);
+	for (const key in object) {
+		if (Object.hasOwnProperty.call(object, key)) {
+			instance[key] = object[key];
+		};
+	};
+	return instance;
 };

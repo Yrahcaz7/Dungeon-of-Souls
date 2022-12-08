@@ -31,7 +31,7 @@ function load(saveNum = 0) {
 	if (get && atob(get) && JSON.parse(atob(get))) {
 		let obj = JSON.parse(atob(get));
 		for (let index = 0; index < obj.enemies.length; index++) {
-			obj.enemies[index] = new Enemy(undefined, undefined, obj.enemies[index]);
+			obj.enemies[index] = classifyEnemy(obj.enemies[index]);
 		};
 		for (let index = 0; index < obj.deck.length; index++) {
 			obj.deck[index] = new Card(obj.deck[index].id, obj.deck[index].level);
