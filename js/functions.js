@@ -138,13 +138,22 @@ function drawHand() {
 	};
 };
 
+function discardHand() {
+	for (let index = 0; index < game.hand.length; iteration++) {
+		game.discard.push(game.hand[index]);
+		game.hand.splice(index, 1);
+	};
+};
+
 function dealDamage(amount, exMod = 1, enemy = game.enemyAttSel) {
 	// extra damage
 	let exDamage = 0;
-	if (game.attackEffect == "aura blade") {
-		exDamage += 5 + (game.eff.aura_blades + 1);
+	if (exMod) {
+		if (game.attackEffect == "aura blade") {
+			exDamage += 5 + (game.eff.aura_blades + 1);
+		};
+		exDamage = Math.floor(exDamage * exMod);
 	};
-	if (exMod) exDamage = Math.floor(exDamage * exMod);
 	let damage = amount + exDamage;
 	// multiply damage
 	let mulDamage = 1;
