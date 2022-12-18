@@ -66,6 +66,7 @@ var global = {
 	room: [],
 	firstRoom: [],
 	map: [],
+	traveled: [],
 	seed: "" + (new Date().getTime() % 1000000).toString().shuffle(),
 	saveNum: 0,
 }, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = "title", menuSelect = 0, enemyPos = [], handPos = [], paths = {}, deckMove = "none", gameWon = false;
@@ -812,6 +813,7 @@ function manageGameplay() {
 	if (game.state == "enter") {
 		if (game.location == "-1" || game.map[place[0]][place[1]][0] == "battle" || game.map[place[0]][place[1]][0] == "battle_prime") {
 			if (game.location == "-1") game.room = game.firstRoom;
+			else game.traveled.push(+game.location.split(", ")[1]);
 			for (let index = 0; index < game.room[3].length; index++) {
 				let item = game.room[3][index].split(", ");
 				if (item[1]) game.enemies.push(new Enemy(item[0], item[1]));

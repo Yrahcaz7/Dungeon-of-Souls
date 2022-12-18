@@ -964,7 +964,8 @@ function mapGraphics(onlyCalc = false) {
 			let drawX = 25 + (x * 32) + game.map[x][y][1];
 			let drawY = 18 + (y * 32) + game.map[x][y][2];
 			if (x === 0 && render) {
-				draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#fff", 3);
+				if (game.traveled[x] === y) draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#842", 3);
+				else draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#b84", 3);
 			};
 			if (game.map[x][y]) {
 				for (let branch = 0; branch < 2; branch++) {
@@ -996,7 +997,10 @@ function mapGraphics(onlyCalc = false) {
 							};
 						};
 					};
-					if (render) draw.line(drawX + 8, drawY + 8, posX + 8, posY + 8, "#fff", 3);
+					if (render) {
+						if (game.traveled[x] === y) draw.line(drawX + 8, drawY + 8, posX + 8, posY + 8, "#842", 3);
+						else draw.line(drawX + 8, drawY + 8, posX + 8, posY + 8, "#b84", 3);
+					};
 				};
 			};
 		};
