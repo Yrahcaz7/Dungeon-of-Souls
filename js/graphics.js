@@ -306,30 +306,6 @@ const draw = {
 	},
 };
 
-const startAnim = {
-	player(type) {
-		type = "" + type;
-		if (!player[type]) return;
-		if (game.eff.aura_blades && (type == "attack" || type == "attack_2")) type += "_aura";
-		if (game.eff.reinforces && (type == "shield" || type == "crouch_shield")) type += "_reinforced";
-		playerAnim = [0, type];
-	},
-	effect(type) {
-		type = "" + type;
-		if (!type) return;
-		effAnim = [0, type];
-	},
-	enemy(index, type) {
-		index = +index;
-		type = "" + type;
-		if ((!index && index !== 0) || !type) return;
-		tempAnim = [0, type, "normal", index];
-		if (type == "slime_small_launch") {
-			invNum = index;
-		} else invNum = -1;
-	},
-};
-
 function backgrounds() {
 	let now = new Date(Date.now()),
 		time = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()],
@@ -387,6 +363,30 @@ function foregrounds() {
 	else if (game.select[0] == "discard") draw.image(select.discard, 382, 181);
 	else if (game.select[0] == "map") draw.image(select.map, 1, 11);
 	draw.lore(1, 1, "floor " + game.floor, {"color": "red"});
+};
+
+const startAnim = {
+	player(type) {
+		type = "" + type;
+		if (!player[type]) return;
+		if (game.eff.aura_blades && (type == "attack" || type == "attack_2")) type += "_aura";
+		if (game.eff.reinforces && (type == "shield" || type == "crouch_shield")) type += "_reinforced";
+		playerAnim = [0, type];
+	},
+	effect(type) {
+		type = "" + type;
+		if (!type) return;
+		effAnim = [0, type];
+	},
+	enemy(index, type) {
+		index = +index;
+		type = "" + type;
+		if ((!index && index !== 0) || !type) return;
+		tempAnim = [0, type, "normal", index];
+		if (type == "slime_small_launch") {
+			invNum = index;
+		} else invNum = -1;
+	},
 };
 
 function playerGraphics() {
@@ -893,8 +893,7 @@ function popupGraphics() {
 			if (popups[a][2] == stopPoint) popups[a][3] += 0.025;
 			draw.image(popup.back, popups[a][2], 150 - (a * 21));
 			draw.lore(popups[a][2] + 13, 150 - (a * 21) + 8, popups[a][4] ? popups[a][1] + "\n" + popups[a][4] : popups[a][1], {"text-small": !!popups[a][4]});
-			if (popups[a][0] == "music") draw.image(popup.music, popups[a][2] + 4, 150 - (a * 21) + 3);
-			else if (popups[a][0] == "go") draw.image(popup.go, popups[a][2] + 2, 150 - (a * 21) + 3);
+			if (popup[popups[a][0]]) draw.image(popup[popups[a][0]], popups[a][2] + 2, 150 - (a * 21) + 2);
 			if (game.select[0] == "popups" && game.select[1] == a) {
 				draw.image(select.popup, popups[a][2] - 1, 150 - (a * 21) - 1);
 			};
