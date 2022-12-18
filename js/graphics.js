@@ -656,17 +656,15 @@ function optionsGraphics(focused = true) {
 	if (game.select[1] == 1 && focused) draw.image(select.options, 380, 2);
 };
 
-function deckGraphics(name = "deck") {
+function deckGraphics(deck) {
 	draw.rect("#000c");
-	let tempDeck = Object.deepCopy(game.deckLocal).cardSort(), selected;
-	if (name == "void") tempDeck = game.void;
-	else if (name == "discard") tempDeck = game.discard;
-	if (tempDeck.length) {
-		for (let x = 0, y = 0; x + (y * 6) < tempDeck.length; x++) {
+	if (deck.length) {
+		let selected;
+		for (let x = 0, y = 0; x + (y * 6) < deck.length; x++) {
 			if (x == game.cardSelect[0] && y == game.cardSelect[1]) {
 				selected = [x, y];
 			} else {
-				draw.card(tempDeck[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66));
+				draw.card(deck[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66));
 			};
 			if (x >= 5) {
 				x = -1;
@@ -674,7 +672,7 @@ function deckGraphics(name = "deck") {
 			};
 		};
 		if (selected) {
-			draw.card(tempDeck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66));
+			draw.card(deck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66));
 		};
 		target();
 		if (deckMove == "up") {
@@ -690,7 +688,7 @@ function deckGraphics(name = "deck") {
 		};
 	};
 	draw.rect("#0004", 0, 0, 400, 13);
-	draw.lore(200 - 2, 1, name.title(), {"color": "white", "text-align": "center"});
+	draw.lore(200 - 2, 1, game.select[0].title(), {"color": "white", "text-align": "center"});
 	draw.rect("#fff", 1, 12, 398, 1);
 };
 

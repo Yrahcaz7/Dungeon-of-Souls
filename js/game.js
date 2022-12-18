@@ -924,11 +924,11 @@ function updateVisuals() {
 	} else if (game.select[0] == "options" && game.select[1]) {
 		optionsGraphics();
 	} else if (game.select[0] == "deck" && game.select[1]) {
-		deckGraphics();
+		deckGraphics(Object.deepCopy(game.deckLocal).cardSort());
 	} else if (game.select[0] == "void" && game.select[1]) {
-		deckGraphics("void");
+		deckGraphics(game.void);
 	} else if (game.select[0] == "discard" && game.select[1]) {
-		deckGraphics("discard");
+		deckGraphics(game.discard);
 	} else {
 		game.cardSelect = [0, 0];
 		deckPos = 0;
