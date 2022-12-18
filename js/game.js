@@ -67,7 +67,7 @@ var global = {
 	firstRoom: [],
 	map: [],
 	traveled: [],
-	seed: "" + (new Date().getTime() % 1000000).toString().shuffle(),
+	seed: "" + (Math.round(new Date().getTime() * (Math.random() + 0.001)) % 1000000).toString().shuffle(),
 	saveNum: 0,
 }, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = "title", menuSelect = 0, enemyPos = [], handPos = [], paths = {}, deckMove = "none", gameWon = false;
 
