@@ -724,32 +724,37 @@ function renderCards() {
 	};
 };
 
-function info(type, location = "none", xPlus = 0, yPlus = 0) {
-	if (location == "card") {
+const info = {
+	card(type, xPlus = 0, yPlus = 0) {
 		let x = handPos[game.prevCard] + xPlus, y = 147 - Math.floor(cardAnim[game.prevCard]) + yPlus;
 		if (game.prevCard == game.hand.length - 1 && game.hand.length >= 4) {
 			x -= 145;
 		};
 		return draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});
-	} else if (location == "reward") {
+	},
+	reward(type, xPlus = 0, yPlus = 0) {
 		let x = handPos[game.select[1]] + xPlus;
 		if (game.select[1] == game.cardRewardChoices - 1 && game.cardRewardChoices >= 4) {
 			x -= 145;
 		};
 		return draw.textBox(x + 69, 51 + yPlus, 24, infoText[type], {"text-small": true});
-	} else if (location == "deck") {
+	},
+	deck(type, xPlus = 0, yPlus = 0) {
 		let x = (game.cardSelect[0] * 66) + xPlus, y = 15 + (game.cardSelect[1] * 98) - game.deckPos + yPlus;
 		if (game.cardSelect[0] >= 4) {
 			x -= 145;
 		};
 		return draw.textBox(x + 71, y, 24, infoText[type], {"text-small": true});
-	} else if (location == "player" && typeof type == "string") {
+	},
+	player(type, xPlus = 0, yPlus = 0) {
+		if (typeof type != "string") return 0;
 		const thing = game.eff[type.replace(/\s/g, "_") + (type.endsWith("s") ? "" : "s")];
 		let y = 71 + yPlus, desc = "You have " + thing + " " + type + (thing >= 2 ? "s." : "."), move = 0;
 		move += draw.textBox(85 + xPlus, y + move, desc.length, desc, {"text-small": true});
 		move += draw.textBox(85 + xPlus, y + move, 24, infoText[type], {"text-small": true});
 		return move;
-	} else if (location == "enemy") {
+	},
+	enemy(type, xPlus = 0, yPlus = 0) {
 		if (type == "burn") {
 			const enemy = game.enemies[game.select[1]];
 			const pos = enemyPos[game.select[1]];
@@ -757,7 +762,8 @@ function info(type, location = "none", xPlus = 0, yPlus = 0) {
 			draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, pos[1] + yPlus, desc.length, desc, {"text-small": true});
 			draw.textBox(pos[0] - 72.5 + xPlus, pos[1] + yPlus + 11, 24, infoText.burn, {"text-small": true});
 		};
-	} else if (location == "artifact") {
+	},
+	artifact(type, xPlus = 0, yPlus = 0) {
 		if (type == "the map") {
 			let x = 21 + xPlus, y = 12 + yPlus;
 			draw.textBox(x, y, 12, "The Map", {"text-align": "center"});
@@ -767,12 +773,12 @@ function info(type, location = "none", xPlus = 0, yPlus = 0) {
 			draw.textBox(x, y, 12, "Iron Will", {"text-align": "center"});
 			draw.textBox(x, y + 13, 24, infoText.iron_will, {"text-small": true});
 		};
-	};
+	},
 };
 
 function target() {
 	if (game.select[0] == "map") {
-		info("the map", "artifact");
+		info.artifact("the map");
 	} else if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") {
 		const enemy = game.enemies[game.select[1]];
 		const enemyType = enemy.type;
@@ -794,8 +800,8 @@ function target() {
 			if (game.select[1] === 0 && game.enemies.length > 1) draw.lore(pos[0] + coords[0] - 5.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-align": "left", "text-small": true});
 			else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-small": true});
 			if (enemy.eff.burn) {
-				if (game.select[1] === 0 && game.enemies.length > 1) info("burn", "enemy", coords[0] - 5.5, coords[1] + 11);
-				else info("burn", "enemy", coords[0] - 5.5, coords[1] - 2);
+				if (game.select[1] === 0 && game.enemies.length > 1) info.enemy("burn", coords[0] - 5.5, coords[1] + 11);
+				else info.enemy("burn", coords[0] - 5.5, coords[1] - 2);
 			};
 		};
 	} else if (game.select[0] == "lookat_you") {
@@ -817,20 +823,20 @@ function target() {
 						y = 0;
 						x += 77;
 					};
-					y += info(type, "player", x, y);
+					y += info.player(type, x, y);
 				};
 			};
 		};
 	} else if (game.select[0] == "artifacts") {
 		let name = game.artifacts[game.select[1]];
-		info(name, "artifact");
+		info.artifact(name);
 	} else if (game.select[0] == "deck" && game.select[1] == 1 && game.deckLocal.length) {
 		const keywords = cards[Object.deepCopy(game.deckLocal).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].id]?.keywords;
 		let x = 0, y = 0;
 		if (keywords instanceof Array) {
 			for (let index = 0; index < keywords.length; index++) {
 				const key = "" + keywords[index];
-				if (key) y += info(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), "deck", x, y);
+				if (key) y += info.deck(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
 			};
 		};
 	} else if ((game.select[0] == "void" || game.select[0] == "discard") && game.select[1] == 1 && game[game.select[0]].length) {
@@ -839,7 +845,7 @@ function target() {
 		if (keywords instanceof Array) {
 			for (let index = 0; index < keywords.length; index++) {
 				const key = "" + keywords[index];
-				if (key) y += info(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), "deck", x, y);
+				if (key) y += info.deck(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
 			};
 		};
 	} else if (game.select[0] == "card_rewards" && game.select[1] > -1 && game.select[1] < game.cardRewardChoices) {
@@ -848,17 +854,17 @@ function target() {
 		if (keywords instanceof Array) {
 			for (let index = 0; index < keywords.length; index++) {
 				const key = "" + keywords[index];
-				if (key) y += info(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), "reward", x, y);
+				if (key) y += info.reward(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
 			};
 		};
 	};
-	if (game.select[0] == "hand" || (game.select[0] != "attack_enemy" && game.select[0] != "lookat_enemy" && !hidden() && global.options.sticky_cards) && game.hand.length && game.prevCard < game.hand.length) {
+	if ((game.select[0] == "hand" || (game.select[0] != "attack_enemy" && game.select[0] != "lookat_enemy" && !hidden() && global.options.sticky_cards)) && game.hand.length && game.prevCard < game.hand.length) {
 		const keywords = cards[game.hand[game.prevCard].id]?.keywords;
 		let x = 0, y = 0;
 		if (keywords instanceof Array) {
 			for (let index = 0; index < keywords.length; index++) {
 				const key = "" + keywords[index];
-				if (key) y += info(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), "card", x, y);
+				if (key) y += info.card(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
 			};
 		};
 	};
