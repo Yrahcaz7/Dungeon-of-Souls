@@ -764,15 +764,10 @@ const info = {
 		};
 	},
 	artifact(type, xPlus = 0, yPlus = 0) {
-		if (type == "the map") {
-			let x = 21 + xPlus, y = 12 + yPlus;
-			draw.textBox(x, y, 12, "The Map", {"text-align": "center"});
-			draw.textBox(x, y + 13, 24, infoText.the_map, {"text-small": true});
-		} else if (type == "iron will") {
-			let x = 39 + (game.select[1] * 18) + xPlus, y = 12 + yPlus;
-			draw.textBox(x, y, 12, "Iron Will", {"text-align": "center"});
-			draw.textBox(x, y + 13, 24, infoText.iron_will, {"text-small": true});
-		};
+		if (typeof type != "string") return;
+		let x = (type == "the map" ? 21 : 39 + (game.select[1] * 18)) + xPlus, y = 12 + yPlus;
+		draw.textBox(x, y, 12, type.title(), {"text-align": "center"});
+		draw.textBox(x, y + 13, 24, infoText[type.replace(/\s/g, "_")], {"text-small": true});
 	},
 };
 
