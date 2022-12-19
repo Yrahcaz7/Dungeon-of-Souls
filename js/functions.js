@@ -145,11 +145,13 @@ function discardHand() {
 	};
 };
 
+const AURA_BLADE = 200;
+
 function dealDamage(amount, exMod = 1, enemy = game.enemyAtt[1]) {
 	// extra damage
 	let exDamage = 0;
 	if (exMod) {
-		if (game.attackEffect == "aura blade") {
+		if (game.attackEffects.includes(AURA_BLADE)) {
 			exDamage += 5 + (game.eff.aura_blades + 1);
 		};
 		exDamage = Math.floor(exDamage * exMod);
@@ -170,11 +172,13 @@ function dealDamage(amount, exMod = 1, enemy = game.enemyAtt[1]) {
 };
 
 function activateAttackEffects(id) {
+	// stop if effects are not allowed
 	if (attributes["NO ATTACK EFFECTS"].includes(id)) return;
+	// start player anim
+	startAnim.player(cards[id].anim);
+	// trigger aura blades
 	if (game.eff.aura_blades) {
 		game.eff.aura_blades--;
-		game.attackEffect = "aura blade";
-	} else {
-		game.attackEffect = "none";
+		game.attackEffects.push(AURA_BLADE);
 	};
 };

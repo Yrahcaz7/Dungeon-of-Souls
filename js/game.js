@@ -31,27 +31,28 @@ var global = {
 	character: "knight",
 	health: 60,
 	shield: 0,
+	energy: 3,
 	floor: 0,
+	gold: 0,
 	location: "-1",
 	rewards: [],
 	cardRewardChoices: 3,
-	gold: 0,
 	state: "enter",
 	turn: "none",
 	select: ["welcome", 0],
+	prevCard: -1,
 	cardSelect: [0, 0],
 	mapSelect: -1,
-	enemyAtt: [-1, 0, "none", false],
-	energy: 3,
 	enemies: [],
 	enemyNum: 0,
 	enemyStage: "none",
+	enemyAtt: [-1, 0, "none", false],
+	attackEffects: [],
 	artifacts: ["iron will"],
 	deck: [new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000), new Card(2001), new Card(4000)],
 	deckLocal: [],
 	deckPos: 0,
 	hand: [],
-	prevCard: -1,
 	discard: [],
 	void: [],
 	eff: {
@@ -59,7 +60,6 @@ var global = {
 		reinforces: 0,
 		weakness: 0,
 	},
-	attackEffect: "none",
 	room: [],
 	firstRoom: [],
 	map: [],
@@ -150,6 +150,7 @@ function playerTurn() {
 		if (typeof attCard.attack == "function") attCard.attack();
 		game.enemyAtt[2] = "none";
 		game.enemyAtt[3] = false;
+		game.attackEffects = [];
 	};
 	// action timer
 	if (actionTimer > -1 || game.enemyAtt[3]) return;
@@ -157,7 +158,6 @@ function playerTurn() {
 	// attack enemy
 	if (action == "enter" && game.select[0] == "attack_enemy") {
 		game.energy -= cards[game.enemyAtt[2].id].cost;
-		startAnim.player(cards[game.enemyAtt[2].id].anim);
 		activateAttackEffects(game.enemyAtt[2].id);
 		game.enemyAtt[3] = true;
 		if (attributes["one use"].includes(game.enemyAtt[2].id)) game.void.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
@@ -193,7 +193,6 @@ function playerTurn() {
 				if (attributes["NO SELECT"].includes(id)) {
 					game.energy -= cards[id].cost;
 					game.enemyAtt[2] = game.hand[game.select[1]];
-					startAnim.player(cards[id].anim);
 					activateAttackEffects(id);
 					game.enemyAtt[3] = true;
 					if (attributes["one use"].includes(id)) game.void.push(game.hand.splice(game.select[1], 1)[0]);

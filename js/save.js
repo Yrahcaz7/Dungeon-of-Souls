@@ -15,11 +15,11 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const id = "Yrahcaz7/Dungeon-of-Souls/save";
+const ID = "Yrahcaz7/Dungeon-of-Souls/save";
 
 function save() {
-	if (game) localStorage.setItem(id + "/" + game.saveNum, btoa(JSON.stringify(game)));
-	if (global) localStorage.setItem(id + "/master", btoa(JSON.stringify(global)));
+	if (game) localStorage.setItem(ID + "/" + game.saveNum, btoa(JSON.stringify(game)));
+	if (global) localStorage.setItem(ID + "/master", btoa(JSON.stringify(global)));
 };
 
 function fixRoom(item) {
@@ -44,6 +44,11 @@ function fixSave() {
 	};
 	fixRoom(game.firstRoom);
 	fixRoom(game.room);
+	// fix attack effect
+	if (game.attackEffect) {
+		if (game.attackEffect == "aura blade") game.attackEffects = [AURA_BLADE];
+		delete game.attackEffect;
+	};
 	// save again
 	save();
 };
@@ -53,7 +58,7 @@ function load(saveNum = 0) {
 		console.log("game not finished loading. please wait and try again.");
 		return;
 	};
-	let get = localStorage.getItem(id + "/" + saveNum), reSave = false;
+	let get = localStorage.getItem(ID + "/" + saveNum), reSave = false;
 	if (get && atob(get) && JSON.parse(atob(get))) {
 		let obj = JSON.parse(atob(get));
 		for (let index = 0; index < obj.enemies.length; index++) {
@@ -76,7 +81,7 @@ function load(saveNum = 0) {
 		};
 		Object.assign(game, obj);
 		if (saveNum !== 0) {
-			localStorage.setItem(id + "/" + game.saveNum, localStorage.getItem(id + "/0"));
+			localStorage.setItem(ID + "/" + game.saveNum, localStorage.getItem(ID + "/0"));
 			game.saveNum = 0;
 			save();
 		};
@@ -87,7 +92,7 @@ function load(saveNum = 0) {
 		console.warn("the following is not a valid local save: " + get);
 		console.log("terminating process.");
 	};
-	get = localStorage.getItem(id + "/master");
+	get = localStorage.getItem(ID + "/master");
 	if (get && atob(get) && JSON.parse(atob(get))) {
 		get = JSON.parse(atob(get));
 		Object.assign(global, get);
