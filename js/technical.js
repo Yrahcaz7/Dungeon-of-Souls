@@ -99,6 +99,10 @@ function canvasData() {
 	return true;
 };
 
+function clearCanvas() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+};
+
 function fixCanvas() {
 	if (global.options.pixel_perfect_screen) {
 		if (window.innerHeight <= document.getElementById("canvas").height) document.getElementById("canvas").className = "fixed";

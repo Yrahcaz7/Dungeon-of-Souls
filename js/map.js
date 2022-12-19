@@ -15,25 +15,27 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+const FIRSTBATTLE = 0, TREASURE = 1, PRIME = 2;
+
 var mapProg = 0, mapTotal = 8, death_zones = 0, rowFalses = 0, rowNodes = 0, twoRow = false;
 
 function weaker(row) {
 	return ", " + (Math.round((0.5 + (row * 0.05)) * 100) / 100);
 };
 
-function mapPiece(row, attribute = "none") {
-	if (attribute == "1stbattle") return ["battle", 0, 0, ["slime_small"], randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5)];
-	if (attribute == "treasure") return ["treasure", randomInt(-5, 5), randomInt(-5, 5), "closed", randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
-	if (attribute == "prime") return ["battle_prime", 0, 0, ["slime_small" + weaker(row), "slime_prime", "slime_small" + weaker(row)], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
-	let type = chance(3/5)?"battle":false;
+function mapPiece(row, attribute = -1) {
+	if (attribute === FIRSTBATTLE) return ["battle", 0, 0, ["slime_small"], randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5)];
+	if (attribute === TREASURE) return ["treasure", randomInt(-5, 5), randomInt(-5, 5), "closed", randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
+	if (attribute === PRIME) return ["battle_prime", 0, 0, ["slime_small" + weaker(row), "slime_prime", "slime_small" + weaker(row)], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
+	let type = chance(3/5) ? "battle" : false;
 	if (rowFalses >= 4 || (twoRow && rowFalses >= 3) || (row === 0 && rowFalses >= 2)) type = "battle";
 	if (type) rowNodes++;
 	else rowFalses++;
 	if (!type || rowNodes == 6) return false;
 	let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
 	if (type == "battle") {
-		if (row >= 5) result.push(chance()?["slime_big"]:(chance(7/10)?["slime_big", "slime_small" + weaker(row)]:["slime_small", "slime_small"]));
-		else result.push(chance()?["slime_big"]:["slime_small", "slime_small" + weaker(row)]);
+		if (row >= 5) result.push(chance() ? ["slime_big"] : (chance(7/10) ? ["slime_big", "slime_small" + weaker(row)] : ["slime_small", "slime_small"]));
+		else result.push(chance() ? ["slime_big"] : ["slime_small", "slime_small" + weaker(row)]);
 		result.push(randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5));
 	};
 	return result;
@@ -83,7 +85,7 @@ function mapRow(row) {
 		};
 		while (past.length < 6) {
 			if (arr[rand] && !pathHasSpecial(row + ", " + rand)) {
-				arr[rand] = mapPiece(row, "treasure");
+				arr[rand] = mapPiece(row, TREASURE);
 				break;
 			} else {
 				if (!past.includes(rand)) past.push(rand);
@@ -95,7 +97,7 @@ function mapRow(row) {
 			past = [];
 			while (past.length < 6) {
 				if (arr[rand] && arr[rand][0] != "treasure" && !pathHasSpecial(row + ", " + rand)) {
-					arr[rand] = mapPiece(row, "prime");
+					arr[rand] = mapPiece(row, PRIME);
 					death_zones++;
 					break;
 				} else {
@@ -109,13 +111,13 @@ function mapRow(row) {
 };
 
 function updateMapProg() {
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-	if (mapProg === mapTotal) draw.lore(200 - 2, 100, "Generating Map...\n100.0%\nrunning final checks...", {"color": "white", "text-align": "center"});
+	clearCanvas();
+	if (mapProg === mapTotal) draw.lore(200 - 2, 100, "Generating Map...\nrunning final checks...", {"color": "white", "text-align": "center"});
 	else draw.lore(200 - 2, 100, "Generating Map...\n" + (mapProg / mapTotal * 100).toFixed(1) + "%", {"color": "white", "text-align": "center"});
 };
 
 async function generateMap() {
-	game.firstRoom = mapPiece(0, "1stbattle");
+	game.firstRoom = mapPiece(0, FIRSTBATTLE);
 	game.map = [];
 	death_zones = 0;
 	for (let index = 0; index < 8; index++) {
@@ -133,7 +135,7 @@ async function generateMap() {
 		};
 		while (past.length < 6) {
 			if (game.map[2][rand] && game.map[2][rand][0] != "treasure" && !pathHasSpecial("2, " + rand, true)) {
-				game.map[2][rand] = mapPiece(2, "prime");
+				game.map[2][rand] = mapPiece(2, PRIME);
 				death_zones++;
 				break;
 			} else {
@@ -142,12 +144,11 @@ async function generateMap() {
 			};
 		};
 		if (death_zones === 0) {
-			mapExProg = 0;
 			rand = randomInt(0, 5);
 			past = [];
 			while (past.length < 6) {
 				if (game.map[3][rand] && game.map[3][rand][0] == "treasure" && !pathHasSpecial("3, " + rand, true)) {
-					game.map[3][rand] = mapPiece(3, "prime");
+					game.map[3][rand] = mapPiece(3, PRIME);
 					death_zones++;
 					break;
 				} else {

@@ -841,7 +841,7 @@ function updateVisuals() {
 	// bugs
 	if (!canvas || !ctx) return;
 	// clear
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	clearCanvas();
 	// update data
 	updateData();
 	// visuals
@@ -958,7 +958,7 @@ function updateVisuals() {
 			actionTimer = 4;
 			gameWon = true;
 			setInterval(() => {
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				clearCanvas();
 				let num = Math.round(interval(4/3, 2));
 				draw.image(victorious, 168, 42 + num, victorious.width * 2, victorious.height * 2);
 				draw.rect("#0004");
