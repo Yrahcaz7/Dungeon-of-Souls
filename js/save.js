@@ -22,13 +22,29 @@ function save() {
 	if (global) localStorage.setItem(id + "/master", btoa(JSON.stringify(global)));
 };
 
+function fixRoom(item) {
+	if (item[0] == "battle") item[0] = BATTLEROOM;
+	else if (item[0] == "treasure") item[0] = TREASUREROOM;
+	else if (item[0] == "battle_prime") item[0] = PRIMEROOM;
+};
+
 function fixSave() {
+	// fix enemy attack
 	if (game.activeCard !== undefined || game.enemyAttSel !== undefined || game.enemyAttFin !== undefined) {
 		game.enemyAtt = [game.activeCard, game.enemyAttSel, game.enemyAtt, game.enemyAttFin];
 		delete game.activeCard;
 		delete game.enemyAttSel;
 		delete game.enemyAttFin;
 	};
+	// fix rooms
+	for (let row = 0; row < game.map.length; row++) {
+		for (let col = 0; col < game.map[row].length; col++) {
+			fixRoom(game.map[row][col]);
+		};
+	};
+	fixRoom(game.firstRoom);
+	fixRoom(game.room);
+	// save again
 	save();
 };
 

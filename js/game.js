@@ -804,14 +804,14 @@ function manageGameplay() {
 		game.rewards = [];
 		if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
 		if (game.cardRewardChoices > 0) game.rewards.push("1 card");
-		if (game.room[0] == "battle_prime") game.rewards.push((get.maxHealth() * 0.9) + " health");
+		if (game.room[0] === PRIMEROOM) game.rewards.push((get.maxHealth() * 0.9) + " health");
 		game.rewards.push("finish");
 		if (game.artifacts.includes("iron will")) game.health += 2;
 	};
 	// load floor
 	let place = game.location.split(", ");
 	if (game.state == "enter") {
-		if (game.location == "-1" || game.map[place[0]][place[1]][0] == "battle" || game.map[place[0]][place[1]][0] == "battle_prime") {
+		if (game.location == "-1" || game.map[place[0]][place[1]][0] === BATTLEROOM || game.map[place[0]][place[1]][0] === PRIMEROOM) {
 			if (game.location == "-1") game.room = game.firstRoom;
 			else game.traveled.push(+place[1]);
 			for (let index = 0; index < game.room[3].length; index++) {
@@ -820,7 +820,7 @@ function manageGameplay() {
 				else game.enemies.push(new Enemy(item[0]));
 			};
 			enterBattle();
-		} else if (game.map[place[0]][place[1]][0] == "treasure") {
+		} else if (game.map[place[0]][place[1]][0] === TREASUREROOM) {
 			game.traveled.push(+place[1]);
 			game.map[place[0]][place[1]][3] = "open";
 			game.select = ["rewards", 0];

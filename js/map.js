@@ -15,7 +15,9 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const FIRSTBATTLE = 0, TREASURE = 1, PRIME = 2;
+const FIRSTBATTLE = 000, TREASURE = 001, PRIME = 002;
+
+const BATTLEROOM = 100, TREASUREROOM = 101, PRIMEROOM = 102;
 
 var mapProg = 0, mapTotal = 8, death_zones = 0, rowFalses = 0, rowNodes = 0, twoRow = false;
 
@@ -24,16 +26,16 @@ function weaker(row) {
 };
 
 function mapPiece(row, attribute = -1) {
-	if (attribute === FIRSTBATTLE) return ["battle", 0, 0, ["slime_small"], randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5)];
-	if (attribute === TREASURE) return ["treasure", randomInt(-5, 5), randomInt(-5, 5), "closed", randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
-	if (attribute === PRIME) return ["battle_prime", 0, 0, ["slime_small" + weaker(row), "slime_prime", "slime_small" + weaker(row)], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
-	let type = chance(3/5) ? "battle" : false;
-	if (rowFalses >= 4 || (twoRow && rowFalses >= 3) || (row === 0 && rowFalses >= 2)) type = "battle";
+	if (attribute === FIRSTBATTLE) return [BATTLEROOM, 0, 0, ["slime_small"], randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5)];
+	if (attribute === TREASURE) return [TREASUREROOM, randomInt(-5, 5), randomInt(-5, 5), "closed", randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
+	if (attribute === PRIME) return [PRIMEROOM, 0, 0, ["slime_small" + weaker(row), "slime_prime", "slime_small" + weaker(row)], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
+	let type = chance(3/5) ? BATTLEROOM : false;
+	if (rowFalses >= 4 || (twoRow && rowFalses >= 3) || (row === 0 && rowFalses >= 2)) type = BATTLEROOM;
 	if (type) rowNodes++;
 	else rowFalses++;
 	if (!type || rowNodes == 6) return false;
 	let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
-	if (type == "battle") {
+	if (type === BATTLEROOM) {
 		if (row >= 5) result.push(chance() ? ["slime_big"] : (chance(7/10) ? ["slime_big", "slime_small" + weaker(row)] : ["slime_small", "slime_small"]));
 		else result.push(chance() ? ["slime_big"] : ["slime_small", "slime_small" + weaker(row)]);
 		result.push(randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5));
@@ -46,7 +48,7 @@ function pathHasSpecial(coords = "", front = false) {
 	let boolean = false;
 	const looping = front ? (location = "", first = false) => {
 		let loc = location.split(", ");
-		if (!first && game.map[loc[0]] && (game.map[loc[0]][loc[1]][0] == "treasure" || game.map[loc[0]][loc[1]][0] == "battle_prime")) {
+		if (!first && game.map[loc[0]] && (game.map[loc[0]][loc[1]][0] === TREASUREROOM || game.map[loc[0]][loc[1]][0] === PRIMEROOM)) {
 			boolean = true;
 			return;
 		};
@@ -55,7 +57,7 @@ function pathHasSpecial(coords = "", front = false) {
 		};
 	} : (location = "", first = false) => {
 		let loc = location.split(", ");
-		if (!first && game.map[loc[0]] && (game.map[loc[0]][loc[1]][0] == "treasure" || game.map[loc[0]][loc[1]][0] == "battle_prime")) {
+		if (!first && game.map[loc[0]] && (game.map[loc[0]][loc[1]][0] === TREASUREROOM || game.map[loc[0]][loc[1]][0] === PRIMEROOM)) {
 			boolean = true;
 			return;
 		};
@@ -96,7 +98,7 @@ function mapRow(row) {
 			rand = randomInt(0, 5);
 			past = [];
 			while (past.length < 6) {
-				if (arr[rand] && arr[rand][0] != "treasure" && !pathHasSpecial(row + ", " + rand)) {
+				if (arr[rand] && arr[rand][0] !== TREASUREROOM && !pathHasSpecial(row + ", " + rand)) {
 					arr[rand] = mapPiece(row, PRIME);
 					death_zones++;
 					break;
@@ -134,7 +136,7 @@ async function generateMap() {
 			if (past.includes(rand)) setRand();
 		};
 		while (past.length < 6) {
-			if (game.map[2][rand] && game.map[2][rand][0] != "treasure" && !pathHasSpecial("2, " + rand, true)) {
+			if (game.map[2][rand] && game.map[2][rand][0] !== TREASUREROOM && !pathHasSpecial("2, " + rand, true)) {
 				game.map[2][rand] = mapPiece(2, PRIME);
 				death_zones++;
 				break;
@@ -147,7 +149,7 @@ async function generateMap() {
 			rand = randomInt(0, 5);
 			past = [];
 			while (past.length < 6) {
-				if (game.map[3][rand] && game.map[3][rand][0] == "treasure" && !pathHasSpecial("3, " + rand, true)) {
+				if (game.map[3][rand] && game.map[3][rand][0] === TREASUREROOM && !pathHasSpecial("3, " + rand, true)) {
 					game.map[3][rand] = mapPiece(3, PRIME);
 					death_zones++;
 					break;

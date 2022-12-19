@@ -904,9 +904,9 @@ function popupGraphics() {
 function rewardGraphics(focused = true) {
 	draw.box(150, 20, 100, 160);
 	const place = game.location.split(", ");
-	const type = game.location == "-1" ? "battle" : game.map[place[0]][place[1]][0];
-	if (type == "battle") draw.lore(200 - 2, 21, "Battle loot!", {"text-align": "center"});
-	else if (type == "treasure") draw.lore(200 - 2, 21, "Treasure!", {"text-align": "center"});
+	const type = (game.location == "-1" ? BATTLEROOM : game.map[place[0]][place[1]][0]);
+	if (type === BATTLEROOM) draw.lore(200 - 2, 21, "Battle Loot!", {"text-align": "center"});
+	else if (type === TREASUREROOM) draw.lore(200 - 2, 21, "Treasure!", {"text-align": "center"});
 	else draw.lore(200 - 2, 21, "Rewards!", {"text-align": "center"});
 	for (let index = 0; index < game.rewards.length; index++) {
 		let item = game.rewards[index];
@@ -1014,15 +1014,15 @@ function mapGraphics(onlyCalc = false) {
 				if (!game.map[x][y]) continue;
 				let drawX = 25 + (x * 32) + game.map[x][y][1];
 				let drawY = 18 + (y * 32) + game.map[x][y][2];
-				if (game.map[x][y][0] == "battle") {
+				if (game.map[x][y][0] === BATTLEROOM) {
 					draw.image(map.battle, drawX, drawY);
 					if (x == coordSel[0] && y == coordSel[1]) draw.image(select.battle, drawX - 1, drawY - 1);
 					if (x == coordOn[0] && y == coordOn[1]) draw.image(select.battle_blue, drawX - 1, drawY - 1);
-				} else if (game.map[x][y][0] == "battle_prime") {
+				} else if (game.map[x][y][0] === PRIMEROOM) {
 					draw.image(map.death_zone, drawX, drawY);
 					if (x == coordSel[0] && y == coordSel[1]) draw.image(select.death_zone, drawX - 1, drawY - 1);
 					if (x == coordOn[0] && y == coordOn[1]) draw.image(select.death_zone_blue, drawX - 1, drawY - 1);
-				} else if (game.map[x][y][0] == "treasure") {
+				} else if (game.map[x][y][0] === TREASUREROOM) {
 					if (game.map[x][y][3] == "open") {
 						draw.image(map.treasure_open, drawX, drawY);
 						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.treasure_open_blue, drawX - 1, drawY - 1);
