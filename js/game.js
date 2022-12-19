@@ -66,7 +66,7 @@ var global = {
 	traveled: [],
 	seed: "" + (Math.round(new Date().getTime() * (Math.random() + 0.001)) % 1000000).toString().shuffle(),
 	saveNum: 0,
-}, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = "title", menuSelect = 0, enemyPos = [], handPos = [], paths = {}, deckMove = "none", gameWon = false;
+}, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = "title", menuSelect = 0, enemyPos = [], handPos = [], paths = {}, gameWon = false;
 
 function musicPopup() {
 	let src = document.getElementById("music").src;
@@ -577,7 +577,6 @@ function selection() {
 			} else if (coor[1] > 0) {
 				game.cardSelect[0] = 5;
 				game.cardSelect[1]--;
-				deckMove = "up";
 			};
 			actionTimer = 1;
 			return;
@@ -587,18 +586,15 @@ function selection() {
 			} else if (coor[0] + (coor[1] * 6) < len - 1) {
 				game.cardSelect[0] = 0;
 				game.cardSelect[1]++;
-				deckMove = "down";
 			};
 			actionTimer = 1;
 			return;
 		} else if (action == "up" && coor[1] > 0) {
 			game.cardSelect[1]--;
-			deckMove = "up";
 			actionTimer = 1;
 			return;
 		} else if (action == "down" && coor[1] < Math.floor(len / 6) && (coor[0] < len % 6 || coor[1] < Math.floor(len / 6) - 1)) {
 			game.cardSelect[1]++;
-			deckMove = "down";
 			actionTimer = 1;
 			return;
 		};
@@ -607,8 +603,6 @@ function selection() {
 	if (action == "enter" && (game.select[0] == "deck" || game.select[0] == "void" || game.select[0] == "discard")) {
 		if (game.select[1] == 0) game.select[1] = 1;
 		else game.select[1] = 0;
-		game.deckPos = 0;
-		deckMove = "none";
 		actionTimer = 2;
 		return;
 	} else if (action == "enter" && game.select[0] == "map") {
@@ -932,10 +926,6 @@ function updateVisuals() {
 		deckGraphics(game.void);
 	} else if (game.select[0] == "discard" && game.select[1]) {
 		deckGraphics(game.discard);
-	} else {
-		game.cardSelect = [0, 0];
-		deckPos = 0;
-		deckMove = "none";
 	};
 	if (!hidden()) target();
 	popupGraphics();

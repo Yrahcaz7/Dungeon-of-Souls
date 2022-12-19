@@ -658,10 +658,12 @@ function optionsGraphics(focused = true) {
 
 function deckGraphics(deck) {
 	draw.rect("#000c");
-	if (deck.length) {
+	const len = +deck.length;
+	if (len > 0) {
+		if (game.cardSelect[0] + (game.cardSelect[1] * 6) >= len) game.cardSelect = [(len - 1) % 6, Math.floor((len - 1) / 6)];
 		let selected;
-		for (let x = 0, y = 0; x + (y * 6) < deck.length; x++) {
-			if (x == game.cardSelect[0] && y == game.cardSelect[1]) {
+		for (let x = 0, y = 0; x + (y * 6) < len; x++) {
+			if (x === game.cardSelect[0] && y === game.cardSelect[1]) {
 				selected = [x, y];
 			} else {
 				draw.card(deck[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66));
@@ -675,16 +677,11 @@ function deckGraphics(deck) {
 			draw.card(deck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66));
 		};
 		target();
-		if (deckMove == "up") {
-			let speed = Math.abs(Math.round(((98 * selected[1]) - game.deckPos) / 20) - 5);
-			if (game.deckPos <= (98 * selected[1]) - 5) game.deckPos += speed;
-			else if (game.deckPos >= (98 * selected[1]) + 5) game.deckPos -= speed;
-			else game.deckPos = (98 * selected[1]);
-		} else if (deckMove == "down") {
-			let speed = Math.abs(Math.round(((98 * (selected[1] - 1)) + 11 - game.deckPos) / 20) + 5);
-			if (game.deckPos <= (98 * (selected[1] - 1)) + 11 - 5) game.deckPos += speed;
-			else if (game.deckPos >= (98 * (selected[1] - 1)) + 12 + 5) game.deckPos -= speed;
-			else game.deckPos = (98 * (selected[1] - 1)) + 11;
+		selected = game.cardSelect;
+		if (game.deckPos >= (98 * selected[1]) + 5) {
+			game.deckPos -= Math.abs(Math.round(((98 * selected[1]) - game.deckPos) / 20) - 5);
+		} else if (game.deckPos <= (98 * (selected[1] - 1)) + 11 - 5) {
+			game.deckPos += Math.abs(Math.round(((98 * (selected[1] - 1)) + 11 - game.deckPos) / 20) + 5);
 		};
 	};
 	draw.rect("#0004", 0, 0, 400, 13);
