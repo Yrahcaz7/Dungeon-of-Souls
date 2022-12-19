@@ -79,6 +79,7 @@ function musicPopup() {
 
 function enterBattle() {
 	game.state = "battle";
+	game.rewards = [];
 	game.deckLocal = randomize(game.deck.slice(0));
 	game.hand = [];
 	game.discard = [];
@@ -86,6 +87,7 @@ function enterBattle() {
 	game.shield = 0;
 	game.eff.aura_blades = 0;
 	game.eff.reinforces = 0;
+	game.eff.weakness = 0;
 	startTurn();
 };
 
@@ -811,7 +813,7 @@ function manageGameplay() {
 	if (game.state == "enter") {
 		if (game.location == "-1" || game.map[place[0]][place[1]][0] == "battle" || game.map[place[0]][place[1]][0] == "battle_prime") {
 			if (game.location == "-1") game.room = game.firstRoom;
-			else game.traveled.push(+game.location.split(", ")[1]);
+			else game.traveled.push(+place[1]);
 			for (let index = 0; index < game.room[3].length; index++) {
 				let item = game.room[3][index].split(", ");
 				if (item[1]) game.enemies.push(new Enemy(item[0], item[1]));
@@ -819,6 +821,7 @@ function manageGameplay() {
 			};
 			enterBattle();
 		} else if (game.map[place[0]][place[1]][0] == "treasure") {
+			game.traveled.push(+place[1]);
 			game.map[place[0]][place[1]][3] = "open";
 			game.select = ["rewards", 0];
 			game.state = "event_fin";
