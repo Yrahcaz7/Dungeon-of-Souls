@@ -41,9 +41,7 @@ var global = {
 	select: ["welcome", 0],
 	cardSelect: [0, 0],
 	mapSelect: -1,
-	enemyAtt: "none",
-	enemyAttSel: 0,
-	enemyAttFin: false,
+	enemyAtt: [-1, 0, "none", false],
 	energy: 3,
 	enemies: [],
 	enemyNum: 0,
@@ -54,7 +52,6 @@ var global = {
 	deckPos: 0,
 	hand: [],
 	prevCard: -1,
-	activeCard: -1,
 	discard: [],
 	void: [],
 	eff: {
@@ -143,29 +140,30 @@ function endTurnConfirm() {
 
 function playerTurn() {
 	// finish attack enemy
-	if (game.enemyAttFin && playerAnim[1] == "idle") {
-		const attCard = cards[game.enemyAtt.id];
-		if (!attributes["NO SELECT"].includes(game.enemyAtt.id) && attCard.damage) {
+	if (game.enemyAtt[3] && playerAnim[1] == "idle") {
+		const attCard = cards[game.enemyAtt[2].id];
+		if (!attributes["NO SELECT"].includes(game.enemyAtt[2].id) && attCard.damage) {
 			dealDamage(attCard.damage, attCard.exMod);
 		};
 		if (typeof attCard.attack == "function") attCard.attack();
-		game.enemyAtt = "none";
-		game.enemyAttFin = false;
+		game.enemyAtt[2] = "none";
+		game.enemyAtt[3] = false;
 	};
 	// action timer
-	if (actionTimer > -1 || game.enemyAttFin) return;
+	if (actionTimer > -1 || game.enemyAtt[3]) return;
 	if (!actionTimer || actionTimer < -1) actionTimer = -1;
 	// attack enemy
 	if (action == "enter" && game.select[0] == "attack_enemy") {
-		game.energy -= cards[game.enemyAtt.id].cost;
-		startAnim.player(cards[game.enemyAtt.id].anim);
-		activateAttackEffects(game.enemyAtt.id);
-		game.enemyAttFin = true;
-		if (attributes["one use"].includes(game.enemyAtt.id)) game.void.push(game.hand.splice(game.activeCard, 1)[0]);
-		else game.discard.push(game.hand.splice(game.activeCard, 1)[0]);
-		cardAnim.splice(game.select[1], 1);
+		game.energy -= cards[game.enemyAtt[2].id].cost;
+		startAnim.player(cards[game.enemyAtt[2].id].anim);
+		activateAttackEffects(game.enemyAtt[2].id);
+		game.enemyAtt[3] = true;
+		if (attributes["one use"].includes(game.enemyAtt[2].id)) game.void.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
+		else game.discard.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
+		cardAnim.splice(game.enemyAtt[0], 1);
 		cardAnim.push(0);
-		game.enemyAttSel = game.select[1];
+		game.enemyAtt[0] = -1;
+		game.enemyAtt[1] = game.select[1];
 		if (game.prevCard) game.select = ["hand", game.prevCard - 1];
 		else game.select = ["hand", 0];
 		actionTimer = 4;
@@ -192,10 +190,10 @@ function playerTurn() {
 			} else if (cards[id].damage || cards[id].attack) { // effects of attack cards
 				if (attributes["NO SELECT"].includes(id)) {
 					game.energy -= cards[id].cost;
-					game.enemyAtt = game.hand[game.select[1]];
+					game.enemyAtt[2] = game.hand[game.select[1]];
 					startAnim.player(cards[id].anim);
 					activateAttackEffects(id);
-					game.enemyAttFin = true;
+					game.enemyAtt[3] = true;
 					if (attributes["one use"].includes(id)) game.void.push(game.hand.splice(game.select[1], 1)[0]);
 					else game.discard.push(game.hand.splice(game.select[1], 1)[0]);
 					cardAnim.splice(game.select[1], 1);
@@ -204,9 +202,9 @@ function playerTurn() {
 					else game.select = ["hand", 0];
 					actionTimer = 2;
 				} else {
-					game.activeCard = game.select[1];
+					game.enemyAtt[0] = game.select[1];
 					game.select = ["attack_enemy", game.enemies.length - 1];
-					game.enemyAtt = game.hand[game.activeCard];
+					game.enemyAtt[2] = game.hand[game.enemyAtt[0]];
 					actionTimer = 4;
 				};
 			};

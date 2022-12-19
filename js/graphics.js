@@ -221,7 +221,7 @@ const draw = {
 		let x = handPos[index], img = card.error;
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
 		const rarity = +cards[cardObject.id].rarity, name = cards[cardObject.id].name, exMod = +cards[cardObject.id].exMod;
-		if (card[rarities[rarity]]) img = card[rarities[rarity]][name];
+		if (card[rarities[rarity]] && rarity >= 0) img = card[rarities[rarity]][name];
 		// card back
 		if (cardObject.id !== 0) draw.image(card.back, x + 2, y + 2);
 		// card outline
@@ -694,7 +694,7 @@ function deckGraphics(deck) {
 
 function renderCards() {
 	if (game.select[0] == "attack_enemy") {
-		draw.card(game.enemyAtt, 0, 52, true, 104);
+		draw.card(game.enemyAtt[2], 0, 52, true, 104);
 	};
 	if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") return;
 	let temp = -1;

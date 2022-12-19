@@ -145,7 +145,7 @@ function discardHand() {
 	};
 };
 
-function dealDamage(amount, exMod = 1, enemy = game.enemyAttSel) {
+function dealDamage(amount, exMod = 1, enemy = game.enemyAtt[1]) {
 	// extra damage
 	let exDamage = 0;
 	if (exMod) {

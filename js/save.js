@@ -22,6 +22,16 @@ function save() {
 	if (global) localStorage.setItem(id + "/master", btoa(JSON.stringify(global)));
 };
 
+function fixSave() {
+	if (game.activeCard !== undefined || game.enemyAttSel !== undefined || game.enemyAttFin !== undefined) {
+		game.enemyAtt = [game.activeCard, game.enemyAttSel, game.enemyAtt, game.enemyAttFin];
+		delete game.activeCard;
+		delete game.enemyAttSel;
+		delete game.enemyAttFin;
+	};
+	save();
+};
+
 function load(saveNum = 0) {
 	if (saveNum !== 0 && !loaded) {
 		console.log("game not finished loading. please wait and try again.");
@@ -73,6 +83,7 @@ function load(saveNum = 0) {
 		console.log("terminating process.");
 	};
 	if (reSave) save();
+	fixSave();
 };
 
 window.onbeforeunload = () => {

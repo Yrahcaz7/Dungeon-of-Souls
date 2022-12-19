@@ -121,7 +121,7 @@ const attributes = {
 		rarity: 1,
 		cost: 0,
 		attack() {
-			let damage = game.enemies[game.enemyAttSel].health;
+			let damage = game.enemies[game.enemyAtt[1]].health;
 			if (game.shield <= damage) {
 				damage -= game.shield;
 				game.shield = 0;
@@ -129,7 +129,7 @@ const attributes = {
 			} else {
 				game.shield -= damage;
 			};
-			game.enemies[game.enemyAttSel].health = 0;
+			game.enemies[game.enemyAtt[1]].health = 0;
 		},
 	},
 	4000: {
