@@ -28,6 +28,34 @@ function fixRoom(item) {
 	else if (item[0] == "battle_prime") item[0] = PRIMEROOM;
 };
 
+function fixSelect(item) {
+	if (item == "hand") return HAND;
+	else if (item == "lookat_you") return LOOKAT_YOU;
+	else if (item == "lookat_enemy") return LOOKAT_ENEMY;
+	else if (item == "attack_enemy") return ATTACK_ENEMY;
+	else if (item == "looker") return LOOKER;
+	else if (item == "help") return HELP;
+	else if (item == "end") return END;
+	else if (item == "confirm_end") return CONFIRM_END;
+	else if (item == "deck") return DECK;
+	else if (item == "discard") return DISCARD;
+	else if (item == "map") return MAP;
+	else if (item == "in_map") return IN_MAP;
+	else if (item == "popups") return POPUPS;
+	else if (item == "rewards") return REWARDS;
+	else if (item == "card_rewards") return CARD_REWARDS;
+	else if (item == "artifacts") return ARTIFACTS;
+	else if (item == "void") return VOID;
+	else if (item == "confirm_exit") return CONFIRM_EXIT;
+	else if (item == "options") return OPTIONS;
+	else if (item == "game_over") return GAME_OVER;
+	else if (item == "game_fin") return GAME_FIN;
+	else if (item == "game_won") return GAME_WON;
+	else if (item == "confirm_restart") return CONFIRM_RESTART;
+	else if (item == "welcome") return WELCOME;
+	else return -1;
+};
+
 function fixSave() {
 	// fix enemy attack
 	if (game.activeCard !== undefined || game.enemyAttSel !== undefined || game.enemyAttFin !== undefined) {
@@ -49,6 +77,9 @@ function fixSave() {
 		if (game.attackEffect == "aura blade") game.attackEffects = [AURA_BLADE];
 		delete game.attackEffect;
 	};
+	// fix selector
+	if (typeof game.select[0] == "string") game.select[0] = fixSelect(game.select[0]);
+	if (typeof game.select[2] == "string") game.select[2][0] = fixSelect(game.select[2][0]);
 	// save again
 	save();
 };

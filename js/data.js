@@ -178,19 +178,19 @@ function updateData() {
 		startAnim.player("death");
 		game.turn = "none";
 		game.state = "game_over";
-		game.select = ["game_over", 0];
+		game.select = [GAME_OVER, 0];
 	};
 	// game won
-	if (game.floor == 8 && game.state == "event_fin" && game.select[0] == "in_map") {
+	if (game.floor == 8 && game.state == "event_fin" && game.select[0] === IN_MAP) {
 		game.turn = "none";
 		game.state = "game_fin";
-		game.select = ["game_fin", 0];
+		game.select = [GAME_FIN, 0];
 	};
 	// other
 	game.deck.cardSort();
 	game.discard.cardSort();
-	if (game.select[0] == "hand") {
-		if (game.hand[0]) game.prevCard = game.select[1];
-		else game.select = ["end", 0];
+	if (game.select[0] === HAND) {
+		if (game.hand.length) game.prevCard = game.select[1];
+		else game.select = [END, 0];
 	};
 };

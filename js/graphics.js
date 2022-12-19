@@ -248,7 +248,7 @@ const draw = {
 		if (game.eff.aura_blades) exDamage += 5 + game.eff.aura_blades;
 		if (exMod) exDamage = Math.floor(exDamage * exMod);
 		if (game.eff.weakness) mulDamage = 0.75;
-		if ((exDamage || mulDamage !== 1) && game.select[0] != "card_rewards") {
+		if ((exDamage || mulDamage !== 1) && game.select[0] != CARD_REWARDS) {
 			desc = desc.replace(/([Dd]eal\s)(\d+)(\s<red>damage<\/red>)/g, (substring, pre, number, post) => {
 				const original = parseInt(number);
 				let damage = Math.floor((original + exDamage) * mulDamage);
@@ -336,11 +336,11 @@ function backgrounds() {
 function foregrounds() {
 	const past = game.select[2];
 	if (past) {
-		if (past[0] == "rewards") rewardGraphics(false);
-		else if (past[0] == "card_rewards") cardRewardGraphics(false);
+		if (past[0] === REWARDS) rewardGraphics(false);
+		else if (past[0] === CARD_REWARDS) cardRewardGraphics(false);
 	};
 	draw.image(view);
-	if (game.select[0] == "looker" && game.select[1] == 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 343, 3);
+	if (game.select[0] === LOOKER && game.select[1] == 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 343, 3);
 	else draw.imageSector(extra.looker, 0, 0, 16, 16, 343, 3);
 	draw.image(extra.help, 362, 3);
 	draw.image(extra.options, 380, 2);
@@ -352,16 +352,16 @@ function foregrounds() {
 	if (game.artifacts.includes("iron will")) {
 		let index = game.artifacts.indexOf("iron will");
 		draw.image(icon.iron_will, 20 + (index * 18), 12);
-		if (game.select[0] == "artifacts" && game.select[1] == index) draw.image(select.iron_will, 19 + (index * 18), 11);
+		if (game.select[0] === ARTIFACTS && game.select[1] == index) draw.image(select.iron_will, 19 + (index * 18), 11);
 	};
-	if (game.select[0] == "looker") draw.image(select.round, 342, 2);
-	else if (game.select[0] == "help") draw.image(select.round, 361, 2);
-	else if (game.select[0] == "options") draw.image(select.options, 380, 2);
-	else if (game.select[0] == "end") draw.image(select.round, 2, 162);
-	else if (game.select[0] == "deck") draw.image(select.deck, 2, 181);
-	else if (game.select[0] == "void") draw.image(select.round, 380, 162);
-	else if (game.select[0] == "discard") draw.image(select.discard, 382, 181);
-	else if (game.select[0] == "map") draw.image(select.map, 1, 11);
+	if (game.select[0] === LOOKER) draw.image(select.round, 342, 2);
+	else if (game.select[0] === HELP) draw.image(select.round, 361, 2);
+	else if (game.select[0] === OPTIONS) draw.image(select.options, 380, 2);
+	else if (game.select[0] === END) draw.image(select.round, 2, 162);
+	else if (game.select[0] === DECK) draw.image(select.deck, 2, 181);
+	else if (game.select[0] === VOID) draw.image(select.round, 380, 162);
+	else if (game.select[0] === DISCARD) draw.image(select.discard, 382, 181);
+	else if (game.select[0] === MAP) draw.image(select.map, 1, 11);
 	draw.lore(1, 1, "floor " + game.floor, {"color": "red"});
 };
 
@@ -532,7 +532,7 @@ function enemyGraphics() {
 			if (tempAnim[2] == "ending") {
 				tempAnim = [0, "none", "normal", -1];
 				enemyAnim[tempAnim[3]] = 0;
-				game.enemyStage = "end";
+				game.enemyStage = END;
 			} else if (game.enemyStage == "middle") {
 				draw.imageSector(enemy.slime.slime_ball, 4 * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
 				tempAnim[2] = "ending";
@@ -562,7 +562,7 @@ function enemyGraphics() {
 			} else if (tempAnim[0] < 0) {
 				tempAnim = [0, "none", "normal", -1];
 				enemyAnim[tempAnim[3]] = 0;
-				game.enemyStage = "end";
+				game.enemyStage = END;
 			} else {
 				game.enemyStage = "pending";
 			};
@@ -576,7 +576,7 @@ function enemyGraphics() {
 			if (game.enemyStage == "middle") {
 				tempAnim = [0, "none", "normal", -1];
 				enemyAnim[tempAnim[3]] = 0;
-				game.enemyStage = "end";
+				game.enemyStage = END;
 			} else if (tempAnim[0] >= 14) {
 				tempAnim[0] = 14;
 				game.enemyStage = "middle";
@@ -685,19 +685,21 @@ function deckGraphics(deck) {
 		};
 	};
 	draw.rect("#0004", 0, 0, 400, 13);
-	draw.lore(200 - 2, 1, game.select[0].title(), {"color": "white", "text-align": "center"});
+	if (game.select[0] === DECK) draw.lore(200 - 2, 1, "Deck", {"color": "white", "text-align": "center"});
+	else if (game.select[0] === DISCARD) draw.lore(200 - 2, 1, "Discard", {"color": "white", "text-align": "center"});
+	else if (game.select[0] === VOID) draw.lore(200 - 2, 1, "Void", {"color": "white", "text-align": "center"});
 	draw.rect("#fff", 1, 12, 398, 1);
 };
 
 function renderCards() {
-	if (game.select[0] == "attack_enemy") {
+	if (game.select[0] === ATTACK_ENEMY) {
 		draw.card(game.enemyAtt[2], 0, 52, true, 104);
 	};
-	if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") return;
+	if (game.select[0] === ATTACK_ENEMY || game.select[0] === LOOKAT_ENEMY) return;
 	let temp = -1;
 	for (let index = 0; index < game.hand.length; index++) {
 		let card = game.hand[index];
-		if ((game.select[0] == "hand" && game.select[1] == index) || (index == game.prevCard && global.options.sticky_cards)) {
+		if ((game.select[0] === HAND && game.select[1] == index) || (index == game.prevCard && global.options.sticky_cards)) {
 			temp = index;
 		} else {
 			if (cardAnim[index] > 0) cardAnim[index] -= 6 + Math.random();
@@ -769,9 +771,9 @@ const info = {
 };
 
 function target() {
-	if (game.select[0] == "map") {
+	if (game.select[0] === MAP) {
 		info.artifact("the map");
-	} else if (game.select[0] == "attack_enemy" || game.select[0] == "lookat_enemy") {
+	} else if (game.select[0] === ATTACK_ENEMY || game.select[0] === LOOKAT_ENEMY) {
 		const enemy = game.enemies[game.select[1]];
 		const enemyType = enemy.type;
 		const pos = enemyPos[game.select[1]];
@@ -796,7 +798,7 @@ function target() {
 				else info.enemy("burn", coords[0] - 5.5, coords[1] - 2);
 			};
 		};
-	} else if (game.select[0] == "lookat_you") {
+	} else if (game.select[0] === LOOKAT_YOU) {
 		let coor = [59, 72, 21, 39];
 		if (playerAnim[1] == "shield" || playerAnim[1] == "shield_reinforced") coor = [58, 72, 23, 39];
 		else if (playerAnim[1] == "crouch_shield" || playerAnim[1] == "crouch_shield_reinforced") coor = [58, 72, 22, 39];
@@ -819,10 +821,10 @@ function target() {
 				};
 			};
 		};
-	} else if (game.select[0] == "artifacts") {
+	} else if (game.select[0] === ARTIFACTS) {
 		let name = game.artifacts[game.select[1]];
 		info.artifact(name);
-	} else if (game.select[0] == "deck" && game.select[1] == 1 && game.deckLocal.length) {
+	} else if (game.select[0] === DECK && game.select[1] == 1 && game.deckLocal.length) {
 		const keywords = cards[Object.deepCopy(game.deckLocal).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].id]?.keywords;
 		let x = 0, y = 0;
 		if (keywords instanceof Array) {
@@ -831,8 +833,8 @@ function target() {
 				if (key) y += info.deck(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
 			};
 		};
-	} else if ((game.select[0] == "void" || game.select[0] == "discard") && game.select[1] == 1 && game[game.select[0]].length) {
-		const keywords = cards[game[game.select[0]][game.cardSelect[0] + (game.cardSelect[1] * 6)].id]?.keywords;
+	} else if ((game.select[0] === VOID || game.select[0] === DISCARD) && game.select[1] == 1 && game[game.select[0] === VOID ? "void" : "discard"].length) {
+		const keywords = cards[game[game.select[0] === VOID ? "void" : "discard"][game.cardSelect[0] + (game.cardSelect[1] * 6)].id]?.keywords;
 		let x = 0, y = 0;
 		if (keywords instanceof Array) {
 			for (let index = 0; index < keywords.length; index++) {
@@ -840,7 +842,7 @@ function target() {
 				if (key) y += info.deck(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
 			};
 		};
-	} else if (game.select[0] == "card_rewards" && game.select[1] > -1 && game.select[1] < game.cardRewardChoices) {
+	} else if (game.select[0] === CARD_REWARDS && game.select[1] > -1 && game.select[1] < game.cardRewardChoices) {
 		const keywords = cards[game.room[5][game.select[1]]]?.keywords;
 		let x = 0, y = 0;
 		if (keywords instanceof Array) {
@@ -850,7 +852,7 @@ function target() {
 			};
 		};
 	};
-	if ((game.select[0] == "hand" || (game.select[0] != "attack_enemy" && game.select[0] != "lookat_enemy" && !hidden() && global.options.sticky_cards)) && game.hand.length && game.prevCard < game.hand.length) {
+	if ((game.select[0] === HAND || (game.select[0] != ATTACK_ENEMY && game.select[0] != LOOKAT_ENEMY && !hidden() && global.options.sticky_cards)) && game.hand.length && game.prevCard < game.hand.length) {
 		const keywords = cards[game.hand[game.prevCard].id]?.keywords;
 		let x = 0, y = 0;
 		if (keywords instanceof Array) {
@@ -891,7 +893,7 @@ function popupGraphics() {
 			draw.image(popup.back, popups[a][2], 150 - (a * 21));
 			draw.lore(popups[a][2] + 13, 150 - (a * 21) + 8, popups[a][4] ? popups[a][1] + "\n" + popups[a][4] : popups[a][1], {"text-small": !!popups[a][4]});
 			if (popup[popups[a][0]]) draw.image(popup[popups[a][0]], popups[a][2] + 2, 150 - (a * 21) + 2);
-			if (game.select[0] == "popups" && game.select[1] == a) {
+			if (game.select[0] === POPUPS && game.select[1] == a) {
 				draw.image(select.popup, popups[a][2] - 1, 150 - (a * 21) - 1);
 			};
 		};

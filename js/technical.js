@@ -68,7 +68,7 @@ window.onload = () => {
 	seed = internalSeed(game.seed);
 	canvasData();
 	// set things
-	if (game.select[0] == "game_fin") game.select[1] = 0;
+	if (game.select[0] == GAME_FIN) game.select[1] = 0;
 	if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: 800px";
 	else document.getElementById("canvas").style = "";
 	// calculate things
@@ -122,34 +122,34 @@ window.onresize = () => {
 document.addEventListener("keydown", (event) => {
 	const key = event.key, prevAction = "" + action;
 	if ((key == "E" || key == "e") && game.turn == "player") {
-		if (game.select[0] != "confirm_end") endTurnConfirm();
+		if (game.select[0] != CONFIRM_END) endTurnConfirm();
 	} else if (key == "1" && actionTimer == -1) {
-		if (game.select[0] == "deck" && game.select[1]) {
+		if (game.select[0] === DECK && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
-			else game.select = ["deck", 0];
+			else game.select = [DECK, 0];
 		} else {
-			if (game.select[2]) game.select = ["deck", 1, game.select[2]];
-			else game.select = ["deck", 1, game.select];
+			if (game.select[2]) game.select = [DECK, 1, game.select[2]];
+			else game.select = [DECK, 1, game.select];
 			action = "none";
 		};
 		actionTimer = 2;
 	} else if (key == "2" && game.void.length && actionTimer == -1) {
-		if (game.select[0] == "void" && game.select[1]) {
+		if (game.select[0] === VOID && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
-			else game.select = ["void", 0];
+			else game.select = [VOID, 0];
 		} else {
-			if (game.select[2]) game.select = ["void", 1, game.select[2]];
-			else game.select = ["void", 1, game.select];
+			if (game.select[2]) game.select = [VOID, 1, game.select[2]];
+			else game.select = [VOID, 1, game.select];
 			action = "none";
 		};
 		actionTimer = 2;
 	} else if (key == "3" && actionTimer == -1) {
-		if (game.select[0] == "discard" && game.select[1]) {
+		if (game.select[0] === DISCARD && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
-			else game.select = ["discard", 0];
+			else game.select = [DISCARD, 0];
 		} else {
-			if (game.select[2]) game.select = ["discard", 1, game.select[2]];
-			else game.select = ["discard", 1, game.select];
+			if (game.select[2]) game.select = [DISCARD, 1, game.select[2]];
+			else game.select = [DISCARD, 1, game.select];
 			action = "none";
 		};
 		actionTimer = 2;
