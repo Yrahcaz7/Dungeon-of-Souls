@@ -68,6 +68,10 @@ const get = {
 		let size = 5;
 		return size;
 	},
+	cardRewardChoices() {
+		let choices = 3;
+		return choices;
+	},
 	maxHealth() {
 		let max = 60;
 		return max;

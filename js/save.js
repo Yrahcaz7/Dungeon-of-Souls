@@ -18,7 +18,7 @@
 const ID = "Yrahcaz7/Dungeon-of-Souls/save";
 
 function save() {
-	if (game) localStorage.setItem(ID + "/" + game.saveNum, btoa(JSON.stringify(game)));
+	if (game) localStorage.setItem(ID + "/0", btoa(JSON.stringify(game)));
 	if (global) localStorage.setItem(ID + "/master", btoa(JSON.stringify(global)));
 };
 
@@ -113,16 +113,13 @@ function fixSave() {
 	else if (game.enemyStage == "middle") game.enemyStage = MIDDLE;
 	else if (game.enemyStage == "end" || game.enemyStage === END) game.enemyStage = ENDING;
 	else if (game.enemyStage == "none") game.enemyStage = -1;
-	// save again
-	save();
+	// delete unused vars
+	delete game.cardRewardChoices;
+	delete game.saveNum;
 };
 
-function load(saveNum = 0) {
-	if (saveNum !== 0 && !loaded) {
-		console.log("game not finished loading. please wait and try again.");
-		return;
-	};
-	let get = localStorage.getItem(ID + "/" + saveNum), reSave = false;
+function load() {
+	let get = localStorage.getItem(ID + "/0");
 	if (get && atob(get) && JSON.parse(atob(get))) {
 		let obj = JSON.parse(atob(get));
 		for (let index = 0; index < obj.enemies.length; index++) {
@@ -144,31 +141,18 @@ function load(saveNum = 0) {
 			obj.void[index] = new Card(obj.void[index].id, obj.void[index].level);
 		};
 		Object.assign(game, obj);
-		if (saveNum !== 0) {
-			localStorage.setItem(ID + "/" + game.saveNum, localStorage.getItem(ID + "/0"));
-			game.saveNum = 0;
-			save();
-		};
-	} else if (!get && game) {
-		console.log("no local save found. creating new save...");
-		reSave = true;
 	} else {
-		console.warn("the following is not a valid local save: " + get);
-		console.log("terminating process.");
+		console.log("no local save found. creating new save...");
 	};
 	get = localStorage.getItem(ID + "/master");
 	if (get && atob(get) && JSON.parse(atob(get))) {
 		get = JSON.parse(atob(get));
 		Object.assign(global, get);
-	} else if (!get && global) {
-		console.log("no global save found. creating new save...");
-		reSave = true;
 	} else {
-		console.warn("the following is not a valid global save: " + get);
-		console.log("terminating process.");
+		console.log("no global save found. creating new save...");
 	};
-	if (reSave) save();
 	fixSave();
+	save();
 };
 
 window.onbeforeunload = () => {

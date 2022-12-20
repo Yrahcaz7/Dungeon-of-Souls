@@ -737,7 +737,7 @@ const info = {
 	},
 	reward(type, xPlus = 0, yPlus = 0) {
 		let x = handPos[game.select[1]] + xPlus;
-		if (game.select[1] == game.cardRewardChoices - 1 && game.cardRewardChoices >= 4) {
+		if (game.select[1] == get.cardRewardChoices() - 1 && get.cardRewardChoices() >= 4) {
 			x -= 145;
 		};
 		return draw.textBox(x + 69, 51 + yPlus, 24, infoText[type], {"text-small": true});
@@ -846,7 +846,7 @@ function target() {
 				if (key) y += info.deck(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
 			};
 		};
-	} else if (game.select[0] === CARD_REWARDS && game.select[1] > -1 && game.select[1] < game.cardRewardChoices) {
+	} else if (game.select[0] === CARD_REWARDS && game.select[1] > -1 && game.select[1] < get.cardRewardChoices()) {
 		const keywords = cards[game.room[5][game.select[1]]]?.keywords;
 		let x = 0, y = 0;
 		if (keywords instanceof Array) {
@@ -923,20 +923,21 @@ function rewardGraphics(focused = true) {
 };
 
 function cardRewardGraphics(focused = true) {
-	let x = 199 - (game.cardRewardChoices * 68 / 2), y = 20, width = (game.cardRewardChoices * 68) + 2, height = 160;
+	const choices = get.cardRewardChoices();
+	let x = 199 - (choices * 68 / 2), y = 20, width = (choices * 68) + 2, height = 160;
 	draw.box(x, y, width, height);
-	if (game.cardRewardChoices == 2) draw.lore(200 - 2, y + 1, "Choose your card\nreward:", {"text-align": CENTER});
-	else if (game.cardRewardChoices == 1) draw.lore(200 - 2, y + 1, "Choose your\ncard reward", {"text-align": CENTER});
+	if (choices === 2) draw.lore(200 - 2, y + 1, "Choose your card\nreward:", {"text-align": CENTER});
+	else if (choices === 1) draw.lore(200 - 2, y + 1, "Choose your\ncard reward", {"text-align": CENTER});
 	else draw.lore(200 - 2, y + 1, "Choose your card reward:", {"text-align": CENTER});
 	handPos = [];
-	for (let index = 0; index < game.cardRewardChoices; index++) {
-		handPos.push((199 - (game.cardRewardChoices * 68 / 2)) + 1 + (index * 68));
+	for (let index = 0; index < choices; index++) {
+		handPos.push((199 - (choices * 68 / 2)) + 1 + (index * 68));
 		draw.card(new Card(game.room[5][index]), index, 50);
 	};
-	if (game.select[1] > -1 && game.select[1] < game.cardRewardChoices && focused) {
+	if (game.select[1] > -1 && game.select[1] < choices && focused) {
 		draw.card(new Card(game.room[5][game.select[1]]), game.select[1], 50, true);
 	};
-	if ((game.select[1] == -1 || game.select[1] == game.cardRewardChoices) && focused) draw.rect("#fff", x, y + height - 14, width, 14);
+	if ((game.select[1] === -1 || game.select[1] === choices) && focused) draw.rect("#fff", x, y + height - 14, width, 14);
 	draw.box(x + 2, y + height - 12, width - 4, 10);
 	draw.lore(x + 3, y + height - 11, "Go back");
 };

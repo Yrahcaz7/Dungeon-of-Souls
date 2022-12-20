@@ -40,7 +40,6 @@ var global = {
 	gold: 0,
 	location: "-1",
 	rewards: [],
-	cardRewardChoices: 3,
 	state: "enter",
 	turn: "none",
 	select: [WELCOME, 0],
@@ -69,7 +68,6 @@ var global = {
 	map: [],
 	traveled: [],
 	seed: "" + (Math.round(new Date().getTime() * (Math.random() + 0.001)) % 1000000).toString().shuffle(),
-	saveNum: 0,
 }, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = TITLE, menuSelect = 0, enemyPos = [], handPos = [], paths = {}, gameWon = false;
 
 function musicPopup() {
@@ -134,7 +132,7 @@ function endTurnConfirm() {
 	if (game.hand.length >= 1) {
 		for (let index = 0; index < game.hand.length; index++) {
 			const id = game.hand[index].id;
-			if (cards[id].cost <= game.energy && attributes.unplayable.includes(id)) {
+			if (cards[id].cost <= game.energy && !attributes.unplayable.includes(id)) {
 				confirm = true;
 				break;
 			};
@@ -373,14 +371,14 @@ function selection() {
 		};
 		return;
 	} else if (game.select[0] === CARD_REWARDS) {
-		if (action === RIGHT && game.select[1] < game.cardRewardChoices) {
+		if (action === RIGHT && game.select[1] < get.cardRewardChoices()) {
 			game.select[1]++;
 			actionTimer = 1;
 		} else if (action === LEFT && game.select[1] > -1) {
 			game.select[1]--;
 			actionTimer = 1;
 		} else if (action === ENTER) {
-			if (game.select[1] == -1 || game.select[1] == game.cardRewardChoices) {
+			if (game.select[1] == -1 || game.select[1] == get.cardRewardChoices()) {
 				for (let index = 0; index < game.rewards.length; index++) {
 					if (game.rewards[index] == "1 card") {
 						game.select = [REWARDS, index];
@@ -801,7 +799,7 @@ function manageGameplay() {
 		game.turn = "none";
 		game.rewards = [];
 		if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
-		if (game.cardRewardChoices > 0) game.rewards.push("1 card");
+		if (get.cardRewardChoices() > 0) game.rewards.push("1 card");
 		if (game.room[0] === PRIMEROOM) game.rewards.push((get.maxHealth() * 0.9) + " health");
 		game.rewards.push("finish");
 		if (game.artifacts.includes("iron will")) game.health += 2;
@@ -829,7 +827,7 @@ function manageGameplay() {
 			game.state = "event_fin";
 			game.rewards = [];
 			if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
-			if (game.cardRewardChoices > 0) game.rewards.push("1 card");
+			if (get.cardRewardChoices() > 0) game.rewards.push("1 card");
 			game.rewards.push("finish");
 		};
 	};
