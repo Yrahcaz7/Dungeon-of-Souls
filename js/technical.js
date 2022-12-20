@@ -132,7 +132,7 @@ window.onresize = () => {
 // key press
 
 document.addEventListener("keydown", (event) => {
-	const key = event.key, prevAction = "" + action;
+	const key = event.key, prevAction = +action;
 	if ((key == "E" || key == "e") && game.turn == "player") {
 		if (game.select[0] != CONFIRM_END) endTurnConfirm();
 	} else if (key == "1" && actionTimer == -1) {
@@ -173,7 +173,7 @@ document.addEventListener("keydown", (event) => {
 	else action = -1;
 	if (key == "Escape") fullscreen(true);
 	else if (key == "Tab") fullscreen();
-	if (!event.repeat && prevAction == "none" && lastAction == action && global.options.allow_fast_movement && loaded) {
+	if (!event.repeat && prevAction === -1 && lastAction === action && global.options.allow_fast_movement && loaded) {
 		if (action !== ENTER) selection();
 		updateVisuals();
 	};
