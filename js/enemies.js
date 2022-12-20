@@ -15,7 +15,9 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const SLIME = {BIG: 601, SMALL: 602, PRIME: 603}
+const SLIME = {BIG: 600, SMALL: 601, PRIME: 602};
+
+const ATTACK = 700, DEFEND = 701;
 
 class Enemy {
 	constructor(type, power = 1) {
@@ -31,11 +33,11 @@ class Enemy {
 		this.attackPower = Math.round(((power / 2) + 1) * 5 - 0.25);
 		this.defendPower = Math.round(((power / 2) + 1) * 5 + 1);
 		this.eff = {};
-		this.intent = chance(3/5) ? "attack" : "defend";
+		this.intent = chance(3/5) ? ATTACK : DEFEND;
 		this.intentHistory = [this.intent];
 	};
 	startAction = () => {
-		if (this.intent == "attack") {
+		if (this.intent === ATTACK) {
 			if (game.shield && !playerAnim[1].includes("shield")) {
 				if (game.eff.weakness) startAnim.player("crouch_shield");
 				else startAnim.player("shield");
@@ -47,12 +49,12 @@ class Enemy {
 				this.middleAction();
 				this.finishAction();
 			};
-		} else if (this.intent == "defend") {
+		} else if (this.intent === DEFEND) {
 			this.middleAction();
 		};
 	};
 	middleAction = () => {
-		if (this.intent == "attack") {
+		if (this.intent === ATTACK) {
 			var damage = this.attackPower;
 			if (game.shield <= damage) {
 				damage -= game.shield;
@@ -62,20 +64,20 @@ class Enemy {
 				game.shield -= damage;
 			};
 			if (game.shield < 1) startAnim.player("hit");
-		} else if (this.intent == "defend") {
+		} else if (this.intent === DEFEND) {
 			this.shield += this.defendPower;
 			this.finishAction();
 		};
 	};
 	finishAction = () => {
-		this.intent = chance(3/5) ? "attack" : "defend";
+		this.intent = chance(3/5) ? ATTACK : DEFEND;
 		this.intentHistory.push(this.intent);
-		if (this.overrideIntent("attack")) {
-			this.intent = "defend";
-			this.intentHistory = ["defend"];
-		} else if (this.overrideIntent("defend")) {
-			this.intent = "attack";
-			this.intentHistory = ["attack"];
+		if (this.overrideIntent(ATTACK)) {
+			this.intent = DEFEND;
+			this.intentHistory = [DEFEND];
+		} else if (this.overrideIntent(DEFEND)) {
+			this.intent = ATTACK;
+			this.intentHistory = [ATTACK];
 		};
 		if (game.enemyNum == game.enemies.length - 1) {
 			game.enemyNum = 0;

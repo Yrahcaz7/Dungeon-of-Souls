@@ -174,8 +174,8 @@ const draw = {
 		else if (effect >= 10) stage = 2;
 		else if (effect >= 5) stage = 1;
 		else stage = 0;
-		if (type == "attack") draw.image(intent.attack[stage], x, y);
-		else if (type == "defend") draw.image(intent.defend[stage], x, y + 1);
+		if (type === ATTACK) draw.image(intent.attack[stage], x, y);
+		else if (type === DEFEND) draw.image(intent.defend[stage], x, y + 1);
 	},
 	box(x, y, width, height, style = {"background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
 		if (!style["background-color"]) style["background-color"] = "#ccc";
@@ -598,11 +598,11 @@ function enemyGraphics() {
 				if (primeAnim == -1 || primeAnim >= 5) y -= 37;
 				else y -= 17;
 			};
-			if (game.enemies[index].intent == "defend") {
-				draw.intent(pos[0] + 16, y, game.enemies[index].defendPower, "defend");
+			if (game.enemies[index].intent === DEFEND) {
+				draw.intent(pos[0] + 16, y, game.enemies[index].defendPower, DEFEND);
 				draw.lore(pos[0] + 30, y + 12, game.enemies[index].defendPower, {"color": "white", "text-align": CENTER});
-			} else if (game.enemies[index].intent == "attack") {
-				draw.intent(pos[0] + 16, y, game.enemies[index].attackPower, "attack");
+			} else if (game.enemies[index].intent === ATTACK) {
+				draw.intent(pos[0] + 16, y, game.enemies[index].attackPower, ATTACK);
 				draw.lore(pos[0] + 30, y + 12, game.enemies[index].attackPower, {"color": "white", "text-align": CENTER});
 			};
 		};

@@ -29,6 +29,11 @@ function fixEnemyType(item) {
 	else return ("" + item).replace("slime_small", SLIME.SMALL);
 };
 
+function fixEnemyIntent(item) {
+	if (item == "attack") return ATTACK;
+	else if (item == "defend") return DEFEND;
+};
+
 function fixRoom(item) {
 	if (item[0] == "battle") item[0] = BATTLEROOM;
 	else if (item[0] == "treasure") item[0] = TREASUREROOM;
@@ -81,6 +86,10 @@ function fixSave() {
 	// fix enemies
 	for (let index = 0; index < game.enemies.length; index++) {
 		if (typeof game.enemies[index].type == "string") game.enemies[index].type = fixEnemyType(game.enemies[index].type);
+		if (typeof game.enemies[index].intent == "string") game.enemies[index].intent = fixEnemyIntent(game.enemies[index].intent);
+		for (let pos = 0; pos < game.enemies[index].intentHistory.length; pos++) {
+			if (typeof game.enemies[index].intentHistory[pos] == "string") game.enemies[index].intentHistory[pos] = fixEnemyIntent(game.enemies[index].intentHistory[pos]);
+		};
 	};
 	// fix rooms
 	for (let row = 0; row < game.map.length; row++) {

@@ -110,8 +110,8 @@ const attributes = {
 		effect() {
 			startAnim.effect("war cry");
 			for (let index = 0; index < game.enemies.length; index++) {
-				game.enemies[index].intent = "defend";
-				game.enemies[index].intentHistory[game.enemies[index].intentHistory.length - 1] = "defend";
+				game.enemies[index].intent = DEFEND;
+				game.enemies[index].intentHistory[game.enemies[index].intentHistory.length - 1] = DEFEND;
 			};
 		},
 	},
