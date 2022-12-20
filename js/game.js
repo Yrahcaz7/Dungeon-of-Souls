@@ -17,6 +17,8 @@
 
 const HAND = 300, LOOKAT_YOU = 301, LOOKAT_ENEMY = 302, ATTACK_ENEMY = 303, LOOKER = 304, HELP = 305, END = 306, CONFIRM_END = 307, DECK = 308, DISCARD = 309, MAP = 310, IN_MAP = 311, POPUPS = 312, REWARDS = 313, CARD_REWARDS = 314, ARTIFACTS = 315, VOID = 316, CONFIRM_EXIT = 317, OPTIONS = 318, GAME_OVER = 319, GAME_FIN = 320, GAME_WON = 321, CONFIRM_RESTART = 322, WELCOME = 323;
 
+const TITLE = 400, DIFFICULTY_CHANGE = 401;
+
 var global = {
 	// unlockedCards: [],
 	options: {
@@ -68,7 +70,7 @@ var global = {
 	traveled: [],
 	seed: "" + (Math.round(new Date().getTime() * (Math.random() + 0.001)) % 1000000).toString().shuffle(),
 	saveNum: 0,
-}, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = "title", menuSelect = 0, enemyPos = [], handPos = [], paths = {}, gameWon = false;
+}, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = TITLE, menuSelect = 0, enemyPos = [], handPos = [], paths = {}, gameWon = false;
 
 function musicPopup() {
 	let src = document.getElementById("music").src;
@@ -159,7 +161,7 @@ function playerTurn() {
 	if (actionTimer > -1 || game.enemyAtt[3]) return;
 	if (!actionTimer || actionTimer < -1) actionTimer = -1;
 	// attack enemy
-	if (action == "enter" && game.select[0] === ATTACK_ENEMY) {
+	if (action === ENTER && game.select[0] === ATTACK_ENEMY) {
 		game.energy -= cards[game.enemyAtt[2].id].cost;
 		activateAttackEffects(game.enemyAtt[2].id);
 		game.enemyAtt[3] = true;
@@ -175,7 +177,7 @@ function playerTurn() {
 		return;
 	};
 	// play card
-	if (action == "enter" && game.select[0] === HAND) {
+	if (action === ENTER && game.select[0] === HAND) {
 		let selected = game.hand[game.select[1]], id = selected.id;
 		if (attributes.unplayable.includes(id)) {
 			if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
@@ -238,13 +240,13 @@ function selection() {
 	if (!actionTimer || actionTimer < -1) actionTimer = -1;
 	// confirmation
 	if (game.select[0] === CONFIRM_END) {
-		if (action == "left" && game.select[1]) {
+		if (action === LEFT && game.select[1]) {
 			game.select[1] = 0;
 			actionTimer = 1;
-		} else if (action == "right" && !game.select[1]) {
+		} else if (action === RIGHT && !game.select[1]) {
 			game.select[1] = 1;
 			actionTimer = 1;
-		} else if (action == "enter") {
+		} else if (action === ENTER) {
 			if (!game.select[1]) {
 				endTurn();
 				game.select = [END, 0];
@@ -253,13 +255,13 @@ function selection() {
 		};
 		return;
 	} else if (game.select[0] === CONFIRM_EXIT) {
-		if (action == "left" && game.select[1]) {
+		if (action === LEFT && game.select[1]) {
 			game.select[1] = 0;
 			actionTimer = 1;
-		} else if (action == "right" && !game.select[1]) {
+		} else if (action === RIGHT && !game.select[1]) {
 			game.select[1] = 1;
 			actionTimer = 1;
-		} else if (action == "enter") {
+		} else if (action === ENTER) {
 			if (!game.select[1]) {
 				game.select = [MAP, 0];
 				showPopup("go", "go to the map!");
@@ -270,13 +272,13 @@ function selection() {
 		};
 		return;
 	} else if (game.select[0] === CONFIRM_RESTART) {
-		if (action == "left" && game.select[1]) {
+		if (action === LEFT && game.select[1]) {
 			game.select[1] = 0;
 			actionTimer = 1;
-		} else if (action == "right" && !game.select[1]) {
+		} else if (action === RIGHT && !game.select[1]) {
 			game.select[1] = 1;
 			actionTimer = 1;
-		} else if (action == "enter") {
+		} else if (action === ENTER) {
 			if (!game.select[1]) {
 				restartRun();
 				game.select = [OPTIONS, 0];
@@ -287,7 +289,7 @@ function selection() {
 	};
 	// game end
 	if (game.select[0] == GAME_OVER && game.select[1] == 204) {
-		if (action == "enter") {
+		if (action === ENTER) {
 			restartRun();
 			actionTimer = 2;
 		};
@@ -295,51 +297,51 @@ function selection() {
 	};
 	// menus
 	if (game.select[0] === WELCOME) {
-		if (action == "enter") {
+		if (action === ENTER) {
 			game.select = [-1, 0];
 			actionTimer = 2;
 		};
 		return;
-	} else if (menuLocation == "title") {
-		if (action == "enter") {
-			menuLocation = "none";
+	} else if (menuLocation === TITLE) {
+		if (action === ENTER) {
+			menuLocation = -1;
 			actionTimer = 2;
-		} else if (action == "left" && global.difficulty === 1) {
-			menuLocation = "difficulty_change";
+		} else if (action === LEFT && global.difficulty === 1) {
+			menuLocation = DIFFICULTY_CHANGE;
 			menuSelect = 1;
 			actionTimer = 2;
-		} else if (action == "right" && global.difficulty === 0) {
-			menuLocation = "difficulty_change";
+		} else if (action === RIGHT && global.difficulty === 0) {
+			menuLocation = DIFFICULTY_CHANGE;
 			menuSelect = 1;
 			actionTimer = 2;
 		};
 		return;
-	} else if (menuLocation == "difficulty_change") {
-		if (action == "left" && menuSelect) {
+	} else if (menuLocation === DIFFICULTY_CHANGE) {
+		if (action === LEFT && menuSelect) {
 			menuSelect = 0;
 			actionTimer = 1;
-		} else if (action == "right" && !menuSelect) {
+		} else if (action === RIGHT && !menuSelect) {
 			menuSelect = 1;
 			actionTimer = 1;
-		} else if (action == "enter") {
+		} else if (action === ENTER) {
 			if (!menuSelect) {
 				if (global.difficulty === 0) global.difficulty++;
 				else global.difficulty--;
 				restartRun();
-			} else menuLocation = "title";
+			} else menuLocation = TITLE;
 			actionTimer = 2;
 		};
 		return;
 	};
 	// rewards
 	if (game.select[0] === REWARDS) {
-		if ((action == "right" || action == "down") && game.select[1] < game.rewards.length - 1) {
+		if ((action === RIGHT || action === DOWN) && game.select[1] < game.rewards.length - 1) {
 			game.select[1]++;
 			actionTimer = 1;
-		} else if ((action == "up" || action == "left") && game.select[1] > 0) {
+		} else if ((action === UP || action === LEFT) && game.select[1] > 0) {
 			game.select[1]--;
 			actionTimer = 1;
-		} else if (action == "enter") {
+		} else if (action === ENTER) {
 			let item = "" + game.rewards[game.select[1]];
 			if (!item.endsWith(" - claimed")) {
 				let arr = item.split(" ");
@@ -371,13 +373,13 @@ function selection() {
 		};
 		return;
 	} else if (game.select[0] === CARD_REWARDS) {
-		if (action == "right" && game.select[1] < game.cardRewardChoices) {
+		if (action === RIGHT && game.select[1] < game.cardRewardChoices) {
 			game.select[1]++;
 			actionTimer = 1;
-		} else if (action == "left" && game.select[1] > -1) {
+		} else if (action === LEFT && game.select[1] > -1) {
 			game.select[1]--;
 			actionTimer = 1;
-		} else if (action == "enter") {
+		} else if (action === ENTER) {
 			if (game.select[1] == -1 || game.select[1] == game.cardRewardChoices) {
 				for (let index = 0; index < game.rewards.length; index++) {
 					if (game.rewards[index] == "1 card") {
@@ -401,7 +403,7 @@ function selection() {
 	};
 	// map
 	if (game.select[0] === IN_MAP && game.state == "event_fin" && paths[game.location]) {
-		if ((action == "up" || action == "right")) {
+		if ((action === UP || action === RIGHT)) {
 			if (game.mapSelect == -1) {
 				game.mapSelect = paths[game.location].length - 1;
 				actionTimer = 1;
@@ -411,7 +413,7 @@ function selection() {
 				actionTimer = 1;
 				return;
 			};
-		} else if ((action == "left" || action == "down") && game.mapSelect != -1) {
+		} else if ((action === LEFT || action === DOWN) && game.mapSelect != -1) {
 			if (game.mapSelect < paths[game.location].length - 1) {
 				game.mapSelect = game.mapSelect + 1;
 			} else {
@@ -419,7 +421,7 @@ function selection() {
 			};
 			actionTimer = 1;
 			return;
-		} else if (action == "enter" && paths[game.location][game.mapSelect]) {
+		} else if (action === ENTER && paths[game.location][game.mapSelect]) {
 			game.location = paths[game.location][game.mapSelect];
 			let coor = game.location.split(", ");
 			game.room = game.map[coor[0]][coor[1]];
@@ -434,34 +436,34 @@ function selection() {
 	// select hand
 	if (game.select[0] === -1) game.select = [HAND, 0];
 	// select extras
-	if (action == "up" && game.select[0] === LOOKAT_ENEMY) {
+	if (action === UP && game.select[0] === LOOKAT_ENEMY) {
 		game.select = [LOOKER, 0];
 		actionTimer = 1;
 		return;
 	};
 	// select / deselect player and more extras
-	if (action == "up" && game.select[0] === LOOKAT_YOU) {
+	if (action === UP && game.select[0] === LOOKAT_YOU) {
 		game.select = [MAP, 0];
 		actionTimer = 1;
 		return;
-	} else if (action == "up" && game.select[0] === VOID && !game.select[1]) {
+	} else if (action === UP && game.select[0] === VOID && !game.select[1]) {
 		if (popups[0]) game.select = [POPUPS, 0];
 		else if (!game.enemies.length) game.select = [LOOKER, 0];
 		else game.select = [LOOKAT_ENEMY, 0];
 		actionTimer = 1;
 		return;
-	} else if ((action == "right" || action == "down") && game.select[0] === VOID && !game.select[1]) {
+	} else if ((action === RIGHT || action === DOWN) && game.select[0] === VOID && !game.select[1]) {
 		game.select = [DISCARD, 0];
 		actionTimer = 1;
 		return;
-	} else if (action == "up" && game.select[0] === DISCARD && !game.select[1]) {
+	} else if (action === UP && game.select[0] === DISCARD && !game.select[1]) {
 		if (game.void.length) game.select = [VOID, 0];
 		else if (popups[0]) game.select = [POPUPS, 0];
 		else if (!game.enemies.length) game.select = [LOOKER, 0];
 		else game.select = [LOOKAT_ENEMY, 0];
 		actionTimer = 1;
 		return;
-	} else if (action == "left") {
+	} else if (action === LEFT) {
 		if (game.select[0] === HAND && !game.select[1]) {
 			game.select = [LOOKAT_YOU, 0];
 			actionTimer = 1;
@@ -480,7 +482,7 @@ function selection() {
 			actionTimer = 1;
 			return;
 		};
-	} else if (action == "right") {
+	} else if (action === RIGHT) {
 		if (game.select[0] === LOOKAT_YOU) {
 			if (!game.enemies.length) {
 				if (game.void.length) game.select = [VOID, 0];
@@ -500,7 +502,7 @@ function selection() {
 			return;
 		};
 	};
-	if (action == "up" || action == "right") {
+	if (action === UP || action === RIGHT) {
 		if (game.select[0] === DECK && !game.select[1]) {
 			game.select = [END, 0];
 			actionTimer = 1;
@@ -510,7 +512,7 @@ function selection() {
 			actionTimer = 1;
 			return;
 		};
-	} else if (action == "left" || action == "down") {
+	} else if (action === LEFT || action === DOWN) {
 		if (game.select[0] === END) {
 			game.select = [DECK, 0];
 			actionTimer = 1;
@@ -532,7 +534,7 @@ function selection() {
 		} else if (game.select[1] >= popups.length) {
 			game.select[1] = popups.length - 1;
 			return;
-		} else if (action == "up") {
+		} else if (action === UP) {
 			if (game.select[1] >= popups.length - 1 || game.select[1] >= 6) {
 				game.select = [LOOKER, 0];
 			} else {
@@ -540,7 +542,7 @@ function selection() {
 			};
 			actionTimer = 1;
 			return;
-		} else if (action == "down") {
+		} else if (action === DOWN) {
 			if (!game.select[1]) {
 				if (game.void.length) game.select = [VOID, 0];
 				else game.select = [DISCARD, 0];
@@ -549,12 +551,12 @@ function selection() {
 			};
 			actionTimer = 1;
 			return;
-		} else if (action == "left") {
+		} else if (action === LEFT) {
 			if (!game.hand.length) game.select = [LOOKAT_YOU, 0];
 			else game.select = [HAND, game.prevCard];
 			actionTimer = 1;
 			return;
-		} else if (action == "enter") {
+		} else if (action === ENTER) {
 			popups.splice(game.select[1], 1);
 			if (popups.length == 0) {
 				if (!game.hand.length) {
@@ -573,7 +575,7 @@ function selection() {
 		let coor = game.cardSelect, len = game.deckLocal.length;
 		if (game.select[0] === VOID) len = game.void.length;
 		else if (game.select[0] === DISCARD) len = game.discard.length;
-		if (action == "left") {
+		if (action === LEFT) {
 			if (coor[0] > 0) {
 				game.cardSelect[0]--;
 			} else if (coor[1] > 0) {
@@ -582,7 +584,7 @@ function selection() {
 			};
 			actionTimer = 1;
 			return;
-		} else if (action == "right" && (coor[0] < (len - 1) % 6 || coor[1] < Math.floor(len / 6))) {
+		} else if (action === RIGHT && (coor[0] < (len - 1) % 6 || coor[1] < Math.floor(len / 6))) {
 			if (coor[0] < 5) {
 				game.cardSelect[0]++;
 			} else if (coor[0] + (coor[1] * 6) < len - 1) {
@@ -591,67 +593,67 @@ function selection() {
 			};
 			actionTimer = 1;
 			return;
-		} else if (action == "up" && coor[1] > 0) {
+		} else if (action === UP && coor[1] > 0) {
 			game.cardSelect[1]--;
 			actionTimer = 1;
 			return;
-		} else if (action == "down" && coor[1] < Math.floor(len / 6) && (coor[0] < len % 6 || coor[1] < Math.floor(len / 6) - 1)) {
+		} else if (action === DOWN && coor[1] < Math.floor(len / 6) && (coor[0] < len % 6 || coor[1] < Math.floor(len / 6) - 1)) {
 			game.cardSelect[1]++;
 			actionTimer = 1;
 			return;
 		};
 	};
 	// activate / deactivate extras
-	if (action == "enter" && (game.select[0] === DECK || game.select[0] === VOID || game.select[0] === DISCARD)) {
+	if (action === ENTER && (game.select[0] === DECK || game.select[0] === VOID || game.select[0] === DISCARD)) {
 		if (game.select[1] == 0) game.select[1] = 1;
 		else game.select[1] = 0;
 		actionTimer = 2;
 		return;
-	} else if (action == "enter" && game.select[0] === MAP) {
+	} else if (action === ENTER && game.select[0] === MAP) {
 		game.select = [IN_MAP, 0];
 		actionTimer = 2;
 		return;
-	} else if (action == "enter" && game.select[0] === IN_MAP && game.mapSelect == -1) {
+	} else if (action === ENTER && game.select[0] === IN_MAP && game.mapSelect == -1) {
 		game.select = [MAP, 0];
 		actionTimer = 2;
 		return;
-	} else if (action == "enter" && game.select[0] === LOOKER) {
+	} else if (action === ENTER && game.select[0] === LOOKER) {
 		if (game.select[1] == 0) game.select[1] = 1;
 		else game.select[1] = 0;
 		actionTimer = 2;
 		return;
-	} else if (action == "enter" && game.select[0] === HELP) {
+	} else if (action === ENTER && game.select[0] === HELP) {
 		if (game.select[1] <= 2) game.select[1]++;
 		else game.select[1] = 0;
 		actionTimer = 2;
 		return;
-	} else if (action == "enter" && game.select[0] === OPTIONS && game.select[1] <= 1) {
+	} else if (action === ENTER && game.select[0] === OPTIONS && game.select[1] <= 1) {
 		if (game.select[1] === 0) game.select[1] = 1;
 		else game.select[1] = 0;
 		actionTimer = 2;
 		return;
-	} else if (action == "enter" && game.select[0] === END && game.turn == "player") {
+	} else if (action === ENTER && game.select[0] === END && game.turn == "player") {
 		endTurnConfirm();
 		return;
 	};
 	// scrolling
-	if (action == "up" && game.select[0] === HELP && infPos > 0 && infLimit > 0) {
+	if (action === UP && game.select[0] === HELP && infPos > 0 && infLimit > 0) {
 		infPos -= infLimit / 8 + 0.5;
-	} else if (action == "down" && game.select[0] === HELP) {
+	} else if (action === DOWN && game.select[0] === HELP) {
 		if (infPos < infLimit) infPos += infLimit / 8 + 0.5;
 		else infPos = infLimit;
 	};
 	// select options
 	if (game.select[0] === OPTIONS) {
-		if (action == "up" && game.select[1] > 1) {
+		if (action === UP && game.select[1] > 1) {
 			game.select[1]--;
 			actionTimer = 1;
 			return;
-		} else if (action == "down" && game.select[1] > 0 && game.select[1] - 2 < Object.keys(global.options).length) {
+		} else if (action === DOWN && game.select[1] > 0 && game.select[1] - 2 < Object.keys(global.options).length) {
 			game.select[1]++;
 			actionTimer = 1;
 			return;
-		} else if (action == "enter") {
+		} else if (action === ENTER) {
 			const option = Object.keys(global.options)[game.select[1] - 2];
 			if (option) global.options[option] = !global.options[option];
 			else game.select = [CONFIRM_RESTART, 1];
@@ -670,33 +672,33 @@ function selection() {
 	};
 	// deselect extras
 	if ((game.select[0] === LOOKER || game.select[0] === HELP || game.select[0] === OPTIONS || game.select[0] === MAP) && !game.select[1]) {
-		if (action == "left" && game.select[0] === LOOKER) {
+		if (action === LEFT && game.select[0] === LOOKER) {
 			if (game.artifacts.length) game.select = [ARTIFACTS, game.artifacts.length - 1];
 			else game.select = [MAP, 0];
 			actionTimer = 1;
 			return;
-		} else if (action == "left" && game.select[0] === HELP) {
+		} else if (action === LEFT && game.select[0] === HELP) {
 			game.select = [LOOKER, 0];
 			actionTimer = 1;
 			return;
-		} else if (action == "left" && game.select[0] === OPTIONS) {
+		} else if (action === LEFT && game.select[0] === OPTIONS) {
 			game.select = [HELP, 0];
 			actionTimer = 1;
 			return;
-		} else if (action == "right" && game.select[0] === LOOKER) {
+		} else if (action === RIGHT && game.select[0] === LOOKER) {
 			game.select = [HELP, 0];
 			actionTimer = 1;
 			return;
-		} else if (action == "right" && game.select[0] === MAP) {
+		} else if (action === RIGHT && game.select[0] === MAP) {
 			if (game.artifacts[0]) game.select = [ARTIFACTS, 0];
 			else game.select = [LOOKER, 0];
 			actionTimer = 1;
 			return;
-		} else if (action == "right" && game.select[0] === HELP) {
+		} else if (action === RIGHT && game.select[0] === HELP) {
 			game.select = [OPTIONS, 0];
 			actionTimer = 1;
 			return;
-		} else if (action == "down") {
+		} else if (action === DOWN) {
 			if (game.select[0] === MAP) game.select = [LOOKAT_YOU, 0];
 			else if (popups.length) game.select = [POPUPS, popups.length - 1];
 			else if (!game.enemies.length) {
@@ -709,17 +711,17 @@ function selection() {
 	};
 	// artifacts
 	if (game.select[0] === ARTIFACTS) {
-		if (action == "left") {
+		if (action === LEFT) {
 			if (game.select[1] == 0) game.select = [MAP, 0];
 			else game.select[1]--;
 			actionTimer = 1;
 			return;
-		} else if (action == "right") {
+		} else if (action === RIGHT) {
 			if (game.select[1] == game.artifacts.length - 1) game.select = [LOOKER, 0];
 			else game.select[1]++;
 			actionTimer = 1;
 			return;
-		} else if (action == "down") {
+		} else if (action === DOWN) {
 			game.select = [LOOKAT_YOU, 0];
 			actionTimer = 1;
 			return;
@@ -732,15 +734,15 @@ function selection() {
 		if (!game.hand) {
 			game.select = [END, 0];
 		} else {
-			if (action == "left") {
+			if (action === LEFT) {
 				game.select[1]--;
 				actionTimer = 1;
 				return;
-			} else if (action == "right") {
+			} else if (action === RIGHT) {
 				game.select[1]++;
 				actionTimer = 1;
 				return;
-			} else if (action == "up") {
+			} else if (action === UP) {
 				let to = -1, distance = -1;
 				for (let index = 0; index < game.enemies.length; index++) {
 					if (enemyPos[index][1] > distance) {
@@ -764,18 +766,18 @@ function selection() {
 	};
 	// select enemy
 	if (game.select[0] === ATTACK_ENEMY || game.select[0] === LOOKAT_ENEMY) {
-		if (action == "left") {
+		if (action === LEFT) {
 			if (game.select[1] < game.enemies.length - 1) game.select[1]++;
 			else game.select = [LOOKAT_YOU, 0];
 			actionTimer = 1;
 			return;
-		} else if (action == "right") {
+		} else if (action === RIGHT) {
 			if (game.select[1]) game.select[1]--;
 			else if (game.void.length) game.select = [VOID, 0];
 			else game.select = [DISCARD, 0];
 			actionTimer = 1;
 			return;
-		} else if (action == "down" && game.select[0] === LOOKAT_ENEMY) {
+		} else if (action === DOWN && game.select[0] === LOOKAT_ENEMY) {
 			if (!game.hand[0]) {
 				if (game.void.length) game.select = [VOID, 0];
 				else game.select = [DISCARD, 0];
@@ -842,20 +844,20 @@ function updateVisuals() {
 	updateData();
 	// visuals
 	backgrounds();
-	if (menuLocation == "title" || menuLocation == "difficulty_change") {
+	if (menuLocation === TITLE || menuLocation === DIFFICULTY_CHANGE) {
 		draw.image(title, (400 - title.width) / 2, 0);
-		draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "red", "text-align": "center"});
-		if (new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "white", "text-align": "center"});
+		draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "red", "text-align": CENTER});
+		if (new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "white", "text-align": CENTER});
 		if (global.difficulty === undefined) global.difficulty = 0;
 		draw.imageSector(difficulty, 0, global.difficulty * 16, 64, 16, 168, 146);
 	};
-	if (menuLocation != "none") {
+	if (menuLocation !== -1) {
 		draw.image(view);
 		if (game.select[0] === WELCOME) {
 			draw.box(80, 83, 240, 34);
-			if (global.difficulty === 0) draw.lore(200 - 2, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": "center"});
-			else draw.lore(200 - 2, 84, "Hello there! Welcome to <deep-red>hard mode!</deep-red><s>In hard mode, enemies start stronger from the beginning.\nAdditionally, the enemies get stronger twice as fast as easy mode.\nOtherwise, this is the same as easy mode, but more changes may be made later.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": "center"});
-		} else if (menuLocation == "difficulty_change") {
+			if (global.difficulty === 0) draw.lore(200 - 2, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": CENTER});
+			else draw.lore(200 - 2, 84, "Hello there! Welcome to <deep-red>hard mode!</deep-red><s>In hard mode, enemies start stronger from the beginning.\nAdditionally, the enemies get stronger twice as fast as easy mode.\nOtherwise, this is the same as easy mode, but more changes may be made later.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": CENTER});
+		} else if (menuLocation === DIFFICULTY_CHANGE) {
 			let x = 116, y = 83;
 			draw.rect("#0008");
 			draw.box(x + 1, y + 1, 166, 26);
@@ -936,7 +938,7 @@ function updateVisuals() {
 		const num = Math.floor(game.select[1]).toString(16);
 		draw.rect("#000000" + (num.length < 2 ? "0" : "") + num);
 		if (game.select[1] < 204) game.select[1] += 10;
-		else draw.lore(200 - 2, 53, "GAME OVER\n\nDIFFICULTY: " + (global.difficulty ? "HARD" : "EASY") + "\n\nTOP FLOOR: " + game.floor + "\n\nPRESS ENTER TO START A NEW RUN", {"color": "deep red", "text-align": "center"});
+		else draw.lore(200 - 2, 53, "GAME OVER\n\nDIFFICULTY: " + (global.difficulty ? "HARD" : "EASY") + "\n\nTOP FLOOR: " + game.floor + "\n\nPRESS ENTER TO START A NEW RUN", {"color": "deep red", "text-align": CENTER});
 	} else if (game.select[0] == GAME_FIN) {
 		if (game.select[1] > 255) game.select[1] = 255;
 		const num = Math.floor(game.select[1]).toString(16);
@@ -954,9 +956,9 @@ function updateVisuals() {
 				let num = Math.round(interval(4/3, 2));
 				draw.image(victorious, 168, 42 + num, victorious.width * 2, victorious.height * 2);
 				draw.rect("#0004");
-				draw.lore(200 - 2, 50, "YOU WON THE GAME ON " + (global.difficulty ? "HARD" : "EASY") + "!\n\nThank you for playing!\n\nMore content coming soon, such as:<s>\n- More cards!\n- More enemies!\n- A boss battle!\n- And much more!<b>\n\nPRESS ENTER TO START A NEW RUN", {"color": "light green", "text-align": "center"});
+				draw.lore(200 - 2, 50, "YOU WON THE GAME ON " + (global.difficulty ? "HARD" : "EASY") + "!\n\nThank you for playing!\n\nMore content coming soon, such as:<s>\n- More cards!\n- More enemies!\n- A boss battle!\n- And much more!<b>\n\nPRESS ENTER TO START A NEW RUN", {"color": "light green", "text-align": CENTER});
 				if (actionTimer <= -1) {
-					if (action == "enter") restartRun();
+					if (action === ENTER) restartRun();
 				} else actionTimer -= 0.1;
 			}, 10);
 		};
@@ -977,7 +979,7 @@ const gameloop = setInterval(function() {
 	};
 	if (loaded) {
 		// gameplay
-		if (menuLocation == "none") manageGameplay();
+		if (menuLocation === -1) manageGameplay();
 		// selection
 		selection();
 		// visuals
@@ -988,7 +990,7 @@ const gameloop = setInterval(function() {
 }, 100), musicloop = setInterval(function() {
 	let time = document.getElementById("music").currentTime;
 	if (global.options.music) {
-		if (time === 0 && menuLocation != "title") {
+		if (time === 0 && menuLocation !== TITLE) {
 			document.getElementById("music").play();
 		} else if (time > document.getElementById("music").duration - 0.1) {
 			document.getElementById("music").currentTime = 0;

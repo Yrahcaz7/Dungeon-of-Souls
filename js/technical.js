@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// seeding and randomness
+// setup seeds
 
 function internalSeed(str) {
 	for (var k, i = 0, h = 2166136261 >>> 0; i < str.length; i++) {
@@ -34,6 +34,8 @@ function internalSeed(str) {
 
 var seed = internalSeed(game.seed);
 
+// setup PRNG
+
 function internalRandom(a, b, c, d) {
 	return function() {
 		var t = b << 9, r = a * 5; r = (r << 7 | r >>> 25) * 9;
@@ -45,6 +47,8 @@ function internalRandom(a, b, c, d) {
 };
 
 const random = internalRandom(seed(), seed(), seed(), seed());
+
+// setup other randomness
 
 function randomInt(min, max) {
 	min = Math.ceil(min);
@@ -58,9 +62,9 @@ function chance(chance = 0.5) {
 	return random() < chance;
 };
 
-// page setup
+// setup game
 
-var canvas, scale, ctx, action = "none", lastAction = "none", loaded = false;
+var loaded = false;
 
 window.onload = () => {
 	// prep things
@@ -85,6 +89,10 @@ window.onload = () => {
 	};
 };
 
+// setup canvas
+
+var canvas, scale, ctx, action = -1, lastAction = -1;
+
 function canvasData() {
 	let canv = document.getElementById("canvas");
 	if (!canv) return false;
@@ -99,9 +107,13 @@ function canvasData() {
 	return true;
 };
 
+// clear canvas
+
 function clearCanvas() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
+
+// fix canvas
 
 function fixCanvas() {
 	if (global.options.pixel_perfect_screen) {
@@ -113,11 +125,11 @@ function fixCanvas() {
 	};
 };
 
-// event listeners
-
 window.onresize = () => {
 	fixCanvas();
 };
+
+// key press
 
 document.addEventListener("keydown", (event) => {
 	const key = event.key, prevAction = "" + action;
@@ -130,7 +142,7 @@ document.addEventListener("keydown", (event) => {
 		} else {
 			if (game.select[2]) game.select = [DECK, 1, game.select[2]];
 			else game.select = [DECK, 1, game.select];
-			action = "none";
+			action = -1;
 		};
 		actionTimer = 2;
 	} else if (key == "2" && game.void.length && actionTimer == -1) {
@@ -140,7 +152,7 @@ document.addEventListener("keydown", (event) => {
 		} else {
 			if (game.select[2]) game.select = [VOID, 1, game.select[2]];
 			else game.select = [VOID, 1, game.select];
-			action = "none";
+			action = -1;
 		};
 		actionTimer = 2;
 	} else if (key == "3" && actionTimer == -1) {
@@ -150,31 +162,35 @@ document.addEventListener("keydown", (event) => {
 		} else {
 			if (game.select[2]) game.select = [DISCARD, 1, game.select[2]];
 			else game.select = [DISCARD, 1, game.select];
-			action = "none";
+			action = -1;
 		};
 		actionTimer = 2;
-	} else if ((key == " " || key == "Enter") && !(game.select[2] && menuLocation == "none")) action = "enter";
-	else if (key == "W" || key == "w" || key == "ArrowUp") action = "up";
-	else if (key == "A" || key == "a" || key == "ArrowLeft") action = "left";
-	else if (key == "S" || key == "s" || key == "ArrowDown") action = "down";
-	else if (key == "D" || key == "d" || key == "ArrowRight") action = "right";
-	else action = "none";
-	if (key == "Escape") fullscreen("exit");
+	} else if ((key == " " || key == "Enter") && !(game.select[2] && menuLocation === -1)) action = ENTER;
+	else if (key == "W" || key == "w" || key == "ArrowUp") action = UP;
+	else if (key == "A" || key == "a" || key == "ArrowLeft") action = LEFT;
+	else if (key == "S" || key == "s" || key == "ArrowDown") action = DOWN;
+	else if (key == "D" || key == "d" || key == "ArrowRight") action = RIGHT;
+	else action = -1;
+	if (key == "Escape") fullscreen(true);
 	else if (key == "Tab") fullscreen();
 	if (!event.repeat && prevAction == "none" && lastAction == action && global.options.allow_fast_movement && loaded) {
-		if (action != "enter" && key != "1" && key != "2" && key != "3") selection();
+		if (action !== ENTER) selection();
 		updateVisuals();
 	};
-	if (action != "none") lastAction = action;
+	if (action !== -1) lastAction = action;
 });
+
+// key lift
 
 document.addEventListener("keyup", (event) => {
 	const key = event.key;
-	if (key == " " || key == "Enter" || key == "W" || key == "w" || key == "ArrowUp" || key == "A" || key == "a" || key == "ArrowLeft" || key == "S" || key == "s" || key == "ArrowDown" || key == "D" || key == "d" || key == "ArrowRight") action = "none";
+	if (key == " " || key == "Enter" || key == "W" || key == "w" || key == "ArrowUp" || key == "A" || key == "a" || key == "ArrowLeft" || key == "S" || key == "s" || key == "ArrowDown" || key == "D" || key == "d" || key == "ArrowRight") action = -1;
 });
 
-function fullscreen(state = "enter") {
-	if (state == "exit") {
+// enter/exit fullscreen
+
+function fullscreen(exit = false) {
+	if (exit) {
 		if (document.body.exitFullscreen) {
 			document.body.exitFullscreen();
 		} else if (document.body.webkitExitFullscreen) {

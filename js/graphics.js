@@ -15,7 +15,9 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-var backAnim = [0, "up", 0.5, "down", 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, "none", "normal", -1], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], primeAnim = 0, auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]], auraBladeAnim = [0, "up", 2.5, "up", 3, "down", 0.5, "down"], invNum = -1, popups = [], infPos = 0, infLimit = 0;
+const ENTER = 500, UP = 501, LEFT = 502, CENTER = 503, RIGHT = 504, DOWN = 505;
+
+var backAnim = [0, UP, 0.5, DOWN, 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, "none", "normal", -1], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], primeAnim = 0, auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]], auraBladeAnim = [0, UP, 2.5, UP, 3, DOWN, 0.5, DOWN], invNum = -1, popups = [], infPos = 0, infLimit = 0;
 
 const draw = {
 	// basic - first order
@@ -44,11 +46,11 @@ const draw = {
 		ctx.stroke();
 	},
 	// complex - second order (uses basic)
-	lore(x, y, string, style = {"color": "black", "highlight-color": "#000", "text-align": "right", "text-small": false}) {
+	lore(x, y, string, style = {"color": "black", "highlight-color": "#000", "text-align": RIGHT, "text-small": false}) {
 		string = "" + string;
 		if (!style["color"]) style["color"] = "black";
 		if (!style["highlight-color"]) style["highlight-color"] = "#000";
-		if (!style["text-align"]) style["text-align"] = "right";
+		if (!style["text-align"]) style["text-align"] = RIGHT;
 		if (!style["text-small"]) style["text-small"] = false;
 		let color = style["color"], highlight = "", position = style["text-align"], small = style["text-small"];
 		string = string.replace(/<br>/g, "\n");
@@ -84,7 +86,7 @@ const draw = {
 			return space;
 		};
 		// print multi-line right aligned text
-		if (string.includes("\n") && position != "right") {
+		if (string.includes("\n") && position !== RIGHT) {
 			let array = string.split("\n");
 			let space = 0;
 			if (!array[0]) array.splice(0, 1);
@@ -127,22 +129,22 @@ const draw = {
 			};
 			// print letter
 			if (small) {
-				if (position == "right") {
+				if (position === RIGHT) {
 					if (highlight) draw.rect(highlight, x + (a * 3) - 0.5, y + (enters * 5.5) - 0.5, 3.5, 5.5);
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 3), y + (enters * 5.5), 2.5, 5);
-				} else if (position == "left") {
+				} else if (position === LEFT) {
 					if (highlight) draw.rect(highlight, x + ((a - len + 1) * 3) - 0.5, y + (enters * 5.5) - 0.5, 3.5, 5.5);
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 3), y + (enters * 5.5), 2.5, 5);
-				} else if (position == "center") {
+				} else if (position === CENTER) {
 					if (highlight) draw.rect(highlight, x + (a * 3) - (len * 1.5) + 1 - 0.5, y + (enters * 5.5) - 0.5, 3.5, 5.5);
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 3) - (len * 1.5) + 1, y + (enters * 5.5), 2.5, 5);
 				};
 			} else {
-				if (position == "right") {
+				if (position === RIGHT) {
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 6), y + (enters * 11), 5, 10);
-				} else if (position == "left") {
+				} else if (position === LEFT) {
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 6), y + (enters * 11), 5, 10);
-				} else if (position == "center") {
+				} else if (position === CENTER) {
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (len * 3) + 2, y + (enters * 11), 5, 10);
 				};
 			};
@@ -200,7 +202,7 @@ const draw = {
 		};
 		draw.imageSector(bar.health_full, 0, 0, cutoff + 1, 12, x, y + 65);
 		draw.imageSector(bar.health_empty, cutoff + 1, 0, 64 - (cutoff + 1), 12, x + (cutoff + 1), y + 65);
-		draw.lore(x + 25, y + 67, health, {"text-align": "left"});
+		draw.lore(x + 25, y + 67, health, {"text-align": LEFT});
 		draw.lore(x + 34, y + 67, maxHealth);
 		if (!shield || !maxShield) return;
 		percentage = shield / maxShield;
@@ -212,7 +214,7 @@ const draw = {
 		};
 		draw.imageSector(bar.shield_full, 0, 0, cutoff + 1, 12, x, y + 76);
 		draw.imageSector(bar.shield_empty, cutoff + 1, 0, 64 - (cutoff + 1), 12, x + (cutoff + 1), y + 76);
-		draw.lore(x + 25, y + 78, shield, {"text-align": "left"});
+		draw.lore(x + 25, y + 78, shield, {"text-align": LEFT});
 		draw.lore(x + 34, y + 78, maxShield);
 	},
 	card(cardObject, index, y, selected = false, overrideX = NaN) {
@@ -241,14 +243,14 @@ const draw = {
 		if (img == card.error) draw.image(card.error, x + 2, y + 2);
 		else draw.image(img, x + 7, y + 7);
 		// card title
-		if (name.length >= 11) draw.lore(x + 32, y + 44, name.title(), {"text-align": "center", "text-small": true});
-		else draw.lore(x + 32, y + 42, name.title(), {"text-align": "center"});
+		if (name.length >= 11) draw.lore(x + 32, y + 44, name.title(), {"text-align": CENTER, "text-small": true});
+		else draw.lore(x + 32, y + 42, name.title(), {"text-align": CENTER});
 		// card description
 		let desc = cards[cardObject.id].desc, exDamage = 0, mulDamage = 1, valueIsLess = false;
 		if (game.eff.aura_blades) exDamage += 5 + game.eff.aura_blades;
 		if (exMod) exDamage = Math.floor(exDamage * exMod);
 		if (game.eff.weakness) mulDamage = 0.75;
-		if ((exDamage || mulDamage !== 1) && game.select[0] != CARD_REWARDS) {
+		if ((exDamage || mulDamage !== 1) && game.select[0] !== CARD_REWARDS) {
 			desc = desc.replace(/([Dd]eal\s)(\d+)(\s<red>damage<\/red>)/g, (substring, pre, number, post) => {
 				const original = parseInt(number);
 				let damage = Math.floor((original + exDamage) * mulDamage);
@@ -264,7 +266,7 @@ const draw = {
 		};
 		// other
 		draw.lore(x + 6, y + 55, desc, {"highlight-color": (valueIsLess ? "#f00" : "#000"), "text-small": true});
-		draw.lore(x + 33, y + 89.5, rarities[rarity] + "|" + type, {"text-align": "center", "text-small": true});
+		draw.lore(x + 33, y + 89.5, rarities[rarity] + "|" + type, {"text-align": CENTER, "text-small": true});
 		if (rarity == 2) {
 			draw.image(card.rarity.rare, x - 2, y - 2);
 		};
@@ -273,10 +275,10 @@ const draw = {
 			draw.lore(x + 4, y + 2, cards[cardObject.id].cost);
 		};
 	},
-	textBox(x, y, width, string, style = {"color": "black", "highlight-color": "#000", "text-align": "right", "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
+	textBox(x, y, width, string, style = {"color": "black", "highlight-color": "#000", "text-align": RIGHT, "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
 		if (!style["color"]) style["color"] = "black";
 		if (!style["highlight-color"]) style["highlight-color"] = "#000";
-		if (!style["text-align"]) style["text-align"] = "right";
+		if (!style["text-align"]) style["text-align"] = RIGHT;
 		if (!style["text-small"]) style["text-small"] = false;
 		if (!style["background-color"]) style["background-color"] = "#ccc";
 		if (!style["border-width"]) style["border-width"] = 1;
@@ -292,11 +294,11 @@ const draw = {
 			height = lines * 11 + 12;
 		};
 		draw.box(x, y, width, height, style);
-		if (position == "center") {
+		if (position === CENTER) {
 			x += width / 2;
 			if (small) x -= 1.5;
 			else x -= 3;
-		} else if (position == "left") {
+		} else if (position === LEFT) {
 			x += width;
 			if (small) x -= 3;
 			else x -= 6;
@@ -323,14 +325,14 @@ function backgrounds() {
 	draw.imageSector(clock.hour_hand, Math.floor((time[0]) * 82 / 12) * 24, 0, 24, 24, clockX + 18, clockY + 18);
 	draw.imageSector(clock.min_hand, Math.floor((time[1]) * 80 / 60) * 34, 0, 34, 34, clockX + 13, clockY + 13);
 	draw.image(clock.node, clockX + 26, clockY + 26);
-	if (backAnim[0] >= 1) backAnim[1] = "down";
-	else if (backAnim[0] <= -1) backAnim[1] = "up";
-	if (backAnim[1] == "up") backAnim[0] += (Math.random() + 0.5) * 0.075;
-	else if (backAnim[1] == "down") backAnim[0] -= (Math.random() + 0.5) * 0.075;
-	if (backAnim[2] >= 1) backAnim[3] = "down";
-	else if (backAnim[2] <= -1) backAnim[3] = "up";
-	if (backAnim[3] == "up") backAnim[2] += (Math.random() + 0.5) * 0.075;
-	else if (backAnim[3] == "down") backAnim[2] -= (Math.random() + 0.5) * 0.075;
+	if (backAnim[0] >= 1) backAnim[1] = DOWN;
+	else if (backAnim[0] <= -1) backAnim[1] = UP;
+	if (backAnim[1] === UP) backAnim[0] += (Math.random() + 0.5) * 0.075;
+	else if (backAnim[1] === DOWN) backAnim[0] -= (Math.random() + 0.5) * 0.075;
+	if (backAnim[2] >= 1) backAnim[3] = DOWN;
+	else if (backAnim[2] <= -1) backAnim[3] = UP;
+	if (backAnim[3] === UP) backAnim[2] += (Math.random() + 0.5) * 0.075;
+	else if (backAnim[3] === DOWN) backAnim[2] -= (Math.random() + 0.5) * 0.075;
 };
 
 function foregrounds() {
@@ -395,10 +397,10 @@ function playerGraphics() {
 		auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]];
 		for (let num = 0; num < auraBladePos.length && num <= 4; num++) {
 			auraBladePos[num][1] += Math.round(auraBladeAnim[num * 2]);
-			if (auraBladeAnim[num * 2 + 1] == "up") auraBladeAnim[num * 2] += (Math.random() + 0.5) * 0.05;
+			if (auraBladeAnim[num * 2 + 1] === UP) auraBladeAnim[num * 2] += (Math.random() + 0.5) * 0.05;
 			else auraBladeAnim[num * 2] -= (Math.random() + 0.5) * 0.05;
-			if (auraBladeAnim[num * 2] >= 4) auraBladeAnim[num * 2 + 1] = "down";
-			else if (auraBladeAnim[num * 2] <= 0) auraBladeAnim[num * 2 + 1] = "up";
+			if (auraBladeAnim[num * 2] >= 4) auraBladeAnim[num * 2 + 1] = DOWN;
+			else if (auraBladeAnim[num * 2] <= 0) auraBladeAnim[num * 2 + 1] = UP;
 		};
 		for (let blade = 0; blade < game.eff.aura_blades && blade < 4; blade++) {
 			draw.image(aura_blade, x + auraBladePos[blade][0], y + auraBladePos[blade][1]);
@@ -410,10 +412,10 @@ function playerGraphics() {
 				let img = icon[key.endsWith("s") && !key.endsWith("ss") ? key.slice(0, -1) : key];
 				if (game.shield) {
 					draw.image(img, x + 23, y + 104);
-					draw.lore(x + 34, y + 112, game.eff[key], {"color": "white", "text-align": "left"});
+					draw.lore(x + 34, y + 112, game.eff[key], {"color": "white", "text-align": LEFT});
 				} else {
 					draw.image(img, x + 23, y + 93);
-					draw.lore(x + 34, y + 101, game.eff[key], {"color": "white", "text-align": "left"});
+					draw.lore(x + 34, y + 101, game.eff[key], {"color": "white", "text-align": LEFT});
 				};
 				x += 17;
 			};
@@ -453,7 +455,7 @@ function playerGraphics() {
 	};
 	draw.imageSector(bar.energy_full, 0, 0, cutoff + 1, 32, x, y + 16);
 	draw.imageSector(bar.energy_empty, cutoff + 1, 0, 32 - (cutoff + 1), 32, x + (cutoff + 1), y + 16);
-	draw.lore(x + 9, y + 28, energy, {"text-align": "left"});
+	draw.lore(x + 9, y + 28, energy, {"text-align": LEFT});
 	draw.lore(x + 18, y + 28, get.maxEnergy());
 };
 
@@ -481,10 +483,10 @@ function enemyGraphics() {
 				if (select.eff[key]) {
 					if (select.shield) {
 						draw.image(img, x, y + 89);
-						draw.lore(x + 11, y + 97, select.eff[key], {"color": "white", "text-align": "left"});
+						draw.lore(x + 11, y + 97, select.eff[key], {"color": "white", "text-align": LEFT});
 					} else {
 						draw.image(img, x, y + 78);
-						draw.lore(x + 11, y + 86, select.eff[key], {"color": "white", "text-align": "left"});
+						draw.lore(x + 11, y + 86, select.eff[key], {"color": "white", "text-align": LEFT});
 					};
 					x += 17;
 				};
@@ -598,10 +600,10 @@ function enemyGraphics() {
 			};
 			if (game.enemies[index].intent == "defend") {
 				draw.intent(pos[0] + 16, y, game.enemies[index].defendPower, "defend");
-				draw.lore(pos[0] + 30, y + 12, game.enemies[index].defendPower, {"color": "white", "text-align": "center"});
+				draw.lore(pos[0] + 30, y + 12, game.enemies[index].defendPower, {"color": "white", "text-align": CENTER});
 			} else if (game.enemies[index].intent == "attack") {
 				draw.intent(pos[0] + 16, y, game.enemies[index].attackPower, "attack");
-				draw.lore(pos[0] + 30, y + 12, game.enemies[index].attackPower, {"color": "white", "text-align": "center"});
+				draw.lore(pos[0] + 30, y + 12, game.enemies[index].attackPower, {"color": "white", "text-align": CENTER});
 			};
 		};
 		starAnim[index] += (Math.random() + 0.5) * 0.15;
@@ -633,7 +635,7 @@ function infoGraphics() {
 	};
 	draw.lore(1, 12 - infPos, 'Source can be found at "https://github.com/Yrahcaz7/Dungeon-of-Souls"', {"color": "red", "text-small": true});
 	if (infLimit > 0) {
-		draw.lore(360, 26, "Scrollable", {"color": "white", "text-align": "left"});
+		draw.lore(360, 26, "Scrollable", {"color": "white", "text-align": LEFT});
 		draw.image(arrows, 367, 22);
 	};
 };
@@ -649,9 +651,9 @@ function optionsGraphics(focused = true) {
 	else text += "\nRESTART RUN";
 	draw.rect("#000c");
 	draw.rect("#0004", 0, 0, 400, 13);
-	draw.lore(200 - 2, 1, "Options", {"color": "white", "text-align": "center"});
+	draw.lore(200 - 2, 1, "Options", {"color": "white", "text-align": CENTER});
 	draw.rect("#fff", 1, 12, 378, 1);
-	draw.lore(200 - 2, 15, text.trim().replace(/_/g, " "), {"color": "white", "text-align": "center"});
+	draw.lore(200 - 2, 15, text.trim().replace(/_/g, " "), {"color": "white", "text-align": CENTER});
 	draw.image(extra.options, 380, 2);
 	if (game.select[1] == 1 && focused) draw.image(select.options, 380, 2);
 };
@@ -685,9 +687,9 @@ function deckGraphics(deck) {
 		};
 	};
 	draw.rect("#0004", 0, 0, 400, 13);
-	if (game.select[0] === DECK) draw.lore(200 - 2, 1, "Deck", {"color": "white", "text-align": "center"});
-	else if (game.select[0] === DISCARD) draw.lore(200 - 2, 1, "Discard", {"color": "white", "text-align": "center"});
-	else if (game.select[0] === VOID) draw.lore(200 - 2, 1, "Void", {"color": "white", "text-align": "center"});
+	if (game.select[0] === DECK) draw.lore(200 - 2, 1, "Deck", {"color": "white", "text-align": CENTER});
+	else if (game.select[0] === DISCARD) draw.lore(200 - 2, 1, "Discard", {"color": "white", "text-align": CENTER});
+	else if (game.select[0] === VOID) draw.lore(200 - 2, 1, "Void", {"color": "white", "text-align": CENTER});
 	draw.rect("#fff", 1, 12, 398, 1);
 };
 
@@ -717,7 +719,7 @@ function renderCards() {
 		if (notif[1] >= 9) color = "red_fade_2";
 		else if (notif[1] >= 7) color = "red_fade_1";
 		else if (notif[1] >= 5) color = "red_fade_0";
-		draw.lore(handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1] + notif[3], notif[2], {"color": color, "text-align": "center"});
+		draw.lore(handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1] + notif[3], notif[2], {"color": color, "text-align": CENTER});
 		notif[1]++;
 		if (notif[1] > 11) notif = [-1, 0];
 	};
@@ -765,7 +767,7 @@ const info = {
 	artifact(type, xPlus = 0, yPlus = 0) {
 		if (typeof type != "string") return;
 		let x = (type == "the map" ? 21 : 39 + (game.select[1] * 18)) + xPlus, y = 12 + yPlus;
-		draw.textBox(x, y, 12, type.title(), {"text-align": "center"});
+		draw.textBox(x, y, 12, type.title(), {"text-align": CENTER});
 		draw.textBox(x, y + 13, 24, infoText[type.replace(/\s/g, "_")], {"text-small": true});
 	},
 };
@@ -790,8 +792,8 @@ function target() {
 		};
 		if (coords) {
 			draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
-			draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "white", "text-align": "center", "text-small": true});
-			if (game.select[1] === 0 && game.enemies.length > 1) draw.lore(pos[0] + coords[0] - 5.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-align": "left", "text-small": true});
+			draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "white", "text-align": CENTER, "text-small": true});
+			if (game.select[1] === 0 && game.enemies.length > 1) draw.lore(pos[0] + coords[0] - 5.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-align": LEFT, "text-small": true});
 			else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-small": true});
 			if (enemy.eff.burn) {
 				if (game.select[1] === 0 && game.enemies.length > 1) info.enemy("burn", coords[0] - 5.5, coords[1] + 11);
@@ -804,8 +806,8 @@ function target() {
 		else if (playerAnim[1] == "crouch_shield" || playerAnim[1] == "crouch_shield_reinforced") coor = [58, 72, 22, 39];
 		draw.selector(coor[0], coor[1], coor[2], coor[3]);
 		if (game.character == "knight") {
-			if (global.charStage.knight === 0) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the forgotten one", {"color": "white", "text-align": "center", "text-small": true});
-			else if (global.charStage.knight == 1) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the true knight", {"color": "white", "text-align": "center", "text-small": true});
+			if (global.charStage.knight === 0) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the forgotten one", {"color": "white", "text-align": CENTER, "text-small": true});
+			else if (global.charStage.knight == 1) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the true knight", {"color": "white", "text-align": CENTER, "text-small": true});
 		};
 		let x = coor[0] + coor[2] - 80, y = 0;
 		for (const key in game.eff) {
@@ -904,9 +906,9 @@ function rewardGraphics(focused = true) {
 	draw.box(150, 20, 100, 160);
 	const place = game.location.split(", ");
 	const type = (game.location == "-1" ? BATTLEROOM : game.map[place[0]][place[1]][0]);
-	if (type === BATTLEROOM) draw.lore(200 - 2, 21, "Battle Loot!", {"text-align": "center"});
-	else if (type === TREASUREROOM) draw.lore(200 - 2, 21, "Treasure!", {"text-align": "center"});
-	else draw.lore(200 - 2, 21, "Rewards!", {"text-align": "center"});
+	if (type === BATTLEROOM) draw.lore(200 - 2, 21, "Battle Loot!", {"text-align": CENTER});
+	else if (type === TREASUREROOM) draw.lore(200 - 2, 21, "Treasure!", {"text-align": CENTER});
+	else draw.lore(200 - 2, 21, "Rewards!", {"text-align": CENTER});
 	for (let index = 0; index < game.rewards.length; index++) {
 		let item = game.rewards[index];
 		draw.image(rewards.item, 151, 32 + (index * 19));
@@ -921,9 +923,9 @@ function rewardGraphics(focused = true) {
 function cardRewardGraphics(focused = true) {
 	let x = 199 - (game.cardRewardChoices * 68 / 2), y = 20, width = (game.cardRewardChoices * 68) + 2, height = 160;
 	draw.box(x, y, width, height);
-	if (game.cardRewardChoices == 2) draw.lore(200 - 2, y + 1, "Choose your card\nreward:", {"text-align": "center"});
-	else if (game.cardRewardChoices == 1) draw.lore(200 - 2, y + 1, "Choose your\ncard reward", {"text-align": "center"});
-	else draw.lore(200 - 2, y + 1, "Choose your card reward:", {"text-align": "center"});
+	if (game.cardRewardChoices == 2) draw.lore(200 - 2, y + 1, "Choose your card\nreward:", {"text-align": CENTER});
+	else if (game.cardRewardChoices == 1) draw.lore(200 - 2, y + 1, "Choose your\ncard reward", {"text-align": CENTER});
+	else draw.lore(200 - 2, y + 1, "Choose your card reward:", {"text-align": CENTER});
 	handPos = [];
 	for (let index = 0; index < game.cardRewardChoices; index++) {
 		handPos.push((199 - (game.cardRewardChoices * 68 / 2)) + 1 + (index * 68));
@@ -954,7 +956,7 @@ function mapGraphics(onlyCalc = false) {
 		draw.image(extra.end, 22, 179);
 		if (game.mapSelect == -1) draw.image(select.round, 21, 178);
 		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "red"});
-		draw.lore(393, 1, "seed: " + game.seed, {"color": "white", "text-align": "left"});
+		draw.lore(393, 1, "seed: " + game.seed, {"color": "white", "text-align": LEFT});
 	};
 	let store = [];
 	for (let x = 0; x < game.map.length; x++) {
