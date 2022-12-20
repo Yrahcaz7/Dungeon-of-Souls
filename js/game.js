@@ -824,7 +824,7 @@ function manageGameplay() {
 			enterBattle();
 		} else if (game.map[place[0]][place[1]][0] === TREASUREROOM) {
 			game.traveled.push(+place[1]);
-			game.map[place[0]][place[1]][3] = "open";
+			game.map[place[0]][place[1]][3] = true;
 			game.select = [REWARDS, 0];
 			game.state = "event_fin";
 			game.rewards = [];

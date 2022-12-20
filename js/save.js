@@ -33,7 +33,9 @@ function fixRoom(item) {
 	if (item[0] == "battle") item[0] = BATTLEROOM;
 	else if (item[0] == "treasure") item[0] = TREASUREROOM;
 	else if (item[0] == "battle_prime") item[0] = PRIMEROOM;
-	if (item[3]) {
+	if (item[3] == "closed") item[3] = false;
+	else if (item[3] == "open") item[3] = true;
+	if (item[3]?.length) {
 		for (let index = 0; index < item[3].length; index++) {
 			if (typeof item[3][index] == "string") item[3][index] = fixEnemyType(item[3][index]);
 		};
