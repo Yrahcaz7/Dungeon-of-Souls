@@ -813,9 +813,13 @@ function manageGameplay() {
 			if (game.location == "-1") game.room = game.firstRoom;
 			else game.traveled.push(+place[1]);
 			for (let index = 0; index < game.room[3].length; index++) {
-				let item = game.room[3][index].split(", ");
-				if (item[1]) game.enemies.push(new Enemy(item[0], item[1]));
-				else game.enemies.push(new Enemy(item[0]));
+				const enemy = game.room[3][index];
+				if (typeof enemy == "string") {
+					const item = enemy.split(", ");
+					game.enemies.push(new Enemy(+item[0], +item[1]));
+				} else {
+					game.enemies.push(new Enemy(+enemy));
+				};
 			};
 			enterBattle();
 		} else if (game.map[place[0]][place[1]][0] === TREASUREROOM) {

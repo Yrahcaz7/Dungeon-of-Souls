@@ -21,14 +21,14 @@ const BATTLEROOM = 100, TREASUREROOM = 101, PRIMEROOM = 102;
 
 var mapProg = 0, mapTotal = 8, death_zones = 0, rowFalses = 0, rowNodes = 0, twoRow = false;
 
-function weaker(row) {
-	return ", " + (Math.round((0.5 + (row * 0.05)) * 100) / 100);
+function weakerSmallSlime(row) {
+	return SLIME.SMALL + ", " + (Math.round((0.5 + (row * 0.05)) * 100) / 100);
 };
 
 function mapPiece(row, attribute = -1) {
-	if (attribute === FIRSTBATTLE) return [BATTLEROOM, 0, 0, ["slime_small"], randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5)];
+	if (attribute === FIRSTBATTLE) return [BATTLEROOM, 0, 0, [SLIME.SMALL], randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5)];
 	if (attribute === TREASURE) return [TREASUREROOM, randomInt(-5, 5), randomInt(-5, 5), "closed", randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
-	if (attribute === PRIME) return [PRIMEROOM, 0, 0, ["slime_small" + weaker(row), "slime_prime", "slime_small" + weaker(row)], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
+	if (attribute === PRIME) return [PRIMEROOM, 0, 0, [weakerSmallSlime(row), SLIME.PRIME, weakerSmallSlime(row)], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
 	let type = chance(3/5) ? BATTLEROOM : false;
 	if (rowFalses >= 4 || (twoRow && rowFalses >= 3) || (row === 0 && rowFalses >= 2)) type = BATTLEROOM;
 	if (type) rowNodes++;
@@ -36,8 +36,8 @@ function mapPiece(row, attribute = -1) {
 	if (!type || rowNodes == 6) return false;
 	let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
 	if (type === BATTLEROOM) {
-		if (row >= 5) result.push(chance() ? ["slime_big"] : (chance(7/10) ? ["slime_big", "slime_small" + weaker(row)] : ["slime_small", "slime_small"]));
-		else result.push(chance() ? ["slime_big"] : ["slime_small", "slime_small" + weaker(row)]);
+		if (row >= 5) result.push(chance() ? [SLIME.BIG] : (chance(7/10) ? [SLIME.BIG, weakerSmallSlime(row)] : [SLIME.SMALL, SLIME.SMALL]));
+		else result.push(chance() ? [SLIME.BIG] : [SLIME.SMALL, weakerSmallSlime(row)]);
 		result.push(randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5));
 	};
 	return result;

@@ -17,7 +17,7 @@
 
 const ENTER = 500, UP = 501, LEFT = 502, CENTER = 503, RIGHT = 504, DOWN = 505;
 
-var backAnim = [0, UP, 0.5, DOWN, 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, "none", "normal", -1], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], primeAnim = 0, auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]], auraBladeAnim = [0, UP, 2.5, UP, 3, DOWN, 0.5, DOWN], invNum = -1, popups = [], infPos = 0, infLimit = 0;
+var backAnim = [0, UP, 0.5, DOWN, 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, -1, "normal", -1], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], primeAnim = 0, auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]], auraBladeAnim = [0, UP, 2.5, UP, 3, DOWN, 0.5, DOWN], invNum = -1, popups = [], infPos = 0, infLimit = 0;
 
 const draw = {
 	// basic - first order
@@ -382,10 +382,10 @@ const startAnim = {
 	},
 	enemy(index, type) {
 		index = +index;
-		type = "" + type;
+		type = +type;
 		if ((!index && index !== 0) || !type) return;
 		tempAnim = [0, type, "normal", index];
-		if (type == "slime_small_launch") {
+		if (type === SLIME.SMALL) {
 			invNum = index;
 		} else invNum = -1;
 	},
@@ -502,11 +502,11 @@ function enemyGraphics() {
 		if (!pos) return;
 		if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
 		if (index !== invNum) {
-			if (select.type == "slime_big") {
+			if (select.type === SLIME.BIG) {
 				draw.imageSector(enemy.slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
-			} else if (select.type == "slime_small") {
+			} else if (select.type === SLIME.SMALL) {
 				draw.imageSector(enemy.slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
-			} else if (select.type == "slime_prime") {
+			} else if (select.type === SLIME.PRIME) {
 				if (primeAnim == -1) {
 					draw.imageSector(enemy.slime.prime, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1, 64, 64);
 				} else {
@@ -523,7 +523,7 @@ function enemyGraphics() {
 	};
 	if (tempAnim[3] != -1) {
 		let pos = enemyPos[tempAnim[3]];
-		if (tempAnim[1] == "slime_ball") {
+		if (tempAnim[1] === SLIME.BIG) {
 			let phase = (tempAnim[0] / 10),
 				posX = Math.round(((pos[0] - 80)) * phase),
 				posY = Math.round(((pos[1] - 42)) * phase);
@@ -548,7 +548,7 @@ function enemyGraphics() {
 					game.enemyStage = "middle";
 				};
 			};
-		} else if (tempAnim[1] == "slime_small_launch") {
+		} else if (tempAnim[1] === SLIME.SMALL) {
 			if (tempAnim[0] >= 10) {
 				let phase = ((tempAnim[0] - 9) / 10),
 					posX = Math.round(((pos[0] - 68) - 64) * phase),
@@ -569,7 +569,7 @@ function enemyGraphics() {
 				game.enemyStage = "pending";
 			};
 			invNum = tempAnim[3];
-		} else if (tempAnim[1] == "slime_prime_fist") {
+		} else if (tempAnim[1] === SLIME.PRIME) {
 			if (tempAnim[0] >= 4) {
 				let phase = ((tempAnim[0] - 4) / 10), posX = Math.round(((pos[0] - 68) - 40) * phase);
 				draw.imageSector(enemy.slime.prime_fist, 4 * 36, 0, 36, 18, pos[0] - 32 - posX, 80, 36, 18);
@@ -592,9 +592,9 @@ function enemyGraphics() {
 		if (starAnim[index] >= 4) starAnim[index] = 0;
 		if (index !== tempAnim[3] && (game.turn == "player" || game.enemyNum !== index)) {
 			let y = Math.round(pos[1] + Math.abs(starAnim[index] - 2));
-			if (select.type == "slime_big") y -= 17;
-			else if (select.type == "slime_small") y -= 7;
-			else if (select.type == "slime_prime") {
+			if (select.type === SLIME.BIG) y -= 17;
+			else if (select.type === SLIME.SMALL) y -= 7;
+			else if (select.type === SLIME.PRIME) {
 				if (primeAnim == -1 || primeAnim >= 5) y -= 37;
 				else y -= 17;
 			};
@@ -780,13 +780,13 @@ function target() {
 		const enemyType = enemy.type;
 		const pos = enemyPos[game.select[1]];
 		let coords = [], name = "";
-		if (enemyType == "slime_small") {
+		if (enemyType === SLIME.SMALL) {
 			coords = [19, 35, 26, 29];
 			name = "small slime";
-		} else if (enemyType == "slime_big" || (enemyType == "slime_prime" && primeAnim != -1 && primeAnim < 5)) {
+		} else if (enemyType === SLIME.BIG || (enemyType === SLIME.PRIME && primeAnim != -1 && primeAnim < 5)) {
 			coords = [5, 25, 54, 39];
 			name = "big slime";
-		} else if (enemyType == "slime_prime") {
+		} else if (enemyType === SLIME.PRIME) {
 			coords = [0, 5, 63, 59];
 			name = "prime slime";
 		};

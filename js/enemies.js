@@ -15,13 +15,15 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+const SLIME = {BIG: 601, SMALL: 602, PRIME: 603}
+
 class Enemy {
 	constructor(type, power = 1) {
-		if (type == "slime_small") power--;
-		if (("" + type).includes("prime")) power++;
+		if (type === SLIME.SMALL) power--;
+		if (type === SLIME.PRIME) power++;
 		power += global.difficulty;
 		power += game.floor * 0.05 * (2 ** global.difficulty);
-		this.type = "" + type;
+		this.type = +type;
 		this.maxHealth = Math.round(((random() / 10) + 0.95) * ((power * 10) + 20));
 		this.health = this.maxHealth;
 		this.maxShield = Math.round(((random() / 10) + 0.95) * ((power * 5) + 10));
@@ -38,9 +40,9 @@ class Enemy {
 				if (game.eff.weakness) startAnim.player("crouch_shield");
 				else startAnim.player("shield");
 			};
-			if (this.type == "slime_big") startAnim.enemy(game.enemyNum, "slime_ball");
-			else if (this.type == "slime_small") startAnim.enemy(game.enemyNum, "slime_small_launch");
-			else if (this.type == "slime_prime") startAnim.enemy(game.enemyNum, "slime_prime_fist");
+			if (this.type === SLIME.BIG) startAnim.enemy(game.enemyNum, SLIME.BIG);
+			else if (this.type === SLIME.SMALL) startAnim.enemy(game.enemyNum, SLIME.SMALL);
+			else if (this.type === SLIME.PRIME) startAnim.enemy(game.enemyNum, SLIME.PRIME);
 			else {
 				this.middleAction();
 				this.finishAction();

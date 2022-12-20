@@ -22,10 +22,22 @@ function save() {
 	if (global) localStorage.setItem(ID + "/master", btoa(JSON.stringify(global)));
 };
 
+function fixEnemyType(item) {
+	if (item == "slime_big") return SLIME.BIG;
+	else if (item == "slime_small") return SLIME.SMALL;
+	else if (item == "slime_prime") return SLIME.PRIME;
+	else return ("" + item).replace("slime_small", SLIME.SMALL);
+};
+
 function fixRoom(item) {
 	if (item[0] == "battle") item[0] = BATTLEROOM;
 	else if (item[0] == "treasure") item[0] = TREASUREROOM;
 	else if (item[0] == "battle_prime") item[0] = PRIMEROOM;
+	if (item[3]) {
+		for (let index = 0; index < item[3].length; index++) {
+			if (typeof item[3][index] == "string") item[3][index] = fixEnemyType(item[3][index]);
+		};
+	};
 };
 
 function fixSelect(item) {
@@ -64,14 +76,18 @@ function fixSave() {
 		delete game.enemyAttSel;
 		delete game.enemyAttFin;
 	};
+	// fix enemies
+	for (let index = 0; index < game.enemies.length; index++) {
+		if (typeof game.enemies[index].type == "string") game.enemies[index].type = fixEnemyType(game.enemies[index].type);
+	};
 	// fix rooms
 	for (let row = 0; row < game.map.length; row++) {
 		for (let col = 0; col < game.map[row].length; col++) {
-			fixRoom(game.map[row][col]);
+			if (game.map[row][col]) fixRoom(game.map[row][col]);
 		};
 	};
-	fixRoom(game.firstRoom);
-	fixRoom(game.room);
+	if (game.firstRoom) fixRoom(game.firstRoom);
+	if (game.room) fixRoom(game.room);
 	// fix attack effect
 	if (game.attackEffect) {
 		if (game.attackEffect == "aura blade") game.attackEffects = [AURA_BLADE];
