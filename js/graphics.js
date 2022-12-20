@@ -17,7 +17,9 @@
 
 const ENTER = 500, UP = 501, LEFT = 502, CENTER = 503, RIGHT = 504, DOWN = 505;
 
-var backAnim = [0, UP, 0.5, DOWN, 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, -1, "normal", -1], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], primeAnim = 0, auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]], auraBladeAnim = [0, UP, 2.5, UP, 3, DOWN, 0.5, DOWN], invNum = -1, popups = [], infPos = 0, infLimit = 0;
+const PENDING = 800, STARTING = 801, MIDDLE = 802, ENDING = 803;
+
+var backAnim = [0, UP, 0.5, DOWN, 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, -1, STARTING, -1], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], primeAnim = 0, auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]], auraBladeAnim = [0, UP, 2.5, UP, 3, DOWN, 0.5, DOWN], invNum = -1, popups = [], infPos = 0, infLimit = 0;
 
 const draw = {
 	// basic - first order
@@ -384,7 +386,7 @@ const startAnim = {
 		index = +index;
 		type = +type;
 		if ((!index && index !== 0) || !type) return;
-		tempAnim = [0, type, "normal", index];
+		tempAnim = [0, type, STARTING, index];
 		if (type === SLIME.SMALL) {
 			invNum = index;
 		} else invNum = -1;
@@ -531,21 +533,21 @@ function enemyGraphics() {
 				posX = Math.round(((pos[0] - 94)) * phase);
 				posY = Math.round(((pos[1] - 44)) * phase);
 			};
-			if (tempAnim[2] == "ending") {
-				tempAnim = [0, "none", "normal", -1];
+			if (tempAnim[2] === ENDING) {
+				tempAnim = [0, -1, STARTING, -1];
 				enemyAnim[tempAnim[3]] = 0;
-				game.enemyStage = END;
-			} else if (game.enemyStage == "middle") {
+				game.enemyStage = ENDING;
+			} else if (game.enemyStage === MIDDLE) {
 				draw.imageSector(enemy.slime.slime_ball, 4 * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
-				tempAnim[2] = "ending";
-				game.enemyStage = "pending";
+				tempAnim[2] = ENDING;
+				game.enemyStage = PENDING;
 			} else {
 				draw.imageSector(enemy.slime.slime_ball, (tempAnim[0] % 4) * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
 				tempAnim[0]++;
-				game.enemyStage = "pending";
+				game.enemyStage = PENDING;
 				if (tempAnim[0] >= 11) {
 					tempAnim[0] = 11;
-					game.enemyStage = "middle";
+					game.enemyStage = MIDDLE;
 				};
 			};
 		} else if (tempAnim[1] === SLIME.SMALL) {
@@ -555,18 +557,18 @@ function enemyGraphics() {
 					posY = Math.round(((pos[1] - (50 + 10))) * phase);
 				draw.imageSector(enemy.slime.small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
 			} else draw.imageSector(enemy.slime.small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
-			if (tempAnim[2] == "normal") tempAnim[0]++;
-			else if (tempAnim[2] == "backwards") tempAnim[0]--;
+			if (tempAnim[2] === STARTING) tempAnim[0]++;
+			else if (tempAnim[2] === ENDING) tempAnim[0]--;
 			if (tempAnim[0] >= 20) {
 				tempAnim[0] = 18;
-				tempAnim[2] = "backwards";
-				game.enemyStage = "middle";
+				tempAnim[2] = ENDING;
+				game.enemyStage = MIDDLE;
 			} else if (tempAnim[0] < 0) {
-				tempAnim = [0, "none", "normal", -1];
+				tempAnim = [0, -1, STARTING, -1];
 				enemyAnim[tempAnim[3]] = 0;
-				game.enemyStage = END;
+				game.enemyStage = ENDING;
 			} else {
-				game.enemyStage = "pending";
+				game.enemyStage = PENDING;
 			};
 			invNum = tempAnim[3];
 		} else if (tempAnim[1] === SLIME.PRIME) {
@@ -575,15 +577,15 @@ function enemyGraphics() {
 				draw.imageSector(enemy.slime.prime_fist, 4 * 36, 0, 36, 18, pos[0] - 32 - posX, 80, 36, 18);
 			} else draw.imageSector(enemy.slime.prime_fist, Math.floor(tempAnim[0]) * 36, 0, 36, 18, pos[0] - 32, 80, 36, 18);
 			tempAnim[0]++;
-			if (game.enemyStage == "middle") {
-				tempAnim = [0, "none", "normal", -1];
+			if (game.enemyStage === MIDDLE) {
+				tempAnim = [0, -1, STARTING, -1];
 				enemyAnim[tempAnim[3]] = 0;
-				game.enemyStage = END;
+				game.enemyStage = ENDING;
 			} else if (tempAnim[0] >= 14) {
 				tempAnim[0] = 14;
-				game.enemyStage = "middle";
+				game.enemyStage = MIDDLE;
 			} else {
-				game.enemyStage = "pending";
+				game.enemyStage = PENDING;
 			};
 		} else invNum = -1;
 	};

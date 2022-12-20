@@ -228,9 +228,9 @@ function enemyTurn() {
 		game.enemyNum = 0;
 		startTurn();
 	};
-	if (game.enemyStage === END) game.enemies[game.enemyNum].finishAction();
-	else if (game.enemyStage == "middle") game.enemies[game.enemyNum].middleAction();
-	else if (game.enemyStage != "pending") game.enemies[game.enemyNum].startAction();
+	if (game.enemyStage === ENDING) game.enemies[game.enemyNum].finishAction();
+	else if (game.enemyStage === MIDDLE) game.enemies[game.enemyNum].middleAction();
+	else if (game.enemyStage !== PENDING) game.enemies[game.enemyNum].startAction();
 };
 
 function selection() {

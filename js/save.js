@@ -75,6 +75,7 @@ function fixSelect(item) {
 	else return -1;
 };
 
+// fixes old saves
 function fixSave() {
 	// fix enemy attack
 	if (game.activeCard !== undefined || game.enemyAttSel !== undefined || game.enemyAttFin !== undefined) {
@@ -107,6 +108,11 @@ function fixSave() {
 	// fix selector
 	if (typeof game.select[0] == "string") game.select[0] = fixSelect(game.select[0]);
 	if (typeof game.select[2] == "string") game.select[2][0] = fixSelect(game.select[2][0]);
+	// fix enemy stage
+	if (game.enemyStage == "pending") game.enemyStage = PENDING;
+	else if (game.enemyStage == "middle") game.enemyStage = MIDDLE;
+	else if (game.enemyStage == "end" || game.enemyStage === END) game.enemyStage = ENDING;
+	else if (game.enemyStage == "none") game.enemyStage = -1;
 	// save again
 	save();
 };

@@ -85,7 +85,7 @@ class Enemy {
 		} else {
 			game.enemyNum++;
 		};
-		game.enemyStage = "none";
+		game.enemyStage = -1;
 	};
 	overrideIntent = (type) => {
 		const location0 = this.intentHistory.lastIndexOf(type);
