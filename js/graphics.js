@@ -970,15 +970,17 @@ function mapGraphics(onlyCalc = false) {
 			};
 			if (game.map[x][y]) {
 				for (let branch = 0; branch < 2; branch++) {
-					let posX, posY;
+					let posX, posY, connectNode = [];
 					for (num = 0; num < 7; num++) {
 						if (branch && x != game.map.length - 1) {
 							if (game.map[x + 1][y - num]) {
+								connectNode = [1, y - num];
 								store.push([x, y, x + 1, y - num]);
 								posX = 25 + ((x + 1) * 32) + game.map[x + 1][y - num][1];
 								posY = 18 + ((y - num) * 32) + game.map[x + 1][y - num][2];
 								break;
 							} else if (game.map[x + 1][y + num]) {
+								connectNode = [1, y + num];
 								store.push([x, y, x + 1, y + num]);
 								posX = 25 + ((x + 1) * 32) + game.map[x + 1][y + num][1];
 								posY = 18 + ((y + num) * 32) + game.map[x + 1][y + num][2];
@@ -986,11 +988,13 @@ function mapGraphics(onlyCalc = false) {
 							};
 						} else if (x !== 0) {
 							if (game.map[x - 1][y - num]) {
+								connectNode = [-1, y - num];
 								store.push([x, y, x - 1, y - num]);
 								posX = 25 + ((x - 1) * 32) + game.map[x - 1][y - num][1];
 								posY = 18 + ((y - num) * 32) + game.map[x - 1][y - num][2];
 								break;
 							} else if (game.map[x - 1][y + num]) {
+								connectNode = [-1, y + num];
 								store.push([x, y, x - 1, y + num]);
 								posX = 25 + ((x - 1) * 32) + game.map[x - 1][y + num][1];
 								posY = 18 + ((y + num) * 32) + game.map[x - 1][y + num][2];
@@ -999,8 +1003,11 @@ function mapGraphics(onlyCalc = false) {
 						};
 					};
 					if (render) {
-						if (game.traveled[x] === y) draw.line(drawX + 8, drawY + 8, posX + 8, posY + 8, "#842", 3);
-						else draw.line(drawX + 8, drawY + 8, posX + 8, posY + 8, "#b84", 3);
+						if (game.traveled[x] === y && game.traveled[x + connectNode[0]] === connectNode[1]) {
+							draw.line(drawX + 8, drawY + 8, posX + 8, posY + 8, "#842", 3);
+						} else {
+							draw.line(drawX + 8, drawY + 8, posX + 8, posY + 8, "#b84", 3);
+						};
 					};
 				};
 			};
