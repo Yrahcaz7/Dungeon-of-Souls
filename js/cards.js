@@ -220,8 +220,9 @@ function randomCardSet(length = 0) {
 	return result;
 };
 
+const common = Object.keys(card.common), rare = Object.keys(card.rare);
+
 function randomCard(notInclude = []) {
-	const common = Object.keys(card.common), rare = Object.keys(card.rare);
 	let bool = true;
 	if (Object.keys(cardNames).length === 0) constructNames();
 	if (notInclude.length) {

@@ -48,8 +48,8 @@ var global = {
 	mapSelect: -1,
 	enemies: [],
 	enemyNum: 0,
-	enemyStage: "none",
-	enemyAtt: [-1, 0, "none", false],
+	enemyStage: -1,
+	enemyAtt: [-1, 0, new Card(), false],
 	attackEffects: [],
 	artifacts: ["iron will"],
 	deck: [new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000), new Card(2001), new Card(4000)],
@@ -151,7 +151,7 @@ function playerTurn() {
 			dealDamage(attCard.damage, attCard.exMod);
 		};
 		if (typeof attCard.attack == "function") attCard.attack();
-		game.enemyAtt[2] = "none";
+		game.enemyAtt[2] = new Card();
 		game.enemyAtt[3] = false;
 		game.attackEffects = [];
 	};
@@ -688,7 +688,7 @@ function selection() {
 			actionTimer = 1;
 			return;
 		} else if (action === RIGHT && game.select[0] === MAP) {
-			if (game.artifacts[0]) game.select = [ARTIFACTS, 0];
+			if (game.artifacts.length) game.select = [ARTIFACTS, 0];
 			else game.select = [LOOKER, 0];
 			actionTimer = 1;
 			return;
@@ -710,12 +710,12 @@ function selection() {
 	// artifacts
 	if (game.select[0] === ARTIFACTS) {
 		if (action === LEFT) {
-			if (game.select[1] == 0) game.select = [MAP, 0];
+			if (game.select[1] === 0) game.select = [MAP, 0];
 			else game.select[1]--;
 			actionTimer = 1;
 			return;
 		} else if (action === RIGHT) {
-			if (game.select[1] == game.artifacts.length - 1) game.select = [LOOKER, 0];
+			if (game.select[1] === game.artifacts.length - 1) game.select = [LOOKER, 0];
 			else game.select[1]++;
 			actionTimer = 1;
 			return;
