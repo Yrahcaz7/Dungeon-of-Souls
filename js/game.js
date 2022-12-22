@@ -793,16 +793,22 @@ function manageGameplay() {
 	if (game.turn == "player") playerTurn();
 	// end battle
 	if (game.state == "battle" && !game.enemies.length) {
+		// normal stuff
 		endTurn();
 		game.select = [REWARDS, 0];
 		game.state = "event_fin";
 		game.turn = "none";
+		// activate artifacts
+		for (let index = 0; index < game.artifacts.length; index++) {
+			const obj = artifacts[game.artifacts[index]];
+			if (obj.time === ENDOFBATTLE && typeof obj.effect == "function") obj.effect();
+		};
+		// set rewards
 		game.rewards = [];
 		if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
 		if (get.cardRewardChoices() > 0) game.rewards.push("1 card");
 		if (game.room[0] === PRIMEROOM) game.rewards.push((get.maxHealth() * 0.9) + " health");
 		game.rewards.push("finish");
-		if (game.artifacts.includes("iron will")) game.health += 2;
 	};
 	// load floor
 	let place = game.location.split(", ");

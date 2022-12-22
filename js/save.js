@@ -113,6 +113,12 @@ function fixSave() {
 	else if (game.enemyStage == "middle") game.enemyStage = MIDDLE;
 	else if (game.enemyStage == "end" || game.enemyStage === END) game.enemyStage = ENDING;
 	else if (game.enemyStage == "none") game.enemyStage = -1;
+	// fix artifacts
+	for (let index = 0; index < game.artifacts.length; index++) {
+		if (game.artifacts[index] == "iron will") {
+			game.artifacts[index] = 1;
+		};
+	};
 	// delete unused vars
 	delete game.cardRewardChoices;
 	delete game.saveNum;

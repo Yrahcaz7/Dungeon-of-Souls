@@ -344,7 +344,7 @@ function foregrounds() {
 		else if (past[0] === CARD_REWARDS) cardRewardGraphics(false);
 	};
 	draw.image(view);
-	if (game.select[0] === LOOKER && game.select[1] == 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 343, 3);
+	if (game.select[0] === LOOKER && game.select[1] === 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 343, 3);
 	else draw.imageSector(extra.looker, 0, 0, 16, 16, 343, 3);
 	draw.image(extra.help, 362, 3);
 	draw.image(extra.options, 380, 2);
@@ -353,10 +353,11 @@ function foregrounds() {
 	if (game.void.length) draw.image(extra.void, 381, 163);
 	draw.image(extra.discard, 383, 182);
 	draw.image(extra.map, 2, 12);
-	if (game.artifacts.includes("iron will")) {
-		let index = game.artifacts.indexOf("iron will");
-		draw.image(icon.iron_will, 20 + (index * 18), 12);
-		if (game.select[0] === ARTIFACTS && game.select[1] == index) draw.image(select.iron_will, 19 + (index * 18), 11);
+	for (let index = 0; index < game.artifacts.length; index++) {
+		const name = ("" + artifacts[game.artifacts[index]].name).replace(/\s/g, "_");
+		if (!name) continue;
+		draw.image(icon[name], 20 + (index * 18), 12);
+		if (game.select[0] === ARTIFACTS && game.select[1] === index) draw.image(select[name], 19 + (index * 18), 11);
 	};
 	if (game.select[0] === LOOKER) draw.image(select.round, 342, 2);
 	else if (game.select[0] === HELP) draw.image(select.round, 361, 2);
@@ -767,10 +768,17 @@ const info = {
 		};
 	},
 	artifact(type, xPlus = 0, yPlus = 0) {
-		if (typeof type != "string") return;
-		let x = (type == "the map" ? 21 : 39 + (game.select[1] * 18)) + xPlus, y = 12 + yPlus;
-		draw.textBox(x, y, 12, type.title(), {"text-align": CENTER});
-		draw.textBox(x, y + 13, 24, infoText[type.replace(/\s/g, "_")], {"text-small": true});
+		if (type == "the map") {
+			let x = 21, y = 12 + yPlus;
+			draw.textBox(x, y, 12, "The Map", {"text-align": CENTER});
+			draw.textBox(x, y + 13, 24, infoText["the map"], {"text-small": true});
+		} else {
+			let x = 39 + (game.select[1] * 18) + xPlus, y = 12 + yPlus;
+			const obj = artifacts[type];
+			if (!obj) return;
+			draw.textBox(x, y, 12, obj.name.title(), {"text-align": CENTER});
+			draw.textBox(x, y + 13, 24, obj.desc, {"text-small": true});
+		};
 	},
 };
 
@@ -826,8 +834,7 @@ function target() {
 			};
 		};
 	} else if (game.select[0] === ARTIFACTS) {
-		let name = game.artifacts[game.select[1]];
-		info.artifact(name);
+		info.artifact(game.artifacts[game.select[1]]);
 	} else if (game.select[0] === DECK && game.select[1] == 1 && game.deckLocal.length) {
 		const keywords = cards[Object.deepCopy(game.deckLocal).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].id]?.keywords;
 		let x = 0, y = 0;
