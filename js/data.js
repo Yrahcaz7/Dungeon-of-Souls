@@ -21,10 +21,13 @@ const artifacts = {
 	1: {
 		name: "iron will",
 		desc: "Every time a battle\nends, you <red>heal</red> 2 <red>health</red>.",
-		time: ENDOFBATTLE,
-		effect() {
+		[ENDOFBATTLE]() {
 			game.health += 2;
 		},
+	},
+	2: {
+		name: "supershield",
+		desc: "All cards that give\n<blue>shield</blue> give 1 extra.",
 	},
 };
 

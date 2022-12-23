@@ -266,6 +266,21 @@ const draw = {
 				};
 			});
 		};
+		let exShield = get.extraShield();
+		if (exShield && game.select[0] !== CARD_REWARDS) {
+			desc = desc.replace(/([Gg]ain\s)(\d+)(\s<blue>shield<\/blue>)/g, (substring, pre, number, post) => {
+				const original = parseInt(number);
+				let shield = Math.floor(original + exShield);
+				if (shield > original) {
+					return pre + "<light-green highlight>" + shield + "</light-green>" + post;
+				} else if (shield < original) {
+					valueIsLess = true;
+					return pre + "<white highlight>" + shield + "</white>" + post;
+				} else {
+					return pre + shield + post;
+				};
+			});
+		};
 		// other
 		draw.lore(x + 6, y + 55, desc, {"highlight-color": (valueIsLess ? "#f00" : "#000"), "text-small": true});
 		draw.lore(x + 33, y + 89.5, rarities[rarity] + "|" + type, {"text-align": CENTER, "text-small": true});
@@ -356,7 +371,7 @@ function foregrounds() {
 	for (let index = 0; index < game.artifacts.length; index++) {
 		const name = ("" + artifacts[game.artifacts[index]].name).replace(/\s/g, "_");
 		if (!name) continue;
-		draw.image(icon[name], 20 + (index * 18), 12);
+		draw.image(artifact[name], 20 + (index * 18), 12);
 		if (game.select[0] === ARTIFACTS && game.select[1] === index) draw.image(select[name], 19 + (index * 18), 11);
 	};
 	if (game.select[0] === LOOKER) draw.image(select.round, 342, 2);

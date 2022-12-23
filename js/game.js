@@ -800,8 +800,8 @@ function manageGameplay() {
 		game.turn = "none";
 		// activate artifacts
 		for (let index = 0; index < game.artifacts.length; index++) {
-			const obj = artifacts[game.artifacts[index]];
-			if (obj.time === ENDOFBATTLE && typeof obj.effect == "function") obj.effect();
+			const func = artifacts[game.artifacts[index]][ENDOFBATTLE];
+			if (typeof func == "function") func();
 		};
 		// set rewards
 		game.rewards = [];

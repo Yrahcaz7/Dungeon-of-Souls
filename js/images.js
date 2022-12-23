@@ -115,6 +115,7 @@ const player = {
 	death_zone: new Image,
 	death_zone_blue: new Image,
 	iron_will: new Image,
+	supershield: new Image,
 	selector: [new Image, new Image, new Image, new Image],
 	item: new Image,
 	item_green: new Image,
@@ -131,9 +132,11 @@ const player = {
 }, icon = {
 	aura_blade: new Image,
 	burn: new Image,
-	iron_will: new Image,
 	reinforce: new Image,
 	weakness: new Image,
+}, artifact = {
+	iron_will: new Image,
+	supershield: new Image,
 }, intent = {
 	defend: [new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image],
 	attack: [new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image],
@@ -246,6 +249,13 @@ for (const image in extra) {
 for (const image in icon) {
 	if (Object.hasOwnProperty.call(icon, image)) {
 		icon[image].src = "images/icons/" + image + ".png";
+	};
+};
+
+// artifacts
+for (const image in artifact) {
+	if (Object.hasOwnProperty.call(artifact, image)) {
+		artifact[image].src = "images/artifacts/" + image + ".png";
 	};
 };
 

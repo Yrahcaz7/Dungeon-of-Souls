@@ -70,7 +70,7 @@ const attributes = {
 		rarity: 0,
 		cost: 1,
 		effect() {
-			game.shield += 4;
+			gainShieldFromCard(4);
 		},
 	},
 	2001: {
@@ -79,7 +79,7 @@ const attributes = {
 		rarity: 1,
 		cost: 1,
 		effect() {
-			game.shield += 1;
+			gainShieldFromCard(1);
 			game.eff.reinforces++;
 		},
 	},
@@ -98,7 +98,7 @@ const attributes = {
 		rarity: 1,
 		cost: 1,
 		effect() {
-			game.shield += 9;
+			gainShieldFromCard(9);
 			game.eff.weakness += 2;
 		},
 	},

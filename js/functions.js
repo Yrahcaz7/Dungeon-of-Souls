@@ -84,6 +84,16 @@ const get = {
 		let max = 3;
 		return max;
 	},
+	extraShield() {
+		let extra = 0;
+		if (game.artifacts.includes(2)) extra++;
+		return extra;
+	},
+};
+
+function gainShieldFromCard(amount = 0) {
+	if (isNaN(amount)) return;
+	game.shield += amount + get.extraShield();
 };
 
 // reset functions
