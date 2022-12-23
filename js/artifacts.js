@@ -14,17 +14,25 @@ const artifacts = {
 		rarity: 1,
 		desc: "All cards that give\nshield give 2 extra.",
 	},
-    3: {
+	3: {
 		name: "gem of rage",
 		rarity: 1,
 		desc: "All cards that deal\ndamage deal 2 extra.",
 	},
-    4: {
+	4: {
 		name: "candy",
 		rarity: 1,
 		desc: "You have 20 less max\nhealth, but you heal by\n3 after every battle.",
-        [ENDOFBATTLE]() {
+		[ENDOFBATTLE]() {
 			game.health += 3;
+		},
+	},
+	5: {
+		name: "corrosion",
+		rarity: 1,
+		desc: "You deal 3 extra damage,\nbut you lose 3 health\nafter every battle.",
+		[ENDOFBATTLE]() {
+			game.health -= 3;
 		},
 	},
 };

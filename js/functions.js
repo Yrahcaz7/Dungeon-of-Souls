@@ -93,6 +93,7 @@ const get = {
 			extra += 5 + game.eff.aura_blades;
 		};
 		if (game.artifacts.includes(3)) extra += 2;
+		if (game.artifacts.includes(5)) extra += 3;
 		return extra;
 	},
 	extraShield() {
