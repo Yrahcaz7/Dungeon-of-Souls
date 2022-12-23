@@ -248,8 +248,7 @@ const draw = {
 		if (name.length >= 11) draw.lore(x + 32, y + 44, name.title(), {"text-align": CENTER, "text-small": true});
 		else draw.lore(x + 32, y + 42, name.title(), {"text-align": CENTER});
 		// card description
-		let desc = cards[cardObject.id].desc, exDamage = 0, mulDamage = 1, valueIsLess = false;
-		if (game.eff.aura_blades) exDamage += 5 + game.eff.aura_blades;
+		let desc = cards[cardObject.id].desc, exDamage = get.extraDamage(), mulDamage = 1, valueIsLess = false;
 		if (exMod) exDamage = Math.floor(exDamage * exMod);
 		if (game.eff.weakness) mulDamage = 0.75;
 		if ((exDamage || mulDamage !== 1) && game.select[0] !== CARD_REWARDS) {
@@ -273,9 +272,6 @@ const draw = {
 				let shield = Math.floor(original + exShield);
 				if (shield > original) {
 					return pre + "<light-green highlight>" + shield + "</light-green>" + post;
-				} else if (shield < original) {
-					valueIsLess = true;
-					return pre + "<white highlight>" + shield + "</white>" + post;
 				} else {
 					return pre + shield + post;
 				};

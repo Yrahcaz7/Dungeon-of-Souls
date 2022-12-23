@@ -97,15 +97,19 @@ const player = {
 	energy_empty: new Image,
 	energy_full: new Image,
 }, select = {
+	// menu stuff
 	round: new Image,
 	options: new Image,
+	// card stuff
 	card_normal: new Image,
 	card_unplayable: new Image,
 	card_rare: new Image,
 	card_rare_unplayable: new Image,
 	deck: new Image,
 	discard: new Image,
+	// popups
 	popup: new Image,
+	// map stuff
 	map: new Image,
 	battle: new Image,
 	battle_blue: new Image,
@@ -114,8 +118,11 @@ const player = {
 	treasure_open_blue: new Image,
 	death_zone: new Image,
 	death_zone_blue: new Image,
+	// artifacts
+	gem_of_rage: new Image,
 	iron_will: new Image,
 	supershield: new Image,
+	// other
 	selector: [new Image, new Image, new Image, new Image],
 	item: new Image,
 	item_green: new Image,
@@ -135,6 +142,7 @@ const player = {
 	reinforce: new Image,
 	weakness: new Image,
 }, artifact = {
+	gem_of_rage: new Image,
 	iron_will: new Image,
 	supershield: new Image,
 }, intent = {

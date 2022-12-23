@@ -14,6 +14,11 @@ const artifacts = {
 		rarity: 1,
 		desc: "All cards that give\nshield give 1 extra.",
 	},
+    3: {
+		name: "gem of rage",
+		rarity: 1,
+		desc: "All cards that deal\ndamage deal 2 extra.",
+	},
 };
 
 for (const key in artifacts) {

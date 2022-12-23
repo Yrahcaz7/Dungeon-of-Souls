@@ -84,16 +84,21 @@ const get = {
 		let max = 3;
 		return max;
 	},
+	extraDamage() {
+		let extra = 0;
+		if (game.attackEffects.includes(AURA_BLADE)) {
+			extra += 5 + (game.eff.aura_blades + 1);
+		} else if (game.eff.aura_blades) {
+			extra += 5 + game.eff.aura_blades;
+		};
+		if (game.artifacts.includes(3)) extra += 2;
+		return extra;
+	},
 	extraShield() {
 		let extra = 0;
 		if (game.artifacts.includes(2)) extra++;
 		return extra;
 	},
-};
-
-function gainShieldFromCard(amount = 0) {
-	if (isNaN(amount)) return;
-	game.shield += amount + get.extraShield();
 };
 
 // reset functions
@@ -163,11 +168,8 @@ const AURA_BLADE = 200;
 
 function dealDamage(amount, exMod = 1, enemy = game.enemyAtt[1]) {
 	// extra damage
-	let exDamage = 0;
+	let exDamage = get.extraDamage();
 	if (exMod) {
-		if (game.attackEffects.includes(AURA_BLADE)) {
-			exDamage += 5 + (game.eff.aura_blades + 1);
-		};
 		exDamage = Math.floor(exDamage * exMod);
 	};
 	let damage = amount + exDamage;
@@ -183,6 +185,11 @@ function dealDamage(amount, exMod = 1, enemy = game.enemyAtt[1]) {
 		game.enemies[enemy].shield = 0;
 		game.enemies[enemy].health -= damage;
 	};
+};
+
+function gainShield(amount = 0) {
+	if (isNaN(amount)) return;
+	game.shield += amount + get.extraShield();
 };
 
 function activateAttackEffects(id) {
