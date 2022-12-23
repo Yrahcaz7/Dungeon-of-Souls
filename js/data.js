@@ -15,22 +15,6 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const ENDOFBATTLE = 900;
-
-const artifacts = {
-	1: {
-		name: "iron will",
-		desc: "Every time a battle\nends, you <red>heal</red> 2 <red>health</red>.",
-		[ENDOFBATTLE]() {
-			game.health += 2;
-		},
-	},
-	2: {
-		name: "supershield",
-		desc: "All cards that give\n<blue>shield</blue> give 1 extra.",
-	},
-};
-
 const infoText = {
 	// effects
 	"aura blade": "Every time you <red>attack</red>,\none of your aura blades\nis used up for 5 + X\n<red>extra damage</red>, X being\nthe number of aura\nblades you have.",
@@ -39,7 +23,7 @@ const infoText = {
 	reinforce: "At the start of each\nturn, one reinforce is\nused up to retain your\n<blue>shield</blue> (even if you have\nno <blue>shield</blue> left).",
 	weakness: "While something has\nweakness, its <red>attack</red> is\n75% of normal, rounded\ndown. At the end of each\nturn, one weakness will\ngo away.",
 	// other
-	"the map": "Every time a battle\nends, you can choose\nwhere you go next.",
+	"the map": "You can choose where\nyou go next. Cannot use\nduring a battle.",
 }, overview = ""
 	+ "<b>Storyline:<s>"
 	+ "You have been trapped in this dungeon as long as you can remember.\n"

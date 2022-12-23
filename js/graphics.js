@@ -302,23 +302,23 @@ const draw = {
 		if (!style["border-color"]) style["border-color"] = "#000";
 		let small = style["text-small"];
 		let position = style["text-align"];
-		let lines = (("" + string).match(/\n/g) || []).length, height = small?7:12;
+		let lines = (("" + string).match(/\n/g) || []).length, height = small ? 7 : 12;
 		if (small) {
 			width = Math.ceil(width * 3 + 0.5);
 			height = Math.ceil(lines * 5.5 + 7);
 		} else {
-			width = width * 6;
+			width = width * 6 + 1;
 			height = lines * 11 + 12;
 		};
 		draw.box(x, y, width, height, style);
 		if (position === CENTER) {
 			x += width / 2;
 			if (small) x -= 1.5;
-			else x -= 3;
+			else x -= 2.5;
 		} else if (position === LEFT) {
 			x += width;
-			if (small) x -= 3;
-			else x -= 6;
+			if (small) x -= 4;
+			else x -= 7;
 		};
 		draw.lore(x + 1, y + 1, string, style);
 		return height + 4;
@@ -791,7 +791,8 @@ const info = {
 			let x = 39 + (game.select[1] * 18) + xPlus, y = 12 + yPlus;
 			const obj = artifacts[type];
 			if (!obj) return;
-			draw.textBox(x, y, 12, obj.name.title(), {"text-align": CENTER});
+			if (obj.name.length <= 12) draw.textBox(x, y, 12, obj.name.title(), {"text-align": CENTER});
+			else draw.textBox(x, y, obj.name.length, obj.name.title());
 			draw.textBox(x, y + 13, 24, obj.desc, {"text-small": true});
 		};
 	},
