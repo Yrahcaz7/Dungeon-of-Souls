@@ -74,6 +74,7 @@ const get = {
 	},
 	maxHealth() {
 		let max = 60;
+		if (game.artifacts.includes(4)) max -= 20;
 		return max;
 	},
 	maxShield() {
@@ -96,7 +97,7 @@ const get = {
 	},
 	extraShield() {
 		let extra = 0;
-		if (game.artifacts.includes(2)) extra++;
+		if (game.artifacts.includes(2)) extra += 2;
 		return extra;
 	},
 };

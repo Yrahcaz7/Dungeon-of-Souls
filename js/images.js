@@ -119,6 +119,7 @@ const player = {
 	death_zone: new Image,
 	death_zone_blue: new Image,
 	// artifacts
+	candy: new Image,
 	gem_of_rage: new Image,
 	iron_will: new Image,
 	supershield: new Image,
@@ -142,6 +143,7 @@ const player = {
 	reinforce: new Image,
 	weakness: new Image,
 }, artifact = {
+	candy: new Image,
 	gem_of_rage: new Image,
 	iron_will: new Image,
 	supershield: new Image,
