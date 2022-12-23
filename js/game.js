@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const HAND = 300, LOOKAT_YOU = 301, LOOKAT_ENEMY = 302, ATTACK_ENEMY = 303, LOOKER = 304, HELP = 305, END = 306, CONFIRM_END = 307, DECK = 308, DISCARD = 309, MAP = 310, IN_MAP = 311, POPUPS = 312, REWARDS = 313, CARD_REWARDS = 314, ARTIFACTS = 315, VOID = 316, CONFIRM_EXIT = 317, OPTIONS = 318, GAME_OVER = 319, GAME_FIN = 320, GAME_WON = 321, CONFIRM_RESTART = 322, WELCOME = 323;
+const HAND = 300, LOOKAT_YOU = 301, LOOKAT_ENEMY = 302, ATTACK_ENEMY = 303, LOOKER = 304, HELP = 305, END = 306, CONFIRM_END = 307, DECK = 308, DISCARD = 309, MAP = 310, IN_MAP = 311, POPUPS = 312, REWARDS = 313, CARD_REWARDS = 314, ARTIFACTS = 315, VOID = 316, CONFIRM_EXIT = 317, OPTIONS = 318, GAME_OVER = 319, GAME_FIN = 320, GAME_WON = 321, CONFIRM_RESTART = 322, WELCOME = 323, ARTIFACT_REWARDS = 324;
 
 const TITLE = 400, DIFFICULTY_CHANGE = 401;
 
@@ -340,7 +340,7 @@ function selection() {
 			game.select[1]--;
 			actionTimer = 1;
 		} else if (action === ENTER) {
-			let item = "" + game.rewards[game.select[1]];
+			const item = "" + game.rewards[game.select[1]];
 			if (!item.endsWith(" - claimed")) {
 				let arr = item.split(" ");
 				if (arr[1] == "gold") {
@@ -348,6 +348,8 @@ function selection() {
 					game.rewards[game.select[1]] += " - claimed";
 				} else if (arr[1] == "card") {
 					game.select = [CARD_REWARDS, 0];
+				} else if (arr[1] == "artifact") {
+					game.select = [ARTIFACT_REWARDS, -1];
 				} else if (arr[1] == "health") {
 					game.health += +arr[0];
 					game.rewards[game.select[1]] += " - claimed";
@@ -378,7 +380,7 @@ function selection() {
 			game.select[1]--;
 			actionTimer = 1;
 		} else if (action === ENTER) {
-			if (game.select[1] == -1 || game.select[1] == get.cardRewardChoices()) {
+			if (game.select[1] === -1 || game.select[1] === get.cardRewardChoices()) {
 				for (let index = 0; index < game.rewards.length; index++) {
 					if (game.rewards[index] == "1 card") {
 						game.select = [REWARDS, index];
@@ -389,6 +391,34 @@ function selection() {
 				game.deck.push(new Card(game.room[5][game.select[1]]));
 				for (let index = 0; index < game.rewards.length; index++) {
 					if (game.rewards[index] == "1 card") {
+						game.rewards[index] += " - claimed";
+						game.select = [REWARDS, index];
+						break;
+					};
+				};
+			};
+			actionTimer = 2;
+		};
+		return;
+	} else if (game.select[0] === ARTIFACT_REWARDS) {
+		if (action === RIGHT && game.select[1] < 3) {
+			game.select[1]++;
+			actionTimer = 1;
+		} else if (action === LEFT && game.select[1] > -1) {
+			game.select[1]--;
+			actionTimer = 1;
+		} else if (action === ENTER) {
+			if (game.select[1] === -1 || game.select[1] === 3) {
+				for (let index = 0; index < game.rewards.length; index++) {
+					if (game.rewards[index] == "1 artifact") {
+						game.select = [REWARDS, index];
+						break;
+					};
+				};
+			} else {
+				game.artifacts.push(game.room[6][game.select[1]]);
+				for (let index = 0; index < game.rewards.length; index++) {
+					if (game.rewards[index] == "1 artifact") {
 						game.rewards[index] += " - claimed";
 						game.select = [REWARDS, index];
 						break;
@@ -807,7 +837,10 @@ function manageGameplay() {
 		game.rewards = [];
 		if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
 		if (get.cardRewardChoices() > 0) game.rewards.push("1 card");
-		if (game.room[0] === PRIMEROOM) game.rewards.push((get.maxHealth() * 0.9) + " health");
+		if (game.room[0] === PRIMEROOM) {
+			if (game.room[6]) game.rewards.push("1 artifact");
+			game.rewards.push(Math.floor(get.maxHealth() * 0.3) + " health");
+		};
 		game.rewards.push("finish");
 	};
 	// load floor
@@ -928,6 +961,8 @@ function updateVisuals() {
 		rewardGraphics();
 	} else if (game.select[0] === CARD_REWARDS) {
 		cardRewardGraphics();
+	} else if (game.select[0] === ARTIFACT_REWARDS) {
+		artifactRewardGraphics();
 	} else if (game.select[0] === HELP && game.select[1]) {
 		infoGraphics();
 	} else if (game.select[0] === OPTIONS && game.select[1]) {

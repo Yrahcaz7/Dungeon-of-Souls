@@ -24,7 +24,7 @@ function internalSeed(str) {
 		h = Math.imul(h, 5) + 3864292196 | 0;
 	};
 	h ^= str.length;
-	return function() {
+	return () => {
 		h ^= h >>> 16; h = Math.imul(h, 2246822507);
 		h ^= h >>> 13; h = Math.imul(h, 3266489909);
 		h ^= h >>> 16;
@@ -37,7 +37,7 @@ var seed = internalSeed(game.seed);
 // setup PRNG
 
 function internalRandom(a, b, c, d) {
-	return function() {
+	return () => {
 		var t = b << 9, r = a * 5; r = (r << 7 | r >>> 25) * 9;
 		c ^= a; d ^= b;
 		b ^= c; a ^= d; c ^= t;

@@ -42,3 +42,33 @@ for (const key in artifacts) {
 		artifacts[key].desc = artifacts[key].desc.replace(/([Mm]ax\shealth|[Hh]ealth|[Hh]eal|[Dd]amage(?!<\/red>)|[Ee]xtra\sdamage|[Aa]ttack)/g, "<red>$1</red>").replace(/([Ss]hield|[Dd]efense)/g, "<blue>$1</blue>");
 	};
 };
+
+function randomArtifactSet(length = 0) {
+	if (length <= 0) return [];
+	let result = [];
+	for (let index = 0; index < length; index++) {
+		result.push(randomArtifact(result));
+	};
+	return result;
+};
+
+function randomArtifact(notInclude = []) {
+	let bool = true;
+	if (notInclude.length) {
+		for (const key in artifacts) {
+			if (Object.hasOwnProperty.call(artifacts, key)) {
+				if (artifacts[key].rarity > 0 && !notInclude.includes(+key)) {
+					bool = false;
+				};
+			};
+		};
+	};
+	if (bool) {
+		return randomInt(2, Object.keys(artifact).length);
+	};
+	let result;
+	while (!result || notInclude.includes(result)) {
+		result = randomInt(2, Object.keys(artifact).length);
+	};
+	return result;
+};

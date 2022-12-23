@@ -353,6 +353,7 @@ function foregrounds() {
 	if (past) {
 		if (past[0] === REWARDS) rewardGraphics(false);
 		else if (past[0] === CARD_REWARDS) cardRewardGraphics(false);
+		else if (past[0] === ARTIFACT_REWARDS) artifactRewardGraphics(false);
 	};
 	draw.image(view);
 	if (game.select[0] === LOOKER && game.select[1] === 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 343, 3);
@@ -778,13 +779,13 @@ const info = {
 			draw.textBox(pos[0] - 72.5 + xPlus, pos[1] + yPlus + 11, 24, infoText.burn, {"text-small": true});
 		};
 	},
-	artifact(type, xPlus = 0, yPlus = 0) {
+	artifact(type, xOveride = 0, yOveride = 0) {
 		if (type == "the map") {
-			let x = 21, y = 12 + yPlus;
+			let x = (xOveride ? xOveride : 21), y = (yOveride ? yOveride : 12);
 			draw.textBox(x, y, 12, "The Map", {"text-align": CENTER});
 			draw.textBox(x, y + 13, 24, infoText["the map"], {"text-small": true});
 		} else {
-			let x = 39 + (game.select[1] * 18) + xPlus, y = 12 + yPlus;
+			let x = (xOveride ? xOveride : 39 + (game.select[1] * 18)), y = (yOveride ? yOveride : 12);
 			const obj = artifacts[type];
 			if (!obj) return;
 			if (obj.name.length <= 12) draw.textBox(x, y, 12, obj.name.title(), {"text-align": CENTER});
@@ -847,6 +848,8 @@ function target() {
 		};
 	} else if (game.select[0] === ARTIFACTS) {
 		info.artifact(game.artifacts[game.select[1]]);
+	} else if (game.select[0] === ARTIFACT_REWARDS) {
+		info.artifact(game.room[6][game.select[1]], 179 + (game.select[1] * 32), 90);
 	} else if (game.select[0] === DECK && game.select[1] == 1 && game.deckLocal.length) {
 		const keywords = cards[Object.deepCopy(game.deckLocal).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].id]?.keywords;
 		let x = 0, y = 0;
@@ -957,6 +960,21 @@ function cardRewardGraphics(focused = true) {
 		draw.card(new Card(game.room[5][game.select[1]]), game.select[1], 50, true);
 	};
 	if ((game.select[1] === -1 || game.select[1] === choices) && focused) draw.rect("#fff", x, y + height - 14, width, 14);
+	draw.box(x + 2, y + height - 12, width - 4, 10);
+	draw.lore(x + 3, y + height - 11, "Go back");
+};
+
+function artifactRewardGraphics(focused = true) {
+	rewardGraphics(false);
+	let x = 140, y = 70, width = 120, height = 60;
+	draw.box(x, y, width, height);
+	draw.lore(200 - 2, y + 1, "Pick an artifact:", {"text-align": CENTER});
+	for (let index = 0; index < 3; index++) {
+		const name = ("" + artifacts[game.room[6][index]].name).replace(/\s/g, "_");
+		draw.image(artifact[name], 160 + (index * 32), 90);
+		if (game.select[1] === index) draw.image(select[name], 159 + (index * 32), 89);
+	};
+	if ((game.select[1] === -1 || game.select[1] === 3) && focused) draw.rect("#fff", x, y + height - 14, width, 14);
 	draw.box(x + 2, y + height - 12, width - 4, 10);
 	draw.lore(x + 3, y + height - 11, "Go back");
 };

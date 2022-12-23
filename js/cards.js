@@ -179,7 +179,7 @@ class Card {
 };
 
 Array.prototype.cardSort = function() {
-	return this.sort(function compareFn(a, b) {
+	return this.sort((a, b) => {
 		if (cards[a.id].rarity > cards[b.id].rarity) {
 			return -1;
 		};

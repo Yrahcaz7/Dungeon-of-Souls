@@ -20,7 +20,7 @@
 String.prototype.title = function() {
 	let result = "";
 	for (let num = 0; num < this.length; num++) {
-		if (num === 0 || this.charAt(num - 1) == " " || this.charAt(num - 1) == "\n") result += this.charAt(num).toUpperCase();
+		if (num === 0 || (/\s/.test(this.charAt(num - 1)) && !/^(a|an|and|at|but|by|for|in|nor|of|on|or|so|the|to|up|yet)(?!\w)/.test(this.substring(num)))) result += this.charAt(num).toUpperCase();
 		else result += this.charAt(num);
 	};
 	return result;
@@ -35,7 +35,7 @@ String.prototype.shuffle = function() {
 	return arr.join("");
 };
 
-Object.prototype.deepCopy = function(o, keepProto = false) {
+Object.prototype.deepCopy = (o, keepProto = false) => {
 	let object = JSON.parse(JSON.stringify(o));
 	if (keepProto) Object.setPrototypeOf(object, Object.getPrototypeOf(o));
 	return object;
