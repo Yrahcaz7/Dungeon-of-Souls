@@ -838,7 +838,14 @@ function manageGameplay() {
 		if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
 		if (get.cardRewardChoices() > 0) game.rewards.push("1 card");
 		if (game.room[0] === PRIMEROOM) {
-			if (game.room[6]) game.rewards.push("1 artifact");
+			if (game.room[6]) {
+				for (let index = 0; index < game.room[6].length; index++) {
+					if (game.artifacts.includes(game.room[6][index])) {
+						game.room[6][index] = randomArtifact(game.artifacts.concat(game.room[6]));
+					};
+				};
+				game.rewards.push("1 artifact");
+			};
 			game.rewards.push(Math.floor(get.maxHealth() * 0.3) + " health");
 		};
 		game.rewards.push("finish");
