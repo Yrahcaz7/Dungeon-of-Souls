@@ -71,10 +71,10 @@ var global = {
 }, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = TITLE, menuSelect = 0, enemyPos = [], handPos = [], paths = {}, gameWon = false;
 
 function musicPopup() {
-	let src = document.getElementById("music").src;
+	let src = "" + document.getElementById("music").src;
 	if (!global.options.music) {
 		showPopup("music", "music is off");
-	} else if (src.includes("Ruins_of_Caelum.mp3")) {
+	} else if (/Ruins_of_Caelum.(mp3|wav)/.test(src)) {
 		showPopup("music", "Ruins of Caelum");
 	};
 };
@@ -964,7 +964,7 @@ function updateVisuals() {
 				let num = Math.round(interval(4/3, 2));
 				draw.image(victorious, 168, 42 + num, victorious.width * 2, victorious.height * 2);
 				draw.rect("#0004");
-				draw.lore(200 - 2, 50, "YOU WON THE GAME ON " + (global.difficulty ? "HARD" : "EASY") + "!\n\nThank you for playing!\n\nMore content coming soon, such as:<s>\n- More cards!\n- More enemies!\n- A boss battle!\n- And much more!<b>\n\nPRESS ENTER TO START A NEW RUN", {"color": "light green", "text-align": CENTER});
+				draw.lore(200 - 2, 50, "YOU WON THE GAME ON " + (global.difficulty ? "<deep-red>HARD MODE!</deep-red>" : "EASY MODE!") + "\n\nThank you for playing!\n\nMore content coming soon, such as:<s>\n- More cards!\n- More enemies!\n- A boss battle!\n- And much more!<b>\n\nPRESS ENTER TO START A NEW RUN", {"color": "light green", "text-align": CENTER});
 				if (actionTimer <= -1) {
 					if (action === ENTER) restartRun();
 				} else actionTimer -= 0.1;
@@ -976,7 +976,7 @@ function updateVisuals() {
 	};
 };
 
-const gameloop = setInterval(function() {
+const gameloop = setInterval(() => {
 	// bugs
 	if (!canvas || !ctx) {
 		canvasData();
@@ -995,10 +995,10 @@ const gameloop = setInterval(function() {
 		// save
 		save();
 	};
-}, 100), musicloop = setInterval(function() {
+}, 100), musicloop = setInterval(() => {
 	let time = document.getElementById("music").currentTime;
 	if (global.options.music) {
-		if (time === 0 && menuLocation !== TITLE) {
+		if (time === 0 && menuLocation === -1) {
 			document.getElementById("music").play();
 		} else if (time > document.getElementById("music").duration - 0.1) {
 			document.getElementById("music").currentTime = 0;
