@@ -18,7 +18,7 @@
 const attributes = {
 	// gameplay
 	unplayable: [0],
-	"one use": [3000],
+	"one use": [3000, 4001],
 	// technical
 	"NO SELECT": [1002],
 	"NO ATTACK EFFECTS": [3001],
@@ -143,7 +143,7 @@ const attributes = {
 	},
 	4001: {
 		name: "aura blaze",
-		desc: "Gain 4 aura blades.",
+		desc: "Gain 4 aura blades.\nOne use.",
 		rarity: 2,
 		cost: 3,
 		effect() {
