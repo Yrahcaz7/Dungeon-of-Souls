@@ -846,14 +846,16 @@ function manageGameplay() {
 				};
 				game.rewards.push("1 artifact");
 			};
-			game.rewards.push(Math.floor(get.maxHealth() * 0.3) + " health");
+			game.rewards.push(Math.floor(get.maxHealth() * 0.25) + " health");
 		};
 		game.rewards.push("finish");
 	};
 	// load floor
-	let place = game.location.split(", ");
 	if (game.state == "enter") {
-		if (game.location == "-1" || game.map[place[0]][place[1]][0] === BATTLEROOM || game.map[place[0]][place[1]][0] === PRIMEROOM) {
+		const place = game.location.split(", ");
+		const type = (game.location == "-1" ? BATTLEROOM : game.map[place[0]][place[1]][0]);
+		if (type === BATTLEROOM || type === PRIMEROOM || type === BOSSROOM) {
+			primeAnim = 0;
 			if (game.location == "-1") game.room = game.firstRoom;
 			else game.traveled.push(+place[1]);
 			for (let index = 0; index < game.room[3].length; index++) {
@@ -866,7 +868,7 @@ function manageGameplay() {
 				};
 			};
 			enterBattle();
-		} else if (game.map[place[0]][place[1]][0] === TREASUREROOM) {
+		} else if (type === TREASUREROOM) {
 			game.traveled.push(+place[1]);
 			game.map[place[0]][place[1]][3] = true;
 			game.select = [REWARDS, 0];
@@ -875,6 +877,11 @@ function manageGameplay() {
 			if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
 			if (get.cardRewardChoices() > 0) game.rewards.push("1 card");
 			game.rewards.push("finish");
+		} else if (type === ORBROOM) {
+			game.traveled.push(+place[1]);
+			game.select = [REWARDS, 0];
+			game.state = "event_fin";
+			game.rewards = [Math.floor(get.maxHealth() * 0.5) + " health", "finish"];
 		};
 	};
 	// update data again

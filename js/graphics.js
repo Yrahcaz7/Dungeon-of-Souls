@@ -23,7 +23,7 @@ var backAnim = [0, UP, 0.5, DOWN, 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], c
 
 const draw = {
 	// basic - first order
-	image(image, x = 0, y = 0, width = image ? +image.width : undefined, height = image ? +image.height : undefined) {
+	image(image, x = 0, y = 0, width = (image ? +image.width : 0), height = (image ? +image.height : 0)) {
 		if (!image || (!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
 		ctx.drawImage(image, x * scale, y * scale, width * scale, height * scale);
 	},
@@ -322,22 +322,21 @@ const draw = {
 };
 
 function backgrounds() {
-	let now = new Date(Date.now()),
-		time = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()],
-		clockX = 170,
-		clockY = 63 - Math.round(backAnim[2]);
-	time[2] += (time[3] / 1000);
-	time[1] += (time[2] / 60);
-	time[0] += (time[1] / 60);
-	if (time[0] >= 12) time[0] = time[0] - 12;
 	draw.image(background.cave);
 	draw.rect("#10106080");
 	draw.image(background.temple);
 	draw.image(background.floating_arch, 136, 34 - Math.round(backAnim[0]));
-	draw.image(clock.face, clockX, clockY);
-	draw.imageSector(clock.hour_hand, Math.floor((time[0]) * 82 / 12) * 24, 0, 24, 24, clockX + 18, clockY + 18);
-	draw.imageSector(clock.min_hand, Math.floor((time[1]) * 80 / 60) * 34, 0, 34, 34, clockX + 13, clockY + 13);
-	draw.image(clock.node, clockX + 26, clockY + 26);
+	if (game.floor != 10) {
+		let now = new Date(), time = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()], x = 170, y = 63 - Math.round(backAnim[2]);
+		time[2] += (time[3] / 1000);
+		time[1] += (time[2] / 60);
+		time[0] += (time[1] / 60);
+		if (time[0] >= 12) time[0] = time[0] - 12;
+		draw.image(clock.face, x, y);
+		draw.imageSector(clock.hour_hand, Math.floor((time[0]) * 82 / 12) * 24, 0, 24, 24, x + 18, y + 18);
+		draw.imageSector(clock.min_hand, Math.floor((time[1]) * 80 / 60) * 34, 0, 34, 34, x + 13, y + 13);
+		draw.image(clock.node, x + 26, y + 26);
+	};
 	if (backAnim[0] >= 1) backAnim[1] = DOWN;
 	else if (backAnim[0] <= -1) backAnim[1] = UP;
 	if (backAnim[1] === UP) backAnim[0] += (Math.random() + 0.5) * 0.075;
@@ -477,7 +476,7 @@ function playerGraphics() {
 function effectGraphics() {
 	if (effAnim[1] == "war cry") {
 		draw.imageSector(war_cry, Math.floor(effAnim[0]) * 188, 0, 188, 188, -22, -18, 188, 188);
-		effAnim[0] += 1;
+		effAnim[0]++;
 		if (effAnim[0] >= 35) effAnim = [0, "none"];
 	};
 };
@@ -518,19 +517,33 @@ function enemyGraphics() {
 		if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
 		if (index !== invNum) {
 			if (select.type === SLIME.BIG) {
-				draw.imageSector(enemy.slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
+				draw.imageSector(enemy.slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
 			} else if (select.type === SLIME.SMALL) {
-				draw.imageSector(enemy.slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1], 64, 64);
+				draw.imageSector(enemy.slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
 			} else if (select.type === SLIME.PRIME) {
 				if (primeAnim == -1) {
-					draw.imageSector(enemy.slime.prime, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1, 64, 64);
+					draw.imageSector(enemy.slime.prime, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 				} else {
-					draw.imageSector(enemy.slime.to_prime, Math.floor(primeAnim) * 64, 0, 64, 64, pos[0], pos[1] + 1, 64, 64);
+					draw.imageSector(enemy.slime.to_prime, Math.floor(primeAnim) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 					primeAnim += (Math.random() + 0.5) * 0.1;
 					if (primeAnim >= 12) {
 						primeAnim = -1;
 						enemyAnim[index] = 0;
 					};
+				};
+			} else if (select.type === FRAGMENT) {
+				if (primeAnim == -1) {
+					draw.imageSector(enemy.fragment.idle, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
+				} else if (primeAnim >= 18) {
+					draw.imageSector(enemy.fragment.open, Math.floor(primeAnim - 18) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+					primeAnim += 0.5;
+					if (primeAnim >= 25) {
+						primeAnim = -1;
+						enemyAnim[index] = 0;
+					};
+				} else {
+					draw.imageSector(enemy.fragment.roll, Math.floor(primeAnim % 4) * 64, 0, 64, 64, pos[0] + ((18 - primeAnim) * 8), pos[1] + 1);
+					primeAnim++;
 				};
 			};
 		};
@@ -548,7 +561,6 @@ function enemyGraphics() {
 			};
 			if (tempAnim[2] === ENDING) {
 				tempAnim = [0, -1, STARTING, -1];
-				enemyAnim[tempAnim[3]] = 0;
 				game.enemyStage = ENDING;
 			} else if (game.enemyStage === MIDDLE) {
 				draw.imageSector(enemy.slime.slime_ball, 4 * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
@@ -592,10 +604,21 @@ function enemyGraphics() {
 			tempAnim[0]++;
 			if (game.enemyStage === MIDDLE) {
 				tempAnim = [0, -1, STARTING, -1];
-				enemyAnim[tempAnim[3]] = 0;
 				game.enemyStage = ENDING;
 			} else if (tempAnim[0] >= 14) {
 				tempAnim[0] = 14;
+				game.enemyStage = MIDDLE;
+			} else {
+				game.enemyStage = PENDING;
+			};
+		} else if (tempAnim[1] === FRAGMENT) {
+			draw.imageSector(enemy.fragment.attack, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
+			if (tempAnim[0] == 4) draw.rect("#f00", 0, pos[1] + 4, pos[0], 60);
+			tempAnim[0]++;
+			if (tempAnim[0] >= 6) {
+				tempAnim = [0, -1, STARTING, -1];
+				game.enemyStage = ENDING;
+			} else if (tempAnim[0] >= 4) {
 				game.enemyStage = MIDDLE;
 			} else {
 				game.enemyStage = PENDING;
@@ -612,6 +635,9 @@ function enemyGraphics() {
 			else if (select.type === SLIME.PRIME) {
 				if (primeAnim == -1 || primeAnim >= 5) y -= 37;
 				else y -= 17;
+			} else if (select.type === FRAGMENT) {
+				if (primeAnim == -1 || primeAnim > 18) y -= 36;
+				else y = NaN;
 			};
 			if (game.enemies[index].intent === DEFEND) {
 				draw.intent(pos[0] + 16, y, game.enemies[index].defendPower, DEFEND);
@@ -812,6 +838,9 @@ function target() {
 		} else if (enemyType === SLIME.PRIME) {
 			coords = [0, 5, 63, 59];
 			name = "prime slime";
+		} else if (enemyType === FRAGMENT && (primeAnim == -1 || primeAnim > 18)) {
+			coords = [7, 6, 50, 58];
+			name = "fragment of time";
 		};
 		if (coords) {
 			draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
@@ -1079,6 +1108,14 @@ function mapGraphics(onlyCalc = false) {
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(select.treasure, drawX - 1, drawY - 1);
 						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.treasure_blue, drawX - 1, drawY - 1);
 					};
+				} else if (game.map[x][y][0] === ORBROOM) {
+					draw.image(map.orb, drawX, drawY);
+					if (x == coordSel[0] && y == coordSel[1]) draw.image(select.orb, drawX - 1, drawY - 1);
+					if (x == coordOn[0] && y == coordOn[1]) draw.image(select.orb_blue, drawX - 1, drawY - 1);
+				} else if (game.map[x][y][0] === BOSSROOM) {
+					draw.image(map.boss, drawX, drawY);
+					if (x == coordSel[0] && y == coordSel[1]) draw.image(select.boss, drawX - 1, drawY - 1);
+					if (x == coordOn[0] && y == coordOn[1]) draw.image(select.boss_blue, drawX - 1, drawY - 1);
 				};
 			};
 		};

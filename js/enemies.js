@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const SLIME = {BIG: 600, SMALL: 601, PRIME: 602};
+const SLIME = {BIG: 600, SMALL: 601, PRIME: 602}, FRAGMENT = 603;
 
 const ATTACK = 700, DEFEND = 701;
 
@@ -23,8 +23,9 @@ class Enemy {
 	constructor(type, power = 1) {
 		if (type === SLIME.SMALL) power--;
 		if (type === SLIME.PRIME) power++;
-		power += global.difficulty;
-		power += game.floor * 0.05 * (2 ** global.difficulty);
+		if (type === FRAGMENT) power += 2;
+		power += global.difficulty * 0.75;
+		power += (game.floor * 0.05) * (2 ** global.difficulty);
 		this.type = +type;
 		this.maxHealth = Math.round(((random() / 10) + 0.95) * ((power * 10) + 20));
 		this.health = this.maxHealth;
@@ -42,9 +43,7 @@ class Enemy {
 				if (game.eff.weakness) startAnim.player("crouch_shield");
 				else startAnim.player("shield");
 			};
-			if (this.type === SLIME.BIG) startAnim.enemy(game.enemyNum, SLIME.BIG);
-			else if (this.type === SLIME.SMALL) startAnim.enemy(game.enemyNum, SLIME.SMALL);
-			else if (this.type === SLIME.PRIME) startAnim.enemy(game.enemyNum, SLIME.PRIME);
+			if (this.type >= 600 && this.type <= FRAGMENT) startAnim.enemy(game.enemyNum, this.type);
 			else {
 				this.middleAction();
 				this.finishAction();

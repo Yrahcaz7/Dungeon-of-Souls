@@ -182,7 +182,7 @@ function updateData() {
 		game.select = [GAME_OVER, 0];
 	};
 	// game won
-	if (game.floor == 8 && game.state == "event_fin" && game.select[0] === IN_MAP) {
+	if (game.floor == 10 && game.state == "event_fin" && game.select[0] === IN_MAP) {
 		game.turn = "none";
 		game.state = "game_fin";
 		game.select = [GAME_FIN, 0];

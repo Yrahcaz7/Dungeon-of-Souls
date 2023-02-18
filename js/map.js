@@ -15,11 +15,11 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const FIRSTBATTLE = 000, TREASURE = 001, PRIME = 002;
+const FIRSTBATTLE = 000, TREASURE = 001, PRIME = 002, ORB = 003, BOSS = 004;
 
-const BATTLEROOM = 100, TREASUREROOM = 101, PRIMEROOM = 102;
+const BATTLEROOM = 100, TREASUREROOM = 101, PRIMEROOM = 102, ORBROOM = 103, BOSSROOM = 104;
 
-var mapProg = 0, mapTotal = 8, death_zones = 0, rowFalses = 0, rowNodes = 0, twoRow = false;
+var mapProg = 0, mapTotal = 10, death_zones = 0, rowFalses = 0, rowNodes = 0, twoRow = false;
 
 function weakerSmallSlime(row) {
 	return SLIME.SMALL + ", " + (Math.round((0.5 + (row * 0.05)) * 100) / 100);
@@ -28,7 +28,9 @@ function weakerSmallSlime(row) {
 function mapPiece(row, attribute = -1) {
 	if (attribute === FIRSTBATTLE) return [BATTLEROOM, 0, 0, [SLIME.SMALL], randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5)];
 	if (attribute === TREASURE) return [TREASUREROOM, randomInt(-5, 5), randomInt(-5, 5), false, randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
-	if (attribute === PRIME) return [PRIMEROOM, 0, 0, [weakerSmallSlime(row), SLIME.PRIME, weakerSmallSlime(row)], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5), randomArtifactSet(3)];
+	if (attribute === PRIME) return [PRIMEROOM, randomInt(-5, 5), randomInt(-5, 5), [weakerSmallSlime(row), SLIME.PRIME, weakerSmallSlime(row)], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5), randomArtifactSet(3)];
+	if (attribute === ORB) return [ORBROOM, randomInt(-5, 5), randomInt(-5, 5)];
+	if (attribute === BOSS) return [BOSSROOM, 0, 0, [FRAGMENT], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 3, randomCardSet(5)];
 	let type = chance(3/5) ? BATTLEROOM : false;
 	if (rowFalses >= 4 || (twoRow && rowFalses >= 3) || (row === 0 && rowFalses >= 2)) type = BATTLEROOM;
 	if (type) rowNodes++;
@@ -36,7 +38,7 @@ function mapPiece(row, attribute = -1) {
 	if (!type || rowNodes == 6) return false;
 	let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
 	if (type === BATTLEROOM) {
-		if (row >= 5) result.push(chance() ? [SLIME.BIG] : (chance(7/10) ? [SLIME.BIG, weakerSmallSlime(row)] : [SLIME.SMALL, SLIME.SMALL]));
+		if (row >= 5) result.push(chance(1/3) ? [SLIME.BIG] : (chance(2/3) ? [SLIME.BIG, weakerSmallSlime(row)] : [SLIME.SMALL, SLIME.SMALL]));
 		else result.push(chance() ? [SLIME.BIG] : [SLIME.SMALL, weakerSmallSlime(row)]);
 		result.push(randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5));
 	};
@@ -75,6 +77,11 @@ function mapRow(row) {
 	rowFalses = 0;
 	rowNodes = 0;
 	if (row === 0) return [false, mapPiece(0), mapPiece(0), mapPiece(0), mapPiece(0), false];
+	if (row === 8) {
+		if (chance()) return [mapPiece(8, ORB), false, mapPiece(8, ORB), false, mapPiece(8, ORB), false];
+		else return [false, mapPiece(8, ORB), false, mapPiece(8, ORB), false, mapPiece(8, ORB)];
+	};
+	if (row === 9) return [false, false, mapPiece(9, BOSS), false, false, false];
 	let arr = [mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row)];
 	if (row > 1) {
 		game.map.push(arr);
@@ -122,7 +129,7 @@ async function generateMap() {
 	game.firstRoom = mapPiece(0, FIRSTBATTLE);
 	game.map = [];
 	death_zones = 0;
-	for (let index = 0; index < 8; index++) {
+	for (let index = 0; index < 10; index++) {
 		game.map.push(mapRow(index));
 		mapProg++;
 		updateMapProg();

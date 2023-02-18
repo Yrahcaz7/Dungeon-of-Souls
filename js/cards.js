@@ -110,8 +110,10 @@ const attributes = {
 		effect() {
 			startAnim.effect("war cry");
 			for (let index = 0; index < game.enemies.length; index++) {
-				game.enemies[index].intent = DEFEND;
-				game.enemies[index].intentHistory[game.enemies[index].intentHistory.length - 1] = DEFEND;
+				if (game.enemies[index].type !== FRAGMENT) {
+					game.enemies[index].intent = DEFEND;
+					game.enemies[index].intentHistory[game.enemies[index].intentHistory.length - 1] = DEFEND;
+				};
 			};
 		},
 	},
@@ -121,15 +123,17 @@ const attributes = {
 		rarity: 1,
 		cost: 0,
 		attack() {
-			let damage = game.enemies[game.enemyAtt[1]].health;
-			if (game.shield <= damage) {
-				damage -= game.shield;
-				game.shield = 0;
-				game.health -= damage;
-			} else {
-				game.shield -= damage;
+			if (game.enemies[game.enemyAtt[1]].type !== FRAGMENT) {
+				let damage = game.enemies[game.enemyAtt[1]].health;
+				if (game.shield <= damage) {
+					damage -= game.shield;
+					game.shield = 0;
+					game.health -= damage;
+				} else {
+					game.shield -= damage;
+				};
+				game.enemies[game.enemyAtt[1]].health = 0;
 			};
-			game.enemies[game.enemyAtt[1]].health = 0;
 		},
 	},
 	4000: {
