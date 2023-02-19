@@ -1033,50 +1033,51 @@ function mapGraphics(onlyCalc = false) {
 			if (!game.map[x][y]) continue;
 			let drawX = 25 + (x * 32) + game.map[x][y][1];
 			let drawY = 18 + (y * 32) + game.map[x][y][2];
+			if (game.map[x][y][0] === BOSSROOM) {
+				drawX = 25 + 10 + 8 + (x * 32);
+				drawY = 90 + 8;
+			};
 			if (x === 0 && render) {
 				if (game.traveled[x] === y) draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#842", 3);
 				else draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#b84", 3);
 			};
-			if (game.map[x][y]) {
-				for (let branch = 0; branch < 2; branch++) {
-					let posX, posY, connectNode = [];
-					for (num = 0; num < 7; num++) {
-						if (branch && x != game.map.length - 1) {
-							if (game.map[x + 1][y - num]) {
-								connectNode = [1, y - num];
-								store.push([x, y, x + 1, y - num]);
-								posX = 25 + ((x + 1) * 32) + game.map[x + 1][y - num][1];
-								posY = 18 + ((y - num) * 32) + game.map[x + 1][y - num][2];
-								break;
-							} else if (game.map[x + 1][y + num]) {
-								connectNode = [1, y + num];
-								store.push([x, y, x + 1, y + num]);
-								posX = 25 + ((x + 1) * 32) + game.map[x + 1][y + num][1];
-								posY = 18 + ((y + num) * 32) + game.map[x + 1][y + num][2];
-								break;
-							};
-						} else if (x !== 0) {
-							if (game.map[x - 1][y - num]) {
-								connectNode = [-1, y - num];
-								store.push([x, y, x - 1, y - num]);
-								posX = 25 + ((x - 1) * 32) + game.map[x - 1][y - num][1];
-								posY = 18 + ((y - num) * 32) + game.map[x - 1][y - num][2];
-								break;
-							} else if (game.map[x - 1][y + num]) {
-								connectNode = [-1, y + num];
-								store.push([x, y, x - 1, y + num]);
-								posX = 25 + ((x - 1) * 32) + game.map[x - 1][y + num][1];
-								posY = 18 + ((y + num) * 32) + game.map[x - 1][y + num][2];
-								break;
-							};
+			for (let branch = 0; branch < 2; branch++) {
+				let posX, posY, connectNode = [];
+				const calcNode = (nodeX, nodeY) => {
+					connectNode = [nodeX - x, nodeY];
+					store.push([x, y, nodeX, nodeY]);
+					if (game.map[nodeX][nodeY][0] === BOSSROOM) {
+						posX = 25 + 10 + 8 + (nodeX * 32);
+						posY = 90 + 8;
+					} else {
+						posX = 25 + (nodeX * 32) + game.map[nodeX][nodeY][1];
+						posY = 18 + (nodeY * 32) + game.map[nodeX][nodeY][2];
+					};
+				};
+				for (num = 0; num < 7; num++) {
+					if (branch && x != game.map.length - 1) {
+						if (game.map[x + 1][y - num]) {
+							calcNode(x + 1, y - num);
+							break;
+						} else if (game.map[x + 1][y + num]) {
+							calcNode(x + 1, y + num);
+							break;
+						};
+					} else if (x !== 0) {
+						if (game.map[x - 1][y - num]) {
+							calcNode(x - 1, y - num);
+							break;
+						} else if (game.map[x - 1][y + num]) {
+							calcNode(x - 1, y + num);
+							break;
 						};
 					};
-					if (render) {
-						if (game.traveled[x] === y && game.traveled[x + connectNode[0]] === connectNode[1]) {
-							draw.line(drawX + 8, drawY + 8, posX + 8, posY + 8, "#842", 3);
-						} else {
-							draw.line(drawX + 8, drawY + 8, posX + 8, posY + 8, "#b84", 3);
-						};
+				};
+				if (render) {
+					if (game.traveled[x] === y && game.traveled[x + connectNode[0]] === connectNode[1]) {
+						draw.line(drawX + 8, drawY + 8, posX + 8, posY + 8, "#842", 3);
+					} else {
+						draw.line(drawX + 8, drawY + 8, posX + 8, posY + 8, "#b84", 3);
 					};
 				};
 			};
@@ -1113,9 +1114,10 @@ function mapGraphics(onlyCalc = false) {
 					if (x == coordSel[0] && y == coordSel[1]) draw.image(select.orb, drawX - 1, drawY - 1);
 					if (x == coordOn[0] && y == coordOn[1]) draw.image(select.orb_blue, drawX - 1, drawY - 1);
 				} else if (game.map[x][y][0] === BOSSROOM) {
-					draw.image(map.boss, drawX, drawY);
-					if (x == coordSel[0] && y == coordSel[1]) draw.image(select.boss, drawX - 1, drawY - 1);
-					if (x == coordOn[0] && y == coordOn[1]) draw.image(select.boss_blue, drawX - 1, drawY - 1);
+					drawX += 10;
+					draw.image(map.boss, drawX, 90);
+					if (x == coordSel[0] && y == coordSel[1]) draw.image(select.boss, drawX - 1, 90 - 1);
+					if (x == coordOn[0] && y == coordOn[1]) draw.image(select.boss_blue, drawX - 1, 90 - 1);
 				};
 			};
 		};
