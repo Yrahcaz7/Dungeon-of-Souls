@@ -124,14 +124,7 @@ const attributes = {
 		cost: 0,
 		attack() {
 			if (game.enemies[game.enemyAtt[1]].type !== FRAGMENT) {
-				let damage = game.enemies[game.enemyAtt[1]].health;
-				if (game.shield <= damage) {
-					damage -= game.shield;
-					game.shield = 0;
-					game.health -= damage;
-				} else {
-					game.shield -= damage;
-				};
+				takeDamage(game.enemies[game.enemyAtt[1]].health);
 				game.enemies[game.enemyAtt[1]].health = 0;
 			};
 		},

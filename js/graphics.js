@@ -618,6 +618,8 @@ function enemyGraphics() {
 			if (tempAnim[0] >= 6) {
 				tempAnim = [0, -1, STARTING, -1];
 				game.enemyStage = ENDING;
+			} else if (game.enemyStage === MIDDLE) {
+				game.enemyStage = PENDING;
 			} else if (tempAnim[0] >= 4) {
 				game.enemyStage = MIDDLE;
 			} else {
@@ -961,6 +963,7 @@ function rewardGraphics(focused = true) {
 	const type = (game.location == "-1" ? BATTLEROOM : game.map[place[0]][place[1]][0]);
 	if (type === BATTLEROOM) draw.lore(200 - 2, 21, "Battle Loot!", {"text-align": CENTER});
 	else if (type === TREASUREROOM) draw.lore(200 - 2, 21, "Treasure!", {"text-align": CENTER});
+	else if (type === ORBROOM) draw.lore(200 - 2, 21, "Healing!", {"text-align": CENTER});
 	else draw.lore(200 - 2, 21, "Rewards!", {"text-align": CENTER});
 	for (let index = 0; index < game.rewards.length; index++) {
 		let item = game.rewards[index];

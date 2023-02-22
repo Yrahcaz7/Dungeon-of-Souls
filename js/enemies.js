@@ -54,14 +54,7 @@ class Enemy {
 	};
 	middleAction = () => {
 		if (this.intent === ATTACK) {
-			var damage = this.attackPower;
-			if (game.shield <= damage) {
-				damage -= game.shield;
-				game.shield = 0;
-				game.health -= damage;
-			} else {
-				game.shield -= damage;
-			};
+			takeDamage(this.attackPower);
 			if (game.shield < 1) startAnim.player("hit");
 		} else if (this.intent === DEFEND) {
 			this.shield += this.defendPower;
