@@ -51,7 +51,7 @@ var global = {
 	enemyStage: -1,
 	enemyAtt: [-1, 0, new Card(), false],
 	attackEffects: [],
-	artifacts: ["iron will"],
+	artifacts: [1],
 	deck: [new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000), new Card(2001), new Card(4000)],
 	deckLocal: [],
 	deckPos: 0,
@@ -417,7 +417,10 @@ function selection() {
 					};
 				};
 			} else {
-				game.artifacts.push(game.room[6][game.select[1]]);
+				const index = game.room[6][game.select[1]];
+				const func = artifacts[index][ONPICKUP];
+				if (typeof func == "function") func();
+				game.artifacts.push(index);
 				for (let index = 0; index < game.rewards.length; index++) {
 					if (game.rewards[index] == "1 artifact") {
 						game.rewards[index] += " - claimed";

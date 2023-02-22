@@ -130,9 +130,11 @@ const player = {
 	boss_blue: new Image,
 	// artifacts
 	candy: new Image,
+	card_charm: new Image,
 	corrosion: new Image,
 	gem_of_rage: new Image,
 	iron_will: new Image,
+	nutritious_meal: new Image,
 	supershield: new Image,
 	// other
 	selector: [new Image, new Image, new Image, new Image],
@@ -155,9 +157,11 @@ const player = {
 	weakness: new Image,
 }, artifact = {
 	candy: new Image,
+	card_charm: new Image,
 	corrosion: new Image,
 	gem_of_rage: new Image,
 	iron_will: new Image,
+	nutritious_meal: new Image,
 	supershield: new Image,
 }, intent = {
 	defend: [new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image],

@@ -1,4 +1,4 @@
-const ENDOFBATTLE = 900;
+const ENDOFBATTLE = 900, ONPICKUP = 901;
 
 const artifacts = {
 	1: {
@@ -30,16 +30,29 @@ const artifacts = {
 	5: {
 		name: "corrosion",
 		rarity: 1,
-		desc: "You deal 3 extra damage,\nbut you lose 3 health\nafter every battle.",
+		desc: "You deal 3 extra damage,\nbut you lose 2 health\nafter every battle.",
 		[ENDOFBATTLE]() {
-			game.health -= 3;
+			game.health -= 2;
+		},
+	},
+	6: {
+		name: "card charm",
+		rarity: 1,
+		desc: "You get 1 extra card\nreward choice, but your\nhand size is 1 smaller.",
+	},
+	7: {
+		name: "nutritious meal",
+		rarity: 1,
+		desc: "You have 15 more max health.\nOn pickup, heal 10 health.",
+		[ONPICKUP]() {
+			game.health += 10;
 		},
 	},
 };
 
 for (const key in artifacts) {
 	if (Object.hasOwnProperty.call(artifacts, key)) {
-		artifacts[key].desc = artifacts[key].desc.replace(/([Mm]ax\shealth|[Hh]ealth|[Hh]eal|[Dd]amage(?!<\/red>)|[Ee]xtra\sdamage|[Aa]ttack)/g, "<red>$1</red>").replace(/([Ss]hield|[Dd]efense)/g, "<blue>$1</blue>");
+		artifacts[key].desc = artifacts[key].desc.replace(/([Mm]ax\shealth|[Hh]ealth|[Hh]eal|[Dd]amage(?!<\/red>)|[Ee]xtra\sdamage|[Aa]ttack)/g, "<red>$1</red>").replace(/([Ss]hield|[Dd]efense)/g, "<blue>$1</blue>").replace(/([Ee]nergy|[Cc]ard\sreward\schoice)/g, "<yellow highlight>$1</yellow>");
 	};
 };
 

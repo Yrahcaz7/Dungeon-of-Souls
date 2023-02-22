@@ -66,15 +66,18 @@ function hidden() {
 const get = {
 	handSize() {
 		let size = 5;
+		if (game.artifacts.includes(6)) size--;
 		return size;
 	},
 	cardRewardChoices() {
 		let choices = 3;
+		if (game.artifacts.includes(6)) choices++;
 		return choices;
 	},
 	maxHealth() {
 		let max = 60;
 		if (game.artifacts.includes(4)) max -= 20;
+		if (game.artifacts.includes(7)) max += 15;
 		return max;
 	},
 	maxShield() {
