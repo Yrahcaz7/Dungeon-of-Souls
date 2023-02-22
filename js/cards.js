@@ -18,7 +18,7 @@
 const attributes = {
 	// gameplay
 	unplayable: [0],
-	"one use": [3000],
+	"one use": [3000, 4001],
 	// technical
 	"NO SELECT": [1002],
 	"NO ATTACK EFFECTS": [3001],
@@ -110,8 +110,10 @@ const attributes = {
 		effect() {
 			startAnim.effect("war cry");
 			for (let index = 0; index < game.enemies.length; index++) {
-				game.enemies[index].intent = DEFEND;
-				game.enemies[index].intentHistory[game.enemies[index].intentHistory.length - 1] = DEFEND;
+				if (game.enemies[index].type !== FRAGMENT) {
+					game.enemies[index].intent = DEFEND;
+					game.enemies[index].intentHistory[game.enemies[index].intentHistory.length - 1] = DEFEND;
+				};
 			};
 		},
 	},
@@ -121,15 +123,10 @@ const attributes = {
 		rarity: 1,
 		cost: 0,
 		attack() {
-			let damage = game.enemies[game.enemyAtt[1]].health;
-			if (game.shield <= damage) {
-				damage -= game.shield;
-				game.shield = 0;
-				game.health -= damage;
-			} else {
-				game.shield -= damage;
+			if (game.enemies[game.enemyAtt[1]].type !== FRAGMENT) {
+				takeDamage(game.enemies[game.enemyAtt[1]].health);
+				game.enemies[game.enemyAtt[1]].health = 0;
 			};
-			game.enemies[game.enemyAtt[1]].health = 0;
 		},
 	},
 	4000: {
@@ -143,7 +140,7 @@ const attributes = {
 	},
 	4001: {
 		name: "aura blaze",
-		desc: "Gain 4 aura blades.",
+		desc: "Gain 4 aura blades.\nOne use.",
 		rarity: 2,
 		cost: 3,
 		effect() {

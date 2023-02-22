@@ -83,18 +83,20 @@ gameplay = ""
 	+ "Additionally, there will be a <deep-red>skull</deep-red> on <light-brown>the map</light-brown>. That is the <deep-red>death zone</deep-red>.\n"
 	+ "It contains a <deep-red>prime enemy</deep-red>, which is much, much stronger than normal ones.\n"
 	+ "However, the rewards you get are even better than ones from <yellow>treasure chambers</yellow>.\n"
+	+ "Lastly, the large node at the end is a <deep-red>boss battle</deep-red>, and the bright orbs before it are healing.\n"
 	+ "<b>Losing the Game<s>"
 	+ "If you reach 0 <red>health</red>, you will <deep-red>die</deep-red> and lose your progress.\n"
 	+ "However, you earn <yellow>XP</yellow> (not implemented yet), and when you get enough you can unlock new cards.\n"
 	+ "Then, you can use your new knowledge and cards to reach higher heights next time.",
 changelog = ""
-	+ "<b>Version 1.1 - Perception (in progress)<s>"
+	+ "<b>Version 1.1 - Perception<s>"
 	+ " - added a new option: pixel perfect screen\n"
 	+ " - two new cards, and a new effect\n"
 	+ " - four new artifacts (obtained via death zone rewards)\n"
-	+ " - updated/adjusted some pixel art\n"
+	+ " - finally added a boss battle at the end\n"
 	+ " - travelled paths on the map now appear darker\n"
-	+ " - more bugfixes of course :)\n"
+	+ " - balancing (including the map generator)\n"
+	+ " - even more things that I didn't list here\n"
 	+ "<b>Version 1.0 - Inception<s>"
 	+ " - finally added title and game over screens\n"
 	+ " - finally added an options menu\n"
@@ -182,7 +184,7 @@ function updateData() {
 		game.select = [GAME_OVER, 0];
 	};
 	// game won
-	if (game.floor == 8 && game.state == "event_fin" && game.select[0] === IN_MAP) {
+	if (game.floor == 10 && game.state == "event_fin" && game.select[0] === IN_MAP) {
 		game.turn = "none";
 		game.state = "game_fin";
 		game.select = [GAME_FIN, 0];

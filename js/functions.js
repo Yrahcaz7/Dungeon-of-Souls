@@ -189,6 +189,16 @@ function dealDamage(amount, exMod = 1, enemy = game.enemyAtt[1]) {
 	};
 };
 
+function takeDamage(amount) {
+	if (amount < game.shield) {
+		game.shield -= amount;
+	} else {
+		amount -= game.shield;
+		game.shield = 0;
+		game.health -= amount;
+	};
+};
+
 function gainShield(amount = 0) {
 	if (isNaN(amount)) return;
 	game.shield += amount + get.extraShield();

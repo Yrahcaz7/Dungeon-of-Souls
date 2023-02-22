@@ -68,6 +68,12 @@ const player = {
 		prime: new Image,
 		prime_fist: new Image,
 	},
+	fragment: {
+		roll: new Image,
+		open: new Image,
+		idle: new Image,
+		attack: new Image,
+	},
 }, background = {
 	cave: new Image,
 	temple: new Image,
@@ -118,6 +124,10 @@ const player = {
 	treasure_open_blue: new Image,
 	death_zone: new Image,
 	death_zone_blue: new Image,
+	orb: new Image,
+	orb_blue: new Image,
+	boss: new Image,
+	boss_blue: new Image,
 	// artifacts
 	candy: new Image,
 	corrosion: new Image,
@@ -164,6 +174,8 @@ const player = {
 	treasure: new Image,
 	treasure_open: new Image,
 	death_zone: new Image,
+	orb: new Image,
+	boss: new Image,
 	select: new Image,
 	select_first: new Image,
 }, rewards = {
@@ -295,8 +307,11 @@ for (const image in map) {
 };
 
 // rewards
-rewards.item.src = "images/rewards/item.png";
-rewards.back.src = "images/rewards/back.png";
+for (const image in rewards) {
+	if (Object.hasOwnProperty.call(rewards, image)) {
+		rewards[image].src = "images/rewards/" + image + ".png";
+	};
+};
 
 // other
 view.src = "images/view.png";
