@@ -48,10 +48,10 @@ const draw = {
 		ctx.stroke();
 	},
 	// complex - second order (uses basic)
-	lore(x, y, string, style = {"color": "black", "highlight-color": "#000", "text-align": RIGHT, "text-small": false}) {
+	lore(x, y, string, style = {"color": "black", "highlight-color": "#222", "text-align": RIGHT, "text-small": false}) {
 		string = "" + string;
 		if (!style["color"]) style["color"] = "black";
-		if (!style["highlight-color"]) style["highlight-color"] = "#000";
+		if (!style["highlight-color"]) style["highlight-color"] = "#222";
 		if (!style["text-align"]) style["text-align"] = RIGHT;
 		if (!style["text-small"]) style["text-small"] = false;
 		let color = style["color"], highlight = "", position = style["text-align"], small = style["text-small"];
@@ -132,21 +132,24 @@ const draw = {
 			// print letter
 			if (small) {
 				if (position === RIGHT) {
-					if (highlight) draw.rect(highlight, x + (a * 3) - 0.5, y + (enters * 5.5) - 0.5, 3.5, 5.5);
+					if (highlight && index >= 32) draw.rect(highlight, x + (a * 3) - 0.5, y + (enters * 5.5) - 0.5, 3.5, 5.5);
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 3), y + (enters * 5.5), 2.5, 5);
 				} else if (position === LEFT) {
-					if (highlight) draw.rect(highlight, x + ((a - len + 1) * 3) - 0.5, y + (enters * 5.5) - 0.5, 3.5, 5.5);
+					if (highlight && index >= 32) draw.rect(highlight, x + ((a - len + 1) * 3) - 0.5, y + (enters * 5.5) - 0.5, 3.5, 5.5);
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 3), y + (enters * 5.5), 2.5, 5);
 				} else if (position === CENTER) {
-					if (highlight) draw.rect(highlight, x + (a * 3) - (len * 1.5) + 1 - 0.5, y + (enters * 5.5) - 0.5, 3.5, 5.5);
+					if (highlight && index >= 32) draw.rect(highlight, x + (a * 3) - (len * 1.5) + 1 - 0.5, y + (enters * 5.5) - 0.5, 3.5, 5.5);
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 3) - (len * 1.5) + 1, y + (enters * 5.5), 2.5, 5);
 				};
 			} else {
 				if (position === RIGHT) {
+					if (highlight && index >= 32) draw.rect(highlight, x + (a * 6) - 1, y + (enters * 11) - 1, 7, 11);
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 6), y + (enters * 11), 5, 10);
 				} else if (position === LEFT) {
+					if (highlight && index >= 32) draw.rect(highlight, x + ((a - len + 1) * 6) - 1, y + (enters * 11) - 1, 7, 11);
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 6), y + (enters * 11), 5, 10);
 				} else if (position === CENTER) {
+					if (highlight && index >= 32) draw.rect(highlight, x + (a * 6) - (len * 3) + 2 - 1, y + (enters * 11) - 1, 7, 11);
 					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (len * 3) + 2, y + (enters * 11), 5, 10);
 				};
 			};
@@ -288,9 +291,9 @@ const draw = {
 			draw.lore(x + 4, y + 2, cards[cardObject.id].cost);
 		};
 	},
-	textBox(x, y, width, string, style = {"color": "black", "highlight-color": "#000", "text-align": RIGHT, "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
+	textBox(x, y, width, string, style = {"color": "black", "highlight-color": "#222", "text-align": RIGHT, "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
 		if (!style["color"]) style["color"] = "black";
-		if (!style["highlight-color"]) style["highlight-color"] = "#000";
+		if (!style["highlight-color"]) style["highlight-color"] = "#222";
 		if (!style["text-align"]) style["text-align"] = RIGHT;
 		if (!style["text-small"]) style["text-small"] = false;
 		if (!style["background-color"]) style["background-color"] = "#ccc";
@@ -816,9 +819,13 @@ const info = {
 			let x = (xOveride ? xOveride : 39 + (game.select[1] * 18)), y = (yOveride ? yOveride : 12);
 			const obj = artifacts[type];
 			if (!obj) return;
-			if (obj.name.length <= 12) draw.textBox(x, y, 12, obj.name.title(), {"text-align": CENTER});
-			else draw.textBox(x, y, obj.name.length, obj.name.title());
-			draw.textBox(x, y + 13, 24, obj.desc, {"text-small": true});
+			if (obj.name.length <= 12) {
+				draw.textBox(x, y, 12, obj.name.title(), {"text-align": CENTER});
+				draw.textBox(x, y + 13, 24, obj.desc, {"text-small": true});
+			} else {
+				draw.textBox(x, y, obj.name.length, obj.name.title());
+				draw.textBox(x, y + 13, obj.name.length * 2, obj.desc, {"text-small": true});
+			};
 		};
 	},
 };
