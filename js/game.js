@@ -124,6 +124,7 @@ function endTurn() {
 	// other
 	if (game.hand.length >= 1) discardHand();
 	cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	notif = [-1, 0, "", 0];
 	game.turn = "enemy";
 };
 
