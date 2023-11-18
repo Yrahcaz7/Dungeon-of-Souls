@@ -153,7 +153,10 @@ function load() {
 	get = localStorage.getItem(ID + "/master");
 	if (get && atob(get) && JSON.parse(atob(get))) {
 		get = JSON.parse(atob(get));
+		const defaultOptions = global.options;
 		Object.assign(global, get);
+		global.options = defaultOptions;
+		Object.assign(global.options, get.options);
 	} else {
 		console.log("no global save found. creating new save...");
 	};

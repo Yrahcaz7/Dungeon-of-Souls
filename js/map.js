@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const FIRSTBATTLE = 000, TREASURE = 001, PRIME = 002, ORB = 003, BOSS = 004;
+const FIRSTBATTLE = 0, TREASURE = 1, PRIME = 2, ORB = 3, BOSS = 4;
 
 const BATTLEROOM = 100, TREASUREROOM = 101, PRIMEROOM = 102, ORBROOM = 103, BOSSROOM = 104;
 

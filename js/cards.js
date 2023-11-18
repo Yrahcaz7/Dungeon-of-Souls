@@ -39,11 +39,11 @@ const attributes = {
 	},
 	1001: {
 		name: "heat wave",
-		desc: "Deal 7 damage to\nan enemy, and apply\n2 burn to all\nenemies.",
+		desc: "Deal 8 damage to\nan enemy, and apply\n2 burn to all\nenemies.",
 		rarity: 2,
 		cost: 2,
 		anim: "attack",
-		damage: 7,
+		damage: 8,
 		attack() {
 			for (let index = 0; index < game.enemies.length; index++) {
 				if (game.enemies[index].eff.burn) game.enemies[index].eff.burn += 2;
@@ -53,7 +53,7 @@ const attributes = {
 	},
 	1002: {
 		name: "sweeping slash",
-		desc: "Deal 3 damage to\nall enemies. All\nextra damage is\nhalved, rounded\ndown.",
+		desc: "Deal 3 damage to\nall enemies. Extra\ndamage has half the\neffect on this,\nrounded down.",
 		rarity: 1,
 		cost: 1,
 		anim: "attack_2",

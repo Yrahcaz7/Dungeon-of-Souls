@@ -690,8 +690,17 @@ function optionsGraphics(focused = true) {
 	const options = Object.keys(global.options);
 	let text = "";
 	for (let index = 0; index < options.length; index++) {
-		if (game.select[1] - 2 === index && focused) text += "<yellow>" + options[index].title() + ": " + (global.options[options[index]] ? "ON" : "OFF") + "</yellow>\n";
-		else text += options[index].title() + ": " + (global.options[options[index]] ? "ON" : "OFF") + "\n";
+		let option = global.options[options[index]];
+		if (typeof option == "boolean") {
+			if (game.select[1] - 2 === index && focused) text += "<yellow>" + options[index].title() + ": " + (option ? "ON" : "OFF") + "</yellow>\n";
+			else text += options[index].title() + ": " + (option ? "ON" : "OFF") + "\n";
+		} else if (typeof option == "number") {
+			if (game.select[1] - 2 === index && focused) text += "<yellow>" + options[index].title() + ": " + option + "x</yellow>\n";
+			else text += options[index].title() + ": " + option + "x\n";
+		} else {
+			if (game.select[1] - 2 === index && focused) text += "<yellow>" + options[index].title() + ": " + option + "</yellow>\n";
+			else text += options[index].title() + ": " + option + "\n";
+		};
 	};
 	if (game.select[1] - 2 === options.length && focused) text += "\n<yellow>RESTART RUN</yellow>";
 	else text += "\nRESTART RUN";

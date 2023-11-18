@@ -19,12 +19,15 @@ const HAND = 300, LOOKAT_YOU = 301, LOOKAT_ENEMY = 302, ATTACK_ENEMY = 303, LOOK
 
 const TITLE = 400, DIFFICULTY_CHANGE = 401;
 
+const PIXEL_SIZES = [1, 2, 0.5];
+
 var global = {
 	// unlockedCards: [],
 	options: {
 		music: true,
 		sticky_cards: false,
 		pixel_perfect_screen: false,
+		pixel_perfect_size: 1,
 		allow_fast_movement: true,
 	},
 	difficulty: 0,
@@ -687,14 +690,21 @@ function selection() {
 			return;
 		} else if (action === ENTER) {
 			const option = Object.keys(global.options)[game.select[1] - 2];
-			if (option) global.options[option] = !global.options[option];
-			else game.select = [CONFIRM_RESTART, 1];
+			if (option == "pixel_perfect_size") {
+				let index = PIXEL_SIZES.indexOf(global.options.pixel_perfect_size) + 1;
+				if (index >= PIXEL_SIZES.length) index = 0;
+				global.options.pixel_perfect_size = PIXEL_SIZES[index];
+			} else if (option) {
+				global.options[option] = !global.options[option];
+			} else {
+				game.select = [CONFIRM_RESTART, 1];
+			};
 			if (option == "music") {
 				if (global.options.music) document.getElementById("music").play();
 				else document.getElementById("music").pause();
 				musicPopup();
-			} else if (option == "pixel_perfect_screen") {
-				if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: 800px";
+			} else if (option == "pixel_perfect_screen" || option == "pixel_perfect_size") {
+				if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: " + (800 * global.options.pixel_perfect_size) + "px";
 				else document.getElementById("canvas").style = "";
 				fixCanvas();
 			};

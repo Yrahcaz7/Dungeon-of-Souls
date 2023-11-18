@@ -73,7 +73,7 @@ window.onload = () => {
 	canvasData();
 	// set things
 	if (game.select[0] == GAME_FIN) game.select[1] = 0;
-	if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: 800px";
+	if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: " + (800 * global.options.pixel_perfect_size) + "px";
 	else document.getElementById("canvas").style = "";
 	// calculate things
 	mapGraphics(true);
@@ -117,8 +117,13 @@ function clearCanvas() {
 
 function fixCanvas() {
 	if (global.options.pixel_perfect_screen) {
-		if (window.innerHeight <= document.getElementById("canvas").height) document.getElementById("canvas").className = "fixed";
-		else document.getElementById("canvas").className = "";
+		const width = +(document.getElementById("canvas").style.width.match(/\d+/) || [800])[0];
+		if (window.innerHeight <= width / 2) {
+			if (window.innerWidth <= width) document.getElementById("canvas").className = "onlyScroll";
+			else document.getElementById("canvas").className = "fixed";
+		} else {
+			document.getElementById("canvas").className = "";
+		};
 	} else {
 		if (window.innerHeight <= window.innerWidth / 2) document.getElementById("canvas").className = "fixed";
 		else document.getElementById("canvas").className = "";

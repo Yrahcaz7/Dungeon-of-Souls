@@ -47,3 +47,7 @@ canvas {
 .fixed {
 	margin: 0px auto !important;
 }
+
+.onlyScroll {
+	margin: 0px !important;
+}
