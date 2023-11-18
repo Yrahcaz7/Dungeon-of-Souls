@@ -621,9 +621,7 @@ function enemyGraphics() {
 			if (tempAnim[0] >= 7) {
 				tempAnim = [0, -1, STARTING, -1];
 				game.enemyStage = ENDING;
-			} else if (game.enemyStage === MIDDLE) {
-				game.enemyStage = PENDING;
-			} else if (tempAnim[0] >= 4) {
+			} else if (tempAnim[0] == 4) {
 				game.enemyStage = MIDDLE;
 			} else {
 				game.enemyStage = PENDING;

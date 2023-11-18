@@ -100,7 +100,7 @@ function startTurn() {
 	// end of enemy turn effects
 	for (let index = 0; index < game.enemies.length; index++) {
 		if (game.enemies[index].eff.burn) {
-			dealDamage(game.enemies[index].eff.burn, NaN, index);
+			dealDamage(game.enemies[index].eff.burn, 0, index, false);
 			game.enemies[index].eff.burn--;
 		};
 	};
@@ -226,13 +226,11 @@ function playerTurn() {
 };
 
 function enemyTurn() {
-	if (game.enemyNum >= game.enemies.length) {
-		game.enemyNum = 0;
-		startTurn();
+	if (game.enemyNum < game.enemies.length) {
+		if (game.enemyStage === ENDING) game.enemies[game.enemyNum].finishAction();
+		else if (game.enemyStage === MIDDLE) game.enemies[game.enemyNum].middleAction();
+		else if (game.enemyStage !== PENDING) game.enemies[game.enemyNum].startAction();
 	};
-	if (game.enemyStage === ENDING) game.enemies[game.enemyNum].finishAction();
-	else if (game.enemyStage === MIDDLE) game.enemies[game.enemyNum].middleAction();
-	else if (game.enemyStage !== PENDING) game.enemies[game.enemyNum].startAction();
 };
 
 function selection() {

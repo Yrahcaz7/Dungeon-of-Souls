@@ -171,16 +171,14 @@ function discardHand() {
 
 const AURA_BLADE = 200;
 
-function dealDamage(amount, exMod = 1, enemy = game.enemyAtt[1]) {
-	// extra damage
-	let exDamage = get.extraDamage();
-	if (exMod) {
-		exDamage = Math.floor(exDamage * exMod);
-	};
-	let damage = amount + exDamage;
+function dealDamage(amount, exMod = 1, enemy = +game.enemyAtt[1], attacking = true) {
+	// setup
+	let damage = amount;
+	// increase damage
+	if (attacking) damage += get.extraDamage() * exMod;
 	// multiply damage
 	let mulDamage = 1;
-	if (game.eff.weakness) mulDamage = 0.75;
+	if (game.eff.weakness && attacking) mulDamage = 0.75;
 	damage = Math.floor(damage * mulDamage);
 	// damage enemy
 	if (damage < game.enemies[enemy].shield) {

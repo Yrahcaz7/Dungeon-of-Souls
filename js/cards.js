@@ -39,11 +39,11 @@ const attributes = {
 	},
 	1001: {
 		name: "heat wave",
-		desc: "Deal 8 damage to\nan enemy, and apply\n2 burn to all\nenemies.",
+		desc: "Deal 7 damage to\nan enemy, and apply\n2 burn to all\nenemies.",
 		rarity: 2,
 		cost: 2,
 		anim: "attack",
-		damage: 8,
+		damage: 7,
 		attack() {
 			for (let index = 0; index < game.enemies.length; index++) {
 				if (game.enemies[index].eff.burn) game.enemies[index].eff.burn += 2;
