@@ -70,7 +70,7 @@ var global = {
 	firstRoom: [],
 	map: [],
 	traveled: [],
-	seed: "" + (Math.round(new Date().getTime() * (Math.random() + 0.001)) % 1000000).toString().shuffle(),
+	seed: "" + (Math.round(new Date().getTime() * (Math.random() + 0.001)) % 1000000).toString().randomize(),
 }, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = TITLE, menuSelect = 0, enemyPos = [], handPos = [], paths = {}, gameWon = false;
 
 function musicPopup() {
@@ -85,7 +85,7 @@ function musicPopup() {
 function enterBattle() {
 	game.state = "battle";
 	game.rewards = [];
-	game.deckLocal = randomize(game.deck.slice(0));
+	game.deckLocal = shuffle(game.deck.slice(0));
 	game.hand = [];
 	game.discard = [];
 	game.void = [];
@@ -443,14 +443,20 @@ function selection() {
 				game.mapSelect = paths[game.location].length - 1;
 				actionTimer = 1;
 				return;
-			} else if (game.mapSelect > 0) {
+			} else if (game.mapSelect == 0) {
+				game.mapSelect = paths[game.location].length;
+				actionTimer = 1;
+				return;
+			} else if (game.mapSelect < paths[game.location].length) {
 				game.mapSelect = game.mapSelect - 1;
 				actionTimer = 1;
 				return;
 			};
-		} else if ((action === LEFT || action === DOWN) && game.mapSelect != -1) {
+		} else if ((action === LEFT || action === DOWN) && game.mapSelect != -1 && (game.mapSelect != paths[game.location].length || game.select[1] == 0)) {
 			if (game.mapSelect < paths[game.location].length - 1) {
 				game.mapSelect = game.mapSelect + 1;
+			} else if (game.mapSelect == paths[game.location].length) {
+				game.mapSelect = 0;
 			} else {
 				game.mapSelect = -1;
 			};
@@ -466,6 +472,13 @@ function selection() {
 			game.floor++;
 			actionTimer = 1;
 			return;
+		};
+	} else if (game.select[0] === IN_MAP) {
+		const len = (paths[game.location] || []).length;
+		if (action === UP || action === RIGHT) {
+			if (game.mapSelect == -1) game.mapSelect = len;
+		} else if ((action === LEFT || action === DOWN) && (game.mapSelect != len || game.select[1] == 0)) {
+			if (game.mapSelect == len) game.mapSelect = -1;
 		};
 	};
 	// select hand
@@ -606,10 +619,11 @@ function selection() {
 		};
 	};
 	// deck selection
-	if ((game.select[0] === DECK || game.select[0] === VOID || game.select[0] === DISCARD) && game.select[1]) {
+	if ((game.select[0] === DECK || game.select[0] === VOID || game.select[0] === DISCARD || (game.select[0] === IN_MAP && game.mapSelect == (paths[game.location] || []).length)) && game.select[1]) {
 		let coor = game.cardSelect, len = game.deckLocal.length;
 		if (game.select[0] === VOID) len = game.void.length;
 		else if (game.select[0] === DISCARD) len = game.discard.length;
+		else if (game.select[0] === IN_MAP) len = game.deck.length;
 		if (action === LEFT) {
 			if (coor[0] > 0) {
 				game.cardSelect[0]--;
@@ -650,6 +664,11 @@ function selection() {
 		return;
 	} else if (action === ENTER && game.select[0] === IN_MAP && game.mapSelect == -1) {
 		game.select = [MAP, 0];
+		actionTimer = 2;
+		return;
+	} else if (action === ENTER && game.select[0] === IN_MAP && game.mapSelect == (paths[game.location] || []).length) {
+		if (game.select[1] == 0) game.select[1] = 1;
+		else game.select[1] = 0;
 		actionTimer = 2;
 		return;
 	} else if (action === ENTER && game.select[0] === LOOKER) {
@@ -851,7 +870,7 @@ function manageGameplay() {
 		game.rewards = [];
 		if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
 		if (get.cardRewardChoices() > 0) game.rewards.push("1 card");
-		if (game.room[0] === PRIMEROOM) {
+		if (game.room[0] === PRIMEROOM || game.room[0] === BOSSROOM) {
 			if (game.room[6]) {
 				for (let index = 0; index < game.room[6].length; index++) {
 					if (game.artifacts.includes(game.room[6][index])) {
@@ -860,7 +879,6 @@ function manageGameplay() {
 				};
 				game.rewards.push("1 artifact");
 			};
-			game.rewards.push(Math.floor(get.maxHealth() * 0.25) + " health");
 		};
 		game.rewards.push("finish");
 	};
@@ -1001,6 +1019,9 @@ function updateVisuals() {
 		deckGraphics(game.void);
 	} else if (game.select[0] === DISCARD && game.select[1]) {
 		deckGraphics(game.discard);
+	};
+	if (game.select[0] === IN_MAP && game.select[1]) {
+		deckGraphics(game.deck);
 	};
 	if (!hidden()) target();
 	popupGraphics();

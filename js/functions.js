@@ -26,7 +26,7 @@ String.prototype.title = function() {
 	return result;
 };
 
-String.prototype.shuffle = function() {
+String.prototype.randomize = function() {
 	let arr = this.split("");
 	for (let index = arr.length - 1; index > 0; index--) {
 		let rand = Math.floor(Math.random() * (index + 1));
@@ -42,16 +42,6 @@ Object.prototype.deepCopy = (o, keepProto = false) => {
 };
 
 // technical functions
-
-function randomize(array) {
-	let index = array.length, randomIndex;
-	while (index != 0) {
-		randomIndex = Math.floor(Math.random() * index);
-		index--;
-		[array[index], array[randomIndex]] = [array[randomIndex], array[index]];
-	};
-	return array;
-};
 
 function interval(time, range = 1) {
 	return (Math.abs((new Date().getTime() % (2000 * time * range) / (1000 * time)) - range) * range) - range;
@@ -128,6 +118,16 @@ function restartRun() {
 
 // gameplay functions
 
+function shuffle(deck) {
+	let index = deck.length, randomIndex;
+	while (index != 0) {
+		randomIndex = Math.floor(random() * index);
+		index--;
+		[deck[index], deck[randomIndex]] = [deck[randomIndex], deck[index]];
+	};
+	return deck;
+};
+
 function shuffleDeck(...newCards) {
 	if (newCards) {
 		for (let card of newCards) {
@@ -135,7 +135,7 @@ function shuffleDeck(...newCards) {
 			else game.deckLocal.push(new Card("" + card));
 		};
 	};
-	game.deckLocal = randomize(game.deckLocal);
+	game.deckLocal = shuffle(game.deckLocal);
 };
 
 function drawHand() {

@@ -50,16 +50,6 @@ Note: go to the '?' (top-right of the screen) in-game for more details.
 
 Inspired by ***Slay the Spire*** and ***Die in the Dungeon***.
 
-Most player sprites taken from or based off of the ones found [**here**](https://aamatniekss.itch.io/fantasy-knight-free-pixelart-animated-character).
+Most player sprites are taken from or based off of the ones found [**here**](https://aamatniekss.itch.io/fantasy-knight-free-pixelart-animated-character).
 
-All other art (and music, too!) is entirely my original work.
-
-## *An ominous feeling...*
-
-*When the hands align,*
-
-*find the fragment of time.*
-
-*Else, at the edge of the sky,*
-
-*you shall eternally die.*
+All other art (and music) is entirely my original work.

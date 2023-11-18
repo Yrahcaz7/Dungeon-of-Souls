@@ -17,11 +17,11 @@
 
 const infoText = {
 	// effects
-	"aura blade": "Every time you <red>attack</red>,\none of your aura blades\nis used up for 5 + X\n<red>extra damage</red>, X being\nthe number of aura\nblades you have.",
-	burn: "At the end of each\nturn, each burn deals 1\n<red>damage</red> to what it is on,\nthen one burn on that\ngoes away.",
-	"one use": "When a one use card is\nplayed, it will be sent\nto the void instead of\nthe discard.",
-	reinforce: "At the start of each\nturn, one reinforce is\nused up to retain your\n<blue>shield</blue> (even if you have\nno <blue>shield</blue> left).",
-	weakness: "While something has\nweakness, its <red>attack</red> is\n75% of normal, rounded\ndown. At the end of each\nturn, one weakness will\ngo away.",
+	"aura blade": "If something has X aura\nblades, every time it\n<red>attacks</red>, it deals 5 + X\n<red>extra damage</red>, then X is\nreduced by 1.",
+	burn: "If something has X burn,\nat the end of its turn,\nit takes X <red>damage</red>, then\nX is reduced by 1.",
+	"one use": "When a one use card is\nplayed, it is sent to\nthe void. Cards in the\nvoid stay there until\nthe end of the battle.",
+	reinforce: "If something has X\nreinforces, at the start\nof its turn, its <blue>shield</blue>\nis kept, then X is\nreduced by 1.",
+	weakness: "If something has X\nweakness, its <red>attack</red> is\nreduced by 25%, rounded\nup. At the end of each\nturn, X is reduced by 1.",
 	// other
 	"the map": "You can choose where\nyou go next. Cannot use\nduring a battle.",
 }, overview = ""
@@ -57,8 +57,8 @@ gameplay = ""
 	+ "The <yellow>energy cost</yellow> of each card is shown on their top-left corner.\n"
 	+ "When you play a card, it does what it says on the card (effects are listed below).\n"
 	+ " - <red>Damage</red> reduces enemies' <red>health</red>, while <blue>shield</blue> protects your <red>health</red> from attacks.\n"
-	+ " - Take note that <blue>shield</blue> goes away at the end of your turn unless something says otherwise.\n"
-	+ " - Also, <blue>shield</blue> on enemies acts the same and goes away at the start of the enemy turn.\n"
+	+ " - Take note that <blue>shield</blue> is not kept at the end of your turn unless something says otherwise.\n"
+	+ " - Also, <blue>shield</blue> on enemies acts the same and goes away at the start of the enemy's turn.\n"
 	+ " - Most other effects are more complex, and have a tooltip that says what they do.\n"
 	+ "<b>Enemy Intents<s>"
 	+ "Take note of what's floating above the enemies' heads. That is their intent.\n"
@@ -191,6 +191,7 @@ function updateData() {
 	};
 	// other
 	game.deck.cardSort();
+	game.void.cardSort();
 	game.discard.cardSort();
 	if (game.select[0] === HAND) {
 		if (game.hand.length) game.prevCard = game.select[1];

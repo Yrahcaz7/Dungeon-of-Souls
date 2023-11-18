@@ -30,7 +30,7 @@ function mapPiece(row, attribute = -1) {
 	if (attribute === TREASURE) return [TREASUREROOM, randomInt(-5, 5), randomInt(-5, 5), false, randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
 	if (attribute === PRIME) return [PRIMEROOM, randomInt(-5, 5), randomInt(-5, 5), [weakerSmallSlime(row), SLIME.PRIME, weakerSmallSlime(row)], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5), randomArtifactSet(3)];
 	if (attribute === ORB) return [ORBROOM, randomInt(-5, 5), randomInt(-5, 5)];
-	if (attribute === BOSS) return [BOSSROOM, 0, 0, [FRAGMENT], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 3, randomCardSet(5)];
+	if (attribute === BOSS) return [BOSSROOM, 0, 0, [FRAGMENT], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 3, randomCardSet(5), randomArtifactSet(3)];
 	let type = chance(3/5) ? BATTLEROOM : false;
 	if (rowFalses >= 4 || (twoRow && rowFalses >= 3) || (row === 0 && rowFalses >= 2)) type = BATTLEROOM;
 	if (type) rowNodes++;

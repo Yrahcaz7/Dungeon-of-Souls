@@ -29,7 +29,7 @@ class Enemy {
 		this.type = +type;
 		this.maxHealth = Math.round(((random() / 10) + 0.95) * ((power * 10) + 20));
 		this.health = this.maxHealth;
-		this.maxShield = this.maxHealth / 2;
+		this.maxShield = Math.floor(this.maxHealth / 2);
 		this.shield = 0;
 		this.attackPower = Math.round(((power / 2) + 1) * 5 - 0.25);
 		this.defendPower = Math.round(((power / 2) + 1) * 5 + 1);

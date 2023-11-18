@@ -616,9 +616,9 @@ function enemyGraphics() {
 			};
 		} else if (tempAnim[1] === FRAGMENT) {
 			draw.imageSector(enemy.fragment.attack, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
-			if (tempAnim[0] == 4) draw.rect("#f00", 0, pos[1] + 4, pos[0], 60);
+			if (tempAnim[0] == 4 || tempAnim[0] == 5) draw.rect("#f00", 0, pos[1] + 4, pos[0], 60);
 			tempAnim[0]++;
-			if (tempAnim[0] >= 6) {
+			if (tempAnim[0] >= 7) {
 				tempAnim = [0, -1, STARTING, -1];
 				game.enemyStage = ENDING;
 			} else if (game.enemyStage === MIDDLE) {
@@ -735,16 +735,17 @@ function deckGraphics(deck) {
 		};
 		target();
 		selected = game.cardSelect;
-		if (game.deckPos >= (98 * selected[1]) + 5) {
-			game.deckPos -= Math.abs(Math.round(((98 * selected[1]) - game.deckPos) / 20) - 5);
-		} else if (game.deckPos <= (98 * (selected[1] - 1)) + 11 - 5) {
-			game.deckPos += Math.abs(Math.round(((98 * (selected[1] - 1)) + 11 - game.deckPos) / 20) + 5);
+		if (game.deckPos >= 98 * selected[1]) {
+			game.deckPos -= Math.min(10, Math.abs(game.deckPos - (98 * selected[1])));
+		} else if (game.deckPos <= (98 * (selected[1] - 1)) + 11) {
+			game.deckPos +=Math.min(10, Math.abs(game.deckPos - ((98 * (selected[1] - 1)) + 11)));
 		};
 	};
 	draw.rect("#0004", 0, 0, 400, 13);
 	if (game.select[0] === DECK) draw.lore(200 - 2, 1, "Deck", {"color": "white", "text-align": CENTER});
 	else if (game.select[0] === DISCARD) draw.lore(200 - 2, 1, "Discard", {"color": "white", "text-align": CENTER});
 	else if (game.select[0] === VOID) draw.lore(200 - 2, 1, "Void", {"color": "white", "text-align": CENTER});
+	else if (game.select[0] === IN_MAP) draw.lore(200 - 2, 1, "Cards", {"color": "white", "text-align": CENTER});
 	draw.rect("#fff", 1, 12, 398, 1);
 };
 
@@ -804,8 +805,9 @@ const info = {
 	},
 	player(type, xPlus = 0, yPlus = 0) {
 		if (typeof type != "string") return 0;
-		const thing = game.eff[type.replace(/\s/g, "_") + (type.endsWith("s") ? "" : "s")];
-		let y = 71 + yPlus, desc = "You have " + thing + " " + type + (thing >= 2 ? "s." : "."), move = 0;
+		const ending = type.endsWith("s") ? "" : "s";
+		const eff = game.eff[type.replace(/\s/g, "_") + (type.endsWith("s") ? "" : "s")];
+		let y = 71 + yPlus, desc = "You have " + eff + " " + type + (eff >= 2 ? ending : "") + ".", move = 0;
 		move += draw.textBox(85 + xPlus, y + move, desc.length, desc, {"text-small": true});
 		move += draw.textBox(85 + xPlus, y + move, 24, infoText[type], {"text-small": true});
 		return move;
@@ -1038,9 +1040,17 @@ function mapGraphics(onlyCalc = false) {
 			if (game.location == "-1") draw.image(map.select_first, 13, 12);
 			else draw.image(map.select, 13 + ((+game.location.split(", ")[0] + 1) * 32), 12);
 		} else if (game.location != "-1") {
-			if (game.location.split(", ")[0] == "0") draw.image(map.select_first, 13, 12);
-			else draw.image(map.select, 13 + (+game.location.split(", ")[0] * 32), 12);
+			if (game.floor % 10 == 0) {
+				draw.image(map.select, 18 + (9 * 32), 12);
+				draw.image(map.select, 12 + (10 * 32), 12);
+			} else if (game.location.split(", ")[0] == "0") {
+				draw.image(map.select_first, 13, 12);
+			} else {
+				draw.image(map.select, 13 + (+game.location.split(", ")[0] * 32), 12);
+			};
 		};
+		draw.image(extra.deck, 22, 16);
+		if (game.mapSelect == (paths[game.location] || []).length) draw.image(select.deck, 21, 15);
 		draw.image(extra.end, 22, 179);
 		if (game.mapSelect == -1) draw.image(select.round, 21, 178);
 		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "red"});
