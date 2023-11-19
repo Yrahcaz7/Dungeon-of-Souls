@@ -129,6 +129,19 @@ const attributes = {
 			};
 		},
 	},
+	3002: {
+		name: "burn",
+		desc: "Apply 1 burn to\nyourself and all\nenemies.",
+		rarity: 1,
+		cost: 0,
+		effect() {
+			game.eff.burn++;
+			for (let index = 0; index < game.enemies.length; index++) {
+				if (game.enemies[index].eff.burn) game.enemies[index].eff.burn++;
+				else game.enemies[index].eff.burn = 1;
+			};
+		},
+	},
 	4000: {
 		name: "aura blade",
 		desc: "Gain 1 aura blade.",

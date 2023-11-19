@@ -803,8 +803,8 @@ const info = {
 	},
 	player(type, xPlus = 0, yPlus = 0) {
 		if (typeof type != "string") return 0;
-		const ending = type.endsWith("s") ? "" : "s";
-		const eff = game.eff[type.replace(/\s/g, "_") + (type.endsWith("s") ? "" : "s")];
+		const ending = (type.endsWith("s") || type == "burn") ? "" : "s";
+		const eff = game.eff[type.replace(/\s/g, "_") + ending];
 		let y = 71 + yPlus, desc = "You have " + eff + " " + type + (eff >= 2 ? ending : "") + ".", move = 0;
 		move += draw.textBox(85 + xPlus, y + move, desc.length, desc, {"text-small": true});
 		move += draw.textBox(85 + xPlus, y + move, 24, infoText[type], {"text-small": true});

@@ -63,6 +63,7 @@ var global = {
 	void: [],
 	eff: {
 		aura_blades: 0,
+		burn: 0,
 		reinforces: 0,
 		weakness: 0,
 	},
@@ -117,6 +118,11 @@ function startTurn() {
 
 function endTurn() {
 	// end of your turn effects
+	if (game.eff.burn) {
+		takeDamage(game.eff.burn);
+		game.eff.burn--;
+	};
+	// start of enemy turn effects
 	for (let index = 0; index < game.enemies.length; index++) {
 		if (game.enemies[index].eff.reinforces) {
 			game.enemies[index].eff.reinforces--;
@@ -1078,12 +1084,14 @@ const gameloop = setInterval(() => {
 		save();
 	};
 }, 100), musicloop = setInterval(() => {
-	let time = document.getElementById("music").currentTime;
-	if (global.options.music) {
-		if (time === 0 && menuLocation === -1) {
-			document.getElementById("music").play();
-		} else if (time > document.getElementById("music").duration - 0.1) {
-			document.getElementById("music").currentTime = 0;
+	if (document.getElementById("music")) {
+		let time = document.getElementById("music").currentTime;
+		if (global.options.music) {
+			if (time === 0 && menuLocation === -1) {
+				document.getElementById("music").play();
+			} else if (time > document.getElementById("music").duration - 0.1) {
+				document.getElementById("music").currentTime = 0;
+			};
 		};
 	};
 }, 2);

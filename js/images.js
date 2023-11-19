@@ -47,6 +47,7 @@ const player = {
 	},
 	common: {
 		"aura blade": new Image,
+		"burn": new Image,
 		"cower": new Image,
 		"rage": new Image,
 		"reinforce": new Image,

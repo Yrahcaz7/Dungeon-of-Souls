@@ -22,7 +22,7 @@ const artifacts = {
 	4: {
 		name: "candy",
 		rarity: 1,
-		desc: "You have 20 less max\nhealth, but you heal by\n3 after every battle.",
+		desc: "You have 15 less max\nhealth, but you heal by\n3 after every battle.",
 		[ENDOFBATTLE]() {
 			game.health += 3;
 		},
@@ -30,9 +30,9 @@ const artifacts = {
 	5: {
 		name: "corrosion",
 		rarity: 1,
-		desc: "You deal 3 extra damage,\nbut you lose 2 health\nafter every battle.",
+		desc: "You have 1 more energy,\nbut you lose 8 health\nafter every battle.",
 		[ENDOFBATTLE]() {
-			game.health -= 2;
+			game.health -= 8;
 		},
 	},
 	6: {

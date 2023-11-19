@@ -66,7 +66,7 @@ const get = {
 	},
 	maxHealth() {
 		let max = 60;
-		if (game.artifacts.includes(4)) max -= 20;
+		if (game.artifacts.includes(4)) max -= 15;
 		if (game.artifacts.includes(7)) max += 15;
 		return max;
 	},
@@ -76,6 +76,7 @@ const get = {
 	},
 	maxEnergy() {
 		let max = 3;
+		if (game.artifacts.includes(5)) max++;
 		return max;
 	},
 	extraDamage() {
@@ -86,7 +87,6 @@ const get = {
 			extra += 5 + game.eff.aura_blades;
 		};
 		if (game.artifacts.includes(3)) extra += 2;
-		if (game.artifacts.includes(5)) extra += 3;
 		return extra;
 	},
 	extraShield() {
