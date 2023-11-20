@@ -85,7 +85,7 @@ function mapRow(row) {
 	let arr = [mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row), mapPiece(row)];
 	if (row > 1) {
 		game.map.push(arr);
-		mapGraphics(true);
+		graphics.map(true);
 		game.map.pop();
 		let rand = randomInt(0, 5), past = [];
 		const setRand = () => {
@@ -167,7 +167,7 @@ async function generateMap() {
 			};
 		};
 	};
-	mapGraphics(true);
+	graphics.map(true);
 	musicPopup();
 	updateVisuals();
 	loaded = true;

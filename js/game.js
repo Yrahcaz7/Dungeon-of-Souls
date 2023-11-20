@@ -74,12 +74,20 @@ var global = {
 	seed: "" + (Math.round(new Date().getTime() * (Math.random() + 0.001)) % 1000000).toString().randomize(),
 }, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = TITLE, menuSelect = 0, enemyPos = [], handPos = [], paths = {}, gameWon = false;
 
+function pushPopup(type, description, secondLine = "") {
+	type = "" + type;
+	description = "" + description;
+	secondLine = "" + secondLine;
+	if (!type || !description) return;
+	popups.push([type, description, 400, 0, secondLine]);
+};
+
 function musicPopup() {
 	let src = "" + document.getElementById("music").src;
 	if (!global.options.music) {
-		showPopup("music", "music is off");
+		pushPopup("music", "music is off");
 	} else if (/Ruins_of_Caelum.(mp3|wav)/.test(src)) {
-		showPopup("music", "Ruins of Caelum");
+		pushPopup("music", "Ruins of Caelum");
 	};
 };
 
@@ -270,7 +278,7 @@ function selection() {
 		} else if (action === ENTER) {
 			if (!game.select[1]) {
 				game.select = [MAP, 0];
-				showPopup("go", "go to the map!");
+				pushPopup("go", "go to the map!");
 			} else {
 				game.select = [REWARDS, game.rewards.length - 1];
 			};
@@ -373,7 +381,7 @@ function selection() {
 						game.select = [CONFIRM_EXIT, 0];
 					} else {
 						game.select = [MAP, 0];
-						showPopup("go", "go to the map!");
+						pushPopup("go", "go to the map!");
 					};
 				};
 			};
@@ -934,7 +942,7 @@ function updateVisuals() {
 	// update data
 	updateData();
 	// visuals
-	backgrounds();
+	graphics.backgrounds();
 	if (menuLocation === TITLE || menuLocation === DIFFICULTY_CHANGE) {
 		draw.image(title, (400 - title.width) / 2, 0);
 		draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": CENTER});
@@ -964,14 +972,14 @@ function updateVisuals() {
 		return;
 	};
 	if (!hidden()) {
-		playerGraphics();
-		enemyGraphics();
-		effectGraphics();
+		graphics.player();
+		graphics.enemy();
+		graphics.effect();
 	};
-	foregrounds();
-	if (!hidden()) renderCards();
+	graphics.foregrounds();
+	if (!hidden()) graphics.hand();
 	if (game.select[0] === IN_MAP) {
-		mapGraphics();
+		graphics.map();
 	} else if (game.select[0] === CONFIRM_END) {
 		let x = 140, y = 86;
 		draw.rect("#0008");
@@ -984,7 +992,7 @@ function updateVisuals() {
 		draw.lore(x + 4, y + 10, "YES");
 		draw.lore(x + 26, y + 10, "NO");
 	} else if (game.select[0] === CONFIRM_EXIT) {
-		rewardGraphics(false);
+		graphics.rewards(false);
 		let x = 122, y = 83;
 		draw.rect("#0008");
 		draw.box(x + 1, y + 1, 154, 26);
@@ -996,7 +1004,7 @@ function updateVisuals() {
 		draw.lore(x + 4, y + 16, "YES");
 		draw.lore(x + 26, y + 16, "NO");
 	} else if (game.select[0] === CONFIRM_RESTART) {
-		optionsGraphics(false);
+		graphics.options(false);
 		let x = 123, y = 83;
 		draw.rect("#0008");
 		draw.box(x + 1, y + 1, 152, 26);
@@ -1008,27 +1016,27 @@ function updateVisuals() {
 		draw.lore(x + 4, y + 16, "YES");
 		draw.lore(x + 26, y + 16, "NO");
 	} else if (game.select[0] === REWARDS) {
-		rewardGraphics();
+		graphics.rewards();
 	} else if (game.select[0] === CARD_REWARDS) {
-		cardRewardGraphics();
+		graphics.cardRewards();
 	} else if (game.select[0] === ARTIFACT_REWARDS) {
-		artifactRewardGraphics();
+		graphics.artifactRewards();
 	} else if (game.select[0] === HELP && game.select[1]) {
-		infoGraphics();
+		graphics.info();
 	} else if (game.select[0] === OPTIONS && game.select[1]) {
-		optionsGraphics();
+		graphics.options();
 	} else if (game.select[0] === DECK && game.select[1]) {
-		deckGraphics(Object.deepCopy(game.deckLocal).cardSort());
+		graphics.deck(Object.deepCopy(game.deckLocal).cardSort());
 	} else if (game.select[0] === VOID && game.select[1]) {
-		deckGraphics(game.void);
+		graphics.deck(game.void);
 	} else if (game.select[0] === DISCARD && game.select[1]) {
-		deckGraphics(game.discard);
+		graphics.deck(game.discard);
 	};
 	if (game.select[0] === IN_MAP && game.select[1]) {
-		deckGraphics(game.deck);
+		graphics.deck(game.deck);
 	};
-	if (!hidden()) target();
-	popupGraphics();
+	if (!hidden()) graphics.target();
+	graphics.popups();
 	if (game.select[0] == GAME_OVER) {
 		if (game.select[1] > 204) game.select[1] = 204;
 		const num = Math.floor(game.select[1]).toString(16);

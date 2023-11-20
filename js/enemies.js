@@ -43,7 +43,7 @@ class Enemy {
 				if (game.eff.weakness) startAnim.player("crouch_shield");
 				else startAnim.player("shield");
 			};
-			if (this.type >= 600 && this.type <= FRAGMENT) startAnim.enemy(game.enemyNum, this.type);
+			if (this.type >= 600 && this.type <= FRAGMENT) startAnim.enemy(game.enemyNum);
 			else {
 				this.middleAction();
 				this.finishAction();

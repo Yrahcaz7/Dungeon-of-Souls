@@ -76,7 +76,7 @@ window.onload = () => {
 	if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: " + (800 * global.options.pixel_perfect_size) + "px";
 	else document.getElementById("canvas").style = "";
 	// calculate things
-	mapGraphics(true);
+	graphics.map(true);
 	if (game.map.length === 0) {
 		updateMapProg();
 		setTimeout(() => {
