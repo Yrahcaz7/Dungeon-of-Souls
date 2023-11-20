@@ -169,7 +169,7 @@ const attributes = {
 
 for (const key in cards) {
 	if (Object.hasOwnProperty.call(cards, key)) {
-		cards[key].desc = cards[key].desc.replace(/([Hh]ealth|[Dd]amage(?!<\/red>)|[Ee]xtra\sdamage|[Aa]ttack)/g, "<red>$1</red>").replace(/([Ss]hield|[Dd]efense)/g, "<blue>$1</blue>");
+		cards[key].desc = cards[key].desc.replace(/([Hh]ealth|[Dd]amage(?!<\/#f44>)|[Ee]xtra\sdamage|[Aa]ttack)/g, "<#f44>$1</#f44>").replace(/([Ss]hield|[Dd]efense)/g, "<#58f>$1</#58f>");
 		if (cards[key].exMod === undefined && (cards[key].damage || cards[key].attack)) cards[key].exMod = 1;
 		cards[key].keywords = [];
 		if (/[Aa]ura[ \n]blade/.test(cards[key].desc)) cards[key].keywords.push("aura blade");

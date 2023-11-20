@@ -121,8 +121,8 @@ function mapRow(row) {
 
 function updateMapProg() {
 	clearCanvas();
-	if (mapProg === mapTotal) draw.lore(200 - 2, 100, "Generating Map...\nrunning final checks...", {"color": "white", "text-align": CENTER});
-	else draw.lore(200 - 2, 100, "Generating Map...\n" + (mapProg / mapTotal * 100).toFixed(1) + "%", {"color": "white", "text-align": CENTER});
+	if (mapProg === mapTotal) draw.lore(200 - 2, 100, "Generating Map...\nrunning final checks...", {"color": "#fff", "text-align": CENTER});
+	else draw.lore(200 - 2, 100, "Generating Map...\n" + (mapProg / mapTotal * 100).toFixed(1) + "%", {"color": "#fff", "text-align": CENTER});
 };
 
 async function generateMap() {

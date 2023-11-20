@@ -22,50 +22,114 @@ const PENDING = 800, STARTING = 801, MIDDLE = 802, ENDING = 803;
 var backAnim = [0, UP, 0.5, DOWN, 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, -1, STARTING, -1], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], primeAnim = 0, auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]], auraBladeAnim = [0, UP, 2.5, UP, 3, DOWN, 0.5, DOWN], invNum = -1, popups = [], infPos = 0, infLimit = 0;
 
 const draw = {
-	// basic - first order
-	image(image, x = 0, y = 0, width = (image ? +image.width : 0), height = (image ? +image.height : 0)) {
-		if (!image || (!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
+	/**
+	 * Draws an image on the canvas.
+	 * @param {HTMLImageElement} image - the image to draw.
+	 * @param {number} x - the x-coordinate to draw the image at. Defaults to `0`.
+	 * @param {number} y - the y-coordinate to draw the image at. Defaults to `0`.
+	 * @param {number} width - the width of the image. Defaults to `image.width`.
+	 * @param {number} height - the height of the image. Defaults to `image.height`.
+	 */
+	image(image, x = 0, y = 0, width = image.width, height = image.height) {
 		ctx.drawImage(image, x * scale, y * scale, width * scale, height * scale);
 	},
-	imageSector(image, sx, sy, sw, sh, dx, dy, dw = +sw, dh = +sh) {
-		if (!image || (!sx && sx !== 0) || (!sy && sy !== 0) || !sw || !sh || (!dx && dx !== 0) || (!dy && dy !== 0) || !dw || !dh) return;
+	/**
+	 * Draws an image sector on the canvas.
+	 * @param {HTMLImageElement} image - the image to draw.
+	 * @param {number} sx - the x-coordinate to retrieve the sector from.
+	 * @param {number} sy - the y-coordinate to retrieve the sector from.
+	 * @param {number} sw - the width of the sector.
+	 * @param {number} sh - the height of the sector.
+	 * @param {number} dx - the x-coordinate to draw the image at. Defaults to `0`.
+	 * @param {number} dy - the y-coordinate to draw the image at. Defaults to `0`.
+	 * @param {number} dw - the width of the image. Defaults to `sw`.
+	 * @param {number} dh - the height of the image. Defaults to `sh`.
+	 */
+	imageSector(image, sx, sy, sw, sh, dx = 0, dy = 0, dw = +sw, dh = +sh) {
 		ctx.drawImage(image, sx, sy, sw, sh, dx * scale, dy * scale, dw * scale, dh * scale);
 	},
+	/**
+	 * Draws a rectangle on the canvas.
+	 * @param {string} color - the color of the rectangle.
+	 * @param {number} x - the x-coordinate to draw the rectangle at. Defaults to `0`.
+	 * @param {number} y - the y-coordinate to draw the rectangle at. Defaults to `0`.
+	 * @param {number} width - the width of the rectangle. Defaults to `canvas.width / scale`.
+	 * @param {number} height - the height of the rectangle. Defaults to `canvas.height / scale`.
+	 */
 	rect(color, x = 0, y = 0, width = canvas.width / scale, height = canvas.height / scale) {
-		if (!color || (!x && x !== 0) || (!y && y !== 0) || !width || !height) return;
 		ctx.fillStyle = color;
 		ctx.fillRect(x * scale, y * scale, width * scale, height * scale);
 	},
-	line(x, y, x2, y2, color = "#000", width = 1) {
-		if ((!x && x !== 0) || (!y && y !== 0) || (!x2 && x2 !== 0) || (!y2 && y2 !== 0)) return;
+	/**
+	 * Draws a line on the canvas.
+	 * @param {number} x1 - the x-coordinate to start drawing at.
+	 * @param {number} y1 - the y-coordinate to start drawing at.
+	 * @param {number} x2 - the x-coordinate to end drawing at.
+	 * @param {number} y2 - the y-coordinate to end drawing at.
+	 * @param {string} color - the color of the line. Defaults to `#000`.
+	 * @param {number} width - the width of the line. Defaults to `1`.
+	 */
+	line(x1, y1, x2, y2, color = "#000", width = 1) {
 		ctx.beginPath();
 		if (color) ctx.strokeStyle = color;
 		else ctx.strokeStyle = "#000";
 		if (width) ctx.lineWidth = width * scale;
 		else ctx.lineWidth = 1 * scale;
-		ctx.moveTo(x * scale, y * scale);
+		ctx.moveTo(x1 * scale, y1 * scale);
 		ctx.lineTo(x2 * scale, y2 * scale);
 		ctx.stroke();
 	},
-	// complex - second order (uses basic)
-	lore(x, y, string, style = {"color": "black", "highlight-color": "#222", "text-align": RIGHT, "text-small": false}) {
-		string = "" + string;
+	/**
+	 * Draws a character on the canvas.
+	 * @param {string} char - the character to draw.
+	 * @param {number} x - the x-coordinate to draw the character at.
+	 * @param {number} y - the y-coordinate to draw the character at.
+	 * @param style - the character's style object.
+	 */
+	char(char, x, y, style = {"color": "#000", "highlight-color": "", "text-small": false}) {
+		// defualt values
+		if (!style["color"]) style["color"] = "black";
+		if (!style["text-small"]) style["text-small"] = false;
+		// highlight
+		if (style["highlight-color"]) {
+			if (style["text-small"]) draw.rect(style["highlight-color"], x - 0.5, y - 0.5, 3.5, 5.5);
+			else draw.rect(style["highlight-color"], x - 1, y - 1, 7, 11);
+		};
+		// draw char
+		if (characters[char]) {
+			ctx.fillStyle = style["color"];
+			for (let row = 0; row < characters[char].length; row++) {
+				for (let index = 0; index < characters[char][row].length; index++) {
+					if (characters[char][row][index]) {
+						if (style["text-small"]) ctx.fillRect(x * scale + index, y * scale + row, 1, 1);
+						else ctx.fillRect((x + index) * scale, (y + row) * scale, scale, scale);
+					};
+				};
+			};
+		};
+	},
+	/**
+	 * Draws some lore on the canvas.
+	 * @param {number} x - the x-coordinate to draw the lore at.
+	 * @param {number} y - the y-coordinate to draw the lore at.
+	 * @param {string} str - the string containing the lore.
+	 * @param style - the lore's style object.
+	 */
+	lore(x, y, str, style = {"color": "#000", "highlight-color": "#222", "text-align": RIGHT, "text-small": false}) {
+		str = "" + str;
 		if (!style["color"]) style["color"] = "black";
 		if (!style["highlight-color"]) style["highlight-color"] = "#222";
 		if (!style["text-align"]) style["text-align"] = RIGHT;
 		if (!style["text-small"]) style["text-small"] = false;
 		let color = style["color"], highlight = "", position = style["text-align"], small = style["text-small"];
-		string = string.replace(/<br>/g, "\n");
+		str = str.replace(/<br>/g, "\n");
 		x = Math.round(x * 2) / 2;
 		y = Math.round(y * 2) / 2;
-		let img = letters.black, enters = 0, enterIndex = 0, len = string.replace(/<.*?>/g, "").length;
-		// set images
-		if (letters[color.replace(/-|\s/, "_")]) img = letters[color.replace(/-|\s/, "_")];
-		else if (letters[color.slice(0, -2)] && letters[color.slice(0, -2)][color.slice(-1)]) img = letters[color.slice(0, -2)][color.slice(-1)];
+		let enters = 0, enterIndex = 0, len = str.replace(/<.*?>/g, "").length;
 		// check for size tags
-		if (string.includes("<b>") || string.includes("<big>") || string.includes("<s>") || string.includes("<small>")) {
-			string = string.replace(/<\/b>|<\/big>|<\/s>|<\/small>/g, "");
-			let array = string.split(/<(?=b>|big>|s>|small>)/g);
+		if (str.includes("<b>") || str.includes("<big>") || str.includes("<s>") || str.includes("<small>")) {
+			str = str.replace(/<\/b>|<\/big>|<\/s>|<\/small>/g, "");
+			let array = str.split(/<(?=b>|big>|s>|small>)/g);
 			let space = 0;
 			if (!array[0]) array.splice(0, 1);
 			for (let index = 0; index < array.length; index++) {
@@ -88,8 +152,8 @@ const draw = {
 			return space;
 		};
 		// print multi-line right aligned text
-		if (string.includes("\n") && position !== RIGHT) {
-			let array = string.split("\n");
+		if (str.includes("\n") && position !== RIGHT) {
+			let array = str.split("\n");
 			let space = 0;
 			if (!array[0]) array.splice(0, 1);
 			for (let index = 0; index < array.length; index++) {
@@ -98,74 +162,75 @@ const draw = {
 			return space;
 		};
 		// print all text
-		let defImg = img;
-		for (let a = 0; a < string.length; a++) {
+		for (let a = 0; a < str.length; a++) {
 			// check for color tags
-			if (string.charAt(a) == "<") {
-				const cut = string.slice(a + 1), tag = cut.slice(0, cut.indexOf(" ")==-1?cut.indexOf(">"):Math.min(cut.indexOf(">"), cut.indexOf(" ")));
-				if (letters[tag.replace("-", "_")]) {
+			if (str.charAt(a) == "<") {
+				const cut = str.slice(a + 1), tag = cut.slice(0, cut.indexOf(" ") == -1 ? cut.indexOf(">") : Math.min(cut.indexOf(">"), cut.indexOf(" ")));
+				if (color == tag.slice(1) && tag.startsWith("/")) {
+					highlight = "";
+					color = style["color"];
+					str = str.replace("<" + tag + ">", "");
+				} else {
 					if (cut.slice(0, cut.indexOf(">")).includes("highlight")) highlight = style["highlight-color"];
 					else highlight = "";
-					img = letters[tag.replace("-", "_")];
-					string = string.replace(new RegExp("<" + tag + ".*?>"), "");
-				} else if (img == letters[tag.slice(1).replace("-", "_")] && tag.startsWith("/")) {
-					highlight = "";
-					img = defImg;
-					string = string.replace("<" + tag + ">", "");
+					color = tag;
+					str = str.replace(new RegExp("<" + tag + ".*?>"), "");
 				};
 			};
-			// set things up
-			let index = string.charCodeAt(a);
-			if (string.replace(/<.*?>/g, "").includes("\n", enterIndex + 1)) {
-				len = string.replace(/<.*?>/g, "").indexOf("\n", enterIndex + 1);
+			// calculate length of this line
+			if (str.replace(/<.*?>/g, "").includes("\n", enterIndex + 1)) {
+				len = str.replace(/<.*?>/g, "").indexOf("\n", enterIndex + 1);
 			};
-			if (index == 10) {
+			let char = str.charAt(a);
+			if (char == "\n") {
 				enters++;
 				enterIndex = a + 1;
 			};
 			// don't print if no color
-			if (color == "none") continue;
-			// stagger 'a' from line breaks
-			if (enters) {
-				a -= enterIndex;
-			};
-			// print letter
-			if (small) {
-				if (position === RIGHT) {
-					if (highlight && index >= 32) draw.rect(highlight, x + (a * 3) - 0.5, y + (enters * 5.5) - 0.5, 3.5, 5.5);
-					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 3), y + (enters * 5.5), 2.5, 5);
-				} else if (position === LEFT) {
-					if (highlight && index >= 32) draw.rect(highlight, x + ((a - len + 1) * 3) - 0.5, y + (enters * 5.5) - 0.5, 3.5, 5.5);
-					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 3), y + (enters * 5.5), 2.5, 5);
-				} else if (position === CENTER) {
-					if (highlight && index >= 32) draw.rect(highlight, x + (a * 3) - (len * 1.5) + 1 - 0.5, y + (enters * 5.5) - 0.5, 3.5, 5.5);
-					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 3) - (len * 1.5) + 1, y + (enters * 5.5), 2.5, 5);
-				};
-			} else {
-				if (position === RIGHT) {
-					if (highlight && index >= 32) draw.rect(highlight, x + (a * 6) - 1, y + (enters * 11) - 1, 7, 11);
-					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 6), y + (enters * 11), 5, 10);
-				} else if (position === LEFT) {
-					if (highlight && index >= 32) draw.rect(highlight, x + ((a - len + 1) * 6) - 1, y + (enters * 11) - 1, 7, 11);
-					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + ((a - len + 1) * 6), y + (enters * 11), 5, 10);
-				} else if (position === CENTER) {
-					if (highlight && index >= 32) draw.rect(highlight, x + (a * 6) - (len * 3) + 2 - 1, y + (enters * 11) - 1, 7, 11);
-					draw.imageSector(img, (index - 32) * 6, 0, 5, 10, x + (a * 6) - (len * 3) + 2, y + (enters * 11), 5, 10);
-				};
-			};
-			// set 'a' back to normal
-			if (enters) {
-				a += enterIndex;
+			if (color == "none" || style["color"] == "none") continue;
+			// print character
+			if (position === RIGHT) {
+				draw.char(char, x + ((a - enterIndex) * (small ? 3 : 6)), y + (enters * (small ? 5.5 : 11)), {
+					"color": color,
+					"highlight-color": highlight,
+					"text-small": small,
+				});
+			} else if (position === LEFT) {
+				draw.char(char, x + (((a - enterIndex) - len + 1) * (small ? 3 : 6)), y + (enters * (small ? 5.5 : 11)), {
+					"color": color,
+					"highlight-color": highlight,
+					"text-small": small,
+				});
+			} else if (position === CENTER) {
+				draw.char(char, x + ((a - enterIndex) * (small ? 3 : 6)) - (len * (small ? 1.5 : 3)) + (small ? 1 : 2), y + (enters * (small ? 5.5 : 11)), {
+					"color": color,
+					"highlight-color": highlight,
+					"text-small": small,
+				});
 			};
 		};
 		return small ? (enters + 1) * 5.5 : (enters + 1) * 11;
 	},
+	/**
+	 * Draws the selector on the canvas.
+	 * @param {number} x - the x-coordinate to draw the selector at.
+	 * @param {number} y - the y-coordinate to draw the selector at.
+	 * @param {number} width - the width of the selector.
+	 * @param {number} height - the height of the selector.
+	 */
 	selector(x, y, width, height) {
 		draw.image(select.selector[0], x - 2, y - 2);
 		draw.image(select.selector[1], x + width - 6, y - 2);
 		draw.image(select.selector[2], x - 2, y + height - 7);
 		draw.image(select.selector[3], x + width - 6, y + height - 7);
 	},
+	/**
+	 * Draws an intent on the canvas.
+	 * @param {number} x - the x-coordinate to draw the intent at.
+	 * @param {number} y - the y-coordinate to draw the intent at.
+	 * @param {number} effect - how powerful the intent is.
+	 * @param {ATTACK | DEFEND} type - the type of intent. Can be `ATTACK` or `DEFEND`.
+	 */
 	intent(x, y, effect, type) {
 		let stage = 0;
 		if (effect >= 125) stage = 10;
@@ -181,7 +246,16 @@ const draw = {
 		else stage = 0;
 		if (type === ATTACK) draw.image(intent.attack[stage], x, y);
 		else if (type === DEFEND) draw.image(intent.defend[stage], x, y + 1);
+		draw.lore(x + 30 - 16, y + 12, effect, {"color": "#fff", "text-align": CENTER});
 	},
+	/**
+	 * Draws a box on the canvas.
+	 * @param {number} x - the x-coordinate to draw the box at.
+	 * @param {number} y - the y-coordinate to draw the box at.
+	 * @param {number} width - the width of the box.
+	 * @param {number} height - the height of the box.
+	 * @param style - the box's style object.
+	 */
 	box(x, y, width, height, style = {"background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
 		if (!style["background-color"]) style["background-color"] = "#ccc";
 		if (!style["border-width"]) style["border-width"] = 1;
@@ -196,8 +270,16 @@ const draw = {
 			draw.rect(col, x + width, y - val, val, height + (val * 2)); // right
 		};
 	},
-	// fractal - third order (uses complex and basic)
-	bars(x, y, health, maxHealth, shield, maxShield) {
+	/**
+	 * Draws an entity's status bars on the canvas.
+	 * @param {number} x - the x-coordinate to draw the status bars at.
+	 * @param {number} y - the y-coordinate to draw the status bars at.
+	 * @param {number} health - the health of the entity.
+	 * @param {number} maxHealth - the max health of the entity.
+	 * @param {number} shield - the shield of the entity. Defaults to `0`.
+	 * @param {number} maxShield - the max shield of the entity. Defaults to `0`.
+	 */
+	bars(x, y, health, maxHealth, shield = 0, maxShield = 0) {
 		let cutoff, percentage = health / maxHealth;
 		if (percentage < 0) cutoff = 0;
 		else if (percentage > 1) cutoff = 62;
@@ -222,6 +304,14 @@ const draw = {
 		draw.lore(x + 25, y + 78, shield, {"text-align": LEFT});
 		draw.lore(x + 34, y + 78, maxShield);
 	},
+	/**
+	 * Draws a card on the canvas.
+	 * @param {Card} cardObject - the card object.
+	 * @param {number} index - the index of the card.
+	 * @param {number} y - the y-coordinate to draw the card at.
+	 * @param {boolean} selected - whether the card is selected or not. Defaults to `false`.
+	 * @param {number} overrideX - overrides the calculated x-coordinate to draw at.
+	 */
 	card(cardObject, index, y, selected = false, overrideX = NaN) {
 		// setup
 		if (!(cardObject instanceof Object)) cardObject = new Card(cardObject);
@@ -255,14 +345,14 @@ const draw = {
 		if (exMod) exDamage = Math.floor(exDamage * exMod);
 		if (game.eff.weakness) mulDamage = 0.75;
 		if ((exDamage || mulDamage !== 1) && game.select[0] !== CARD_REWARDS) {
-			desc = desc.replace(/([Dd]eal\s)(\d+)(\s<red>damage<\/red>)/g, (substring, pre, number, post) => {
+			desc = desc.replace(/([Dd]eal\s)(\d+)(\s<#f44>damage<\/#f44>)/g, (substring, pre, number, post) => {
 				const original = parseInt(number);
 				let damage = Math.floor((original + exDamage) * mulDamage);
 				if (damage > original) {
-					return pre + "<light-green highlight>" + damage + "</light-green>" + post;
+					return pre + "<#0f0 highlight>" + damage + "</#0f0>" + post;
 				} else if (damage < original) {
 					valueIsLess = true;
-					return pre + "<white highlight>" + damage + "</white>" + post;
+					return pre + "<#fff highlight>" + damage + "</#fff>" + post;
 				} else {
 					return pre + damage + post;
 				};
@@ -270,17 +360,17 @@ const draw = {
 		};
 		let exShield = get.extraShield();
 		if (exShield && game.select[0] !== CARD_REWARDS) {
-			desc = desc.replace(/([Gg]ain\s)(\d+)(\s<blue>shield<\/blue>)/g, (substring, pre, number, post) => {
+			desc = desc.replace(/([Gg]ain\s)(\d+)(\s<#58f>shield<\/#58f>)/g, (substring, pre, number, post) => {
 				const original = parseInt(number);
 				let shield = Math.floor(original + exShield);
 				if (shield > original) {
-					return pre + "<light-green highlight>" + shield + "</light-green>" + post;
+					return pre + "<#0f0 highlight>" + shield + "</#0f0>" + post;
 				} else {
 					return pre + shield + post;
 				};
 			});
 		};
-		// other
+		// draw text and image
 		draw.lore(x + 6, y + 55, desc, {"highlight-color": (valueIsLess ? "#f00" : "#000"), "text-small": true});
 		draw.lore(x + 33, y + 89.5, rarities[rarity] + "|" + type, {"text-align": CENTER, "text-small": true});
 		if (rarity == 2) {
@@ -291,7 +381,15 @@ const draw = {
 			draw.lore(x + 4, y + 2, cards[cardObject.id].cost);
 		};
 	},
-	textBox(x, y, width, string, style = {"color": "black", "highlight-color": "#222", "text-align": RIGHT, "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
+	/**
+	 * Draws a textbox on the canvas.
+	 * @param {number} x - the x-coordinate to draw the textbox at.
+	 * @param {number} y - the y-coordinate to draw the textbox at.
+	 * @param {number} width - the width of the textbox, measured in characters.
+	 * @param {string} str - the string containing the lore to insert into the textbox.
+	 * @param style - the textbox's style object.
+	 */
+	textBox(x, y, width, str, style = {"color": "black", "highlight-color": "#222", "text-align": RIGHT, "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
 		if (!style["color"]) style["color"] = "black";
 		if (!style["highlight-color"]) style["highlight-color"] = "#222";
 		if (!style["text-align"]) style["text-align"] = RIGHT;
@@ -301,7 +399,7 @@ const draw = {
 		if (!style["border-color"]) style["border-color"] = "#000";
 		let small = style["text-small"];
 		let position = style["text-align"];
-		let lines = (("" + string).match(/\n/g) || []).length, height = small ? 7 : 12;
+		let lines = (("" + str).match(/\n/g) || []).length, height = small ? 7 : 12;
 		if (small) {
 			width = Math.ceil(width * 3 + 0.5);
 			height = Math.ceil(lines * 5.5 + 7);
@@ -319,7 +417,7 @@ const draw = {
 			if (small) x -= 4;
 			else x -= 7;
 		};
-		draw.lore(x + 1, y + 1, string, style);
+		draw.lore(x + 1, y + 1, str, style);
 		return height + 4;
 	},
 };
@@ -381,7 +479,7 @@ function foregrounds() {
 	else if (game.select[0] === VOID) draw.image(select.round, 380, 162);
 	else if (game.select[0] === DISCARD) draw.image(select.discard, 382, 181);
 	else if (game.select[0] === MAP) draw.image(select.map, 1, 11);
-	draw.lore(1, 1, "floor " + game.floor, {"color": "red"});
+	draw.lore(1, 1, "floor " + game.floor, {"color": "#f44"});
 };
 
 const startAnim = {
@@ -429,10 +527,10 @@ function playerGraphics() {
 				let img = icon[key.endsWith("s") && !key.endsWith("ss") ? key.slice(0, -1) : key];
 				if (game.shield) {
 					draw.image(img, x + 23, y + 104);
-					draw.lore(x + 34, y + 112, game.eff[key], {"color": "white", "text-align": LEFT});
+					draw.lore(x + 34, y + 112, game.eff[key], {"color": "#fff", "text-align": LEFT});
 				} else {
 					draw.image(img, x + 23, y + 93);
-					draw.lore(x + 34, y + 101, game.eff[key], {"color": "white", "text-align": LEFT});
+					draw.lore(x + 34, y + 101, game.eff[key], {"color": "#fff", "text-align": LEFT});
 				};
 				x += 17;
 			};
@@ -488,6 +586,7 @@ function enemyGraphics() {
 	if (game.enemies.length > 6) {
 		game.enemies.splice(6);
 	};
+	// icons
 	for (let index = 0; index < game.enemies.length; index++) {
 		let select = game.enemies[index], pos = enemyPos[index];
 		draw.bars(pos[0], pos[1], select.health, select.maxHealth, select.shield, select.maxShield);
@@ -500,16 +599,17 @@ function enemyGraphics() {
 				if (select.eff[key]) {
 					if (select.shield) {
 						draw.image(img, x, y + 89);
-						draw.lore(x + 11, y + 97, select.eff[key], {"color": "white", "text-align": LEFT});
+						draw.lore(x + 11, y + 97, select.eff[key], {"color": "#fff", "text-align": LEFT});
 					} else {
 						draw.image(img, x, y + 78);
-						draw.lore(x + 11, y + 86, select.eff[key], {"color": "white", "text-align": LEFT});
+						draw.lore(x + 11, y + 86, select.eff[key], {"color": "#fff", "text-align": LEFT});
 					};
 					x += 17;
 				};
 			};
 		};
 	};
+	// enemy drawing
 	for (let index = 0; index < game.enemies.length; index++) {
 		let select = game.enemies[index], pos = enemyPos[index];
 		if (select.health <= 0) {
@@ -552,6 +652,7 @@ function enemyGraphics() {
 		};
 		enemyAnim[index] += (Math.random() + 0.5) * 0.1;
 	};
+	// attack animations
 	if (tempAnim[3] != -1) {
 		let pos = enemyPos[tempAnim[3]];
 		if (tempAnim[1] === SLIME.BIG) {
@@ -628,6 +729,7 @@ function enemyGraphics() {
 			};
 		} else invNum = -1;
 	};
+	// intents
 	for (let index = 0; index < game.enemies.length; index++) {
 		let select = game.enemies[index], pos = enemyPos[index];
 		if (starAnim[index] >= 4) starAnim[index] = 0;
@@ -642,13 +744,10 @@ function enemyGraphics() {
 				if (primeAnim == -1 || primeAnim > 18) y -= 36;
 				else y = NaN;
 			};
-			if (game.enemies[index].intent === DEFEND) {
-				draw.intent(pos[0] + 16, y, game.enemies[index].defendPower, DEFEND);
-				draw.lore(pos[0] + 30, y + 12, game.enemies[index].defendPower, {"color": "white", "text-align": CENTER});
-			} else if (game.enemies[index].intent === ATTACK) {
-				draw.intent(pos[0] + 16, y, game.enemies[index].attackPower, ATTACK);
-				draw.lore(pos[0] + 30, y + 12, game.enemies[index].attackPower, {"color": "white", "text-align": CENTER});
-			};
+			let power = 0;
+			if (game.enemies[index].intent === ATTACK) power = game.enemies[index].attackPower;
+			if (game.enemies[index].intent === DEFEND) power = game.enemies[index].defendPower;
+			draw.intent(pos[0] + 16, y, power, game.enemies[index].intent);
 		};
 		starAnim[index] += (Math.random() + 0.5) * 0.15;
 	};
@@ -666,20 +765,20 @@ function infoGraphics() {
 	};
 	if (game.select[1] == 3) {
 		infLimit = limit(changelog);
-		draw.lore(1, 1 - infPos, "Dungeon of Souls - Changelog", {"color": "red"});
-		draw.lore(1, 23 - infPos, changelog, {"color": "white"});
+		draw.lore(1, 1 - infPos, "Dungeon of Souls - Changelog", {"color": "#f44"});
+		draw.lore(1, 23 - infPos, changelog, {"color": "#fff"});
 	} else if (game.select[1] == 2) {
 		infLimit = limit(gameplay);
-		draw.lore(1, 1 - infPos, "Dungeon of Souls - How To Play", {"color": "red"});
-		draw.lore(1, 23 - infPos, gameplay, {"color": "white"});
+		draw.lore(1, 1 - infPos, "Dungeon of Souls - How To Play", {"color": "#f44"});
+		draw.lore(1, 23 - infPos, gameplay, {"color": "#fff"});
 	} else {
 		infLimit = limit(overview);
-		draw.lore(1, 1 - infPos, "Dungeon of Souls - Overview", {"color": "red"});
-		draw.lore(1, 23 - infPos, overview, {"color": "white"});
+		draw.lore(1, 1 - infPos, "Dungeon of Souls - Overview", {"color": "#f44"});
+		draw.lore(1, 23 - infPos, overview, {"color": "#fff"});
 	};
-	draw.lore(1, 12 - infPos, 'Source can be found at "https://github.com/Yrahcaz7/Dungeon-of-Souls"', {"color": "red", "text-small": true});
+	draw.lore(1, 12 - infPos, 'Source can be found at "https://github.com/Yrahcaz7/Dungeon-of-Souls"', {"color": "#f44", "text-small": true});
 	if (infLimit > 0) {
-		draw.lore(360, 26, "Scrollable", {"color": "white", "text-align": LEFT});
+		draw.lore(360, 26, "Scrollable", {"color": "#fff", "text-align": LEFT});
 		draw.image(arrows, 367, 22);
 	};
 };
@@ -690,23 +789,23 @@ function optionsGraphics(focused = true) {
 	for (let index = 0; index < options.length; index++) {
 		let option = global.options[options[index]];
 		if (typeof option == "boolean") {
-			if (game.select[1] - 2 === index && focused) text += "<yellow>" + options[index].title() + ": " + (option ? "ON" : "OFF") + "</yellow>\n";
+			if (game.select[1] - 2 === index && focused) text += "<#ff0>" + options[index].title() + ": " + (option ? "ON" : "OFF") + "</#ff0>\n";
 			else text += options[index].title() + ": " + (option ? "ON" : "OFF") + "\n";
 		} else if (typeof option == "number") {
-			if (game.select[1] - 2 === index && focused) text += "<yellow>" + options[index].title() + ": " + option + "x</yellow>\n";
+			if (game.select[1] - 2 === index && focused) text += "<#ff0>" + options[index].title() + ": " + option + "x</#ff0>\n";
 			else text += options[index].title() + ": " + option + "x\n";
 		} else {
-			if (game.select[1] - 2 === index && focused) text += "<yellow>" + options[index].title() + ": " + option + "</yellow>\n";
+			if (game.select[1] - 2 === index && focused) text += "<#ff0>" + options[index].title() + ": " + option + "</#ff0>\n";
 			else text += options[index].title() + ": " + option + "\n";
 		};
 	};
-	if (game.select[1] - 2 === options.length && focused) text += "\n<yellow>RESTART RUN</yellow>";
+	if (game.select[1] - 2 === options.length && focused) text += "\n<#ff0>RESTART RUN</#ff0>";
 	else text += "\nRESTART RUN";
 	draw.rect("#000c");
 	draw.rect("#0004", 0, 0, 400, 13);
-	draw.lore(200 - 2, 1, "Options", {"color": "white", "text-align": CENTER});
+	draw.lore(200 - 2, 1, "Options", {"color": "#fff", "text-align": CENTER});
 	draw.rect("#fff", 1, 12, 378, 1);
-	draw.lore(200 - 2, 15, text.trim().replace(/_/g, " "), {"color": "white", "text-align": CENTER});
+	draw.lore(200 - 2, 15, text.trim().replace(/_/g, " "), {"color": "#fff", "text-align": CENTER});
 	draw.image(extra.options, 380, 2);
 	if (game.select[1] == 1 && focused) draw.image(select.options, 380, 2);
 };
@@ -740,10 +839,10 @@ function deckGraphics(deck) {
 		};
 	};
 	draw.rect("#0004", 0, 0, 400, 13);
-	if (game.select[0] === DECK) draw.lore(200 - 2, 1, "Deck", {"color": "white", "text-align": CENTER});
-	else if (game.select[0] === DISCARD) draw.lore(200 - 2, 1, "Discard", {"color": "white", "text-align": CENTER});
-	else if (game.select[0] === VOID) draw.lore(200 - 2, 1, "Void", {"color": "white", "text-align": CENTER});
-	else if (game.select[0] === IN_MAP) draw.lore(200 - 2, 1, "Cards", {"color": "white", "text-align": CENTER});
+	if (game.select[0] === DECK) draw.lore(200 - 2, 1, "Deck", {"color": "#fff", "text-align": CENTER});
+	else if (game.select[0] === DISCARD) draw.lore(200 - 2, 1, "Discard", {"color": "#fff", "text-align": CENTER});
+	else if (game.select[0] === VOID) draw.lore(200 - 2, 1, "Void", {"color": "#fff", "text-align": CENTER});
+	else if (game.select[0] === IN_MAP) draw.lore(200 - 2, 1, "Cards", {"color": "#fff", "text-align": CENTER});
 	draw.rect("#fff", 1, 12, 398, 1);
 };
 
@@ -769,13 +868,12 @@ function renderCards() {
 		draw.card(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]), true);
 	};
 	if (notif[0] != -1) {
-		let color = "red";
-		if (notif[1] >= 9) color = "red_fade_2";
-		else if (notif[1] >= 7) color = "red_fade_1";
-		else if (notif[1] >= 5) color = "red_fade_0";
-		draw.lore(handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1] + notif[3], notif[2], {"color": color, "text-align": CENTER});
+		draw.lore(handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1] + notif[3], notif[2], {
+			"color": "#ff4444" + Math.min(16 - notif[1], 15).toString(16) + "f",
+			"text-align": CENTER,
+		});
 		notif[1]++;
-		if (notif[1] > 11) notif = [-1, 0];
+		if (notif[1] > 16) notif = [-1, 0];
 	};
 };
 
@@ -862,9 +960,9 @@ function target() {
 		};
 		if (coords) {
 			draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
-			draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "white", "text-align": CENTER, "text-small": true});
-			if (game.select[1] === 0 && game.enemies.length > 1) draw.lore(pos[0] + coords[0] - 5.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-align": LEFT, "text-small": true});
-			else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "white", "text-small": true});
+			draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "#fff", "text-align": CENTER, "text-small": true});
+			if (game.select[1] === 0 && game.enemies.length > 1) draw.lore(pos[0] + coords[0] - 5.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "#fff", "text-align": LEFT, "text-small": true});
+			else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "#fff", "text-small": true});
 			if (enemy.eff.burn) {
 				if (game.select[1] === 0 && game.enemies.length > 1) info.enemy("burn", coords[0] - 5.5, coords[1] + 11);
 				else info.enemy("burn", coords[0] - 5.5, coords[1] - 2);
@@ -876,8 +974,8 @@ function target() {
 		else if (playerAnim[1] == "crouch_shield" || playerAnim[1] == "crouch_shield_reinforced") coor = [58, 72, 22, 39];
 		draw.selector(coor[0], coor[1], coor[2], coor[3]);
 		if (game.character == "knight") {
-			if (global.charStage.knight === 0) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the forgotten one", {"color": "white", "text-align": CENTER, "text-small": true});
-			else if (global.charStage.knight == 1) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the true knight", {"color": "white", "text-align": CENTER, "text-small": true});
+			if (global.charStage.knight === 0) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the forgotten one", {"color": "#fff", "text-align": CENTER, "text-small": true});
+			else if (global.charStage.knight == 1) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the true knight", {"color": "#fff", "text-align": CENTER, "text-small": true});
 		};
 		let x = coor[0] + coor[2] - 80, y = 0;
 		for (const key in game.eff) {
@@ -1051,8 +1149,8 @@ function mapGraphics(onlyCalc = false) {
 		if (game.mapSelect == (paths[game.location] || []).length) draw.image(select.deck, 21, 15);
 		draw.image(extra.end, 22, 179);
 		if (game.mapSelect == -1) draw.image(select.round, 21, 178);
-		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "red"});
-		draw.lore(393, 1, "seed: " + game.seed, {"color": "white", "text-align": LEFT});
+		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
+		draw.lore(393, 1, "seed: " + game.seed, {"color": "#fff", "text-align": LEFT});
 	};
 	let store = [];
 	for (let x = 0; x < game.map.length; x++) {

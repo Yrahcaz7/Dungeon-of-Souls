@@ -84,18 +84,6 @@ const player = {
 	hour_hand: new Image,
 	min_hand: new Image,
 	node: new Image,
-}, letters = {
-	black: new Image,
-	blue: new Image,
-	gray: new Image,
-	red: new Image,
-	white: new Image,
-	yellow: new Image,
-	deep_blue: new Image,
-	deep_red: new Image,
-	light_brown: new Image,
-	light_green: new Image,
-	red_fade: [new Image, new Image, new Image],
 }, bar = {
 	health_empty: new Image,
 	health_full: new Image,
@@ -236,17 +224,6 @@ for (const image in clock) {
 		clock[image].src = "images/clock/" + image + ".png";
 	};
 };
-
-// letters
-for (const image in letters) {
-	if (Object.hasOwnProperty.call(letters, image)) {
-		if (letters[image] instanceof Array) continue;
-		letters[image].src = "images/letters/" + image + ".png";
-	};
-};
-letters.red_fade[0].src = "images/letters/red_fade_0.png";
-letters.red_fade[1].src = "images/letters/red_fade_1.png";
-letters.red_fade[2].src = "images/letters/red_fade_2.png";
 
 // bars
 for (const image in bar) {

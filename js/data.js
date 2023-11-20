@@ -17,11 +17,11 @@
 
 const infoText = {
 	// effects
-	"aura blade": "If something has X aura\nblades, every time it\n<red>attacks</red>, it deals 5 + X\n<red>extra damage</red>, then X is\nreduced by 1.",
-	burn: "If something has X burn,\nat the end of its turn,\nit takes X <red>damage</red>, then\nX is reduced by 1.",
+	"aura blade": "If something has X aura\nblades, every time it\n<#f44>attacks</#f44>, it deals 5 + X\n<#f44>extra damage</#f44>, then X is\nreduced by 1.",
+	burn: "If something has X burn,\nat the end of its turn,\nit takes X <#f44>damage</#f44>, then\nX is reduced by 1.",
 	"one use": "When a one use card is\nplayed, it is sent to\nthe void. Cards in the\nvoid stay there until\nthe end of the battle.",
-	reinforce: "If something has X\nreinforces, at the start\nof its turn, its <blue>shield</blue>\nis kept, then X is\nreduced by 1.",
-	weakness: "If something has X\nweakness, its <red>attack</red> is\nreduced by 25%, rounded\nup. At the end of each\nturn, X is reduced by 1.",
+	reinforce: "If something has X\nreinforces, at the start\nof its turn, its <#58f>shield</#58f>\nis kept, then X is\nreduced by 1.",
+	weakness: "If something has X\nweakness, its <#f44>attack</#f44> is\nreduced by 25%, rounded\nup. At the end of each\nturn, X is reduced by 1.",
 	// other
 	"the map": "You can choose where\nyou go next. Cannot use\nduring a battle.",
 }, overview = ""
@@ -45,7 +45,7 @@ const infoText = {
 	+ "If you reach 0 health, you die and lose your progress.\n"
 	+ "However, you can use your new knowledge to reach higher heights next time.\n"
 	+ "Note: go to the next page for more details on how to play.\n"
-	+ "<b><gray>An ominous feeling...<s><gray>"
+	+ "<b><#999>An ominous feeling...<s><#999>"
 	+ "When the hands align,\n"
 	+ "find the fragment of time.\n"
 	+ "Else, at the edge of the sky,\n"
@@ -53,17 +53,17 @@ const infoText = {
 gameplay = ""
 	+ "<b>Cards and Effects<s>"
 	+ "You have a deck of cards, which you draw the top 5 from each turn.\n"
-	+ "Cards cost <yellow>energy</yellow> to play, which is the number in the big yellow circle.\n"
-	+ "The <yellow>energy cost</yellow> of each card is shown on their top-left corner.\n"
+	+ "Cards cost <#ff0>energy</#ff0> to play, which is the number in the big yellow circle.\n"
+	+ "The <#ff0>energy cost</#ff0> of each card is shown on their top-left corner.\n"
 	+ "When you play a card, it does what it says on the card (effects are listed below).\n"
-	+ " - <red>Damage</red> reduces enemies' <red>health</red>, while <blue>shield</blue> protects your <red>health</red> from attacks.\n"
-	+ " - Take note that <blue>shield</blue> is not kept at the end of your turn unless something says otherwise.\n"
-	+ " - Also, <blue>shield</blue> on enemies acts the same and goes away at the start of the enemy's turn.\n"
+	+ " - <#f44>Damage</#f44> reduces enemies' <#f44>health</#f44>, while <#58f>shield</#58f> protects your <#f44>health</#f44> from attacks.\n"
+	+ " - Take note that <#58f>shield</#58f> is not kept at the end of your turn unless something says otherwise.\n"
+	+ " - Also, <#58f>shield</#58f> on enemies acts the same and goes away at the start of the enemy's turn.\n"
 	+ " - Most other effects are more complex, and have a tooltip that says what they do.\n"
 	+ "<b>Enemy Intents<s>"
 	+ "Take note of what's floating above the enemies' heads. That is their intent.\n"
 	+ "An enemy's intent shows what it intends to do on its next turn.\n"
-	+ "<deep-red>Red</deep-red> with spikes or stars is <red>attack</red>, <deep-blue>blue</deep-blue> and shield shape means <blue>defense</blue> (gain <blue>shield</blue>).\n"
+	+ "<#f00>Red</#f00> with spikes or stars is <#f44>attack</#f44>, <#00f>blue</#00f> and shield shape means <#58f>defense</#58f> (gain <#58f>shield</#58f>).\n"
 	+ "There are others later (not implemented yet), but you can look at the tooltips to see what they are.\n"
 	+ "Use the enemies' predictableness to strategize what cards you play.\n"
 	+ "<b>Building a Deck<s>"
@@ -72,21 +72,21 @@ gameplay = ""
 	+ "Choose cards wisely, and try to get a good synergy between the cards in your deck.\n"
 	+ " - Put info about enhancements here when they are added.\n"
 	+ "<b>Artifacts<s>"
-	+ "Artifacts are very important. You start with two, <light-brown>The Map</light-brown> and Iron Will.\n"
-	+ "<light-brown>The map</light-brown> you always have, and it lets you pick where you go next after a battle.\n"
-	+ "Iron Will <red>heals</red> you a bit after every battle, which is very useful (especially for beginners).\n"
+	+ "Artifacts are very important. You start with two, <#f0c060>The Map</#f0c060> and Iron Will.\n"
+	+ "<#f0c060>The map</#f0c060> you always have, and it lets you pick where you go next after a battle.\n"
+	+ "Iron Will <#f44>heals</#f44> you a bit after every battle, which is very useful (especially for beginners).\n"
 	+ "More artifacts will appear later, and you can always look at the tooltip to see what it does.\n"
 	+ "<b>The Map<s>"
-	+ "When you open <light-brown>the map</light-brown>, you will see a tree of paths you can take.\n"
-	+ "You will see some chests, which symbolize <yellow>treasure chambers</yellow>.\n"
-	+ "<yellow>Treasure chambers</yellow> give better rewards than fights, so try to get them.\n"
-	+ "Additionally, there will be a <deep-red>skull</deep-red> on <light-brown>the map</light-brown>. That is the <deep-red>death zone</deep-red>.\n"
-	+ "It contains a <deep-red>prime enemy</deep-red>, which is much, much stronger than normal ones.\n"
-	+ "However, the rewards you get are even better than ones from <yellow>treasure chambers</yellow>.\n"
-	+ "Lastly, the large node at the end is a <deep-red>boss battle</deep-red>, and the bright orbs before it are healing.\n"
+	+ "When you open <#f0c060>the map</#f0c060>, you will see a tree of paths you can take.\n"
+	+ "You will see some chests, which symbolize <#ff0>treasure chambers</#ff0>.\n"
+	+ "<#ff0>Treasure chambers</#ff0> give better rewards than fights, so try to get them.\n"
+	+ "Additionally, there will be a <#f00>skull</#f00> on <#f0c060>the map</#f0c060>. That is the <#f00>death zone</#f00>.\n"
+	+ "It contains a <#f00>prime enemy</#f00>, which is much, much stronger than normal ones.\n"
+	+ "However, the rewards you get are even better than ones from <#ff0>treasure chambers</#ff0>.\n"
+	+ "Lastly, the large node at the end is a <#f00>boss battle</#f00>, and the bright orbs before it are healing.\n"
 	+ "<b>Losing the Game<s>"
-	+ "If you reach 0 <red>health</red>, you will <deep-red>die</deep-red> and lose your progress.\n"
-	+ "However, you earn <yellow>XP</yellow> (not implemented yet), and when you get enough you can unlock new cards.\n"
+	+ "If you reach 0 <#f44>health</#f44>, you will <#f00>die</#f00> and lose your progress.\n"
+	+ "However, you earn <#ff0>XP</#ff0> (not implemented yet), and when you get enough you can unlock new cards.\n"
 	+ "Then, you can use your new knowledge and cards to reach higher heights next time.",
 changelog = ""
 	+ "<b>Version 1.2 - Reception<s>"
