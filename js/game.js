@@ -985,7 +985,6 @@ function updateVisuals() {
 		draw.imageSector(difficulty, 0, global.difficulty * 16, 64, 16, 168, 146);
 	};
 	if (menuLocation !== -1) {
-		draw.image(view);
 		if (game.select[0] === WELCOME) {
 			draw.box(80, 83, 240, 34);
 			if (global.difficulty === 0) draw.lore(200 - 2, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": CENTER});

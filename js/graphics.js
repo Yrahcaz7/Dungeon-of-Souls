@@ -19,7 +19,7 @@ const ENTER = 500, UP = 501, LEFT = 502, CENTER = 503, RIGHT = 504, DOWN = 505;
 
 const PENDING = 800, STARTING = 801, MIDDLE = 802, ENDING = 803;
 
-var backAnim = [0, UP, 0.5, DOWN, 0, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, -1, STARTING, -1], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], primeAnim = 0, auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]], auraBladeAnim = [0, UP, 2.5, UP, 3, DOWN, 0.5, DOWN], invNum = -1, popups = [], infPos = 0, infLimit = 0;
+var backAnim = [0, UP, 0.5, DOWN, -1, UP], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, -1, STARTING, -1], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], primeAnim = 0, auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]], auraBladeAnim = [0, UP, 2.5, UP, 3, DOWN, 0.5, DOWN], invNum = -1, popups = [], infPos = 0, infLimit = 0;
 
 const draw = {
 	/**
@@ -527,8 +527,9 @@ const graphics = {
 		draw.rect("#10106080");
 		draw.image(background.temple);
 		draw.image(background.floating_arch, 136, 34 - Math.round(backAnim[0]));
+		draw.image(background.debris, 151, 92 - Math.round(backAnim[2]));
 		if (game.floor != 10) {
-			let now = new Date(), time = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()], x = 170, y = 63 - Math.round(backAnim[2]);
+			let now = new Date(), time = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()], x = 170, y = 63 - Math.round(backAnim[4]);
 			time[2] += (time[3] / 1000);
 			time[1] += (time[2] / 60);
 			time[0] += (time[1] / 60);
@@ -538,14 +539,12 @@ const graphics = {
 			draw.imageSector(clock.min_hand, Math.floor((time[1]) * 80 / 60) * 34, 0, 34, 34, x + 13, y + 13);
 			draw.image(clock.node, x + 26, y + 26);
 		};
-		if (backAnim[0] >= 1) backAnim[1] = DOWN;
-		else if (backAnim[0] <= -1) backAnim[1] = UP;
-		if (backAnim[1] === UP) backAnim[0] += (Math.random() + 0.5) * 0.075;
-		else if (backAnim[1] === DOWN) backAnim[0] -= (Math.random() + 0.5) * 0.075;
-		if (backAnim[2] >= 1) backAnim[3] = DOWN;
-		else if (backAnim[2] <= -1) backAnim[3] = UP;
-		if (backAnim[3] === UP) backAnim[2] += (Math.random() + 0.5) * 0.075;
-		else if (backAnim[3] === DOWN) backAnim[2] -= (Math.random() + 0.5) * 0.075;
+		for (let index = 0; index < backAnim.length; index += 2) {
+			if (backAnim[index] >= 1) backAnim[index + 1] = DOWN;
+			else if (backAnim[index] <= -1) backAnim[index + 1] = UP;
+			if (backAnim[index + 1] === UP) backAnim[index] += (Math.random() + 0.5) * 0.075;
+			else if (backAnim[index + 1] === DOWN) backAnim[index] -= (Math.random() + 0.5) * 0.075;
+		};
 	},
 	/**
 	 * Draws the foreground layer on the canvas.
@@ -557,7 +556,6 @@ const graphics = {
 			else if (past[0] === CARD_REWARDS) graphics.cardRewards(false);
 			else if (past[0] === ARTIFACT_REWARDS) graphics.artifactRewards(false);
 		};
-		draw.image(view);
 		if (game.select[0] === LOOKER && game.select[1] === 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 343, 3);
 		else draw.imageSector(extra.looker, 0, 0, 16, 16, 343, 3);
 		draw.image(extra.help, 362, 3);
@@ -986,13 +984,13 @@ const graphics = {
 			const pos = enemyPos[game.select[1]];
 			let coords = [], name = "";
 			if (enemyType === SLIME.SMALL) {
-				coords = [19, 35, 26, 29];
+				coords = [19, 36, 26, 28];
 				name = "small slime";
 			} else if (enemyType === SLIME.BIG || (enemyType === SLIME.PRIME && primeAnim != -1 && primeAnim < 5)) {
-				coords = [5, 25, 54, 39];
+				coords = [5, 26, 54, 38];
 				name = "big slime";
 			} else if (enemyType === SLIME.PRIME) {
-				coords = [0, 5, 63, 59];
+				coords = [0, 7, 64, 57];
 				name = "prime slime";
 			} else if (enemyType === FRAGMENT && (primeAnim == -1 || primeAnim > 18)) {
 				coords = [7, 6, 50, 58];
