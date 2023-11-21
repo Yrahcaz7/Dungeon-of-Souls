@@ -17,11 +17,18 @@
 
 const ID = "Yrahcaz7/Dungeon-of-Souls/save";
 
+/**
+ * Saves the game.
+ */
 function save() {
 	if (game) localStorage.setItem(ID + "/0", btoa(JSON.stringify(game)));
 	if (global) localStorage.setItem(ID + "/master", btoa(JSON.stringify(global)));
 };
 
+/**
+ * Returns a fixed enemy type.
+ * @param {string} item - the enemy type to fix.
+ */
 function fixEnemyType(item) {
 	if (item == "slime_big") return SLIME.BIG;
 	else if (item == "slime_small") return SLIME.SMALL;
@@ -29,11 +36,19 @@ function fixEnemyType(item) {
 	else return ("" + item).replace("slime_small", SLIME.SMALL);
 };
 
+/**
+ * Returns a fixed enemy intent.
+ * @param {string} item - the enemy intent to fix.
+ */
 function fixEnemyIntent(item) {
 	if (item == "attack") return ATTACK;
 	else if (item == "defend") return DEFEND;
 };
 
+/**
+ * Fixes a room.
+ * @param {Array} item - the room to fix.
+ */
 function fixRoom(item) {
 	if (item[0] == "battle") item[0] = BATTLEROOM;
 	else if (item[0] == "treasure") item[0] = TREASUREROOM;
@@ -47,6 +62,10 @@ function fixRoom(item) {
 	};
 };
 
+/**
+ * Returns a fixed selector.
+ * @param {string} item - the selector to fix.
+ */
 function fixSelect(item) {
 	if (item == "hand") return HAND;
 	else if (item == "lookat_you") return LOOKAT_YOU;
@@ -75,7 +94,9 @@ function fixSelect(item) {
 	else return -1;
 };
 
-// fixes old saves
+/**
+ * Fixes the save if it is old.
+ */
 function fixSave() {
 	// fix enemy attack
 	if (game.activeCard !== undefined || game.enemyAttSel !== undefined || game.enemyAttFin !== undefined) {
@@ -124,6 +145,9 @@ function fixSave() {
 	delete game.saveNum;
 };
 
+/**
+ * Loads the save. Creates a new save if there is no save to load.
+ */
 function load() {
 	let get = localStorage.getItem(ID + "/0");
 	if (get && atob(get) && JSON.parse(atob(get))) {

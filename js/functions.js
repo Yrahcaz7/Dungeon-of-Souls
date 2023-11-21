@@ -15,8 +15,9 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// prototype functions
-
+/**
+ * Returns the string formatted in title case.
+ */
 String.prototype.title = function() {
 	let result = "";
 	for (let num = 0; num < this.length; num++) {
@@ -26,6 +27,9 @@ String.prototype.title = function() {
 	return result;
 };
 
+/**
+ * Returns the string with each character's position randomized.
+ */
 String.prototype.randomize = function() {
 	let arr = this.split("");
 	for (let index = arr.length - 1; index > 0; index--) {
@@ -35,50 +39,66 @@ String.prototype.randomize = function() {
 	return arr.join("");
 };
 
-Object.prototype.deepCopy = (o, keepProto = false) => {
-	let object = JSON.parse(JSON.stringify(o));
-	if (keepProto) Object.setPrototypeOf(object, Object.getPrototypeOf(o));
-	return object;
+/**
+ * Returns the value of an interval at the current time.
+ * @param {number} period - the period of the interval function.
+ * @param {number} mag - the magnitude of the interval. Defaults to `1`.
+ */
+function interval(period, mag = 1) {
+	return (Math.abs((new Date().getTime() % (2000 * period * mag) / (1000 * period)) - mag) * mag) - mag;
 };
 
-// technical functions
-
-function interval(time, range = 1) {
-	return (Math.abs((new Date().getTime() % (2000 * time * range) / (1000 * time)) - range) * range) - range;
-};
-
+/**
+ * Returns a boolean indicating whether the middleground layers are hidden.
+ */
 function hidden() {
 	return !!((game.select[0] === LOOKER || game.select[0] === HELP || game.select[0] === OPTIONS || game.select[0] === DECK || game.select[0] === VOID || game.select[0] === DISCARD) && game.select[1]) || game.select[0] === IN_MAP || game.select[0] === CONFIRM_RESTART;
 };
 
-// value getter functions
-
 const get = {
+	/**
+	 * Gets the hand size.
+	 */
 	handSize() {
 		let size = 5;
 		if (game.artifacts.includes(6)) size--;
 		return size;
 	},
+	/**
+	 * Gets the number of card reward choices.
+	 */
 	cardRewardChoices() {
 		let choices = 3;
 		if (game.artifacts.includes(6)) choices++;
 		return choices;
 	},
+	/**
+	 * Gets the player's maximum health.
+	 */
 	maxHealth() {
 		let max = 60;
 		if (game.artifacts.includes(4)) max -= 15;
 		if (game.artifacts.includes(7)) max += 15;
 		return max;
 	},
+	/**
+	 * Gets the player's maximum shield.
+	 */
 	maxShield() {
 		let max = 60;
 		return max;
 	},
+	/**
+	 * Gets the player's maximum energy.
+	 */
 	maxEnergy() {
 		let max = 3;
 		if (game.artifacts.includes(5)) max++;
 		return max;
 	},
+	/**
+	 * Gets the current extra damage effect.
+	 */
 	extraDamage() {
 		let extra = 0;
 		if (game.attackEffects.includes(AURA_BLADE)) {
@@ -89,6 +109,9 @@ const get = {
 		if (game.artifacts.includes(3)) extra += 2;
 		return extra;
 	},
+	/**
+	 * Gets the current extra shield effect.
+	 */
 	extraShield() {
 		let extra = 0;
 		if (game.artifacts.includes(2)) extra += 2;
@@ -96,8 +119,9 @@ const get = {
 	},
 };
 
-// reset functions
-
+/**
+ * Resets everything. Use carefully!
+ */
 function hardReset() {
 	for (let index = 0; index < localStorage.length; index++) {
 		const key = localStorage.key(index);
@@ -110,14 +134,19 @@ function hardReset() {
 	location.reload();
 };
 
+/**
+ * Restarts the current run.
+ */
 function restartRun() {
 	localStorage.removeItem("Yrahcaz7/Dungeon-of-Souls/save/0");
 	game = null;
 	location.reload();
 };
 
-// gameplay functions
-
+/**
+ * Shuffles a deck and returns it.
+ * @param {Card[]} deck - the deck to shuffle.
+ */
 function shuffle(deck) {
 	let index = deck.length, randomIndex;
 	while (index != 0) {
@@ -128,6 +157,10 @@ function shuffle(deck) {
 	return deck;
 };
 
+/**
+ * Shuffles `game.deck` and adds new cards to it while doing so.
+ * @param  {...Card} newCards - the new cards, if any, to add.
+ */
 function shuffleDeck(...newCards) {
 	if (newCards) {
 		for (let card of newCards) {
@@ -138,6 +171,9 @@ function shuffleDeck(...newCards) {
 	game.deckLocal = shuffle(game.deckLocal);
 };
 
+/**
+ * Has the player draw their hand.
+ */
 function drawHand() {
 	const handSize = get.handSize();
 	let index = 0, len = game.deckLocal.length;
@@ -162,6 +198,9 @@ function drawHand() {
 	};
 };
 
+/**
+ * Has the player discard their hand.
+ */
 function discardHand() {
 	for (let index = 0; index < game.hand.length; ) {
 		game.discard.push(game.hand[index]);
@@ -171,7 +210,14 @@ function discardHand() {
 
 const AURA_BLADE = 200;
 
-function dealDamage(amount, exMod = 1, enemy = +game.enemyAtt[1], attacking = true) {
+/**
+ * Deals damage to an enemy.
+ * @param {number} amount - the amount of damage.
+ * @param {number} exMod - the extra damage modifier. Defaults to `1`.
+ * @param {number} enemy - the index of the enemy. Defaults to `game.enemyAtt[1]`.
+ * @param {boolean} attacking - whether the damage is considered an attack.
+ */
+function dealDamage(amount, exMod = 1, enemy = game.enemyAtt[1], attacking = true) {
 	// setup
 	let damage = amount;
 	// increase damage
@@ -190,6 +236,10 @@ function dealDamage(amount, exMod = 1, enemy = +game.enemyAtt[1], attacking = tr
 	};
 };
 
+/**
+ * Makes the player take damage.
+ * @param {number} amount - the amount of damage to take.
+ */
 function takeDamage(amount) {
 	if (amount < game.shield) {
 		game.shield -= amount;
@@ -200,11 +250,19 @@ function takeDamage(amount) {
 	};
 };
 
+/**
+ * Has the player gain shield.
+ * @param {number} amount - the amount of shield to gain.
+ */
 function gainShield(amount = 0) {
 	if (isNaN(amount)) return;
 	game.shield += amount + get.extraShield();
 };
 
+/**
+ * Activates the attack effects of a card.
+ * @param {number} id - the id of the card.
+ */
 function activateAttackEffects(id) {
 	// stop if effects are not allowed
 	if (attributes["NO ATTACK EFFECTS"].includes(id)) return;

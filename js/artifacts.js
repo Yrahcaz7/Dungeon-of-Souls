@@ -1,3 +1,20 @@
+/*  Dungeon of Souls
+ *  Copyright (C) 2022 Yrahcaz7
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 const ENDOFBATTLE = 900, ONPICKUP = 901;
 
 const artifacts = {
@@ -56,15 +73,10 @@ for (const key in artifacts) {
 	};
 };
 
-function randomArtifactSet(length = 0) {
-	if (length <= 0) return [];
-	let result = [];
-	for (let index = 0; index < length; index++) {
-		result.push(randomArtifact(result));
-	};
-	return result;
-};
-
+/**
+ * Returns a random artifact's id.
+ * @param {number[]} notInclude - the ids to not include.
+ */
 function randomArtifact(notInclude = []) {
 	let bool = true;
 	if (notInclude.length) {
@@ -82,6 +94,19 @@ function randomArtifact(notInclude = []) {
 	let result;
 	while (!result || notInclude.includes(result)) {
 		result = randomInt(2, Object.keys(artifact).length);
+	};
+	return result;
+};
+
+/**
+ * Returns a random artifact set.
+ * @param {number} length - the length of the set. Default is `0`.
+ */
+function randomArtifactSet(length = 0) {
+	if (length <= 0) return [];
+	let result = [];
+	for (let index = 0; index < length; index++) {
+		result.push(randomArtifact(result));
 	};
 	return result;
 };

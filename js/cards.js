@@ -188,6 +188,9 @@ class Card {
 	};
 };
 
+/**
+ * Sorts an array of cards. This method mutates the array and returns a reference to the same array.
+ */
 Array.prototype.cardSort = function() {
 	return this.sort((a, b) => {
 		if (cards[a.id].rarity > cards[b.id].rarity) {
@@ -214,6 +217,9 @@ Array.prototype.cardSort = function() {
 
 const cardNames = {};
 
+/**
+ * Constructs the `cardNames` array.
+ */
 function constructNames() {
 	const entries = Object.entries(cards);
 	for (let index = 0; index < entries.length; index++) {
@@ -221,17 +227,12 @@ function constructNames() {
 	};
 };
 
-function randomCardSet(length = 0) {
-	if (length <= 0) return [];
-	let result = [];
-	for (let index = 0; index < length; index++) {
-		result.push(randomCard(result));
-	};
-	return result;
-};
-
 const common = Object.keys(card.common), rare = Object.keys(card.rare);
 
+/**
+ * Returns a random card's id.
+ * @param {string[]} notInclude - the ids to not include.
+ */
 function randomCard(notInclude = []) {
 	let bool = true;
 	if (Object.keys(cardNames).length === 0) constructNames();
@@ -245,21 +246,35 @@ function randomCard(notInclude = []) {
 		};
 	};
 	if (bool) {
-		let result;
+		let result = 0;
 		if (chance(7/10)) {
 			result = cardNames[common[randomInt(0, Object.keys(card.common).length - 1)]];
 		} else {
-			result = cardNames[rare[randomInt(0, Object.keys(card.rare).length - 1)]];			
+			result = cardNames[rare[randomInt(0, Object.keys(card.rare).length - 1)]];
+		};
+		return result;
+	} else {
+		let result = 0;
+		while (!result || notInclude.includes(result)) {
+			if (chance(7/10)) {
+				result = cardNames[common[randomInt(0, Object.keys(card.common).length - 1)]];
+			} else {
+				result = cardNames[rare[randomInt(0, Object.keys(card.rare).length - 1)]];
+			};
 		};
 		return result;
 	};
-	let result;
-	while (!result || notInclude.includes(result)) {
-		if (chance(7/10)) {
-			result = cardNames[common[randomInt(0, Object.keys(card.common).length - 1)]];
-		} else {
-			result = cardNames[rare[randomInt(0, Object.keys(card.rare).length - 1)]];			
-		};
+};
+
+/**
+ * Returns a random card set.
+ * @param {number} length - the length of the set. Default is `0`.
+ */
+function randomCardSet(length = 0) {
+	if (length <= 0) return [];
+	let result = [];
+	for (let index = 0; index < length; index++) {
+		result.push(randomCard(result));
 	};
 	return result;
 };

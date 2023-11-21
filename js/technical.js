@@ -15,27 +15,41 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// setup seeds
-
+/**
+ * Returns a seeding function based on a string.
+ * @param {string} str - the string to use.
+ */
 function internalSeed(str) {
 	for (var k, i = 0, h = 2166136261 >>> 0; i < str.length; i++) {
-		k = Math.imul(str.charCodeAt(i), 3432918353); k = k << 15 | k >>> 17;
-		h ^= Math.imul(k, 461845907); h = h << 13 | h >>> 19;
+		k = Math.imul(str.charCodeAt(i), 3432918353);
+		k = k << 15 | k >>> 17;
+		h ^= Math.imul(k, 461845907);
+		h = h << 13 | h >>> 19;
 		h = Math.imul(h, 5) + 3864292196 | 0;
 	};
 	h ^= str.length;
 	return () => {
-		h ^= h >>> 16; h = Math.imul(h, 2246822507);
-		h ^= h >>> 13; h = Math.imul(h, 3266489909);
+		h ^= h >>> 16;
+		h = Math.imul(h, 2246822507);
+		h ^= h >>> 13;
+		h = Math.imul(h, 3266489909);
 		h ^= h >>> 16;
 		return h >>> 0;
 	};
 };
 
+/**
+ * Returns a seed.
+ */
 var seed = internalSeed(game.seed);
 
-// setup PRNG
-
+/**
+ * Returns a function that gives a random number in [0, 1) that is based on four seeds.
+ * @param {number} a - the first seed.
+ * @param {number} b - the second seed.
+ * @param {number} c - the third seed.
+ * @param {number} d - the fourth seed.
+ */
 function internalRandom(a, b, c, d) {
 	return () => {
 		var t = b << 9, r = a * 5; r = (r << 7 | r >>> 25) * 9;
@@ -46,23 +60,30 @@ function internalRandom(a, b, c, d) {
 	};
 };
 
+/**
+ * Returns a seeded random number in [0, 1)
+ */
 const random = internalRandom(seed(), seed(), seed(), seed());
 
-// setup other randomness
-
+/**
+ * Returns a seeded random integer in [min, max)
+ * @param {number} min - the minimum integer, inclusive.
+ * @param {number} max - the maximum integer, exclusive.
+ */
 function randomInt(min, max) {
 	min = Math.ceil(min);
 	max = Math.floor(max);
-	if ((!min && min !== 0) || (!max && max !== 0)) return NaN;
 	if (min > max) [min, max] = [max, min];
 	return Math.floor(random() * (max - min + 1)) + min;
 };
 
-function chance(chance = 0.5) {
+/**
+ * Has a chance of returning true.
+ * @param {number} chance - the chance. Default is `1/2`.
+ */
+function chance(chance = 1/2) {
 	return random() < chance;
 };
-
-// setup game
 
 var loaded = false;
 
@@ -89,10 +110,11 @@ window.onload = () => {
 	};
 };
 
-// setup canvas
-
 var canvas, scale, ctx, action = -1, lastAction = -1;
 
+/**
+ * Sets up the canvas. Returns true if successful.
+ */
 function canvasData() {
 	let canv = document.getElementById("canvas");
 	if (!canv) return false;
@@ -107,14 +129,16 @@ function canvasData() {
 	return true;
 };
 
-// clear canvas
-
+/**
+ * Clears the canvas.
+ */
 function clearCanvas() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 };
 
-// fix canvas
-
+/**
+ * Fixes the canvas in the html.
+ */
 function fixCanvas() {
 	if (global.options.pixel_perfect_screen) {
 		const width = +(document.getElementById("canvas").style.width.match(/\d+/) || [800])[0];
@@ -133,8 +157,6 @@ function fixCanvas() {
 window.onresize = () => {
 	fixCanvas();
 };
-
-// key press
 
 document.addEventListener("keydown", (event) => {
 	const key = event.key, prevAction = +action;
@@ -185,15 +207,15 @@ document.addEventListener("keydown", (event) => {
 	if (action !== -1) lastAction = action;
 });
 
-// key lift
-
 document.addEventListener("keyup", (event) => {
 	const key = event.key;
 	if (key == " " || key == "Enter" || key == "W" || key == "w" || key == "ArrowUp" || key == "A" || key == "a" || key == "ArrowLeft" || key == "S" || key == "s" || key == "ArrowDown" || key == "D" || key == "d" || key == "ArrowRight") action = -1;
 });
 
-// enter/exit fullscreen
-
+/**
+ * Enters fullsceen mode.
+ * @param {boolean} exit - whether to exit fullscreen mode instead of entering it.
+ */
 function fullscreen(exit = false) {
 	if (exit) {
 		if (document.body.exitFullscreen) {

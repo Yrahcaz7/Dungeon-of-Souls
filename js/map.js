@@ -21,10 +21,19 @@ const BATTLEROOM = 100, TREASUREROOM = 101, PRIMEROOM = 102, ORBROOM = 103, BOSS
 
 var mapProg = 0, mapTotal = 10, death_zones = 0, rowFalses = 0, rowNodes = 0, twoRow = false;
 
+/**
+ * Gets a weaker small slime in the map syntax.
+ * @param {number} row - the row the enemy will be contained in.
+ */
 function weakerSmallSlime(row) {
 	return SLIME.SMALL + ", " + (Math.round((0.5 + (row * 0.05)) * 100) / 100);
 };
 
+/**
+ * Returns a map piece.
+ * @param {number} row - the row of the map piece.
+ * @param {FIRSTBATTLE | TREASURE | PRIME | ORB | BOSS} attribute - the attribute of the map piece, if any.
+ */
 function mapPiece(row, attribute = -1) {
 	if (attribute === FIRSTBATTLE) return [BATTLEROOM, 0, 0, [SLIME.SMALL], randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5)];
 	if (attribute === TREASURE) return [TREASUREROOM, randomInt(-5, 5), randomInt(-5, 5), false, randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
@@ -45,7 +54,12 @@ function mapPiece(row, attribute = -1) {
 	return result;
 };
 
-function pathHasSpecial(coords = "", front = false) {
+/**
+ * Checks if a map path has a special node.
+ * @param {string} coords - the coordinates of the node to start searching from.
+ * @param {boolean} front - whether to seach the front instead of the back.
+ */
+function pathHasSpecial(coords, front = false) {
 	const entries = Object.entries(paths);
 	let boolean = false;
 	const looping = front ? (location = "", first = false) => {
@@ -73,6 +87,10 @@ function pathHasSpecial(coords = "", front = false) {
 	return boolean;
 };
 
+/**
+ * Returns a map row.
+ * @param {number} row - the row number.
+ */
 function mapRow(row) {
 	rowFalses = 0;
 	rowNodes = 0;
@@ -119,12 +137,18 @@ function mapRow(row) {
 	return arr;
 };
 
+/**
+ * Updates the map generation progress.
+ */
 function updateMapProg() {
 	clearCanvas();
 	if (mapProg === mapTotal) draw.lore(200 - 2, 100, "Generating Map...\nrunning final checks...", {"color": "#fff", "text-align": CENTER});
 	else draw.lore(200 - 2, 100, "Generating Map...\n" + (mapProg / mapTotal * 100).toFixed(1) + "%", {"color": "#fff", "text-align": CENTER});
 };
 
+/**
+ * Generates a map and saves it.
+ */
 async function generateMap() {
 	game.firstRoom = mapPiece(0, FIRSTBATTLE);
 	game.map = [];

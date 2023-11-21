@@ -95,6 +95,10 @@ class Enemy {
 	};
 };
 
+/**
+ * Returns an object as an enemy.
+ * @param {object} object - the object to classify.
+ */
 function classifyEnemy(object = {}) {
 	let instance = new Enemy("", NaN);
 	for (const key in object) {

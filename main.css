@@ -21,10 +21,12 @@
 	overscroll-behavior-inline: none;
 }
 
-html {
-	cursor: none;
+html, body {
+	height: 100%;
 	background-color: black;
 	color: white;
+	margin: 0px;
+	cursor: none;
 }
 
 canvas {
@@ -34,6 +36,7 @@ canvas {
 	bottom: 0;
 	right: 0;
 	width: 100%;
+	background-color: black;
 	margin: auto;
 	-ms-interpolation-mode: nearest-neighbor;
 	image-rendering: -moz-crisp-edges;

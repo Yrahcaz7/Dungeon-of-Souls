@@ -1036,7 +1036,7 @@ const graphics = {
 		} else if (game.select[0] === ARTIFACT_REWARDS) {
 			info.artifact(game.room[6][game.select[1]], 179 + (game.select[1] * 32), 90);
 		} else if (game.select[0] === DECK && game.select[1] == 1 && game.deckLocal.length) {
-			const keywords = cards[Object.deepCopy(game.deckLocal).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].id]?.keywords;
+			const keywords = cards[game.deckLocal.slice(0).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].id]?.keywords;
 			let x = 0, y = 0;
 			if (keywords instanceof Array) {
 				for (let index = 0; index < keywords.length; index++) {

@@ -141,6 +141,9 @@ changelog = ""
 	+ " - still needs a lot of polishing and such\n"
 	+ " - next update will probably make it more playable";
 
+/**
+ * Updates the game's data.
+ */
 function updateData() {
 	if (!loaded) return;
 	// enemyPos

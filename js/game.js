@@ -74,23 +74,31 @@ var global = {
 	seed: "" + (Math.round(new Date().getTime() * (Math.random() + 0.001)) % 1000000).toString().randomize(),
 }, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = TITLE, menuSelect = 0, enemyPos = [], handPos = [], paths = {}, gameWon = false;
 
+/**
+ * Pushes a popup.
+ * @param {string} type - the type of the popup.
+ * @param {string} description - the description of the popup.
+ * @param {string} secondLine - the second line of the popup, if any.
+ */
 function pushPopup(type, description, secondLine = "") {
-	type = "" + type;
-	description = "" + description;
-	secondLine = "" + secondLine;
-	if (!type || !description) return;
 	popups.push([type, description, 400, 0, secondLine]);
 };
 
+/**
+ * Pushes the current music popup.
+ */
 function musicPopup() {
 	let src = "" + document.getElementById("music").src;
 	if (!global.options.music) {
 		pushPopup("music", "music is off");
-	} else if (/Ruins_of_Caelum.(mp3|wav)/.test(src)) {
+	} else if (/Ruins_of_Caelum/.test(src)) {
 		pushPopup("music", "Ruins of Caelum");
 	};
 };
 
+/**
+ * Enters the battle.
+ */
 function enterBattle() {
 	game.state = "battle";
 	game.rewards = [];
@@ -99,12 +107,17 @@ function enterBattle() {
 	game.discard = [];
 	game.void = [];
 	game.shield = 0;
-	game.eff.aura_blades = 0;
-	game.eff.reinforces = 0;
-	game.eff.weakness = 0;
+	for (const effect in game.eff) {
+		if (Object.hasOwnProperty.call(game.eff, effect)) {
+			game.eff[effect] = 0;
+		};
+	};
 	startTurn();
 };
 
+/**
+ * Starts the player's turn.
+ */
 function startTurn() {
 	// end of enemy turn effects
 	for (let index = 0; index < game.enemies.length; index++) {
@@ -124,6 +137,9 @@ function startTurn() {
 	if (playerAnim[1] != "idle") startAnim.player("idle");
 };
 
+/**
+ * Ends the player's turn.
+ */
 function endTurn() {
 	// end of your turn effects
 	if (game.eff.burn) {
@@ -145,6 +161,9 @@ function endTurn() {
 	game.turn = "enemy";
 };
 
+/**
+ * Ends the player's turn (after a confirmation if the player can still play cards).
+ */
 function endTurnConfirm() {
 	let confirm = false;
 	if (game.hand.length >= 1) {
@@ -161,6 +180,9 @@ function endTurnConfirm() {
 	actionTimer = 2;
 };
 
+/**
+ * Handles the player's turn.
+ */
 function playerTurn() {
 	// finish attack enemy
 	if (game.enemyAtt[3] && playerAnim[1] == "idle") {
@@ -239,6 +261,9 @@ function playerTurn() {
 	};
 };
 
+/**
+ * Handles the enemies' turn.
+ */
 function enemyTurn() {
 	if (game.enemyNum < game.enemies.length) {
 		if (game.enemyStage === ENDING) game.enemies[game.enemyNum].finishAction();
@@ -247,6 +272,9 @@ function enemyTurn() {
 	};
 };
 
+/**
+ * Handles all normal selection cases.
+ */
 function selection() {
 	// action timer
 	actionTimer--;
@@ -861,6 +889,9 @@ function selection() {
 	};
 };
 
+/**
+ * Handles the gameplay.
+ */
 function manageGameplay() {
 	// update data
 	updateData();
@@ -934,6 +965,9 @@ function manageGameplay() {
 	if (game.turn == "enemy") enemyTurn();
 };
 
+/**
+ * Handles the visuals of the game.
+ */
 function updateVisuals() {
 	// bugs
 	if (!canvas || !ctx) return;
@@ -1026,7 +1060,7 @@ function updateVisuals() {
 	} else if (game.select[0] === OPTIONS && game.select[1]) {
 		graphics.options();
 	} else if (game.select[0] === DECK && game.select[1]) {
-		graphics.deck(Object.deepCopy(game.deckLocal).cardSort());
+		graphics.deck(game.deckLocal.slice(0).cardSort());
 	} else if (game.select[0] === VOID && game.select[1]) {
 		graphics.deck(game.void);
 	} else if (game.select[0] === DISCARD && game.select[1]) {
