@@ -100,7 +100,7 @@ function randomArtifact(notInclude = []) {
 
 /**
  * Returns a random artifact set.
- * @param {number} length - the length of the set. Default is `0`.
+ * @param {number} length - the length of the set. Defaults to `0`.
  */
 function randomArtifactSet(length = 0) {
 	if (length <= 0) return [];

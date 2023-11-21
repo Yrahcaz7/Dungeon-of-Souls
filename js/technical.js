@@ -79,7 +79,7 @@ function randomInt(min, max) {
 
 /**
  * Has a chance of returning true.
- * @param {number} chance - the chance. Default is `1/2`.
+ * @param {number} chance - the chance. Defaults to `1/2`.
  */
 function chance(chance = 1/2) {
 	return random() < chance;

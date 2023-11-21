@@ -268,7 +268,7 @@ function randomCard(notInclude = []) {
 
 /**
  * Returns a random card set.
- * @param {number} length - the length of the set. Default is `0`.
+ * @param {number} length - the length of the set. Defaults to `0`.
  */
 function randomCardSet(length = 0) {
 	if (length <= 0) return [];
