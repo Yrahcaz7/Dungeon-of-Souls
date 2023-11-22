@@ -72,7 +72,7 @@ class Enemy {
 			this.intentHistory = [ATTACK];
 		};
 		if (game.enemyNum == game.enemies.length - 1) {
-			game.enemyNum = 0;
+			game.enemyNum = -1;
 			startTurn();
 		} else {
 			game.enemyNum++;

@@ -58,6 +58,7 @@ const player = {
 		"aura blaze": new Image,
 		"everlasting shield": new Image,
 		"heat wave": new Image,
+		"resilience": new Image,
 	},
 }, enemy = {
 	slime: {
@@ -144,6 +145,7 @@ const player = {
 	aura_blade: new Image,
 	burn: new Image,
 	reinforce: new Image,
+	resilience: new Image,
 	weakness: new Image,
 }, artifact = {
 	candy: new Image,

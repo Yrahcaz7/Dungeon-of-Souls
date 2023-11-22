@@ -110,6 +110,26 @@ const get = {
 		return extra;
 	},
 	/**
+	 * Gets the current dealing damage multiplier effect.
+	 * @param {number} enemy - the index of the enemy that is being damaged. Defaults to `game.enemyAtt[1]`.
+	 */
+	dealDamageMult(enemy = game.enemyAtt[1]) {
+		let mult = 1;
+		if (game.eff.weakness) mult -= 0.25;
+		if (game.enemies[enemy]?.eff.resilience) mult -= 0.25;
+		return mult;
+	},
+	/**
+	 * Gets the current taking damage multiplier effect.
+	 * @param {number} enemy - the index of the enemy that is being damaged. Defaults to `game.enemyNum`.
+	 */
+	takeDamageMult(enemy = game.enemyNum) {
+		let mult = 1;
+		if (game.enemies[enemy]?.eff.weakness) mult -= 0.25;
+		if (game.eff.resilience) mult -= 0.25;
+		return mult;
+	},
+	/**
 	 * Gets the current extra shield effect.
 	 */
 	extraShield() {
@@ -215,32 +235,32 @@ const AURA_BLADE = 200;
  * @param {number} amount - the amount of damage.
  * @param {number} exMod - the extra damage modifier. Defaults to `1`.
  * @param {number} enemy - the index of the enemy. Defaults to `game.enemyAtt[1]`.
- * @param {boolean} attacking - whether the damage is considered an attack.
+ * @param {boolean} attack - whether the damage is considered an attack. Defaults to `true`.
  */
-function dealDamage(amount, exMod = 1, enemy = game.enemyAtt[1], attacking = true) {
-	// setup
-	let damage = amount;
+function dealDamage(amount, exMod = 1, enemy = game.enemyAtt[1], attack = true) {
 	// increase damage
-	if (attacking) damage += get.extraDamage() * exMod;
+	if (attack) amount += Math.floor(get.extraDamage() * exMod);
 	// multiply damage
-	let mulDamage = 1;
-	if (game.eff.weakness && attacking) mulDamage = 0.75;
-	damage = Math.floor(damage * mulDamage);
+	if (attack) amount = Math.ceil(amount * get.dealDamageMult(enemy));
 	// damage enemy
-	if (damage < game.enemies[enemy].shield) {
-		game.enemies[enemy].shield -= damage;
+	if (amount < game.enemies[enemy].shield) {
+		game.enemies[enemy].shield -= amount;
 	} else {
-		damage -= game.enemies[enemy].shield;
+		amount -= game.enemies[enemy].shield;
 		game.enemies[enemy].shield = 0;
-		game.enemies[enemy].health -= damage;
+		game.enemies[enemy].health -= amount;
 	};
 };
 
 /**
  * Makes the player take damage.
  * @param {number} amount - the amount of damage to take.
+ * @param {boolean} attack - whether the damage is considered an attack. Defaults to `true`.
  */
-function takeDamage(amount) {
+function takeDamage(amount, attack = true) {
+	// multiply damage
+	if (attack) amount = Math.ceil(amount * get.takeDamageMult());
+	// take damage
 	if (amount < game.shield) {
 		game.shield -= amount;
 	} else {

@@ -243,7 +243,6 @@ const draw = {
 		else if (effect >= 15) stage = 3;
 		else if (effect >= 10) stage = 2;
 		else if (effect >= 5) stage = 1;
-		else stage = 0;
 		if (type === ATTACK) draw.image(intent.attack[stage], x, y);
 		else if (type === DEFEND) draw.image(intent.defend[stage], x, y + 1);
 		draw.lore(x + 30 - 16, y + 12, effect, {"color": "#fff", "text-align": CENTER});
@@ -341,13 +340,13 @@ const draw = {
 		if (name.length >= 11) draw.lore(x + 32, y + 44, name.title(), {"text-align": CENTER, "text-small": true});
 		else draw.lore(x + 32, y + 42, name.title(), {"text-align": CENTER});
 		// card description
-		let desc = cards[cardObject.id].desc, exDamage = get.extraDamage(), mulDamage = 1, valueIsLess = false;
+		let desc = cards[cardObject.id].desc, exDamage = get.extraDamage(), mulDamage = get.dealDamageMult(), valueIsLess = false;
 		if (exMod) exDamage = Math.floor(exDamage * exMod);
-		if (game.eff.weakness) mulDamage = 0.75;
+		if (game.select[0] === ATTACK_ENEMY) mulDamage = get.dealDamageMult(game.select[1]);
 		if ((exDamage || mulDamage !== 1) && game.select[0] !== CARD_REWARDS) {
 			desc = desc.replace(/([Dd]eal\s)(\d+)(\s<#f44>damage<\/#f44>)/g, (substring, pre, number, post) => {
 				const original = parseInt(number);
-				let damage = Math.floor((original + exDamage) * mulDamage);
+				let damage = Math.ceil((original + exDamage) * mulDamage);
 				if (damage > original) {
 					return pre + "<#0f0 highlight>" + damage + "</#0f0>" + post;
 				} else if (damage < original) {
@@ -362,7 +361,7 @@ const draw = {
 		if (exShield && game.select[0] !== CARD_REWARDS) {
 			desc = desc.replace(/([Gg]ain\s)(\d+)(\s<#58f>shield<\/#58f>)/g, (substring, pre, number, post) => {
 				const original = parseInt(number);
-				let shield = Math.floor(original + exShield);
+				let shield = Math.ceil(original + exShield);
 				if (shield > original) {
 					return pre + "<#0f0 highlight>" + shield + "</#0f0>" + post;
 				} else {
@@ -470,7 +469,7 @@ const info = {
 	 */
 	player(type, xPlus = 0, yPlus = 0) {
 		if (typeof type != "string") return 0;
-		const ending = (type.endsWith("s") || type == "burn") ? "" : "s";
+		const ending = (type.endsWith("s") || type == "burn" || type == "resilience") ? "" : "s";
 		const eff = game.eff[type.replace(/\s/g, "_") + ending];
 		let y = 71 + yPlus, desc = "You have " + eff + " " + type + (eff >= 2 ? ending : "") + ".", move = 0;
 		move += draw.textBox(85 + xPlus, y + move, desc.length, desc, {"text-small": true});
@@ -484,13 +483,14 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	enemy(type, xPlus = 0, yPlus = 0) {
-		if (type == "burn") {
-			const enemy = game.enemies[game.select[1]];
-			const pos = enemyPos[game.select[1]];
-			let desc = "This enemy has " + enemy.eff.burn + " burn.";
-			draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, pos[1] + yPlus, desc.length, desc, {"text-small": true});
-			draw.textBox(pos[0] - 72.5 + xPlus, pos[1] + yPlus + 11, 24, infoText.burn, {"text-small": true});
-		};
+		if (typeof type != "string") return 0;
+		const pos = enemyPos[game.select[1]];
+		const ending = (type.endsWith("s") || type == "burn" || type == "resilience") ? "" : "s";
+		const eff = game.enemies[game.select[1]].eff[type.replace(/\s/g, "_") + ending];
+		let y = pos[1] + yPlus, desc = "This has " + eff + " " + type + (eff >= 2 ? ending : "") + ".", move = 0;
+		move += draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, y + move, desc.length, desc, {"text-small": true});
+		move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, infoText[type], {"text-small": true});
+		return move;
 	},
 	/**
 	 * Draws an infobox for an artifact.
@@ -561,9 +561,9 @@ const graphics = {
 		draw.image(extra.help, 362, 3);
 		draw.image(extra.options, 380, 2);
 		draw.image(extra.end, 3, 163);
-		draw.image(extra.deck, 3, 182);
+		draw.image(extra.deck, 4, 182);
 		if (game.void.length) draw.image(extra.void, 381, 163);
-		draw.image(extra.discard, 383, 182);
+		draw.image(extra.discard, 382, 182);
 		draw.image(extra.map, 2, 12);
 		for (let index = 0; index < game.artifacts.length; index++) {
 			const name = ("" + artifacts[game.artifacts[index]].name).replace(/\s/g, "_");
@@ -575,9 +575,9 @@ const graphics = {
 		else if (game.select[0] === HELP) draw.image(select.round, 361, 2);
 		else if (game.select[0] === OPTIONS) draw.image(select.options, 380, 2);
 		else if (game.select[0] === END) draw.image(select.round, 2, 162);
-		else if (game.select[0] === DECK) draw.image(select.deck, 2, 181);
+		else if (game.select[0] === DECK) draw.image(select.deck, 3, 181);
 		else if (game.select[0] === VOID) draw.image(select.round, 380, 162);
-		else if (game.select[0] === DISCARD) draw.image(select.discard, 382, 181);
+		else if (game.select[0] === DISCARD) draw.image(select.discard, 381, 181);
 		else if (game.select[0] === MAP) draw.image(select.map, 1, 11);
 		draw.lore(1, 1, "floor " + game.floor, {"color": "#f44"});
 	},
@@ -669,9 +669,6 @@ const graphics = {
 	 * Draws the enemies on the canvas.
 	 */
 	enemy() {
-		if (game.enemies.length > 6) {
-			game.enemies.splice(6);
-		};
 		// icons
 		for (let index = 0; index < game.enemies.length; index++) {
 			let select = game.enemies[index], pos = enemyPos[index];
@@ -680,7 +677,7 @@ const graphics = {
 			for (const key in select.eff) {
 				if (Object.hasOwnProperty.call(select.eff, key)) {
 					let img = new Image();
-					if (key == "burn") img = icon.burn;
+					if (icon[key]) img = icon[key];
 					else if (key == "reinforces") img = icon.reinforce;
 					if (select.eff[key]) {
 						if (select.shield) {
@@ -831,8 +828,12 @@ const graphics = {
 					else y = NaN;
 				};
 				let power = 0;
-				if (game.enemies[index].intent === ATTACK) power = game.enemies[index].attackPower;
-				if (game.enemies[index].intent === DEFEND) power = game.enemies[index].defendPower;
+				if (game.enemies[index].intent === ATTACK) {
+					power = game.enemies[index].attackPower;
+					power = Math.ceil(power * get.takeDamageMult(index));
+				} else if (game.enemies[index].intent === DEFEND) {
+					power = game.enemies[index].defendPower;
+				};
 				draw.intent(pos[0] + 16, y, power, game.enemies[index].intent);
 			};
 			starAnim[index] += (Math.random() + 0.5) * 0.15;
@@ -944,7 +945,7 @@ const graphics = {
 	 */
 	hand() {
 		if (game.select[0] === ATTACK_ENEMY) {
-			draw.card(game.enemyAtt[2], 0, 52, true, 104);
+			draw.card(game.enemyAtt[2], 0, 22, true, 50);
 		};
 		if (game.select[0] === ATTACK_ENEMY || game.select[0] === LOOKAT_ENEMY) return;
 		let temp = -1;
@@ -997,31 +998,42 @@ const graphics = {
 				name = "fragment of time";
 			};
 			if (coords) {
+				let left = game.select[1] === 0 && game.enemies.length > 1;
 				draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
 				draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "#fff", "text-align": CENTER, "text-small": true});
-				if (game.select[1] === 0 && game.enemies.length > 1) draw.lore(pos[0] + coords[0] - 5.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "#fff", "text-align": LEFT, "text-small": true});
+				if (left) draw.lore(pos[0] + coords[0] - 5.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "#fff", "text-align": LEFT, "text-small": true});
 				else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "#fff", "text-small": true});
-				if (enemy.eff.burn) {
-					if (game.select[1] === 0 && game.enemies.length > 1) info.enemy("burn", coords[0] - 5.5, coords[1] + 11);
-					else info.enemy("burn", coords[0] - 5.5, coords[1] - 2);
+				let x = coords[0] - 5.5, y = coords[1] - 1;
+				for (const key in game.enemies[game.select[1]].eff) {
+					if (Object.hasOwnProperty.call(game.enemies[game.select[1]].eff, key)) {
+						if (game.enemies[game.select[1]].eff[key]) {
+							let type = key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " ");
+							let height = Math.ceil(((infoText[type]).match(/\n/g) || []).length * 5.5 + 22);
+							if (y + height >= 200 - pos[1]) {
+								y = coords[1] - 1;
+								x -= 77;
+							};
+							y += info.enemy(type, x, (left ? y + 12 : y));
+						};
+					};
 				};
 			};
 		} else if (game.select[0] === LOOKAT_YOU) {
-			let coor = [59, 72, 21, 39];
-			if (playerAnim[1] == "shield" || playerAnim[1] == "shield_reinforced") coor = [58, 72, 23, 39];
-			else if (playerAnim[1] == "crouch_shield" || playerAnim[1] == "crouch_shield_reinforced") coor = [58, 72, 22, 39];
-			draw.selector(coor[0], coor[1], coor[2], coor[3]);
+			let coords = [59, 72, 21, 39];
+			if (playerAnim[1] == "shield" || playerAnim[1] == "shield_reinforced") coords = [58, 72, 23, 39];
+			else if (playerAnim[1] == "crouch_shield" || playerAnim[1] == "crouch_shield_reinforced") coords = [58, 72, 22, 39];
+			draw.selector(coords[0], coords[1], coords[2], coords[3]);
 			if (game.character == "knight") {
-				if (global.charStage.knight === 0) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the forgotten one", {"color": "#fff", "text-align": CENTER, "text-small": true});
-				else if (global.charStage.knight == 1) draw.lore(coor[0] + (coor[2] / 2) - 1, 64.5, "the true knight", {"color": "#fff", "text-align": CENTER, "text-small": true});
+				if (global.charStage.knight === 0) draw.lore(coords[0] + (coords[2] / 2) - 1, 64.5, "the forgotten one", {"color": "#fff", "text-align": CENTER, "text-small": true});
+				else if (global.charStage.knight == 1) draw.lore(coords[0] + (coords[2] / 2) - 1, 64.5, "the true knight", {"color": "#fff", "text-align": CENTER, "text-small": true});
 			};
-			let x = coor[0] + coor[2] - 80, y = 0;
+			let x = coords[0] + coords[2] - 80, y = 0;
 			for (const key in game.eff) {
 				if (Object.hasOwnProperty.call(game.eff, key)) {
 					if (game.eff[key]) {
 						let type = key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " ");
 						let height = Math.ceil(((infoText[type]).match(/\n/g) || []).length * 5.5 + 22);
-						if (y + height >= 200 - 71) {
+						if (y + height >= 200 - coords[1]) {
 							y = 0;
 							x += 77;
 						};

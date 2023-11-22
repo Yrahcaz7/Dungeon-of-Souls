@@ -65,6 +65,7 @@ var global = {
 		aura_blades: 0,
 		burn: 0,
 		reinforces: 0,
+		resilience: 0,
 		weakness: 0,
 	},
 	room: [],
@@ -125,13 +126,14 @@ function startTurn() {
 			dealDamage(game.enemies[index].eff.burn, 0, index, false);
 			game.enemies[index].eff.burn--;
 		};
+		if (game.enemies[index].eff.weakness) game.enemies[index].eff.weakness--;
 	};
 	// start of your turn effects
 	drawHand();
 	game.turn = "player";
 	if (game.eff.reinforces) game.eff.reinforces--;
 	else game.shield = 0;
-	if (game.eff.weakness) game.eff.weakness--;
+	if (game.eff.resilience) game.eff.resilience--;
 	game.energy = get.maxEnergy();
 	game.select = [HAND, 0];
 	if (playerAnim[1] != "idle") startAnim.player("idle");
@@ -142,23 +144,22 @@ function startTurn() {
  */
 function endTurn() {
 	// end of your turn effects
-	if (game.eff.burn) {
-		takeDamage(game.eff.burn);
-		game.eff.burn--;
-	};
-	// start of enemy turn effects
-	for (let index = 0; index < game.enemies.length; index++) {
-		if (game.enemies[index].eff.reinforces) {
-			game.enemies[index].eff.reinforces--;
-		} else {
-			game.enemies[index].shield = 0;
-		};
-	};
-	// other
-	if (game.hand.length >= 1) discardHand();
+	if (game.hand.length > 0) discardHand();
 	cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 	notif = [-1, 0, "", 0];
+	if (game.eff.burn) {
+		takeDamage(game.eff.burn, false);
+		game.eff.burn--;
+	};
+	if (game.eff.weakness) game.eff.weakness--;
+	// start of enemy turn effects
 	game.turn = "enemy";
+	game.enemyNum = 0;
+	for (let index = 0; index < game.enemies.length; index++) {
+		if (game.enemies[index].eff.reinforces) game.enemies[index].eff.reinforces--;
+		else game.enemies[index].shield = 0;
+		if (game.enemies[index].eff.resilience) game.enemies[index].eff.resilience--;
+	};
 };
 
 /**
@@ -191,8 +192,7 @@ function playerTurn() {
 			dealDamage(attCard.damage, attCard.exMod);
 		};
 		if (typeof attCard.attack == "function") attCard.attack();
-		game.enemyAtt[2] = new Card();
-		game.enemyAtt[3] = false;
+		game.enemyAtt = [-1, -1, new Card(), false];
 		game.attackEffects = [];
 	};
 	// action timer

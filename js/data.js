@@ -21,7 +21,8 @@ const infoText = {
 	burn: "If something has X burn,\nat the end of its turn,\nit takes X <#f44>damage</#f44>, then\nX is reduced by 1.",
 	"one use": "When a one use card is\nplayed, it is sent to\nthe void. Cards in the\nvoid stay there until\nthe end of the battle.",
 	reinforce: "If something has X\nreinforces, at the start\nof its turn, its <#58f>shield</#58f>\nis kept, then X is\nreduced by 1.",
-	weakness: "If something has X\nweakness, its <#f44>attack</#f44> is\nreduced by 25%, rounded\nup. At the end of each\nturn, X is reduced by 1.",
+	resilience: "If something has X\nresilience, it takes 25%\nless damage, rounded\ndown. At the start of\nits turn, X is reduced\nby 1.",
+	weakness: "If something has X\nweakness, its <#f44>attack</#f44> is\nreduced by 25%, rounded\ndown. At the end of its\nturn, X is reduced by 1.",
 	// other
 	"the map": "You can choose where\nyou go next. Cannot use\nduring a battle.",
 }, overview = ""
@@ -91,7 +92,7 @@ gameplay = ""
 changelog = ""
 	+ "<b>Version 1.2 - Reception<s>"
 	+ " - added a new option: pixel perfect size\n"
-	+ " - one new card\n"
+	+ " - two new cards, and a new effect\n"
 	+ " - two new artifacts\n"
 	+ " - a lot of balancing\n"
 	+ " - many, many bugfixes\n"
@@ -147,13 +148,14 @@ changelog = ""
 function updateData() {
 	if (!loaded) return;
 	// enemyPos
-	let number = game.enemies.length, x = 400, y = 50;
-	if (number == 1) enemyPos = [[x - 105, y]];
-	else if (number == 2) enemyPos = [[x - 70, y - 5], [x - 140, y + 10]];
-	else if (number == 3) enemyPos = [[x - 70, y + 20], [x - 140, y + 30], [x - 110, y - 36]];
-	else if (number == 4) enemyPos = [[x - 70, y + 30], [x - 140, y + 30], [x - 110, y - 36], [x - 200, y - 20]];
-	else if (number == 5) enemyPos = [[x - 70, y + 30], [x - 140, y + 30], [x - 100, y - 36], [x - 170, y - 36], [x - 210, y + 30]];
-	else if (number == 6) enemyPos = [[x - 70, y + 30], [x - 140, y + 30], [x - 100, y - 36], [x - 170, y - 36], [x - 210, y + 30], [x - 240, y - 36]];
+	if (game.enemies.length > 6) game.enemies.splice(6);
+	let number = game.enemies.length, x = 400;
+	if (number == 1) enemyPos = [[x - 105, 40]];
+	else if (number == 2) enemyPos = [[x - 70, 35], [x - 140, 50]];
+	else if (number == 3) enemyPos = [[x - 70, 70], [x - 140, 80], [x - 110, 14]];
+	else if (number == 4) enemyPos = [[x - 70, 80], [x - 140, 80], [x - 110, 14], [x - 200, 30]];
+	else if (number == 5) enemyPos = [[x - 70, 80], [x - 140, 80], [x - 100, 14], [x - 170, 14], [x - 210, 80]];
+	else if (number == 6) enemyPos = [[x - 70, 80], [x - 140, 80], [x - 100, 14], [x - 170, 14], [x - 210, 80], [x - 240, 14]];
 	else enemyPos = [];
 	// handPos
 	if (game.hand.length > 12) game.hand.splice(12);

@@ -24,6 +24,7 @@
 html, body {
 	height: 100%;
 	background-color: black;
+	text-align: center;
 	color: white;
 	margin: 0px;
 	cursor: none;

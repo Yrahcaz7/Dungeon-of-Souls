@@ -102,6 +102,15 @@ const attributes = {
 			game.eff.weakness += 2;
 		},
 	},
+	2004: {
+		name: "resilience",
+		desc: "Gain 2 resilience.",
+		rarity: 2,
+		cost: 1,
+		effect() {
+			game.eff.resilience += 2;
+		},
+	},
 	3000: {
 		name: "war cry",
 		desc: "All enemies (except\nbosses) switch\ntheir intents to\ndefense. One use.",

@@ -19,7 +19,7 @@ const FIRSTBATTLE = 0, TREASURE = 1, PRIME = 2, ORB = 3, BOSS = 4;
 
 const BATTLEROOM = 100, TREASUREROOM = 101, PRIMEROOM = 102, ORBROOM = 103, BOSSROOM = 104;
 
-var mapProg = 0, mapTotal = 10, death_zones = 0, rowFalses = 0, rowNodes = 0, twoRow = false;
+var mapProg = 0, mapTotal = 10, death_zones = 0, rowFalses = 0, rowNodes = 0;
 
 /**
  * Gets a weaker small slime in the map syntax.
@@ -41,7 +41,7 @@ function mapPiece(row, attribute = -1) {
 	if (attribute === ORB) return [ORBROOM, randomInt(-5, 5), randomInt(-5, 5)];
 	if (attribute === BOSS) return [BOSSROOM, 0, 0, [FRAGMENT], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 3, randomCardSet(5), randomArtifactSet(3)];
 	let type = chance(3/5) ? BATTLEROOM : false;
-	if (rowFalses >= 4 || (twoRow && rowFalses >= 3) || (row === 0 && rowFalses >= 2)) type = BATTLEROOM;
+	if (rowFalses >= 3 || (row === 0 && rowFalses >= 2)) type = BATTLEROOM;
 	if (type) rowNodes++;
 	else rowFalses++;
 	if (!type || rowNodes == 6) return false;
@@ -158,7 +158,6 @@ async function generateMap() {
 		mapProg++;
 		updateMapProg();
 		await new Promise(r => setTimeout(r, 0));
-		if (rowNodes == 2) twoRow = true;
 	};
 	if (death_zones === 0) {
 		let rand = randomInt(0, 5), past = [];
