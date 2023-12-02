@@ -17,9 +17,14 @@
 
 const SLIME = {BIG: 600, SMALL: 601, PRIME: 602}, FRAGMENT = 603;
 
-const ATTACK = 700, DEFEND = 701;
+const ATTACK = 700, DEFEND = 701, BUFF = 702;
 
 class Enemy {
+	/**
+	 * Returns a new enemy.
+	 * @param {number} type - the enemy's type.
+	 * @param {number} power - the enemy's power. Defaults to 1.
+	 */
 	constructor(type, power = 1) {
 		if (type === SLIME.SMALL) power--;
 		if (type === SLIME.PRIME) power++;
@@ -34,40 +39,59 @@ class Enemy {
 		this.attackPower = Math.round(((power / 2) + 1) * 5 - 0.25);
 		this.defendPower = Math.round(((power / 2) + 1) * 5 + 1);
 		this.eff = {};
-		this.intent = chance(3/5) ? ATTACK : DEFEND;
+		this.intent = this.getIntent(true);
 		this.intentHistory = [this.intent];
 	};
-	startAction = () => {
+	/**
+	 * Starts the enemy's action.
+	 */
+	startAction() {
 		if (this.intent === ATTACK) {
 			if (game.shield && !playerAnim[1].includes("shield")) {
 				if (game.eff.weakness) startAnim.player("crouch_shield");
 				else startAnim.player("shield");
 			};
-			if (this.type >= 600 && this.type <= FRAGMENT) startAnim.enemy(game.enemyNum);
-			else {
+			if (this.type >= 600 && this.type <= FRAGMENT) {
+				startAnim.enemy(game.enemyNum);
+			} else {
 				this.middleAction();
 				this.finishAction();
 			};
-		} else if (this.intent === DEFEND) {
+		} else if (this.intent === DEFEND || this.intent === BUFF) {
 			this.middleAction();
 		};
 	};
-	middleAction = () => {
+	/**
+	 * Triggers the effects of the enemy's action.
+	 */
+	middleAction() {
 		if (this.intent === ATTACK) {
 			takeDamage(this.attackPower);
 			if (game.shield < 1) startAnim.player("hit");
 		} else if (this.intent === DEFEND) {
 			this.shield += this.defendPower;
 			this.finishAction();
+		} else if (this.intent === BUFF) {
+			if (this.type === FRAGMENT) {
+				if (this.eff.resilience) this.eff.resilience += 3;
+				else this.eff.resilience = 3;
+			};
+			this.finishAction();
 		};
 	};
-	finishAction = () => {
-		this.intent = chance(3/5) ? ATTACK : DEFEND;
+	/**
+	 * Finishes the enemy's action.
+	 */
+	finishAction() {
+		this.intent = this.getIntent();
 		this.intentHistory.push(this.intent);
 		if (this.overrideIntent(ATTACK)) {
 			this.intent = DEFEND;
 			this.intentHistory = [DEFEND];
 		} else if (this.overrideIntent(DEFEND)) {
+			this.intent = ATTACK;
+			this.intentHistory = [ATTACK];
+		} else if (this.overrideIntent(BUFF)) {
 			this.intent = ATTACK;
 			this.intentHistory = [ATTACK];
 		};
@@ -79,7 +103,27 @@ class Enemy {
 		};
 		game.enemyStage = -1;
 	};
-	overrideIntent = (type) => {
+	/**
+	 * Gets the enemy's intent.
+	 * @param {boolean} first - whether this is the enemy's first intent. Defaults to false.
+	 */
+	getIntent(first = false) {
+		if (this.type === FRAGMENT) {
+			if (first) return BUFF;
+			if (chance(3/5)) {
+				return ATTACK;
+			} else {
+				if (this.health <= this.maxHealth / 4 || this.eff.resilience > 1) return DEFEND;
+				return chance(3/5) ? BUFF : DEFEND;
+			};
+		};
+		return chance(3/5) ? ATTACK : DEFEND;
+	};
+	/**
+	 * Overrides the enemy's intent if the conditions are satisfied.
+	 * @param {ATTACK | DEFEND | BUFF} type - the type of intent to override.
+	 */
+	overrideIntent(type) {
 		const location0 = this.intentHistory.lastIndexOf(type);
 		if (location0 !== -1) {
 			const location1 = this.intentHistory.lastIndexOf(type, location0 - 1);

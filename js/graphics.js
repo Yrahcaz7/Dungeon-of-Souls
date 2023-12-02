@@ -232,6 +232,10 @@ const draw = {
 	 * @param {ATTACK | DEFEND} type - the type of intent. Can be `ATTACK` or `DEFEND`.
 	 */
 	intent(x, y, effect, type) {
+		if (type === BUFF) {
+			draw.image(intent.buff, x, y);
+			return;
+		};
 		let stage = 0;
 		if (effect >= 125) stage = 10;
 		else if (effect >= 100) stage = 9;
@@ -244,7 +248,7 @@ const draw = {
 		else if (effect >= 10) stage = 2;
 		else if (effect >= 5) stage = 1;
 		if (type === ATTACK) draw.image(intent.attack[stage], x, y);
-		else if (type === DEFEND) draw.image(intent.defend[stage], x, y + 1);
+		else if (type === DEFEND) draw.image(intent.defend[stage], x, y);
 		draw.lore(x + 30 - 16, y + 12, effect, {"color": "#fff", "text-align": CENTER});
 	},
 	/**
@@ -491,6 +495,28 @@ const info = {
 		move += draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, y + move, desc.length, desc, {"text-small": true});
 		move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, infoText[type], {"text-small": true});
 		return move;
+	},
+	/**
+	 * Draws an infobox for the selected enemy's intent.
+	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
+	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
+	 */
+	intent(xPlus = 0, yPlus = 0) {
+		const pos = enemyPos[game.select[1]], select = game.enemies[game.select[1]];
+		let y = pos[1] + 14 + yPlus;
+		if (select.type === SLIME.BIG) y -= 17;
+		else if (select.type === SLIME.SMALL) y -= 7;
+		else if (select.type === SLIME.PRIME) {
+			if (primeAnim == -1 || primeAnim >= 5) y -= 37;
+			else y -= 17;
+		} else if (select.type === FRAGMENT) {
+			if (primeAnim == -1 || primeAnim > 18) y -= 36;
+			else y = NaN;
+		};
+		if (y === y) {
+			let desc = infoText[select.intent];
+			if (desc) draw.textBox(pos[0] - 71 + xPlus, y - (desc.match(/\n/g) || []).length * 3, 28, desc, {"text-small": true});
+		};
 	},
 	/**
 	 * Draws an infobox for an artifact.
@@ -998,6 +1024,7 @@ const graphics = {
 				name = "fragment of time";
 			};
 			if (coords) {
+				info.intent();
 				let left = game.select[1] === 0 && game.enemies.length > 1;
 				draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
 				draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "#fff", "text-align": CENTER, "text-small": true});
@@ -1144,9 +1171,8 @@ const graphics = {
 		const choices = get.cardRewardChoices();
 		let x = 199 - (choices * 68 / 2), y = 20, width = (choices * 68) + 2, height = 160;
 		draw.box(x, y, width, height);
-		if (choices === 2) draw.lore(200 - 2, y + 1, "Choose your card\nreward:", {"text-align": CENTER});
-		else if (choices === 1) draw.lore(200 - 2, y + 1, "Choose your\ncard reward", {"text-align": CENTER});
-		else draw.lore(200 - 2, y + 1, "Choose your card reward:", {"text-align": CENTER});
+		if (choices === 1) draw.lore(200 - 2, y + 1, "Take the\ncard?", {"text-align": CENTER});
+		else draw.lore(200 - 2, y + 1, "Pick a card:", {"text-align": CENTER});
 		handPos = [];
 		for (let index = 0; index < choices; index++) {
 			handPos.push((199 - (choices * 68 / 2)) + 1 + (index * 68));
@@ -1190,8 +1216,14 @@ const graphics = {
 			draw.image(map.row, 16, 20, map.row.width, 164);
 			draw.image(map.bottom, 16, 184);
 			if (game.state == "event_fin") {
-				if (game.location == "-1") draw.image(map.select_first, 13, 12);
-				else draw.image(map.select, 13 + ((+game.location.split(", ")[0] + 1) * 32), 12);
+				if (game.floor % 10 == 9) {
+					draw.image(map.select, 18 + (9 * 32), 12);
+					draw.image(map.select, 12 + (10 * 32), 12);
+				} else if (game.location == "-1") {
+					draw.image(map.select_first, 13, 12);
+				} else {
+					draw.image(map.select, 13 + ((+game.location.split(", ")[0] + 1) * 32), 12);
+				};
 			} else if (game.location != "-1") {
 				if (game.floor % 10 == 0) {
 					draw.image(map.select, 18 + (9 * 32), 12);

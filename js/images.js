@@ -158,6 +158,7 @@ const player = {
 }, intent = {
 	defend: [new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image],
 	attack: [new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image, new Image],
+	buff: new Image,
 }, popup = {
 	back: new Image,
 	music: new Image,
@@ -271,8 +272,12 @@ for (const image in artifact) {
 // intents
 for (const folder in intent) {
 	if (Object.hasOwnProperty.call(intent, folder)) {
-		for (let index = 0; index < intent[folder].length; index++) {
-			intent[folder][index].src = "images/intent/" + folder + "/" + index + ".png";
+		if (intent[folder] instanceof Array) {
+			for (let index = 0; index < intent[folder].length; index++) {
+				intent[folder][index].src = "images/intent/" + folder + "/" + index + ".png";
+			};
+		} else {
+			intent[folder].src = "images/intent/" + folder + ".png";
 		};
 	};
 };

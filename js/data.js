@@ -23,6 +23,10 @@ const infoText = {
 	reinforce: "If something has X\nreinforces, at the start\nof its turn, its <#58f>shield</#58f>\nis kept, then X is\nreduced by 1.",
 	resilience: "If something has X\nresilience, it takes 25%\nless damage, rounded\ndown. At the start of\nits turn, X is reduced\nby 1.",
 	weakness: "If something has X\nweakness, its <#f44>attack</#f44> is\nreduced by 25%, rounded\ndown. At the end of its\nturn, X is reduced by 1.",
+	// intents
+	[ATTACK]: "This enemy intends to attack\nyou on its next turn.",
+	[DEFEND]: "This enemy intends to defend\nitself on its next turn.",
+	[BUFF]: "This enemy intends to buff\nitself on its next turn.",
 	// other
 	"the map": "You can choose where\nyou go next. Cannot use\nduring a battle.",
 }, overview = ""
@@ -65,7 +69,7 @@ gameplay = ""
 	+ "Take note of what's floating above the enemies' heads. That is their intent.\n"
 	+ "An enemy's intent shows what it intends to do on its next turn.\n"
 	+ "<#f00>Red</#f00> with spikes or stars is <#f44>attack</#f44>, <#00f>blue</#00f> and shield shape means <#58f>defense</#58f> (gain <#58f>shield</#58f>).\n"
-	+ "There are others later (not implemented yet), but you can look at the tooltips to see what they are.\n"
+	+ "There are others later, but you can look at the tooltips to see what they are.\n"
 	+ "Use the enemies' predictableness to strategize what cards you play.\n"
 	+ "<b>Building a Deck<s>"
 	+ "After each battle, you will get rewards, including a choice of 3 cards.\n"
@@ -92,9 +96,10 @@ gameplay = ""
 changelog = ""
 	+ "<b>Version 1.2 - Reception<s>"
 	+ " - added a new option: pixel perfect size\n"
-	+ " - two new cards, and a new effect\n"
-	+ " - two new artifacts\n"
-	+ " - a lot of balancing\n"
+	+ " - two new cards and two new artifacts\n"
+	+ " - a new effect, resilience, which reduces damage taken\n"
+	+ " - the boss is now smarter and has a new move\n"
+	+ " - a lot of rebalancing\n"
 	+ " - many, many bugfixes\n"
 	+ " - more coming soon!\n"
 	+ "<b>Version 1.1 - Perception<s>"
@@ -110,7 +115,7 @@ changelog = ""
 	+ " - finally added an options menu\n"
 	+ " - added treasure chambers and death zones\n"
 	+ " - added shortcut keys for various things\n"
-	+ " - three new cards and some card balancing\n"
+	+ " - three new cards and some card rebalancing\n"
 	+ " - polished up the map generator (and fixed seeds)\n"
 	+ " - even more things that I didn't list here\n"
 	+ "<b>Version 0.4 - Formulation<s>"
