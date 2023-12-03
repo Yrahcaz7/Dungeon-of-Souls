@@ -52,12 +52,18 @@ class Enemy {
 				else startAnim.player("shield");
 			};
 			if (this.type >= 600 && this.type <= FRAGMENT) {
-				startAnim.enemy(game.enemyNum);
+				startAnim.enemy();
 			} else {
 				this.middleAction();
 				this.finishAction();
 			};
-		} else if (this.intent === DEFEND || this.intent === BUFF) {
+		} else if (this.intent === DEFEND) {
+			if (this.type < SLIME.PRIME || (this.type === SLIME.PRIME && primeAnim == -1)) {
+				startAnim.enemy();
+			} else {
+				this.middleAction();
+			};
+		} else if (this.intent === BUFF) {
 			this.middleAction();
 		};
 	};
@@ -66,11 +72,14 @@ class Enemy {
 	 */
 	middleAction() {
 		if (this.intent === ATTACK) {
+			let prevHealth = game.health;
 			takeDamage(this.attackPower);
-			if (game.shield < 1) startAnim.player("hit");
+			if (game.health < prevHealth) startAnim.player("hit");
 		} else if (this.intent === DEFEND) {
 			this.shield += this.defendPower;
-			this.finishAction();
+			if (this.type > SLIME.PRIME || (this.type === SLIME.PRIME && primeAnim != -1)) {
+				this.finishAction();
+			};
 		} else if (this.intent === BUFF) {
 			if (this.type === FRAGMENT) {
 				if (this.eff.resilience) this.eff.resilience += 3;
@@ -83,6 +92,7 @@ class Enemy {
 	 * Finishes the enemy's action.
 	 */
 	finishAction() {
+		if (game.shield == 0 && playerAnim[1] != "idle" && playerAnim[1] != "hit") startAnim.player("idle");
 		this.intent = this.getIntent();
 		this.intentHistory.push(this.intent);
 		if (this.overrideIntent(ATTACK)) {

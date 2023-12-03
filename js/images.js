@@ -62,12 +62,16 @@ const player = {
 	},
 }, enemy = {
 	slime: {
-		big: new Image,
-		slime_ball: new Image,
 		small: new Image,
+		small_defend: new Image,
 		small_launch: new Image,
+		big: new Image,
+		big_defend: new Image,
+		slime_ball: new Image,
 		to_prime: new Image,
+		to_prime_defend: new Image,
 		prime: new Image,
+		prime_defend: new Image,
 		prime_fist: new Image,
 	},
 	fragment: {

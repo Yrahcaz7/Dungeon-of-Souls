@@ -50,7 +50,7 @@ var global = {
 	cardSelect: [0, 0],
 	mapSelect: -1,
 	enemies: [],
-	enemyNum: 0,
+	enemyNum: -1,
 	enemyStage: -1,
 	enemyAtt: [-1, 0, new Card(), false],
 	attackEffects: [],
@@ -136,7 +136,7 @@ function startTurn() {
 	if (game.eff.resilience) game.eff.resilience--;
 	game.energy = get.maxEnergy();
 	game.select = [HAND, 0];
-	if (playerAnim[1] != "idle") startAnim.player("idle");
+	if (playerAnim[1] != "idle" && playerAnim[1] != "hit") startAnim.player("idle");
 };
 
 /**
@@ -154,7 +154,7 @@ function endTurn() {
 	if (game.eff.weakness) game.eff.weakness--;
 	// start of enemy turn effects
 	game.turn = "enemy";
-	game.enemyNum = 0;
+	game.enemyNum = -1;
 	for (let index = 0; index < game.enemies.length; index++) {
 		if (game.enemies[index].eff.reinforces) game.enemies[index].eff.reinforces--;
 		else game.enemies[index].shield = 0;
@@ -265,6 +265,9 @@ function playerTurn() {
  * Handles the enemies' turn.
  */
 function enemyTurn() {
+	if (game.enemyNum == -1) {
+		game.enemyNum = 0;
+	};
 	if (game.enemyNum < game.enemies.length) {
 		if (game.enemyStage === ENDING) game.enemies[game.enemyNum].finishAction();
 		else if (game.enemyStage === MIDDLE) game.enemies[game.enemyNum].middleAction();

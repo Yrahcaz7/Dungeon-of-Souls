@@ -91,7 +91,7 @@ const draw = {
 		if (!style["color"]) style["color"] = "black";
 		if (!style["text-small"]) style["text-small"] = false;
 		// highlight
-		if (style["highlight-color"]) {
+		if (style["highlight-color"] && char.charCodeAt() >= 32) {
 			if (style["text-small"]) draw.rect(style["highlight-color"], x - 0.5, y - 0.5, 3.5, 5.5);
 			else draw.rect(style["highlight-color"], x - 1, y - 1, 7, 11);
 		};
@@ -247,9 +247,13 @@ const draw = {
 		else if (effect >= 15) stage = 3;
 		else if (effect >= 10) stage = 2;
 		else if (effect >= 5) stage = 1;
-		if (type === ATTACK) draw.image(intent.attack[stage], x, y);
-		else if (type === DEFEND) draw.image(intent.defend[stage], x, y);
-		draw.lore(x + 30 - 16, y + 12, effect, {"color": "#fff", "text-align": CENTER});
+		if (type === ATTACK) {
+			draw.image(intent.attack[stage], x, y);
+			draw.lore(x + 30 - 16, y + 12, effect, {"color": "#fff", "text-align": CENTER});
+		} else if (type === DEFEND) {
+			draw.image(intent.defend[stage], x, y);
+			draw.lore(x + 30 - 16, y + 11, effect, {"color": "#fff", "text-align": CENTER});
+		};
 	},
 	/**
 	 * Draws a box on the canvas.
@@ -723,20 +727,24 @@ const graphics = {
 			let select = game.enemies[index], pos = enemyPos[index];
 			if (select.health <= 0) {
 				game.enemies.splice(index, 1);
-				if (tempAnim[3] >= index) tempAnim[3]--;
+				if (game.enemyNum >= index) game.enemyNum--;
 			};
 			if (!pos) return;
 			if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
 			if (index !== invNum) {
 				if (select.type === SLIME.BIG) {
-					draw.imageSector(enemy.slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
+					if (select.shield > 0) draw.imageSector(enemy.slime.big_defend, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
+					else draw.imageSector(enemy.slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
 				} else if (select.type === SLIME.SMALL) {
-					draw.imageSector(enemy.slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
+					if (select.shield > 0) draw.imageSector(enemy.slime.small_defend, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
+					else draw.imageSector(enemy.slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
 				} else if (select.type === SLIME.PRIME) {
 					if (primeAnim == -1) {
-						draw.imageSector(enemy.slime.prime, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+						if (select.shield > 0) draw.imageSector(enemy.slime.prime_defend, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+						else draw.imageSector(enemy.slime.prime, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 					} else {
-						draw.imageSector(enemy.slime.to_prime, Math.floor(primeAnim) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+						if (select.shield > 0) draw.imageSector(enemy.slime.to_prime_defend, Math.floor(primeAnim) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+						else draw.imageSector(enemy.slime.to_prime, Math.floor(primeAnim) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 						primeAnim += (Math.random() + 0.5) * 0.1;
 						if (primeAnim >= 12) {
 							primeAnim = -1;
@@ -759,90 +767,134 @@ const graphics = {
 					};
 				};
 			};
-			enemyAnim[index] += (Math.random() + 0.5) * 0.1;
 		};
-		// attack animations
-		if (tempAnim[3] != -1) {
-			let pos = enemyPos[tempAnim[3]];
-			if (tempAnim[1] === SLIME.BIG) {
-				let phase = (tempAnim[0] / 10),
-					posX = Math.round(((pos[0] - 80)) * phase),
-					posY = Math.round(((pos[1] - 42)) * phase);
-				if (playerAnim[1].startsWith("shield")) {
-					posX = Math.round(((pos[0] - 94)) * phase);
-					posY = Math.round(((pos[1] - 44)) * phase);
-				};
-				if (tempAnim[2] === ENDING) {
-					tempAnim = [0, -1, STARTING, -1];
-					game.enemyStage = ENDING;
-				} else if (game.enemyStage === MIDDLE) {
-					draw.imageSector(enemy.slime.slime_ball, 4 * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
-					tempAnim[2] = ENDING;
-					game.enemyStage = PENDING;
-				} else {
-					draw.imageSector(enemy.slime.slime_ball, (tempAnim[0] % 4) * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
-					tempAnim[0]++;
-					game.enemyStage = PENDING;
-					if (tempAnim[0] >= 11) {
-						tempAnim[0] = 11;
+		// action animations
+		if (game.enemyNum != -1) {
+			let pos = enemyPos[game.enemyNum];
+			if (tempAnim[3] === ATTACK) {
+				if (tempAnim[1] === SLIME.SMALL) {
+					if (tempAnim[0] >= 10) {
+						let phase = ((tempAnim[0] - 9) / 10),
+							posX = Math.round(((pos[0] - 68) - 64) * phase),
+							posY = Math.round(((pos[1] - (50 + 10))) * phase);
+						draw.imageSector(enemy.slime.small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
+					} else draw.imageSector(enemy.slime.small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
+					if (tempAnim[2] === STARTING) tempAnim[0]++;
+					else if (tempAnim[2] === ENDING) tempAnim[0]--;
+					if (tempAnim[0] >= 20) {
+						tempAnim[0] = 18;
+						tempAnim[2] = ENDING;
 						game.enemyStage = MIDDLE;
+					} else if (tempAnim[0] < 0) {
+						tempAnim = [0, -1, STARTING, -1];
+						enemyAnim[game.enemyNum] = 0;
+						game.enemyStage = ENDING;
+						invNum = -1;
+					} else {
+						game.enemyStage = PENDING;
+						invNum = game.enemyNum;
+					};
+				} else if (tempAnim[1] === SLIME.BIG) {
+					let phase = (tempAnim[0] / 10),
+						posX = Math.round(((pos[0] - 80)) * phase),
+						posY = Math.round(((pos[1] - 42)) * phase);
+					if (playerAnim[1].startsWith("shield")) {
+						posX = Math.round(((pos[0] - 94)) * phase);
+						posY = Math.round(((pos[1] - 44)) * phase);
+					};
+					if (tempAnim[2] === ENDING) {
+						tempAnim = [0, -1, STARTING, -1];
+						game.enemyStage = ENDING;
+					} else if (game.enemyStage === MIDDLE) {
+						draw.imageSector(enemy.slime.slime_ball, 4 * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
+						tempAnim[2] = ENDING;
+						game.enemyStage = PENDING;
+					} else {
+						draw.imageSector(enemy.slime.slime_ball, (tempAnim[0] % 4) * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
+						tempAnim[0]++;
+						game.enemyStage = PENDING;
+						if (tempAnim[0] >= 11) {
+							tempAnim[0] = 11;
+							game.enemyStage = MIDDLE;
+						};
+					};
+				} else if (tempAnim[1] === SLIME.PRIME) {
+					if (tempAnim[0] >= 4) {
+						let phase = ((tempAnim[0] - 4) / 10), posX = Math.round(((pos[0] - 68) - 40) * phase);
+						draw.imageSector(enemy.slime.prime_fist, 4 * 36, 0, 36, 18, pos[0] - 32 - posX, 80, 36, 18);
+					} else draw.imageSector(enemy.slime.prime_fist, Math.floor(tempAnim[0]) * 36, 0, 36, 18, pos[0] - 32, 80, 36, 18);
+					tempAnim[0]++;
+					if (game.enemyStage === MIDDLE) {
+						tempAnim = [0, -1, STARTING, -1];
+						game.enemyStage = ENDING;
+					} else if (tempAnim[0] >= 14) {
+						tempAnim[0] = 14;
+						game.enemyStage = MIDDLE;
+					} else {
+						game.enemyStage = PENDING;
+					};
+				} else if (tempAnim[1] === FRAGMENT) {
+					draw.imageSector(enemy.fragment.attack, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
+					if (tempAnim[0] == 4 || tempAnim[0] == 5) draw.rect("#f00", 0, pos[1] + 4, pos[0], 60);
+					tempAnim[0]++;
+					if (tempAnim[0] >= 7) {
+						tempAnim = [0, -1, STARTING, -1];
+						game.enemyStage = ENDING;
+					} else if (tempAnim[0] == 4) {
+						game.enemyStage = MIDDLE;
+					} else {
+						game.enemyStage = PENDING;
 					};
 				};
-			} else if (tempAnim[1] === SLIME.SMALL) {
-				if (tempAnim[0] >= 10) {
-					let phase = ((tempAnim[0] - 9) / 10),
-						posX = Math.round(((pos[0] - 68) - 64) * phase),
-						posY = Math.round(((pos[1] - (50 + 10))) * phase);
-					draw.imageSector(enemy.slime.small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
-				} else draw.imageSector(enemy.slime.small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
-				if (tempAnim[2] === STARTING) tempAnim[0]++;
-				else if (tempAnim[2] === ENDING) tempAnim[0]--;
-				if (tempAnim[0] >= 20) {
-					tempAnim[0] = 18;
-					tempAnim[2] = ENDING;
-					game.enemyStage = MIDDLE;
-				} else if (tempAnim[0] < 0) {
-					tempAnim = [0, -1, STARTING, -1];
-					enemyAnim[tempAnim[3]] = 0;
-					game.enemyStage = ENDING;
-				} else {
-					game.enemyStage = PENDING;
+			} else if (tempAnim[3] === DEFEND) {
+				if (tempAnim[1] === SLIME.SMALL) {
+					draw.imageSector(enemy.slime.small_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, tempAnim[0] + 20, 64, pos[0], pos[1]);
+					tempAnim[0]++;
+					if (game.enemyStage === MIDDLE) {
+						tempAnim = [0, -1, STARTING, -1];
+						game.enemyStage = ENDING;
+					} else if (tempAnim[0] >= 24) {
+						tempAnim[0] = 24;
+						game.enemyStage = MIDDLE;
+					} else {
+						game.enemyStage = PENDING;
+					};
+				} else if (tempAnim[1] === SLIME.BIG) {
+					draw.imageSector(enemy.slime.big_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, tempAnim[0] * 2 + 5, 64, pos[0], pos[1]);
+					tempAnim[0]++;
+					if (game.enemyStage === MIDDLE) {
+						tempAnim = [0, -1, STARTING, -1];
+						game.enemyStage = ENDING;
+					} else if (tempAnim[0] >= 27) {
+						tempAnim[0] = 27;
+						game.enemyStage = MIDDLE;
+					} else {
+						game.enemyStage = PENDING;
+					};
+				} else if (tempAnim[1] === SLIME.PRIME) {
+					draw.imageSector(enemy.slime.prime_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, tempAnim[0] * 3, 64, pos[0], pos[1] + 1);
+					tempAnim[0]++;
+					if (game.enemyStage === MIDDLE) {
+						tempAnim = [0, -1, STARTING, -1];
+						game.enemyStage = ENDING;
+					} else if (tempAnim[0] >= 20) {
+						tempAnim[0] = 20;
+						game.enemyStage = MIDDLE;
+					} else {
+						game.enemyStage = PENDING;
+					};
 				};
-				invNum = tempAnim[3];
-			} else if (tempAnim[1] === SLIME.PRIME) {
-				if (tempAnim[0] >= 4) {
-					let phase = ((tempAnim[0] - 4) / 10), posX = Math.round(((pos[0] - 68) - 40) * phase);
-					draw.imageSector(enemy.slime.prime_fist, 4 * 36, 0, 36, 18, pos[0] - 32 - posX, 80, 36, 18);
-				} else draw.imageSector(enemy.slime.prime_fist, Math.floor(tempAnim[0]) * 36, 0, 36, 18, pos[0] - 32, 80, 36, 18);
-				tempAnim[0]++;
-				if (game.enemyStage === MIDDLE) {
-					tempAnim = [0, -1, STARTING, -1];
-					game.enemyStage = ENDING;
-				} else if (tempAnim[0] >= 14) {
-					tempAnim[0] = 14;
-					game.enemyStage = MIDDLE;
-				} else {
-					game.enemyStage = PENDING;
-				};
-			} else if (tempAnim[1] === FRAGMENT) {
-				draw.imageSector(enemy.fragment.attack, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
-				if (tempAnim[0] == 4 || tempAnim[0] == 5) draw.rect("#f00", 0, pos[1] + 4, pos[0], 60);
-				tempAnim[0]++;
-				if (tempAnim[0] >= 7) {
-					tempAnim = [0, -1, STARTING, -1];
-					game.enemyStage = ENDING;
-				} else if (tempAnim[0] == 4) {
-					game.enemyStage = MIDDLE;
-				} else {
-					game.enemyStage = PENDING;
-				};
-			} else invNum = -1;
+			};
+		};
+		// move idle animations along
+		for (let index = 0; index < game.enemies.length; index++) {
+			enemyAnim[index] += (Math.random() + 0.5) * 0.1;
 		};
 		// intents
 		for (let index = 0; index < game.enemies.length; index++) {
 			let select = game.enemies[index], pos = enemyPos[index];
 			if (starAnim[index] >= 4) starAnim[index] = 0;
-			if (index !== tempAnim[3] && (game.turn == "player" || game.enemyNum !== index)) {
+			if (index !== game.enemyNum) {
 				let y = Math.round(pos[1] + Math.abs(starAnim[index] - 2));
 				if (select.type === SLIME.BIG) y -= 17;
 				else if (select.type === SLIME.SMALL) y -= 7;
@@ -1046,7 +1098,7 @@ const graphics = {
 				};
 			};
 		} else if (game.select[0] === LOOKAT_YOU) {
-			let coords = [59, 72, 21, 39];
+			let coords = [59, 72, 22, 39];
 			if (playerAnim[1] == "shield" || playerAnim[1] == "shield_reinforced") coords = [58, 72, 23, 39];
 			else if (playerAnim[1] == "crouch_shield" || playerAnim[1] == "crouch_shield_reinforced") coords = [58, 72, 22, 39];
 			draw.selector(coords[0], coords[1], coords[2], coords[3]);
@@ -1382,13 +1434,10 @@ const startAnim = {
 	},
 	/**
 	 * Starts an enemy animation.
-	 * @param {number} index - the index of the enemy.
 	 */
-	enemy(index) {
-		let name = game.enemies[index].type;
-		tempAnim = [0, name, STARTING, index];
-		if (name === SLIME.SMALL) {
-			invNum = index;
-		} else invNum = -1;
+	enemy() {
+		let name = game.enemies[game.enemyNum].type;
+		tempAnim = [0, name, STARTING, game.enemies[game.enemyNum].intent];
+		invNum = -1;
 	},
 };
