@@ -349,21 +349,23 @@ const draw = {
 		else draw.lore(x + 32, y + 42, name.title(), {"text-align": CENTER});
 		// card description
 		let desc = cards[cardObject.id].desc, exDamage = get.extraDamage(), mulDamage = get.dealDamageMult(), valueIsLess = false;
-		if (exMod) exDamage = Math.floor(exDamage * exMod);
-		if (game.select[0] === ATTACK_ENEMY) mulDamage = get.dealDamageMult(game.select[1]);
-		if ((exDamage || mulDamage !== 1) && game.select[0] !== CARD_REWARDS) {
-			desc = desc.replace(/([Dd]eal\s)(\d+)(\s<#f44>damage<\/#f44>)/g, (substring, pre, number, post) => {
-				const original = parseInt(number);
-				let damage = Math.ceil((original + exDamage) * mulDamage);
-				if (damage > original) {
-					return pre + "<#0f0 highlight>" + damage + "</#0f0>" + post;
-				} else if (damage < original) {
-					valueIsLess = true;
-					return pre + "<#fff highlight>" + damage + "</#fff>" + post;
-				} else {
-					return pre + damage + post;
-				};
-			});
+		if (!attributes["NO ATTACK EFFECTS"].includes(cardObject.id)) {
+			if (exMod) exDamage = Math.floor(exDamage * exMod);
+			if (game.select[0] === ATTACK_ENEMY) mulDamage = get.dealDamageMult(game.select[1]);
+			if ((exDamage || mulDamage !== 1) && game.select[0] !== CARD_REWARDS) {
+				desc = desc.replace(/([Dd]eal\s)(\d+)(\s<#f44>damage<\/#f44>)/g, (substring, pre, number, post) => {
+					const original = parseInt(number);
+					let damage = Math.ceil((original + exDamage) * mulDamage);
+					if (damage > original) {
+						return pre + "<#0f0 highlight>" + damage + "</#0f0>" + post;
+					} else if (damage < original) {
+						valueIsLess = true;
+						return pre + "<#fff highlight>" + damage + "</#fff>" + post;
+					} else {
+						return pre + damage + post;
+					};
+				});
+			};
 		};
 		let exShield = get.extraShield();
 		if (exShield && game.select[0] !== CARD_REWARDS) {

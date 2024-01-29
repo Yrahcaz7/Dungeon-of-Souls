@@ -56,6 +56,7 @@ const player = {
 	},
 	rare: {
 		"aura blaze": new Image,
+		"bladestorm": new Image,
 		"everlasting shield": new Image,
 		"heat wave": new Image,
 		"resilience": new Image,

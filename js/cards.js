@@ -21,7 +21,7 @@ const attributes = {
 	"one use": [3000, 4001],
 	// technical
 	"NO SELECT": [1002],
-	"NO ATTACK EFFECTS": [3001],
+	"NO ATTACK EFFECTS": [1003, 3001],
 }, cards = {
 	0: {
 		name: "error",
@@ -62,6 +62,19 @@ const attributes = {
 			for (let index = 0; index < game.enemies.length; index++) {
 				dealDamage(3, this.exMod, index);
 			};
+		},
+	},
+	1003: {
+		name: "bladestorm",
+		desc: "Use all of your\naura blades to deal\n6 damage for each\nto an enemy and 1\neach to all others.",
+		rarity: 2,
+		cost: 2,
+		attack() {
+			dealDamage(game.eff.aura_blades * 5);
+			for (let index = 0; index < game.enemies.length; index++) {
+				dealDamage(game.eff.aura_blades, 0, index);
+			};
+			game.eff.aura_blades = 0;
 		},
 	},
 	2000: {
