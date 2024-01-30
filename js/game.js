@@ -221,6 +221,10 @@ function playerTurn() {
 			if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
 			else notif = [game.select[1], 0, "unplayable", 0];
 			actionTimer = 1;
+		} else if (cards[id].can && !cards[id].can()) {
+			if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, cards[id].cannotMessage, -2];
+			else notif = [game.select[1], 0, cards[id].cannotMessage, 0];
+			actionTimer = 1;
 		} else if (game.energy >= cards[id].cost) {
 			if (cards[id].effect) { // effects of cards that activate right away
 				cards[id].effect();

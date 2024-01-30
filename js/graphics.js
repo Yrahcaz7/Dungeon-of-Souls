@@ -345,7 +345,7 @@ const draw = {
 		if (img == card.error) draw.image(card.error, x + 2, y + 2);
 		else draw.image(img, x + 7, y + 7);
 		// card title
-		if (name.length >= 11) draw.lore(x + 32, y + 44, name.title(), {"text-align": CENTER, "text-small": true});
+		if (name.length >= 11) draw.lore(x + 33, y + 44, name.title(), {"text-align": CENTER, "text-small": true});
 		else draw.lore(x + 32, y + 42, name.title(), {"text-align": CENTER});
 		// card description
 		let desc = cards[cardObject.id].desc, exDamage = get.extraDamage(), mulDamage = get.dealDamageMult(), valueIsLess = false;
@@ -611,7 +611,7 @@ const graphics = {
 		else if (game.select[0] === VOID) draw.image(select.round, 380, 162);
 		else if (game.select[0] === DISCARD) draw.image(select.discard, 381, 181);
 		else if (game.select[0] === MAP) draw.image(select.map, 1, 11);
-		draw.lore(1, 1, "floor " + game.floor, {"color": "#f44"});
+		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
 	},
 	/**
 	 * Draws the player on the canvas.

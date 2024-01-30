@@ -77,6 +77,21 @@ const attributes = {
 			game.eff.aura_blades = 0;
 		},
 	},
+	1004: {
+		name: "gold slash",
+		desc: "Deal 8 damage and\nconsume 25 gold.",
+		rarity: 1,
+		cost: 1,
+		anim: "attack",
+		damage: 8,
+		attack() {
+			game.gold -= 25;
+		},
+		can() {
+			return game.gold >= 25;
+		},
+		cannotMessage: "not enough gold",
+	},
 	2000: {
 		name: "block",
 		desc: "Gain 4 shield.",
@@ -141,12 +156,12 @@ const attributes = {
 	},
 	3001: {
 		name: "rage",
-		desc: "Kill a non-boss\nenemy. Take damage\nequal to its\nhealth.",
+		desc: "Kill a non-boss\nenemy. Take damage\nequal to half its\nhealth, rounded\ndown.",
 		rarity: 1,
 		cost: 0,
 		attack() {
 			if (game.enemies[game.enemyAtt[1]].type !== FRAGMENT) {
-				takeDamage(game.enemies[game.enemyAtt[1]].health);
+				takeDamage(Math.floor(game.enemies[game.enemyAtt[1]].health / 2));
 				game.enemies[game.enemyAtt[1]].health = 0;
 			};
 		},

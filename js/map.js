@@ -29,17 +29,21 @@ function weakerSmallSlime(row) {
 	return SLIME.SMALL + ", " + (Math.round((0.5 + (row * 0.05)) * 100) / 100);
 };
 
+function goldReward(row) {
+	return randomInt(25, 50) + (row * 2);
+};
+
 /**
  * Returns a map piece.
  * @param {number} row - the row of the map piece.
  * @param {FIRSTBATTLE | TREASURE | PRIME | ORB | BOSS} attribute - the attribute of the map piece, if any.
  */
 function mapPiece(row, attribute = -1) {
-	if (attribute === FIRSTBATTLE) return [BATTLEROOM, 0, 0, [SLIME.SMALL], randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5)];
-	if (attribute === TREASURE) return [TREASUREROOM, randomInt(-5, 5), randomInt(-5, 5), false, randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5)];
-	if (attribute === PRIME) return [PRIMEROOM, randomInt(-5, 5), randomInt(-5, 5), [weakerSmallSlime(row), SLIME.PRIME, weakerSmallSlime(row)], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 2, randomCardSet(5), randomArtifactSet(3)];
+	if (attribute === FIRSTBATTLE) return [BATTLEROOM, 0, 0, [SLIME.SMALL], goldReward(row), randomCardSet(5)];
+	if (attribute === TREASURE) return [TREASUREROOM, randomInt(-5, 5), randomInt(-5, 5), false, goldReward(row) * 2, randomCardSet(5)];
+	if (attribute === PRIME) return [PRIMEROOM, randomInt(-5, 5), randomInt(-5, 5), [weakerSmallSlime(row), SLIME.PRIME, weakerSmallSlime(row)], goldReward(row) * 2, randomCardSet(5), randomArtifactSet(3)];
 	if (attribute === ORB) return [ORBROOM, randomInt(-5, 5), randomInt(-5, 5)];
-	if (attribute === BOSS) return [BOSSROOM, 0, 0, [FRAGMENT], randomInt(25 + (row * 1.5), 50 + (row * 2)) * 3, randomCardSet(5), randomArtifactSet(3)];
+	if (attribute === BOSS) return [BOSSROOM, 0, 0, [FRAGMENT], goldReward(row) * 4, randomCardSet(5), randomArtifactSet(3)];
 	let type = chance(3/5) ? BATTLEROOM : false;
 	if (rowFalses >= 3 || (row === 0 && rowFalses >= 2)) type = BATTLEROOM;
 	if (type) rowNodes++;
@@ -49,7 +53,7 @@ function mapPiece(row, attribute = -1) {
 	if (type === BATTLEROOM) {
 		if (row >= 5) result.push(chance(1/3) ? [SLIME.BIG] : (chance(2/3) ? [SLIME.BIG, weakerSmallSlime(row)] : [SLIME.SMALL, SLIME.SMALL]));
 		else result.push(chance() ? [SLIME.BIG] : [SLIME.SMALL, weakerSmallSlime(row)]);
-		result.push(randomInt(25 + (row * 1.5), 50 + (row * 2)), randomCardSet(5));
+		result.push(goldReward(row), randomCardSet(5));
 	};
 	return result;
 };

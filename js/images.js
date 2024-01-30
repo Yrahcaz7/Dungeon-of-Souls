@@ -49,6 +49,7 @@ const player = {
 		"aura blade": new Image,
 		"burn": new Image,
 		"cower": new Image,
+		"gold slash": new Image,
 		"rage": new Image,
 		"reinforce": new Image,
 		"sweeping slash": new Image,
