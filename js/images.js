@@ -87,6 +87,7 @@ const player = {
 	temple: new Image,
 	floating_arch: new Image,
 	debris: new Image,
+	tunnel_of_time: new Image,
 }, clock = {
 	face: new Image,
 	hour_hand: new Image,
@@ -129,6 +130,7 @@ const player = {
 	candy: new Image,
 	card_charm: new Image,
 	corrosion: new Image,
+	determination: new Image,
 	gem_of_rage: new Image,
 	iron_will: new Image,
 	nutritious_meal: new Image,
@@ -157,6 +159,7 @@ const player = {
 	candy: new Image,
 	card_charm: new Image,
 	corrosion: new Image,
+	determination: new Image,
 	gem_of_rage: new Image,
 	iron_will: new Image,
 	nutritious_meal: new Image,

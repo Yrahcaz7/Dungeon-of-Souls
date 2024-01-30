@@ -32,7 +32,8 @@ class Enemy {
 		power += global.difficulty * 0.75;
 		power += (game.floor * 0.05) * (2 ** global.difficulty);
 		this.type = +type;
-		this.maxHealth = Math.round(((random() / 10) + 0.95) * ((power * 10) + 20));
+		if (type === FRAGMENT) this.maxHealth = Math.round(((power * 10) + 20) * 1.05);
+		else this.maxHealth = Math.round(((power * 10) + 20) * ((random() / 10) + 0.95));
 		this.health = this.maxHealth;
 		this.maxShield = Math.floor(this.maxHealth / 2);
 		this.shield = 0;

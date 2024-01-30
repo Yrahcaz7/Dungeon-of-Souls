@@ -18,6 +18,11 @@
 const ENDOFBATTLE = 900, ONPICKUP = 901;
 
 const artifacts = {
+	0: {
+		name: "determination",
+		desc: "As you confront your\ngreatest challenge yet,\nyou are filled with\na familiar feeling...",
+		rarity: 0,
+	},
 	1: {
 		name: "iron will",
 		desc: "Every time a battle\nends, you heal 2 health.",
@@ -89,11 +94,11 @@ function randomArtifact(notInclude = []) {
 		};
 	};
 	if (bool) {
-		return randomInt(2, Object.keys(artifact).length);
+		return randomInt(2, Object.keys(artifact).length - 1);
 	};
 	let result;
 	while (!result || notInclude.includes(result)) {
-		result = randomInt(2, Object.keys(artifact).length);
+		result = randomInt(2, Object.keys(artifact).length - 1);
 	};
 	return result;
 };
