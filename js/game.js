@@ -298,14 +298,16 @@ function selection() {
 		if (action === ENTER) {
 			menuLocation = -1;
 			actionTimer = 2;
-		} else if (action === LEFT && global.difficulty === 1) {
-			menuLocation = DIFFICULTY_CHANGE;
-			menuSelect = 1;
-			actionTimer = 2;
-		} else if (action === RIGHT && global.difficulty === 0) {
-			menuLocation = DIFFICULTY_CHANGE;
-			menuSelect = 1;
-			actionTimer = 2;
+		} else if (!game.artifacts.includes(0)) {
+			if (action === LEFT && global.difficulty === 1) {
+				menuLocation = DIFFICULTY_CHANGE;
+				menuSelect = 1;
+				actionTimer = 2;
+			} else if (action === RIGHT && global.difficulty === 0) {
+				menuLocation = DIFFICULTY_CHANGE;
+				menuSelect = 1;
+				actionTimer = 2;
+			};
 		};
 		return;
 	} else if (menuLocation === DIFFICULTY_CHANGE) {
@@ -1022,6 +1024,7 @@ function updateVisuals() {
 		if (new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "#fff", "text-align": CENTER});
 		if (global.difficulty === undefined) global.difficulty = 0;
 		draw.imageSector(difficulty, 0, global.difficulty * 16, 64, 16, 168, 146);
+		graphics.topLayer();
 	};
 	if (menuLocation !== -1) {
 		if (game.select[0] === WELCOME) {
@@ -1124,6 +1127,7 @@ function updateVisuals() {
 	};
 	if (!hidden()) graphics.target();
 	graphics.popups();
+	graphics.topLayer();
 	if (game.select[0] == GAME_OVER) {
 		if (game.select[1] > 204) game.select[1] = 204;
 		const num = Math.floor(game.select[1]).toString(16);

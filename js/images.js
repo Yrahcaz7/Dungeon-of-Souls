@@ -87,6 +87,7 @@ const player = {
 	temple: new Image,
 	floating_arch: new Image,
 	debris: new Image,
+	column_debri: new Image,
 	tunnel_of_time: new Image,
 }, clock = {
 	face: new Image,

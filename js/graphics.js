@@ -19,7 +19,7 @@ const ENTER = 500, UP = 501, LEFT = 502, CENTER = 503, RIGHT = 504, DOWN = 505;
 
 const PENDING = 800, STARTING = 801, MIDDLE = 802, ENDING = 803;
 
-let backAnim = [0, UP, 0.5, DOWN, -1, UP, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, -1, STARTING, -1], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], primeAnim = 0, transition = 0, auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]], auraBladeAnim = [0, UP, 2.5, UP, 3, DOWN, 0.5, DOWN], invNum = -1, popups = [], infPos = 0, infLimit = 0;
+let backAnim = [0, UP, 0.5, DOWN, -1, UP, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, -1, STARTING, -1], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], extraAnim = [], primeAnim = 0, transition = 0, auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]], auraBladeAnim = [0, UP, 2.5, UP, 3, DOWN, 0.5, DOWN], invNum = -1, popups = [], infPos = 0, infLimit = 0;
 
 const draw = {
 	/**
@@ -555,21 +555,22 @@ const graphics = {
 	 * Draws the background layer on the canvas.
 	 */
 	backgrounds() {
-		draw.image(background.cave);
-		draw.rect("#10106080");
-		draw.image(background.temple);
+		if (transition < 100) {
+			draw.image(background.cave);
+			draw.rect("#10106080");
+			draw.image(background.temple);
+			draw.image(background.floating_arch, 136, 34 - Math.round(backAnim[0]));
+			draw.image(background.debris, 151, 92 - Math.round(backAnim[2]));
+		};
 		if (game.artifacts.includes(0)) {
 			if (transition < 100) {
 				ctx.globalAlpha = transition / 100;
-				transition++;
 			};
 			draw.image(background.tunnel_of_time, 0 - backAnim[6]);
 			backAnim[6]++;
 			if (backAnim[6] >= 16) backAnim[6] -= 16;
 			ctx.globalAlpha = 1;
 		};
-		draw.image(background.floating_arch, 136, 34 - Math.round(backAnim[0]));
-		draw.image(background.debris, 151, 92 - Math.round(backAnim[2]));
 		if (game.floor != 10) {
 			let now = new Date(), time = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()], x = 170, y = 63 - Math.round(backAnim[4]);
 			time[2] += (time[3] / 1000);
@@ -622,6 +623,53 @@ const graphics = {
 		else if (game.select[0] === DISCARD) draw.image(select.discard, 381, 181);
 		else if (game.select[0] === MAP) draw.image(select.map, 1, 11);
 		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
+	},
+	/**
+	 * Draws the top layer on the canvas.
+	 */
+	topLayer() {
+		if (game.artifacts.includes(0)) {
+			// setup debris
+			if (extraAnim.length == 0) {
+				for (let index = 0; index < 9; index++) {
+					extraAnim[index] = [Math.random() * 180 + 6, index * 50 - Math.random() * 10, Math.floor(Math.random() * 20 + index) % 20];
+				};
+			};
+			// start fade
+			if (transition < 100) {
+				ctx.globalAlpha = transition / 100;
+				transition++;
+			};
+			// difficulty
+			if (menuLocation !== -1) {
+				draw.imageSector(difficulty, 0, 2 * 16, 64, 16, 168, 146);
+			};
+			// debris
+			for (let index = 0; index < extraAnim.length; index++) {
+				if (extraAnim[index][2] < 8) {
+					draw.imageSector(background.column_debri, (extraAnim[index][2] % 8) * 16, 0, 16, 8, Math.floor(400 - extraAnim[index][1]), Math.floor(extraAnim[index][0]));
+				} else if (extraAnim[index][2] < 16) {
+					ctx.scale(-1, 1);
+					draw.imageSector(background.column_debri, (extraAnim[index][2] % 8) * 16, 0, 16, 8, Math.floor(extraAnim[index][1] - 400), Math.floor(extraAnim[index][0]), -16, 8);
+					ctx.scale(-1, 1);
+				} else if (extraAnim[index][2] % 2 == 0) {
+					draw.image(background.debris, Math.floor(400 - extraAnim[index][1]), Math.floor(extraAnim[index][0] + 1));
+				} else {
+					ctx.scale(-1, 1);
+					draw.image(background.debris, Math.floor(extraAnim[index][1] - 400), Math.floor(extraAnim[index][0] + 1), -6, 6);
+					ctx.scale(-1, 1);
+				};
+				const rand = Math.random();
+				if (rand < 0.05) extraAnim[index][0]++;
+				else if (rand < 0.1) extraAnim[index][0]--;
+				extraAnim[index][1] += (Math.random() - 0.5) + 2;
+				if (extraAnim[index][1] >= 450) {
+					extraAnim[index] = [Math.random() * 180 + 6, 0 - Math.random() * 10, Math.floor(Math.random() * 20 + index) % 20];
+				};
+			};
+			// stop fade
+			ctx.globalAlpha = 1;
+		};
 	},
 	/**
 	 * Draws the player on the canvas.
