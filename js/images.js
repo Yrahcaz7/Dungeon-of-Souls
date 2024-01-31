@@ -53,6 +53,7 @@ const player = {
 		"rage": new Image,
 		"reinforce": new Image,
 		"sweeping slash": new Image,
+		"the eternal gold": new Image,
 		"war cry": new Image,
 	},
 	rare: {

@@ -440,7 +440,7 @@ const info = {
 	 */
 	card(type, xPlus = 0, yPlus = 0) {
 		let x = handPos[game.prevCard] + xPlus, y = 147 - Math.floor(cardAnim[game.prevCard]) + yPlus;
-		if (game.prevCard == game.hand.length - 1 && game.hand.length >= 4) {
+		if ((game.prevCard == game.hand.length - 1 && game.hand.length >= 4) || (game.prevCard == game.hand.length - 2 && game.hand.length >= 7)) {
 			x -= 145;
 		};
 		return draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});

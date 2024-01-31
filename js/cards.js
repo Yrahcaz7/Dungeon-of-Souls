@@ -79,7 +79,7 @@ const attributes = {
 	},
 	1004: {
 		name: "gold slash",
-		desc: "Deal 8 damage and\nconsume 25 gold.",
+		desc: "Consume 25 gold to\ndeal 8 damage.",
 		rarity: 1,
 		cost: 1,
 		anim: "attack",
@@ -138,6 +138,21 @@ const attributes = {
 		effect() {
 			game.eff.resilience += 2;
 		},
+	},
+	2005: {
+		name: "the eternal gold",
+		desc: "Consume 45 gold\nto gain 10 shield\nand 1 reinforce.",
+		rarity: 1,
+		cost: 2,
+		effect() {
+			gainShield(10);
+			game.eff.reinforces++;
+			game.gold -= 45;
+		},
+		can() {
+			return game.gold >= 45;
+		},
+		cannotMessage: "not enough gold",
 	},
 	3000: {
 		name: "war cry",

@@ -1030,7 +1030,7 @@ function updateVisuals() {
 		if (game.select[0] === WELCOME) {
 			draw.box(80, 83, 240, 34);
 			if (global.difficulty === 0) draw.lore(200 - 2, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": CENTER});
-			else draw.lore(200 - 2, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start stronger from the beginning.\nAdditionally, the enemies get stronger twice as fast as easy mode.\nOtherwise, this is the same as easy mode, but more changes may be made later.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": CENTER});
+			else draw.lore(200 - 2, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start a lot stronger from the beginning.\nAdditionally, the enemies get more powerful twice as fast as easy mode.\nOtherwise, this is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": CENTER});
 		} else if (menuLocation === DIFFICULTY_CHANGE) {
 			let x = 116, y = 83;
 			draw.rect("#0008");
