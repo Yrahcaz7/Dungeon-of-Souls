@@ -155,6 +155,7 @@ const player = {
 	burn: new Image,
 	reinforce: new Image,
 	resilience: new Image,
+	rewind: new Image,
 	weakness: new Image,
 }, artifact = {
 	candy: new Image,

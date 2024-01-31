@@ -397,7 +397,7 @@ function selection() {
 				game.location = paths[game.location][game.mapSelect];
 				let coor = game.location.split(", ");
 				if (game.select[1] == 0) {
-					game.map[coor[0]][coor[1]][3][0] = game.map[coor[0]][coor[1]][3][0] + ", 4";
+					game.map[coor[0]][coor[1]][3][0] = game.map[coor[0]][coor[1]][3][0] + ", 3";
 					game.artifacts.push(0);
 				};
 				game.room = game.map[coor[0]][coor[1]];
@@ -1018,13 +1018,13 @@ function updateVisuals() {
 	// visuals
 	graphics.backgrounds();
 	if (menuLocation === TITLE || menuLocation === DIFFICULTY_CHANGE) {
+		graphics.middleLayer();
 		draw.image(title, (400 - title.width) / 2, 0);
 		if (game.artifacts.includes(0)) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": CENTER});
 		else draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": CENTER});
 		if (new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "#fff", "text-align": CENTER});
 		if (global.difficulty === undefined) global.difficulty = 0;
 		draw.imageSector(difficulty, 0, global.difficulty * 16, 64, 16, 168, 146);
-		graphics.topLayer();
 	};
 	if (menuLocation !== -1) {
 		if (game.select[0] === WELCOME) {
@@ -1051,6 +1051,7 @@ function updateVisuals() {
 		graphics.enemy();
 		graphics.effect();
 	};
+	graphics.middleLayer();
 	graphics.foregrounds();
 	if (!hidden()) graphics.hand();
 	if (game.select[0] === IN_MAP) {
@@ -1127,7 +1128,6 @@ function updateVisuals() {
 	};
 	if (!hidden()) graphics.target();
 	graphics.popups();
-	graphics.topLayer();
 	if (game.select[0] == GAME_OVER) {
 		if (game.select[1] > 204) game.select[1] = 204;
 		const num = Math.floor(game.select[1]).toString(16);

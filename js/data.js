@@ -22,6 +22,7 @@ const infoText = {
 	"one use": "When a one use card is\nplayed, it is sent to\nthe void. Cards in the\nvoid stay there until\nthe end of the battle.",
 	reinforce: "If something has X\nreinforces, at the start\nof its turn, its <#58f>shield</#58f>\nis kept, then X is\nreduced by 1.",
 	resilience: "If something has X\nresilience, it takes 25%\nless damage, rounded\ndown. At the start of\nits turn, X is reduced\nby 1.",
+	rewind: "If something has any\nrewinds, it use one to\nreturn to its initial\nstate upon reaching 0\nhealth except it will be\nmassively weakened.",
 	weakness: "If something has X\nweakness, its <#f44>attack</#f44> is\nreduced by 25%, rounded\ndown. At the end of its\nturn, X is reduced by 1.",
 	// intents
 	[ATTACK]: "This enemy intends to attack\nyou on its next turn.",
@@ -192,11 +193,27 @@ function updateData() {
 	else if (game.health > get.maxHealth()) game.health = get.maxHealth();
 	if (game.shield < 0) game.shield = 0;
 	else if (game.shield > get.maxShield()) game.shield = get.maxShield();
-	for (let a = 0; a < game.enemies.length; a++) {
-		let enemy = game.enemies[a];
-		if (enemy.health < 0) game.enemies[a].health = 0;
-		if (enemy.health > enemy.maxHealth) game.enemies[a].health = enemy.maxHealth;
-		if (enemy.shield > enemy.maxShield) game.enemies[a].shield = enemy.maxShield;
+	for (let index = 0; index < game.enemies.length; index++) {
+		if (game.enemies[index].health > game.enemies[index].maxHealth) game.enemies[index].health = game.enemies[index].maxHealth;
+		if (game.enemies[index].shield > game.enemies[index].maxShield) game.enemies[index].shield = game.enemies[index].maxShield;
+	};
+	// kill enemies
+	for (let index = 0; index < game.enemies.length; index++) {
+		if (game.enemies[index].health <= 0) {
+			if (game.enemies[index].eff.rewinds) {
+				game.enemies[index].health = game.enemies[index].maxHealth / 2;
+				game.enemies[index].shield = 0;
+				game.enemies[index].eff = {
+					rewinds: game.enemies[index].rewinds - 1,
+					weakness: 99,
+				};
+				game.enemies[index].intent = game.enemies[index].getIntent(true);
+				game.enemies[index].intentHistory = [game.enemies[index].intent];
+			} else {
+				game.enemies.splice(index, 1);
+				if (game.enemyNum >= index) game.enemyNum--;
+			};
+		};
 	};
 	// game over
 	if (game.health === 0 && playerAnim[1] != "death") {

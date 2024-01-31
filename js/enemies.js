@@ -27,8 +27,8 @@ class Enemy {
 	 */
 	constructor(type, power = 1) {
 		if (type === SLIME.SMALL) power--;
-		if (type === SLIME.PRIME) power++;
-		if (type === FRAGMENT) power += 2;
+		else if (type === SLIME.PRIME) power++;
+		else if (type === FRAGMENT) power += 2;
 		power += global.difficulty * 0.75;
 		power += (game.floor * 0.05) * (2 ** global.difficulty);
 		this.type = +type;
@@ -40,6 +40,7 @@ class Enemy {
 		this.attackPower = Math.round(((power / 2) + 1) * 5 - 0.25);
 		this.defendPower = Math.round(((power / 2) + 1) * 5 + 1);
 		this.eff = {};
+		if (type === FRAGMENT && game.artifacts.includes(0)) this.eff.rewinds = 1;
 		this.intent = this.getIntent(true);
 		this.intentHistory = [this.intent];
 	};

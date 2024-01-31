@@ -590,44 +590,9 @@ const graphics = {
 		};
 	},
 	/**
-	 * Draws the foreground layer on the canvas.
+	 * Draws the middle layer on the canvas.
 	 */
-	foregrounds() {
-		const past = game.select[2];
-		if (past) {
-			if (past[0] === REWARDS) graphics.rewards(false);
-			else if (past[0] === CARD_REWARDS) graphics.cardRewards(false);
-			else if (past[0] === ARTIFACT_REWARDS) graphics.artifactRewards(false);
-		};
-		if (game.select[0] === LOOKER && game.select[1] === 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 343, 3);
-		else draw.imageSector(extra.looker, 0, 0, 16, 16, 343, 3);
-		draw.image(extra.help, 362, 3);
-		draw.image(extra.options, 380, 2);
-		draw.image(extra.end, 3, 163);
-		draw.image(extra.deck, 4, 182);
-		if (game.void.length) draw.image(extra.void, 381, 163);
-		draw.image(extra.discard, 382, 182);
-		draw.image(extra.map, 2, 12);
-		for (let index = 0; index < game.artifacts.length; index++) {
-			const name = ("" + artifacts[game.artifacts[index]].name).replace(/\s/g, "_");
-			if (!name) continue;
-			draw.image(artifact[name], 20 + (index * 18), 12);
-			if (game.select[0] === ARTIFACTS && game.select[1] === index) draw.image(select[name], 19 + (index * 18), 11);
-		};
-		if (game.select[0] === LOOKER) draw.image(select.round, 342, 2);
-		else if (game.select[0] === HELP) draw.image(select.round, 361, 2);
-		else if (game.select[0] === OPTIONS) draw.image(select.options, 380, 2);
-		else if (game.select[0] === END) draw.image(select.round, 2, 162);
-		else if (game.select[0] === DECK) draw.image(select.deck, 3, 181);
-		else if (game.select[0] === VOID) draw.image(select.round, 380, 162);
-		else if (game.select[0] === DISCARD) draw.image(select.discard, 381, 181);
-		else if (game.select[0] === MAP) draw.image(select.map, 1, 11);
-		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
-	},
-	/**
-	 * Draws the top layer on the canvas.
-	 */
-	topLayer() {
+	middleLayer() {
 		if (game.artifacts.includes(0)) {
 			// setup debris
 			if (extraAnim.length == 0) {
@@ -670,6 +635,41 @@ const graphics = {
 			// stop fade
 			ctx.globalAlpha = 1;
 		};
+	},
+	/**
+	 * Draws the foreground layer on the canvas.
+	 */
+	foregrounds() {
+		const past = game.select[2];
+		if (past) {
+			if (past[0] === REWARDS) graphics.rewards(false);
+			else if (past[0] === CARD_REWARDS) graphics.cardRewards(false);
+			else if (past[0] === ARTIFACT_REWARDS) graphics.artifactRewards(false);
+		};
+		if (game.select[0] === LOOKER && game.select[1] === 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 343, 3);
+		else draw.imageSector(extra.looker, 0, 0, 16, 16, 343, 3);
+		draw.image(extra.help, 362, 3);
+		draw.image(extra.options, 380, 2);
+		draw.image(extra.end, 3, 163);
+		draw.image(extra.deck, 4, 182);
+		if (game.void.length) draw.image(extra.void, 381, 163);
+		draw.image(extra.discard, 382, 182);
+		draw.image(extra.map, 2, 12);
+		for (let index = 0; index < game.artifacts.length; index++) {
+			const name = ("" + artifacts[game.artifacts[index]].name).replace(/\s/g, "_");
+			if (!name) continue;
+			draw.image(artifact[name], 20 + (index * 18), 12);
+			if (game.select[0] === ARTIFACTS && game.select[1] === index) draw.image(select[name], 19 + (index * 18), 11);
+		};
+		if (game.select[0] === LOOKER) draw.image(select.round, 342, 2);
+		else if (game.select[0] === HELP) draw.image(select.round, 361, 2);
+		else if (game.select[0] === OPTIONS) draw.image(select.options, 380, 2);
+		else if (game.select[0] === END) draw.image(select.round, 2, 162);
+		else if (game.select[0] === DECK) draw.image(select.deck, 3, 181);
+		else if (game.select[0] === VOID) draw.image(select.round, 380, 162);
+		else if (game.select[0] === DISCARD) draw.image(select.discard, 381, 181);
+		else if (game.select[0] === MAP) draw.image(select.map, 1, 11);
+		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
 	},
 	/**
 	 * Draws the player on the canvas.
@@ -769,6 +769,7 @@ const graphics = {
 					let img = new Image();
 					if (icon[key]) img = icon[key];
 					else if (key == "reinforces") img = icon.reinforce;
+					else if (key == "rewinds") img = icon.rewind;
 					if (select.eff[key]) {
 						if (select.shield) {
 							draw.image(img, x, y + 89);
@@ -785,10 +786,6 @@ const graphics = {
 		// enemy drawing
 		for (let index = 0; index < game.enemies.length; index++) {
 			let select = game.enemies[index], pos = enemyPos[index];
-			if (select.health <= 0) {
-				game.enemies.splice(index, 1);
-				if (game.enemyNum >= index) game.enemyNum--;
-			};
 			if (!pos) return;
 			if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
 			if (index !== invNum) {
