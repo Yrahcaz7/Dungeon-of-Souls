@@ -15,13 +15,13 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const HAND = 300, LOOKAT_YOU = 301, LOOKAT_ENEMY = 302, ATTACK_ENEMY = 303, LOOKER = 304, HELP = 305, END = 306, CONFIRM_END = 307, DECK = 308, DISCARD = 309, MAP = 310, IN_MAP = 311, POPUPS = 312, REWARDS = 313, CARD_REWARDS = 314, ARTIFACTS = 315, VOID = 316, CONFIRM_EXIT = 317, OPTIONS = 318, GAME_OVER = 319, GAME_FIN = 320, GAME_WON = 321, CONFIRM_RESTART = 322, WELCOME = 323, ARTIFACT_REWARDS = 324;
+const HAND = 300, LOOKAT_YOU = 301, LOOKAT_ENEMY = 302, ATTACK_ENEMY = 303, LOOKER = 304, HELP = 305, END = 306, CONFIRM_END = 307, DECK = 308, DISCARD = 309, MAP = 310, IN_MAP = 311, POPUPS = 312, REWARDS = 313, CARD_REWARDS = 314, ARTIFACTS = 315, VOID = 316, CONFIRM_EXIT = 317, OPTIONS = 318, GAME_OVER = 319, GAME_FIN = 320, GAME_WON = 321, CONFIRM_RESTART = 322, WELCOME = 323, ARTIFACT_REWARDS = 324, CONFIRM_FRAGMENT_UPGRADE = 325;
 
 const TITLE = 400, DIFFICULTY_CHANGE = 401;
 
 const PIXEL_SIZES = [1, 2, 0.5];
 
-var global = {
+let global = {
 	// unlockedCards: [],
 	options: {
 		music: true,
@@ -287,6 +287,54 @@ function selection() {
 	actionTimer--;
 	if (actionTimer > -1) return;
 	if (!actionTimer || actionTimer < -1) actionTimer = -1;
+	// menus
+	if (game.select[0] === WELCOME) {
+		if (action === ENTER) {
+			game.select = [-1, 0];
+			actionTimer = 2;
+		};
+		return;
+	} else if (menuLocation === TITLE) {
+		if (action === ENTER) {
+			menuLocation = -1;
+			actionTimer = 2;
+		} else if (!game.artifacts.includes(0)) {
+			if (action === LEFT && global.difficulty === 1) {
+				menuLocation = DIFFICULTY_CHANGE;
+				menuSelect = 1;
+				actionTimer = 2;
+			} else if (action === RIGHT && global.difficulty === 0) {
+				menuLocation = DIFFICULTY_CHANGE;
+				menuSelect = 1;
+				actionTimer = 2;
+			};
+		};
+		return;
+	} else if (menuLocation === DIFFICULTY_CHANGE) {
+		if (action === LEFT && menuSelect) {
+			menuSelect = 0;
+			actionTimer = 1;
+		} else if (action === RIGHT && !menuSelect) {
+			menuSelect = 1;
+			actionTimer = 1;
+		} else if (action === ENTER) {
+			if (!menuSelect) {
+				if (global.difficulty === 0) global.difficulty++;
+				else global.difficulty--;
+				restartRun();
+			} else menuLocation = TITLE;
+			actionTimer = 2;
+		};
+		return;
+	};
+	// game end
+	if (game.select[0] == GAME_OVER && game.select[1] == 204) {
+		if (action === ENTER) {
+			restartRun();
+			actionTimer = 2;
+		};
+		return;
+	};
 	// confirmation
 	if (game.select[0] === CONFIRM_END) {
 		if (action === LEFT && game.select[1]) {
@@ -335,49 +383,29 @@ function selection() {
 			actionTimer = 2;
 		};
 		return;
-	};
-	// game end
-	if (game.select[0] == GAME_OVER && game.select[1] == 204) {
-		if (action === ENTER) {
-			restartRun();
-			actionTimer = 2;
-		};
-		return;
-	};
-	// menus
-	if (game.select[0] === WELCOME) {
-		if (action === ENTER) {
-			game.select = [-1, 0];
-			actionTimer = 2;
-		};
-		return;
-	} else if (menuLocation === TITLE) {
-		if (action === ENTER) {
-			menuLocation = -1;
-			actionTimer = 2;
-		} else if (action === LEFT && global.difficulty === 1) {
-			menuLocation = DIFFICULTY_CHANGE;
-			menuSelect = 1;
-			actionTimer = 2;
-		} else if (action === RIGHT && global.difficulty === 0) {
-			menuLocation = DIFFICULTY_CHANGE;
-			menuSelect = 1;
-			actionTimer = 2;
-		};
-		return;
-	} else if (menuLocation === DIFFICULTY_CHANGE) {
-		if (action === LEFT && menuSelect) {
-			menuSelect = 0;
+	} else if (game.select[0] === CONFIRM_FRAGMENT_UPGRADE) {
+		if (action === LEFT && game.select[1] > 0) {
+			game.select[1]--;
 			actionTimer = 1;
-		} else if (action === RIGHT && !menuSelect) {
-			menuSelect = 1;
+		} else if (action === RIGHT && game.select[1] < 2) {
+			game.select[1]++;
 			actionTimer = 1;
 		} else if (action === ENTER) {
-			if (!menuSelect) {
-				if (global.difficulty === 0) global.difficulty++;
-				else global.difficulty--;
-				restartRun();
-			} else menuLocation = TITLE;
+			if (game.select[1] == 2) {
+				game.select = [IN_MAP, 0];
+			} else {
+				game.location = paths[game.location][game.mapSelect];
+				let coor = game.location.split(", ");
+				if (game.select[1] == 0) {
+					game.map[coor[0]][coor[1]][3][0] = game.map[coor[0]][coor[1]][3][0] + ", 3";
+					game.artifacts.push(0);
+				};
+				game.room = game.map[coor[0]][coor[1]];
+				game.select = [-1, 0];
+				game.mapSelect = -1;
+				game.state = "enter";
+				game.floor++;
+			};
 			actionTimer = 2;
 		};
 		return;
@@ -510,13 +538,18 @@ function selection() {
 			actionTimer = 1;
 			return;
 		} else if (action === ENTER && paths[game.location][game.mapSelect]) {
-			game.location = paths[game.location][game.mapSelect];
-			let coor = game.location.split(", ");
-			game.room = game.map[coor[0]][coor[1]];
-			game.select = [-1, 0];
-			game.mapSelect = -1;
-			game.state = "enter";
-			game.floor++;
+			const now = new Date();
+			if (game.floor == 9 && global.difficulty === 1 && ((now.getHours() % 12 == 11 && now.getMinutes() >= 59) || (now.getHours() % 12 == 0 && now.getMinutes() <= 1))) {
+				game.select = [CONFIRM_FRAGMENT_UPGRADE, 2];
+			} else {
+				game.location = paths[game.location][game.mapSelect];
+				let coor = game.location.split(", ");
+				game.room = game.map[coor[0]][coor[1]];
+				game.select = [-1, 0];
+				game.mapSelect = -1;
+				game.state = "enter";
+				game.floor++;
+			};
 			actionTimer = 1;
 			return;
 		};
@@ -985,8 +1018,10 @@ function updateVisuals() {
 	// visuals
 	graphics.backgrounds();
 	if (menuLocation === TITLE || menuLocation === DIFFICULTY_CHANGE) {
+		graphics.middleLayer();
 		draw.image(title, (400 - title.width) / 2, 0);
-		draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": CENTER});
+		if (game.artifacts.includes(0)) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": CENTER});
+		else draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": CENTER});
 		if (new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "#fff", "text-align": CENTER});
 		if (global.difficulty === undefined) global.difficulty = 0;
 		draw.imageSector(difficulty, 0, global.difficulty * 16, 64, 16, 168, 146);
@@ -1016,6 +1051,7 @@ function updateVisuals() {
 		graphics.enemy();
 		graphics.effect();
 	};
+	graphics.middleLayer();
 	graphics.foregrounds();
 	if (!hidden()) graphics.hand();
 	if (game.select[0] === IN_MAP) {
@@ -1055,6 +1091,21 @@ function updateVisuals() {
 		draw.box(x + 25, y + 15, 13, 10);
 		draw.lore(x + 4, y + 16, "YES");
 		draw.lore(x + 26, y + 16, "NO");
+	} else if (game.select[0] === CONFIRM_FRAGMENT_UPGRADE) {
+		graphics.map();
+		let x = 125, y = 83;
+		draw.rect("#0008");
+		draw.box(x + 1, y + 1, 148, 26);
+		draw.lore(x + 2, y + 2, "Are you sure you want to align the hands of time?\nYou will regret it. There is no going back.", {"text-small": true});
+		if (game.select[1] == 0) draw.rect("#fff", x + 1, y + 13, 23, 14);
+		else if (game.select[1] == 1) draw.rect("#fff", x + 23, y + 13, 17, 14);
+		else draw.rect("#fff", x + 39, y + 13, 29, 14);
+		draw.box(x + 3, y + 15, 19, 10);
+		draw.box(x + 25, y + 15, 13, 10);
+		draw.box(x + 41, y + 15, 25, 10);
+		draw.lore(x + 4, y + 16, "YES");
+		draw.lore(x + 26, y + 16, "NO");
+		draw.lore(x + 42, y + 16, "BACK");
 	} else if (game.select[0] === REWARDS) {
 		graphics.rewards();
 	} else if (game.select[0] === CARD_REWARDS) {
@@ -1081,8 +1132,12 @@ function updateVisuals() {
 		if (game.select[1] > 204) game.select[1] = 204;
 		const num = Math.floor(game.select[1]).toString(16);
 		draw.rect("#000000" + (num.length < 2 ? "0" : "") + num);
-		if (game.select[1] < 204) game.select[1] += 10;
-		else draw.lore(200 - 2, 53, "GAME OVER\n\nDIFFICULTY: " + (global.difficulty ? "HARD" : "EASY") + "\n\nTOP FLOOR: " + game.floor + "\n\nPRESS ENTER TO START A NEW RUN", {"color": "#f00", "text-align": CENTER});
+		if (game.select[1] < 204) {
+			game.select[1] += 10;
+		} else {
+			if (game.artifacts.includes(0)) draw.lore(200 - 2, 53, "GAME OVER\n\nDIFFICULTY: <#fcf050>DETERMINATION</#fcf050>\n\nTOP FLOOR: " + game.floor + "\n\nPRESS ENTER TO START A NEW RUN", {"color": "#f00", "text-align": CENTER});
+			else draw.lore(200 - 2, 53, "GAME OVER\n\nDIFFICULTY: " + (global.difficulty ? "HARD" : "EASY") + "\n\nTOP FLOOR: " + game.floor + "\n\nPRESS ENTER TO START A NEW RUN", {"color": "#f00", "text-align": CENTER});
+		};
 	} else if (game.select[0] == GAME_FIN) {
 		if (game.select[1] > 255) game.select[1] = 255;
 		const num = Math.floor(game.select[1]).toString(16);
@@ -1100,7 +1155,8 @@ function updateVisuals() {
 				let num = Math.round(interval(4/3, 2));
 				draw.image(victorious, 168, 42 + num, victorious.width * 2, victorious.height * 2);
 				draw.rect("#0004");
-				draw.lore(200 - 2, 50, "YOU BEAT THE GAME ON " + (global.difficulty ? "<#f00>HARD MODE!</#f00>" : "EASY MODE!") + "\n\nThank you for playing!\n\nMore content coming soon, such as:<s>\n- More cards!\n- More enemies!\n- A new area!\n- And much more!<b>\n\nPRESS ENTER TO START A NEW RUN", {"color": "#0f0", "text-align": CENTER});
+				if (game.artifacts.includes(0)) draw.lore(200 - 2, 50, "YOU BEAT THE GAME <#fcf050>WITH DETERMINATION</#fcf050>\n\nThank you for playing!\n\nMore content coming soon, such as:<s>\n- More cards!\n- More enemies!\n- A new area!\n- And much more!<b>\n\nPRESS ENTER TO START A NEW RUN", {"color": "#0f0", "text-align": CENTER});
+				else draw.lore(200 - 2, 50, "YOU BEAT THE GAME ON " + (global.difficulty ? "<#f00>HARD MODE!</#f00>" : "EASY MODE!") + "\n\nThank you for playing!\n\nMore content coming soon, such as:<s>\n- More cards!\n- More enemies!\n- A new area!\n- And much more!<b>\n\nPRESS ENTER TO START A NEW RUN", {"color": "#0f0", "text-align": CENTER});
 				if (actionTimer <= -1) {
 					if (action === ENTER) restartRun();
 				} else actionTimer -= 0.1;

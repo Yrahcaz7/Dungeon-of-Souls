@@ -22,6 +22,7 @@ const infoText = {
 	"one use": "When a one use card is\nplayed, it is sent to\nthe void. Cards in the\nvoid stay there until\nthe end of the battle.",
 	reinforce: "If something has X\nreinforces, at the start\nof its turn, its <#58f>shield</#58f>\nis kept, then X is\nreduced by 1.",
 	resilience: "If something has X\nresilience, it takes 25%\nless damage, rounded\ndown. At the start of\nits turn, X is reduced\nby 1.",
+	rewind: "If something has any\nrewinds, it use one to\nreturn to its initial\nstate upon reaching 0\nhealth except it will be\nmassively weakened.",
 	weakness: "If something has X\nweakness, its <#f44>attack</#f44> is\nreduced by 25%, rounded\ndown. At the end of its\nturn, X is reduced by 1.",
 	// intents
 	[ATTACK]: "This enemy intends to attack\nyou on its next turn.",
@@ -94,14 +95,19 @@ gameplay = ""
 	+ "However, you earn <#ff0>XP</#ff0> (not implemented yet), and when you get enough you can unlock new cards.\n"
 	+ "Then, you can use your new knowledge and cards to reach higher heights next time.",
 changelog = ""
+	+ "<b>Version 1.3 - Deception<s>"
+	+ " - added THE SECRET ACT\n"
+	+ " - added two new cards\n"
+	+ " - some balancing changes\n"
+	+ " - more coming soon!\n"
 	+ "<b>Version 1.2 - Reception<s>"
 	+ " - added a new option: pixel perfect size\n"
-	+ " - four new cards and two new artifacts\n"
+	+ " - two new cards and two new artifacts\n"
 	+ " - a new effect, resilience, which reduces damage taken\n"
 	+ " - the boss is now smarter and has a new move\n"
 	+ " - slimes now finally have defending animations!\n"
 	+ " - a lot of rebalancing\n"
-	+ " - more coming soon!\n"
+	+ " - even more things that I didn't list here\n"
 	+ "<b>Version 1.1 - Perception<s>"
 	+ " - added a new option: pixel perfect screen\n"
 	+ " - two new cards, and a new effect\n"
@@ -118,7 +124,7 @@ changelog = ""
 	+ " - three new cards and some card rebalancing\n"
 	+ " - polished up the map generator (and fixed seeds)\n"
 	+ " - even more things that I didn't list here\n"
-	+ "<b>Version 0.4 - Formulation<s>"
+	+ "<b>Version 0.3 - Formulation<s>"
 	+ " - enemies now die upon reaching 0 health\n"
 	+ " - added the map (upper-left corner)\n"
 	+ " - added artifacts (and seeds; a work in progress)\n"
@@ -126,7 +132,7 @@ changelog = ""
 	+ " - two new cards, and a new effect\n"
 	+ " - added loot/rewards at end of fights\n"
 	+ " - even more things that I didn't list here\n"
-	+ "<b>Version 0.3 - Manifestation<s>"
+	+ "<b>Version 0.2 - Manifestation<s>"
 	+ " - you can now end your turn (you couldn't before)\n"
 	+ " - enemies can now attack and defend\n"
 	+ " - you can now see what the enemy intends to do\n"
@@ -134,7 +140,7 @@ changelog = ""
 	+ " - added notifications (currently only music change ones)\n"
 	+ " - a new card, with a totally new effect\n"
 	+ " - even more things that I didn't list here\n"
-	+ "<b>Version 0.2 - Realization<s>"
+	+ "<b>Version 0.1 - Realization<s>"
 	+ " - many optimizations including 2 new classes\n"
 	+ " - a lot more cool visuals and animations\n"
 	+ " - some new options and a help page\n"
@@ -142,7 +148,7 @@ changelog = ""
 	+ " - you can now view your deck and discard\n"
 	+ " - a new card, with a totally new effect\n"
 	+ " - even more things that I didn't list here\n"
-	+ "<b>Version 0.1 - Desolation<s>"
+	+ "<b>Version 0.0 - Desolation<s>"
 	+ " - started making the game in my spare time\n"
 	+ " - still needs a lot of polishing and such\n"
 	+ " - next update will probably make it more playable";
@@ -187,11 +193,27 @@ function updateData() {
 	else if (game.health > get.maxHealth()) game.health = get.maxHealth();
 	if (game.shield < 0) game.shield = 0;
 	else if (game.shield > get.maxShield()) game.shield = get.maxShield();
-	for (let a = 0; a < game.enemies.length; a++) {
-		let enemy = game.enemies[a];
-		if (enemy.health < 0) game.enemies[a].health = 0;
-		if (enemy.health > enemy.maxHealth) game.enemies[a].health = enemy.maxHealth;
-		if (enemy.shield > enemy.maxShield) game.enemies[a].shield = enemy.maxShield;
+	for (let index = 0; index < game.enemies.length; index++) {
+		if (game.enemies[index].health > game.enemies[index].maxHealth) game.enemies[index].health = game.enemies[index].maxHealth;
+		if (game.enemies[index].shield > game.enemies[index].maxShield) game.enemies[index].shield = game.enemies[index].maxShield;
+	};
+	// kill enemies
+	for (let index = 0; index < game.enemies.length; index++) {
+		if (game.enemies[index].health <= 0) {
+			if (game.enemies[index].eff.rewinds) {
+				game.enemies[index].health = game.enemies[index].maxHealth / 2;
+				game.enemies[index].shield = 0;
+				game.enemies[index].eff = {
+					rewinds: game.enemies[index].rewinds - 1,
+					weakness: 99,
+				};
+				game.enemies[index].intent = game.enemies[index].getIntent(true);
+				game.enemies[index].intentHistory = [game.enemies[index].intent];
+			} else {
+				game.enemies.splice(index, 1);
+				if (game.enemyNum >= index) game.enemyNum--;
+			};
+		};
 	};
 	// game over
 	if (game.health === 0 && playerAnim[1] != "death") {

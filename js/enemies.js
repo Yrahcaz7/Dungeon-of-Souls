@@ -27,18 +27,20 @@ class Enemy {
 	 */
 	constructor(type, power = 1) {
 		if (type === SLIME.SMALL) power--;
-		if (type === SLIME.PRIME) power++;
-		if (type === FRAGMENT) power += 2;
+		else if (type === SLIME.PRIME) power++;
+		else if (type === FRAGMENT) power += 2;
 		power += global.difficulty * 0.75;
 		power += (game.floor * 0.05) * (2 ** global.difficulty);
 		this.type = +type;
-		this.maxHealth = Math.round(((random() / 10) + 0.95) * ((power * 10) + 20));
+		if (type === FRAGMENT) this.maxHealth = Math.round(((power * 10) + 20) * 1.05);
+		else this.maxHealth = Math.round(((power * 10) + 20) * ((random() / 10) + 0.95));
 		this.health = this.maxHealth;
 		this.maxShield = Math.floor(this.maxHealth / 2);
 		this.shield = 0;
 		this.attackPower = Math.round(((power / 2) + 1) * 5 - 0.25);
 		this.defendPower = Math.round(((power / 2) + 1) * 5 + 1);
 		this.eff = {};
+		if (type === FRAGMENT && game.artifacts.includes(0)) this.eff.rewinds = 1;
 		this.intent = this.getIntent(true);
 		this.intentHistory = [this.intent];
 	};

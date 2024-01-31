@@ -46,10 +46,10 @@ However, you can use your new knowledge to reach higher heights next time.
 
 Note: go to the '?' (top-right of the screen) in-game for more details.
 
-## Other
+## Credits
 
 Inspired by ***Slay the Spire*** and ***Die in the Dungeon***.
 
-Most player sprites are taken from or based off of the ones found [**here**](https://aamatniekss.itch.io/fantasy-knight-free-pixelart-animated-character).
+Most player sprites are taken from or based off of the ones found [**here**](https://aamatniekss.itch.io/fantasy-knight-free-pixelart-animated-character) (made by Nauris Amatnieks).
 
 All other art (and music) is entirely my original work.
