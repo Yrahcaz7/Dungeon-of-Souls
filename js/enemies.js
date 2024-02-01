@@ -99,13 +99,10 @@ class Enemy {
 		this.intentHistory.push(this.intent);
 		if (this.overrideIntent(ATTACK)) {
 			this.intent = DEFEND;
-			this.intentHistory = [DEFEND];
-		} else if (this.overrideIntent(DEFEND)) {
+			this.intentHistory.push(this.intent);
+		} else if (this.overrideIntent(DEFEND, BUFF)) {
 			this.intent = ATTACK;
-			this.intentHistory = [ATTACK];
-		} else if (this.overrideIntent(BUFF)) {
-			this.intent = ATTACK;
-			this.intentHistory = [ATTACK];
+			this.intentHistory.push(this.intent);
 		};
 		if (game.enemyNum == game.enemies.length - 1) {
 			game.enemyNum = -1;
@@ -126,7 +123,7 @@ class Enemy {
 				return ATTACK;
 			} else {
 				if (this.health <= this.maxHealth / 4 || this.eff.resilience > 1) return DEFEND;
-				return chance(3/5) ? BUFF : DEFEND;
+				return chance(2/3) ? BUFF : DEFEND;
 			};
 		};
 		return chance(3/5) ? ATTACK : DEFEND;
@@ -134,15 +131,20 @@ class Enemy {
 	/**
 	 * Overrides the enemy's intent if the conditions are satisfied.
 	 * @param {ATTACK | DEFEND | BUFF} type - the type of intent to override.
+	 * @param {ATTACK | DEFEND | BUFF | undefined} type2 - another type to check for, if any.
 	 */
-	overrideIntent(type) {
-		const location0 = this.intentHistory.lastIndexOf(type);
-		if (location0 !== -1) {
-			const location1 = this.intentHistory.lastIndexOf(type, location0 - 1);
-			if (location1 + 1 === location0) {
-				const location2 = this.intentHistory.lastIndexOf(type, location1 - 1);
-				if (location2 + 1 === location1) {
-					this.intentHistory = [];
+	overrideIntent(type, type2) {
+		let location = this.intentHistory.lastIndexOf(type);
+		if (type2) {
+			let location2 = this.intentHistory.lastIndexOf(type2);
+			if (location2 > location) location = location2;
+		};
+		if (location !== -1) {
+			let item1 = this.intentHistory[location - 1];
+			if (item1 === type || (type2 && item1 === type2)) {
+				let item2 = this.intentHistory[location - 2];
+				if (item2 === type || (type2 && item2 === type2)) {
+					this.intentHistory.splice(this.intentHistory.length - 1);
 					return true;
 				};
 			};
