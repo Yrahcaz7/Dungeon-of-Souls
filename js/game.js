@@ -396,10 +396,7 @@ function selection() {
 			} else {
 				game.location = paths[game.location][game.mapSelect];
 				let coor = game.location.split(", ");
-				if (game.select[1] == 0) {
-					game.map[coor[0]][coor[1]][3][0] = game.map[coor[0]][coor[1]][3][0] + ", 3";
-					game.artifacts.push(0);
-				};
+				if (game.select[1] == 0) game.artifacts.push(0);
 				game.room = game.map[coor[0]][coor[1]];
 				game.select = [-1, 0];
 				game.mapSelect = -1;
@@ -1017,16 +1014,21 @@ function updateVisuals() {
 	updateData();
 	// visuals
 	graphics.backgrounds();
-	if (menuLocation === TITLE || menuLocation === DIFFICULTY_CHANGE) {
+	if (menuLocation !== -1) {
 		graphics.middleLayer();
 		draw.image(title, (400 - title.width) / 2, 0);
-		if (game.artifacts.includes(0)) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": CENTER});
+		if (game.artifacts.includes(0) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": CENTER});
 		else draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": CENTER});
 		if (new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "#fff", "text-align": CENTER});
 		if (global.difficulty === undefined) global.difficulty = 0;
 		draw.imageSector(difficulty, 0, global.difficulty * 16, 64, 16, 168, 146);
-	};
-	if (menuLocation !== -1) {
+		if (game.artifacts.includes(0)) {
+			if (game.floor == 10 && transition < 100) {
+				ctx.globalAlpha = transition / 100;
+			};
+			draw.imageSector(difficulty, 0, 2 * 16, 64, 16, 168, 146);
+			ctx.globalAlpha = 1;
+		};
 		if (game.select[0] === WELCOME) {
 			draw.box(80, 83, 240, 34);
 			if (global.difficulty === 0) draw.lore(200 - 2, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": CENTER});
@@ -1044,6 +1046,7 @@ function updateVisuals() {
 			draw.lore(x + 4, y + 16, "YES");
 			draw.lore(x + 26, y + 16, "NO");
 		};
+		if (game.artifacts.includes(0) && game.floor == 10 && transition < 100) transition++;
 		return;
 	};
 	if (!hidden()) {
@@ -1166,6 +1169,7 @@ function updateVisuals() {
 		game.state = "game_fin";
 		game.select = [GAME_FIN, 0];
 	};
+	if (game.artifacts.includes(0) && game.floor == 10 && transition < 100) transition++;
 };
 
 const gameloop = setInterval(() => {

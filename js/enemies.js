@@ -19,6 +19,8 @@ const SLIME = {BIG: 600, SMALL: 601, PRIME: 602}, FRAGMENT = 603;
 
 const ATTACK = 700, DEFEND = 701, BUFF = 702;
 
+const INTENT = {[ATTACK]: "attack you", [DEFEND]: "defend itself", [BUFF]: "buff itself"};
+
 class Enemy {
 	/**
 	 * Returns a new enemy.
@@ -31,6 +33,7 @@ class Enemy {
 		else if (type === FRAGMENT) power += 2;
 		power += global.difficulty * 0.75;
 		power += (game.floor * 0.05) * (2 ** global.difficulty);
+		if (game.artifacts.includes(0)) power += 0.5;
 		this.type = +type;
 		if (type === FRAGMENT) this.maxHealth = Math.round(((power * 10) + 20) * 1.05);
 		else this.maxHealth = Math.round(((power * 10) + 20) * ((random() / 10) + 0.95));
@@ -43,6 +46,34 @@ class Enemy {
 		if (type === FRAGMENT && game.artifacts.includes(0)) this.eff.rewinds = 1;
 		this.intent = this.getIntent(true);
 		this.intentHistory = [this.intent];
+	};
+	/**
+	 * Gets the enemy's extra attack power.
+	 */
+	getExtraAttackPower() {
+		let power = 0;
+		if (this.eff.rewinds) power += this.attackPower * this.eff.rewinds * 0.2;
+		return Math.floor(power);
+	};
+	/**
+	 * Gets the enemy's extra defend power.
+	 */
+	getExtraDefendPower() {
+		let power = 0;
+		if (this.eff.rewinds) power += this.defendPower * this.eff.rewinds * 0.2;
+		return Math.floor(power);
+	};
+	/**
+	 * Gets the enemy's total attack power.
+	 */
+	getTotalAttackPower() {
+		return this.attackPower + this.getExtraAttackPower();
+	};
+	/**
+	 * Gets the enemy's total defend power.
+	 */
+	getTotalDefendPower() {
+		return this.defendPower + this.getExtraDefendPower();
 	};
 	/**
 	 * Starts the enemy's action.
@@ -75,10 +106,10 @@ class Enemy {
 	middleAction() {
 		if (this.intent === ATTACK) {
 			let prevHealth = game.health;
-			takeDamage(this.attackPower);
+			takeDamage(this.getTotalAttackPower());
 			if (game.health < prevHealth) startAnim.player("hit");
 		} else if (this.intent === DEFEND) {
-			this.shield += this.defendPower;
+			this.shield += this.getTotalDefendPower();
 			if (this.type > SLIME.PRIME || (this.type === SLIME.PRIME && primeAnim != -1)) {
 				this.finishAction();
 			};
@@ -94,15 +125,24 @@ class Enemy {
 	 * Finishes the enemy's action.
 	 */
 	finishAction() {
-		if (game.shield == 0 && playerAnim[1] != "idle" && playerAnim[1] != "hit") startAnim.player("idle");
-		this.intent = this.getIntent();
-		this.intentHistory.push(this.intent);
-		if (this.overrideIntent(ATTACK)) {
-			this.intent = DEFEND;
+		if (game.shield == 0 && playerAnim[1] != "idle" && playerAnim[1] != "hit") {
+			startAnim.player("idle");
+		};
+		if (this.eff.countdown > 0) {
+			this.intent = this.intentHistory[this.eff.countdown - 1];
+			this.intentHistory.splice(this.eff.countdown - 1);
+			this.eff.countdown--;
+			if (!this.eff.countdown) this.eff.rewinds++;
+		} else {
+			this.intent = this.getIntent();
 			this.intentHistory.push(this.intent);
-		} else if (this.overrideIntent(DEFEND, BUFF)) {
-			this.intent = ATTACK;
-			this.intentHistory.push(this.intent);
+			if (this.overrideIntent(ATTACK)) {
+				this.intent = DEFEND;
+				this.intentHistory.push(this.intent);
+			} else if (this.overrideIntent(DEFEND, BUFF)) {
+				this.intent = ATTACK;
+				this.intentHistory.push(this.intent);
+			};
 		};
 		if (game.enemyNum == game.enemies.length - 1) {
 			game.enemyNum = -1;

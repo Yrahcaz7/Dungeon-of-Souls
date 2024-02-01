@@ -19,10 +19,11 @@ const infoText = {
 	// effects
 	"aura blade": "If something has X aura\nblades, every time it\n<#f44>attacks</#f44>, it deals 5 + X\n<#f44>extra damage</#f44>, then X is\nreduced by 1.",
 	burn: "If something has X burn,\nat the end of its turn,\nit takes X <#f44>damage</#f44>, then\nX is reduced by 1.",
+	countdown: "If an enemy has X\ncountdown, at the end of\nits turn, its intent is\nset to what it was on\nthe Xth turn, and then\nX is reduced by 1.",
 	"one use": "When a one use card is\nplayed, it is sent to\nthe void. Cards in the\nvoid stay there until\nthe end of the battle.",
 	reinforce: "If something has X\nreinforces, at the start\nof its turn, its <#58f>shield</#58f>\nis kept, then X is\nreduced by 1.",
 	resilience: "If something has X\nresilience, it takes 25%\nless damage, rounded\ndown. At the start of\nits turn, X is reduced\nby 1.",
-	rewind: "If something has any\nrewinds, it use one to\nreturn to its initial\nstate upon reaching 0\nhealth except it will be\nmassively weakened.",
+	rewind: "If something has X\nrewinds, it is X times\n20 percent stronger. If\nsomething that has\nrewinds and 0 countdown\nreaches 0 health, it\ngains 1 rewind, all\nentities heal fully, and\nthe countdown begins.",
 	weakness: "If something has X\nweakness, its <#f44>attack</#f44> is\nreduced by 25%, rounded\ndown. At the end of its\nturn, X is reduced by 1.",
 	// intents
 	[ATTACK]: "This enemy intends to attack\nyou on its next turn.",
@@ -198,22 +199,26 @@ function updateData() {
 		if (game.enemies[index].shield > game.enemies[index].maxShield) game.enemies[index].shield = game.enemies[index].maxShield;
 	};
 	// kill enemies
+	let healAll = false;
 	for (let index = 0; index < game.enemies.length; index++) {
 		if (game.enemies[index].health <= 0) {
-			if (game.enemies[index].eff.rewinds) {
-				game.enemies[index].health = game.enemies[index].maxHealth / 2;
-				game.enemies[index].shield = 0;
-				game.enemies[index].eff = {
-					rewinds: game.enemies[index].rewinds - 1,
-					weakness: 99,
-				};
-				game.enemies[index].intent = game.enemies[index].getIntent(true);
-				game.enemies[index].intentHistory = [game.enemies[index].intent];
+			if (game.enemies[index].eff.rewinds > 0 && !game.enemies[index].eff.countdown) {
+				game.enemies[index].eff.rewinds++;
+				game.enemies[index].eff.countdown = Math.max(game.enemies[index].intentHistory.length - 1, 0);
+				game.enemies[index].intentHistory.splice(game.enemies[index].intentHistory.length - 1);
+				healAll = true;
 			} else {
 				game.enemies.splice(index, 1);
 				if (game.enemyNum >= index) game.enemyNum--;
 			};
 		};
+	};
+	// heal everything
+	if (healAll) {
+		for (let index = 0; index < game.enemies.length; index++) {
+			game.enemies[index].health = game.enemies[index].maxHealth;
+		};
+		game.health = get.maxHealth();
 	};
 	// game over
 	if (game.health === 0 && playerAnim[1] != "death") {

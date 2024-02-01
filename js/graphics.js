@@ -479,7 +479,7 @@ const info = {
 	 */
 	player(type, xPlus = 0, yPlus = 0) {
 		if (typeof type != "string") return 0;
-		const ending = (type.endsWith("s") || type == "burn" || type == "resilience") ? "" : "s";
+		const ending = (type.endsWith("s") || type == "burn" || type == "countdown" || type == "resilience") ? "" : "s";
 		const eff = game.eff[type.replace(/\s/g, "_") + ending];
 		let y = 71 + yPlus, desc = "You have " + eff + " " + type + (eff >= 2 ? ending : "") + ".", move = 0;
 		move += draw.textBox(85 + xPlus, y + move, desc.length, desc, {"text-small": true});
@@ -495,11 +495,12 @@ const info = {
 	enemy(type, xPlus = 0, yPlus = 0) {
 		if (typeof type != "string") return 0;
 		const pos = enemyPos[game.select[1]];
-		const ending = (type.endsWith("s") || type == "burn" || type == "resilience") ? "" : "s";
+		const ending = (type.endsWith("s") || type == "burn" || type == "countdown" || type == "resilience") ? "" : "s";
 		const eff = game.enemies[game.select[1]].eff[type.replace(/\s/g, "_") + ending];
 		let y = pos[1] + yPlus, desc = "This has " + eff + " " + type + (eff >= 2 ? ending : "") + ".", move = 0;
 		move += draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, y + move, desc.length, desc, {"text-small": true});
 		move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, infoText[type], {"text-small": true});
+		if (type == "countdown") move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, "The next intent will be\nto " + INTENT[game.enemies[game.select[1]].intentHistory[eff - 1]] + ".", {"text-small": true});
 		return move;
 	},
 	/**
@@ -562,13 +563,15 @@ const graphics = {
 			draw.image(background.floating_arch, 136, 34 - Math.round(backAnim[0]));
 			draw.image(background.debris, 151, 92 - Math.round(backAnim[2]));
 		};
-		if (game.artifacts.includes(0)) {
+		if (game.artifacts.includes(0) && game.floor == 10) {
 			if (transition < 100) {
 				ctx.globalAlpha = transition / 100;
 			};
 			draw.image(background.tunnel_of_time, 0 - backAnim[6]);
-			backAnim[6]++;
+			if (!game.enemies[0]?.eff?.countdown) backAnim[6]++;
+			else backAnim[6]--;
 			if (backAnim[6] >= 16) backAnim[6] -= 16;
+			else if (backAnim[6] < 0) backAnim[6] += 16;
 			ctx.globalAlpha = 1;
 		};
 		if (game.floor != 10) {
@@ -593,23 +596,15 @@ const graphics = {
 	 * Draws the middle layer on the canvas.
 	 */
 	middleLayer() {
-		if (game.artifacts.includes(0)) {
-			// setup debris
+		if (game.artifacts.includes(0) && game.floor == 10) {
 			if (extraAnim.length == 0) {
 				for (let index = 0; index < 9; index++) {
 					extraAnim[index] = [Math.random() * 180 + 6, index * 50 - Math.random() * 10, Math.floor(Math.random() * 20 + index) % 20];
 				};
 			};
-			// start fade
 			if (transition < 100) {
 				ctx.globalAlpha = transition / 100;
-				transition++;
 			};
-			// difficulty
-			if (menuLocation !== -1) {
-				draw.imageSector(difficulty, 0, 2 * 16, 64, 16, 168, 146);
-			};
-			// debris
 			for (let index = 0; index < extraAnim.length; index++) {
 				if (extraAnim[index][2] < 8) {
 					draw.imageSector(background.column_debri, (extraAnim[index][2] % 8) * 16, 0, 16, 8, Math.floor(400 - extraAnim[index][1]), Math.floor(extraAnim[index][0]));
@@ -627,12 +622,14 @@ const graphics = {
 				const rand = Math.random();
 				if (rand < 0.05) extraAnim[index][0]++;
 				else if (rand < 0.1) extraAnim[index][0]--;
-				extraAnim[index][1] += (Math.random() - 0.5) + 2;
+				if (!game.enemies[0]?.eff?.countdown) extraAnim[index][1] += (Math.random() - 0.5) + 2;
+				else extraAnim[index][1] -= (Math.random() - 0.5) + 2;
 				if (extraAnim[index][1] >= 450) {
 					extraAnim[index] = [Math.random() * 180 + 6, 0 - Math.random() * 10, Math.floor(Math.random() * 20 + index) % 20];
+				} else if (extraAnim[index][1] <= 0) {
+					extraAnim[index] = [Math.random() * 180 + 6, 450 + Math.random() * 10, Math.floor(Math.random() * 20 + index) % 20];
 				};
 			};
-			// stop fade
 			ctx.globalAlpha = 1;
 		};
 	},
@@ -964,10 +961,10 @@ const graphics = {
 				};
 				let power = 0;
 				if (game.enemies[index].intent === ATTACK) {
-					power = game.enemies[index].attackPower;
+					power = game.enemies[index].getTotalAttackPower();
 					power = Math.ceil(power * get.takeDamageMult(index));
 				} else if (game.enemies[index].intent === DEFEND) {
-					power = game.enemies[index].defendPower;
+					power = game.enemies[index].getTotalDefendPower();
 				};
 				draw.intent(pos[0] + 16, y, power, game.enemies[index].intent);
 			};
@@ -1137,8 +1134,10 @@ const graphics = {
 				let left = game.select[1] === 0 && game.enemies.length > 1;
 				draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
 				draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "#fff", "text-align": CENTER, "text-small": true});
-				if (left) draw.lore(pos[0] + coords[0] - 5.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "#fff", "text-align": LEFT, "text-small": true});
-				else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + "\nDEF: " + enemy.defendPower, {"color": "#fff", "text-small": true});
+				const exAtt = enemy.getExtraAttackPower();
+				const exDef = enemy.getExtraDefendPower();
+				if (left) draw.lore(pos[0] + coords[0] - 5.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-align": LEFT, "text-small": true});
+				else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-small": true});
 				let x = coords[0] - 5.5, y = coords[1] - 1;
 				for (const key in game.enemies[game.select[1]].eff) {
 					if (Object.hasOwnProperty.call(game.enemies[game.select[1]].eff, key)) {

@@ -154,6 +154,7 @@ const player = {
 }, icon = {
 	aura_blade: new Image,
 	burn: new Image,
+	countdown: new Image,
 	reinforce: new Image,
 	resilience: new Image,
 	rewind: new Image,
