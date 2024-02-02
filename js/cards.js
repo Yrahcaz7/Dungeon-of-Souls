@@ -19,6 +19,7 @@ const attributes = {
 	// gameplay
 	unplayable: [0],
 	"one use": [3000, 4001],
+	uniform: [1002, 1003],
 	// technical
 	"NO SELECT": [1002],
 	"NO ATTACK EFFECTS": [1003, 3001],
@@ -53,26 +54,25 @@ const attributes = {
 	},
 	1002: {
 		name: "sweeping slash",
-		desc: "Deal 3 damage to\nall enemies. Extra\ndamage has half the\neffect on this,\nrounded down.",
+		desc: "Deal 3 damage to\nall enemies.\nUniform.",
 		rarity: 1,
 		cost: 1,
 		anim: "attack_2",
-		exMod: 0.5,
 		attack() {
 			for (let index = 0; index < game.enemies.length; index++) {
-				dealDamage(3, this.exMod, index);
+				dealDamage(3, 0.5, index);
 			};
 		},
 	},
 	1003: {
 		name: "bladestorm",
-		desc: "Use all of your\naura blades to deal\n6 damage for each\nto an enemy and 1\neach to all others.",
+		desc: "Consume all X aura\nblades to deal\nX times 6 damage\nto one enemy and\nX to all others.\nUniform.",
 		rarity: 2,
 		cost: 2,
 		attack() {
-			dealDamage(game.eff.aura_blades * 5);
+			dealDamage(game.eff.aura_blades * 6, 0.5);
 			for (let index = 0; index < game.enemies.length; index++) {
-				dealDamage(game.eff.aura_blades, 0, index);
+				if (index != game.enemyAtt[1]) dealDamage(game.eff.aura_blades, 0.5, index);
 			};
 			game.eff.aura_blades = 0;
 		},
@@ -213,22 +213,24 @@ const attributes = {
 		},
 	},
 }, rarities = {
-	"-1": "error",
-	0: "starter",
-	1: "common",
-	2: "rare",
+	[-1]: "error",
+	[0]: "starter",
+	[1]: "common",
+	[2]: "rare",
 }, types = ["error", "attack", "defense", "skill", "magic"];
 
 for (const key in cards) {
 	if (Object.hasOwnProperty.call(cards, key)) {
-		cards[key].desc = cards[key].desc.replace(/([Hh]ealth|[Dd]amage(?!<\/#f44>)|[Ee]xtra\sdamage|[Aa]ttack)/g, "<#f44>$1</#f44>").replace(/([Ss]hield|[Dd]efense)/g, "<#58f>$1</#58f>");
-		if (cards[key].exMod === undefined && (cards[key].damage || cards[key].attack)) cards[key].exMod = 1;
+		cards[key].desc = cards[key].desc.replace(/(health|damage|attack)/gi, "<#f44>$1</#f44>");
+		cards[key].desc = cards[key].desc.replace(/(shield|defense)/gi, "<#58f>$1</#58f>");
+		cards[key].desc = cards[key].desc.replace(/(one\suse|uniform)/gi, "<#666>$1</#666>");
 		cards[key].keywords = [];
-		if (/[Aa]ura[ \n]blade/.test(cards[key].desc)) cards[key].keywords.push("aura blade");
-		if (/[Bb]urn/.test(cards[key].desc)) cards[key].keywords.push("burn");
-		if (/[Oo]ne[ \n]use/.test(cards[key].desc)) cards[key].keywords.push("one use");
-		if (/[Rr]einforce/.test(cards[key].desc)) cards[key].keywords.push("reinforce");
-		if (/[Ww]eakness/.test(cards[key].desc)) cards[key].keywords.push("weakness");
+		if (/aura\sblade/i.test(cards[key].desc)) cards[key].keywords.push("aura blade");
+		if (/burn/i.test(cards[key].desc)) cards[key].keywords.push("burn");
+		if (/one\suse/i.test(cards[key].desc)) cards[key].keywords.push("one use");
+		if (/reinforce/i.test(cards[key].desc)) cards[key].keywords.push("reinforce");
+		if (/uniform/i.test(cards[key].desc)) cards[key].keywords.push("uniform");
+		if (/weakness/i.test(cards[key].desc)) cards[key].keywords.push("weakness");
 	};
 };
 

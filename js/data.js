@@ -17,21 +17,32 @@
 
 const infoText = {
 	// effects
-	"aura blade": "If something has X aura\nblades, every time it\n<#f44>attacks</#f44>, it deals 5 + X\n<#f44>extra damage</#f44>, then X is\nreduced by 1.",
-	burn: "If something has X burn,\nat the end of its turn,\nit takes X <#f44>damage</#f44>, then\nX is reduced by 1.",
+	"aura blade": "If something has X aura\nblades, every time it\nattacks, it deals 5 + X\nextra damage, then X is\nreduced by 1.",
+	burn: "If something has X burn,\nat the end of its turn,\nit takes X damage, then\nX is reduced by 1.",
 	countdown: "If an enemy has X\ncountdown, at the end of\nits turn, its intent is\nset to what it was on\nthe Xth turn, and then\nX is reduced by 1.",
 	"one use": "When a one use card is\nplayed, it is sent to\nthe void. Cards in the\nvoid stay there until\nthe end of the battle.",
-	reinforce: "If something has X\nreinforces, at the start\nof its turn, its <#58f>shield</#58f>\nis kept, then X is\nreduced by 1.",
+	uniform: "Extra damage and extra\nshield have half the\neffect on uniform cards,\nrounded down.",
+	reinforce: "If something has X\nreinforces, at the start\nof its turn, its shield\nis kept, then X is\nreduced by 1.",
 	resilience: "If something has X\nresilience, it takes 25%\nless damage, rounded\ndown. At the start of\nits turn, X is reduced\nby 1.",
 	rewind: "If something has X\nrewinds, it is X times\n20 percent stronger. If\nsomething that has\nrewinds and 0 countdown\nreaches 0 health, it\ngains 1 rewind, all\nentities heal fully, and\nthe countdown begins.",
-	weakness: "If something has X\nweakness, its <#f44>attack</#f44> is\nreduced by 25%, rounded\ndown. At the end of its\nturn, X is reduced by 1.",
+	weakness: "If something has X\nweakness, its attack is\nreduced by 25%, rounded\ndown. At the end of its\nturn, X is reduced by 1.",
 	// intents
 	[ATTACK]: "This enemy intends to attack\nyou on its next turn.",
 	[DEFEND]: "This enemy intends to defend\nitself on its next turn.",
 	[BUFF]: "This enemy intends to buff\nitself on its next turn.",
 	// other
 	"the map": "You can choose where\nyou go next. Cannot use\nduring a battle.",
-}, overview = ""
+};
+
+for (const key in infoText) {
+	if (Object.hasOwnProperty.call(infoText, key)) {
+		infoText[key] = infoText[key].replace(/(health|heal|extra\sdamage|damage|attacks|attack)/gi, "<#f44>$1</#f44>");
+		infoText[key] = infoText[key].replace(/(extra\sshield|shield|defend|defense)/gi, "<#58f>$1</#58f>");
+		infoText[key] = infoText[key].replace(/(one\suse|uniform)/gi, "<#666>$1</#666>");
+	};
+};
+
+const overview = ""
 	+ "<b>Storyline:<s>"
 	+ "You have been trapped in this dungeon as long as you can remember.\n"
 	+ "You are determined to get out, so you pick up some armour and start climbing up the floors.\n"

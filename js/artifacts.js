@@ -74,7 +74,9 @@ const artifacts = {
 
 for (const key in artifacts) {
 	if (Object.hasOwnProperty.call(artifacts, key)) {
-		artifacts[key].desc = artifacts[key].desc.replace(/([Mm]ax\shealth|[Hh]ealth|[Hh]eal|[Dd]amage(?!<\/#f44>)|[Ee]xtra\sdamage|[Aa]ttack)/g, "<#f44>$1</#f44>").replace(/([Ss]hield|[Dd]efense)/g, "<#58f>$1</#58f>").replace(/([Ee]nergy|[Cc]ard\sreward\schoice)/g, "<#ff0 highlight>$1</#ff0>");
+		artifacts[key].desc = artifacts[key].desc.replace(/(max\shealth|health|heal|damage|attack)/gi, "<#f44>$1</#f44>");
+		artifacts[key].desc = artifacts[key].desc.replace(/(shield|defense)/gi, "<#58f>$1</#58f>");
+		artifacts[key].desc = artifacts[key].desc.replace(/(energy|card\sreward\schoice)/gi, "<#ff0 highlight>$1</#ff0>");
 	};
 };
 

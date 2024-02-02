@@ -98,12 +98,13 @@ const get = {
 	},
 	/**
 	 * Gets the current extra damage effect.
+	 * @param {boolean} attacking - whether the player is the middle of attacking.
 	 */
-	extraDamage() {
+	extraDamage(attacking = false) {
 		let extra = 0;
 		if (game.attackEffects.includes(AURA_BLADE)) {
 			extra += 5 + (game.eff.aura_blades + 1);
-		} else if (game.eff.aura_blades) {
+		} else if (game.eff.aura_blades && !attacking) {
 			extra += 5 + game.eff.aura_blades;
 		};
 		if (game.artifacts.includes(3)) extra += 2;
@@ -238,8 +239,9 @@ const AURA_BLADE = 200;
  * @param {boolean} attack - whether the damage is considered an attack. Defaults to `true`.
  */
 function dealDamage(amount, exMod = 1, enemy = game.enemyAtt[1], attack = true) {
+	if (isNaN(amount)) return;
 	// increase damage
-	if (attack) amount += Math.floor(get.extraDamage() * exMod);
+	if (attack) amount += Math.floor(get.extraDamage(true) * exMod);
 	// multiply damage
 	if (attack) amount = Math.ceil(amount * get.dealDamageMult(enemy));
 	// damage enemy
@@ -273,10 +275,14 @@ function takeDamage(amount, attack = true) {
 /**
  * Has the player gain shield.
  * @param {number} amount - the amount of shield to gain.
+ * @param {number} exMod - the extra shield modifier. Defaults to `1`.
  */
-function gainShield(amount = 0) {
+function gainShield(amount = 0, exMod = 1) {
 	if (isNaN(amount)) return;
-	game.shield += amount + get.extraShield();
+	// increase shield
+	amount += Math.floor(get.extraShield() * exMod);
+	// gain shield
+	game.shield += amount;
 };
 
 /**

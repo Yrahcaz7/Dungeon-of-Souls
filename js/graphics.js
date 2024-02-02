@@ -324,7 +324,7 @@ const draw = {
 		if (!(cardObject instanceof Object)) cardObject = new Card(cardObject);
 		let x = handPos[index], img = card.error;
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
-		const rarity = +cards[cardObject.id].rarity, name = cards[cardObject.id].name, exMod = +cards[cardObject.id].exMod;
+		const rarity = +cards[cardObject.id].rarity, name = cards[cardObject.id].name;
 		if (card[rarities[rarity]] && rarity >= 0) img = card[rarities[rarity]][name];
 		// card back
 		if (cardObject.id !== 0) draw.image(card.back, x + 2, y + 2);
@@ -350,10 +350,10 @@ const draw = {
 		// card description
 		let desc = cards[cardObject.id].desc, exDamage = get.extraDamage(), mulDamage = get.dealDamageMult(), valueIsLess = false;
 		if (!attributes["NO ATTACK EFFECTS"].includes(cardObject.id)) {
-			if (exMod) exDamage = Math.floor(exDamage * exMod);
+			if (attributes.uniform.includes(cardObject.id)) exDamage = Math.floor(exDamage * 0.5);
 			if (game.select[0] === ATTACK_ENEMY) mulDamage = get.dealDamageMult(game.select[1]);
 			if ((exDamage || mulDamage !== 1) && game.select[0] !== CARD_REWARDS) {
-				desc = desc.replace(/([Dd]eal\s)(\d+)(\s<#f44>damage<\/#f44>)/g, (substring, pre, number, post) => {
+				desc = desc.replace(/(deal\s)(\d+)(\s<#f44>damage<\/#f44>)/gi, (substring, pre, number, post) => {
 					const original = parseInt(number);
 					let damage = Math.ceil((original + exDamage) * mulDamage);
 					if (damage > original) {
@@ -369,7 +369,7 @@ const draw = {
 		};
 		let exShield = get.extraShield();
 		if (exShield && game.select[0] !== CARD_REWARDS) {
-			desc = desc.replace(/([Gg]ain\s)(\d+)(\s<#58f>shield<\/#58f>)/g, (substring, pre, number, post) => {
+			desc = desc.replace(/(gain\s)(\d+)(\s<#58f>shield<\/#58f>)/gi, (substring, pre, number, post) => {
 				const original = parseInt(number);
 				let shield = Math.ceil(original + exShield);
 				if (shield > original) {

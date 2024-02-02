@@ -19,7 +19,7 @@ const SLIME = {BIG: 600, SMALL: 601, PRIME: 602}, FRAGMENT = 603;
 
 const ATTACK = 700, DEFEND = 701, BUFF = 702;
 
-const INTENT = {[ATTACK]: "attack you", [DEFEND]: "defend itself", [BUFF]: "buff itself"};
+const INTENT = {[ATTACK]: "<#f44>attack</#f44> you", [DEFEND]: "<#58f>defend</#58f> itself", [BUFF]: "buff itself"};
 
 class Enemy {
 	/**
@@ -130,7 +130,7 @@ class Enemy {
 		};
 		if (this.eff.countdown > 0) {
 			this.intent = this.intentHistory[this.eff.countdown - 1];
-			this.intentHistory.splice(this.eff.countdown - 1);
+			this.intentHistory.push(this.intent);
 			this.eff.countdown--;
 			if (!this.eff.countdown) this.eff.rewinds++;
 		} else {

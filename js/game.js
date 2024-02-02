@@ -189,7 +189,8 @@ function playerTurn() {
 	if (game.enemyAtt[3] && playerAnim[1] == "idle") {
 		const attCard = cards[game.enemyAtt[2].id];
 		if (!attributes["NO SELECT"].includes(game.enemyAtt[2].id) && attCard.damage) {
-			dealDamage(attCard.damage, attCard.exMod);
+			if (attributes.uniform.includes(game.enemyAtt[2].id)) dealDamage(attCard.damage, 0.5);
+			else dealDamage(attCard.damage, 0);
 		};
 		if (typeof attCard.attack == "function") attCard.attack();
 		game.enemyAtt = [-1, -1, new Card(), false];
