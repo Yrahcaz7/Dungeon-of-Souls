@@ -472,7 +472,7 @@ const info = {
 	deck(type, xPlus = 0, yPlus = 0) {
 		let x = (game.cardSelect[0] * 66) + xPlus, y = 15 + (game.cardSelect[1] * 98) - game.deckPos + yPlus;
 		if (game.cardSelect[0] >= 4) {
-			const loc = (game.select[0] === DECK ? "deck" : (game.select[0] === VOID ? "void" : "discard"));
+			const loc = (((game.select[0] === IN_MAP && game.select[1]) || game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY) ? "deck" : (game.select[0] === DECK ? "deckLocal" : (game.select[0] === VOID ? "void" : "discard")));
 			const ref = cards[game[loc][game.cardSelect[0] + (game.cardSelect[1] * 6)].id];
 			if (ref.keywords.includes("unplayable") && ref.rarity <= 1) x -= 143;
 			else x -= 145;
@@ -1056,7 +1056,7 @@ const graphics = {
 				if (x === game.cardSelect[0] && y === game.cardSelect[1]) {
 					selected = [x, y];
 				} else {
-					draw.card(deck[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66), game.select[0] === IN_MAP);
+					draw.card(deck[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66), (game.select[0] === IN_MAP || game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY));
 				};
 				if (x >= 5) {
 					x = -1;
@@ -1064,7 +1064,7 @@ const graphics = {
 				};
 			};
 			if (selected) {
-				draw.card(deck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66), game.select[0] === IN_MAP);
+				draw.card(deck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66), (game.select[0] === IN_MAP || game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY));
 			};
 			graphics.target();
 			selected = game.cardSelect;
@@ -1079,6 +1079,7 @@ const graphics = {
 		else if (game.select[0] === DISCARD) draw.lore(200 - 2, 1, "Discard", {"color": "#fff", "text-align": CENTER});
 		else if (game.select[0] === VOID) draw.lore(200 - 2, 1, "Void", {"color": "#fff", "text-align": CENTER});
 		else if (game.select[0] === IN_MAP) draw.lore(200 - 2, 1, "Cards", {"color": "#fff", "text-align": CENTER});
+		else if (game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY) draw.lore(200 - 2, 1, "Purifier: Pick a Card to Destroy", {"color": "#fff", "text-align": CENTER});
 		draw.rect("#fff", 1, 12, 398, 1);
 	},
 	/**
@@ -1139,7 +1140,7 @@ const graphics = {
 				name = "fragment of time";
 			};
 			if (coords) {
-				info.intent();
+				if (game.select[1] !== game.enemyNum) info.intent();
 				let left = game.select[1] === 0 && game.enemies.length > 1;
 				draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
 				draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "#fff", "text-align": CENTER, "text-small": true});
@@ -1214,6 +1215,15 @@ const graphics = {
 				for (let index = 0; index < keywords.length; index++) {
 					const key = "" + keywords[index];
 					if (key) y += info.reward(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
+				};
+			};
+		} else if ((game.select[0] === IN_MAP && game.select[1]) || game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY) {
+			const keywords = cards[game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)].id]?.keywords;
+			let x = 0, y = 0;
+			if (keywords instanceof Array) {
+				for (let index = 0; index < keywords.length; index++) {
+					const key = "" + keywords[index];
+					if (key) y += info.deck(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
 				};
 			};
 		};
