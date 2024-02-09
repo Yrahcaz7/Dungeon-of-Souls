@@ -159,7 +159,7 @@ function hardReset() {
  * Restarts the current run.
  */
 function restartRun() {
-	localStorage.removeItem("Yrahcaz7/Dungeon-of-Souls/save/0");
+	localStorage.setItem("Yrahcaz7/Dungeon-of-Souls/save/0", btoa(JSON.stringify({difficulty: game.difficulty})));
 	game = null;
 	location.reload();
 };

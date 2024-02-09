@@ -33,12 +33,12 @@ let global = {
 		pixel_perfect_size: 1,
 		allow_fast_movement: true,
 	},
-	difficulty: 0,
 	charStage: {
 		knight: 0,
 	},
 }, game = {
 	character: "knight",
+	difficulty: 0,
 	health: 60,
 	shield: 0,
 	energy: 3,
@@ -52,6 +52,7 @@ let global = {
 	prevCard: -1,
 	cardSelect: [0, 0],
 	mapSelect: -1,
+	kills: {},
 	enemies: [],
 	enemyNum: -1,
 	enemyStage: -1,
@@ -303,11 +304,7 @@ function selection() {
 			menuLocation = -1;
 			actionTimer = 2;
 		} else if (!game.artifacts.includes(0)) {
-			if (action === LEFT && global.difficulty === 1) {
-				menuLocation = MENU.DIFFICULTY_CHANGE;
-				menuSelect = 1;
-				actionTimer = 2;
-			} else if (action === RIGHT && global.difficulty === 0) {
+			if ((action === LEFT && game.difficulty === 1) || (action === RIGHT && game.difficulty === 0)) {
 				menuLocation = MENU.DIFFICULTY_CHANGE;
 				menuSelect = 1;
 				actionTimer = 2;
@@ -323,8 +320,8 @@ function selection() {
 			actionTimer = 1;
 		} else if (action === ENTER) {
 			if (!menuSelect) {
-				if (global.difficulty === 0) global.difficulty++;
-				else global.difficulty--;
+				if (game.difficulty === 0) game.difficulty++;
+				else game.difficulty--;
 				restartRun();
 			} else menuLocation = MENU.TITLE;
 			actionTimer = 2;
@@ -565,7 +562,7 @@ function selection() {
 			return;
 		} else if (action === ENTER && paths[game.location][game.mapSelect]) {
 			const now = new Date();
-			if (game.floor == 9 && global.difficulty === 1 && ((now.getHours() % 12 == 11 && now.getMinutes() >= 59) || (now.getHours() % 12 == 0 && now.getMinutes() <= 1))) {
+			if (game.floor == 9 && game.difficulty === 1 && ((now.getHours() % 12 == 11 && now.getMinutes() >= 59) || (now.getHours() % 12 == 0 && now.getMinutes() <= 1))) {
 				game.select = [CONFIRM_FRAGMENT_UPGRADE, 2];
 			} else {
 				game.location = paths[game.location][game.mapSelect];
@@ -1051,8 +1048,8 @@ function updateVisuals() {
 		if (game.artifacts.includes(0) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": CENTER});
 		else draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": CENTER});
 		if (new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "#fff", "text-align": CENTER});
-		if (global.difficulty === undefined) global.difficulty = 0;
-		draw.imageSector(difficulty, 0, global.difficulty * 16, 64, 16, 168, 146);
+		if (game.difficulty === undefined) game.difficulty = 0;
+		draw.imageSector(difficulty, 0, game.difficulty * 16, 64, 16, 168, 146);
 		if (game.artifacts.includes(0)) {
 			if (game.floor == 10 && transition < 100) {
 				ctx.globalAlpha = transition / 100;
@@ -1062,13 +1059,13 @@ function updateVisuals() {
 		};
 		if (game.select[0] === WELCOME) {
 			draw.box(80, 83, 240, 34);
-			if (global.difficulty === 0) draw.lore(200 - 2, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": CENTER});
+			if (game.difficulty === 0) draw.lore(200 - 2, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": CENTER});
 			else draw.lore(200 - 2, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start a lot stronger from the beginning.\nAdditionally, the enemies get more powerful twice as fast as easy mode.\nOtherwise, this is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": CENTER});
 		} else if (menuLocation === MENU.DIFFICULTY_CHANGE) {
 			let x = 116, y = 83;
 			draw.rect("#0008");
 			draw.box(x + 1, y + 1, 166, 26);
-			if (global.difficulty === 0) draw.lore(x + 2, y + 2, "Are you sure you want to change the difficulty to hard?\nThis will also reset your current run.", {"text-small": true});
+			if (game.difficulty === 0) draw.lore(x + 2, y + 2, "Are you sure you want to change the difficulty to hard?\nThis will also reset your current run.", {"text-small": true});
 			else draw.lore(x + 2, y + 2, "Are you sure you want to change the difficulty to easy?\nThis will also reset your current run.", {"text-small": true});
 			if (!menuSelect) draw.rect("#fff", x + 1, y + 13, 23, 14);
 			else draw.rect("#fff", x + 23, y + 13, 17, 14);
@@ -1193,7 +1190,7 @@ function updateVisuals() {
 			game.select[1] += 10;
 		} else {
 			if (game.artifacts.includes(0)) draw.lore(200 - 2, 53, "GAME OVER\n\nDIFFICULTY: <#fcf050>DETERMINATION</#fcf050>\n\nTOP FLOOR: " + game.floor + "\n\nPRESS ENTER TO START A NEW RUN", {"color": "#f00", "text-align": CENTER});
-			else draw.lore(200 - 2, 53, "GAME OVER\n\nDIFFICULTY: " + (global.difficulty ? "HARD" : "EASY") + "\n\nTOP FLOOR: " + game.floor + "\n\nPRESS ENTER TO START A NEW RUN", {"color": "#f00", "text-align": CENTER});
+			else draw.lore(200 - 2, 53, "GAME OVER\n\nDIFFICULTY: " + (game.difficulty ? "HARD" : "EASY") + "\n\nTOP FLOOR: " + game.floor + "\n\nPRESS ENTER TO START A NEW RUN", {"color": "#f00", "text-align": CENTER});
 		};
 	} else if (game.select[0] === GAME_FIN) {
 		if (game.select[1] > 255) game.select[1] = 255;
@@ -1212,7 +1209,7 @@ function updateVisuals() {
 				draw.image(victorious, 168, 42 + num, victorious.width * 2, victorious.height * 2);
 				draw.rect("#0004");
 				if (game.artifacts.includes(0)) draw.lore(200 - 2, 50, "YOU BEAT THE GAME <#fcf050>WITH DETERMINATION</#fcf050>\n\nThank you for playing!\n\nMore content coming soon, such as:<s>\n- More cards!\n- More enemies!\n- A new area!\n- And much more!<b>\n\nPRESS ENTER TO START A NEW RUN", {"color": "#0f0", "text-align": CENTER});
-				else draw.lore(200 - 2, 50, "YOU BEAT THE GAME ON " + (global.difficulty ? "<#f00>HARD MODE!</#f00>" : "EASY MODE!") + "\n\nThank you for playing!\n\nMore content coming soon, such as:<s>\n- More cards!\n- More enemies!\n- A new area!\n- And much more!<b>\n\nPRESS ENTER TO START A NEW RUN", {"color": "#0f0", "text-align": CENTER});
+				else draw.lore(200 - 2, 50, "YOU BEAT THE GAME ON " + (game.difficulty ? "<#f00>HARD MODE!</#f00>" : "EASY MODE!") + "\n\nThank you for playing!\n\nMore content coming soon, such as:<s>\n- More cards!\n- More enemies!\n- A new area!\n- And much more!<b>\n\nPRESS ENTER TO START A NEW RUN", {"color": "#0f0", "text-align": CENTER});
 				if (actionTimer <= -1) {
 					if (action === ENTER) restartRun();
 				} else actionTimer -= 0.1;
@@ -1225,7 +1222,7 @@ function updateVisuals() {
 };
 
 const gameloop = setInterval(() => {
-	// bugs
+	// check for bugs
 	if (!canvas || !ctx) {
 		canvasData();
 		if (!canvas || !ctx) {
@@ -1233,14 +1230,11 @@ const gameloop = setInterval(() => {
 			return;
 		};
 	};
+	// normal things
 	if (loaded) {
-		// gameplay
 		if (menuLocation === -1) manageGameplay();
-		// selection
 		selection();
-		// visuals
 		updateVisuals();
-		// save
 		save();
 	};
 }, 100), musicloop = setInterval(() => {

@@ -157,6 +157,11 @@ function fixSave() {
 		if (game.enemies[game.enemyNum].done) game.enemyStage = ENDING;
 		else game.enemyStage = STARTING;
 	};
+	// fix difficulty
+	if (global.difficulty) {
+		game.difficulty = global.difficulty;
+		delete global.difficulty;
+	};
 };
 
 /**
@@ -166,22 +171,22 @@ function load() {
 	let get = localStorage.getItem(ID + "/0");
 	if (get && atob(get) && JSON.parse(atob(get))) {
 		let obj = JSON.parse(atob(get));
-		for (let index = 0; index < obj.enemies.length; index++) {
+		for (let index = 0; index < obj.enemies?.length; index++) {
 			obj.enemies[index] = classifyEnemy(obj.enemies[index]);
 		};
-		for (let index = 0; index < obj.deck.length; index++) {
+		for (let index = 0; index < obj.deck?.length; index++) {
 			obj.deck[index] = new Card(obj.deck[index].id, obj.deck[index].level);
 		};
-		for (let index = 0; index < obj.deckLocal.length; index++) {
+		for (let index = 0; index < obj.deckLocal?.length; index++) {
 			obj.deckLocal[index] = new Card(obj.deckLocal[index].id, obj.deckLocal[index].level);
 		};
-		for (let index = 0; index < obj.hand.length; index++) {
+		for (let index = 0; index < obj.hand?.length; index++) {
 			obj.hand[index] = new Card(obj.hand[index].id, obj.hand[index].level);
 		};
-		for (let index = 0; index < obj.discard.length; index++) {
+		for (let index = 0; index < obj.discard?.length; index++) {
 			obj.discard[index] = new Card(obj.discard[index].id, obj.discard[index].level);
 		};
-		for (let index = 0; index < obj.void.length; index++) {
+		for (let index = 0; index < obj.void?.length; index++) {
 			obj.void[index] = new Card(obj.void[index].id, obj.void[index].level);
 		};
 		Object.assign(game, obj);

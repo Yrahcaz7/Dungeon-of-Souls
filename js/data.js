@@ -220,6 +220,9 @@ function updateData() {
 				game.enemies[index].intentHistory.splice(game.enemies[index].intentHistory.length - 1);
 				healAll = true;
 			} else {
+				const type = game.enemies[index].type;
+				if (game.kills[type]) game.kills[type]++;
+				else game.kills[type] = 1;
 				game.enemies.splice(index, 1);
 				if (game.enemyNum >= index) game.enemyNum--;
 			};
