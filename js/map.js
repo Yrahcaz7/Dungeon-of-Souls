@@ -17,7 +17,7 @@
 
 const FIRSTBATTLE = 0, TREASURE = 1, PRIME = 2, ORB = 3, BOSS = 4;
 
-const BATTLEROOM = 100, TREASUREROOM = 101, PRIMEROOM = 102, ORBROOM = 103, BOSSROOM = 104;
+const ROOM = {BATTLE: 100, TREASURE: 101, PRIME: 102, ORB: 103, BOSS: 104};
 
 let mapProg = 0, mapTotal = 10, death_zones = 0, rowFalses = 0, rowNodes = 0;
 
@@ -29,6 +29,10 @@ function weakerSmallSlime(row) {
 	return SLIME.SMALL + ", " + (Math.round((0.5 + (row * 0.05)) * 100) / 100);
 };
 
+/**
+ * Gets the base gold reward for a room.
+ * @param {number} row - the row the room is in.
+ */
 function goldReward(row) {
 	return randomInt(25, 50) + (row * 2);
 };
@@ -39,18 +43,18 @@ function goldReward(row) {
  * @param {FIRSTBATTLE | TREASURE | PRIME | ORB | BOSS} attribute - the attribute of the map piece, if any.
  */
 function mapPiece(row, attribute = -1) {
-	if (attribute === FIRSTBATTLE) return [BATTLEROOM, 0, 0, [SLIME.SMALL], goldReward(row), randomCardSet(5)];
-	if (attribute === TREASURE) return [TREASUREROOM, randomInt(-5, 5), randomInt(-5, 5), false, goldReward(row) * 2, randomCardSet(5)];
-	if (attribute === PRIME) return [PRIMEROOM, randomInt(-5, 5), randomInt(-5, 5), [weakerSmallSlime(row), SLIME.PRIME, weakerSmallSlime(row)], goldReward(row) * 2, randomCardSet(5), randomArtifactSet(3)];
-	if (attribute === ORB) return [ORBROOM, randomInt(-5, 5), randomInt(-5, 5)];
-	if (attribute === BOSS) return [BOSSROOM, 0, 0, [FRAGMENT], goldReward(row) * 4, randomCardSet(5), randomArtifactSet(3)];
-	let type = chance(3/5) ? BATTLEROOM : false;
-	if (rowFalses >= 3 || (row === 0 && rowFalses >= 2)) type = BATTLEROOM;
+	if (attribute === FIRSTBATTLE) return [ROOM.BATTLE, 0, 0, [SLIME.SMALL], goldReward(row), randomCardSet(5)];
+	if (attribute === TREASURE) return [ROOM.TREASURE, randomInt(-5, 5), randomInt(-5, 5), false, goldReward(row) * 2, randomCardSet(5)];
+	if (attribute === PRIME) return [ROOM.PRIME, randomInt(-5, 5), randomInt(-5, 5), [weakerSmallSlime(row), SLIME.PRIME, weakerSmallSlime(row)], goldReward(row) * 2, randomCardSet(5), randomArtifactSet(3)];
+	if (attribute === ORB) return [ROOM.ORB, randomInt(-5, 5), randomInt(-5, 5)];
+	if (attribute === BOSS) return [ROOM.BOSS, 0, 0, [FRAGMENT], goldReward(row) * 4, randomCardSet(5), randomArtifactSet(3)];
+	let type = chance(3/5) ? ROOM.BATTLE : false;
+	if (rowFalses >= 3 || (row === 0 && rowFalses >= 2)) type = ROOM.BATTLE;
 	if (type) rowNodes++;
 	else rowFalses++;
 	if (!type || rowNodes == 6) return false;
 	let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
-	if (type === BATTLEROOM) {
+	if (type === ROOM.BATTLE) {
 		if (row >= 5) result.push(chance(1/3) ? [SLIME.BIG] : (chance(2/3) ? [SLIME.BIG, weakerSmallSlime(row)] : [SLIME.SMALL, SLIME.SMALL]));
 		else result.push(chance() ? [SLIME.BIG] : [SLIME.SMALL, weakerSmallSlime(row)]);
 		result.push(goldReward(row), randomCardSet(5));
@@ -68,7 +72,7 @@ function pathHasSpecial(coords, front = false) {
 	let boolean = false;
 	const looping = front ? (location = "", first = false) => {
 		let loc = location.split(", ");
-		if (!first && game.map[loc[0]] && (game.map[loc[0]][loc[1]][0] === TREASUREROOM || game.map[loc[0]][loc[1]][0] === PRIMEROOM)) {
+		if (!first && game.map[loc[0]] && (game.map[loc[0]][loc[1]][0] === ROOM.TREASURE || game.map[loc[0]][loc[1]][0] === ROOM.PRIME)) {
 			boolean = true;
 			return;
 		};
@@ -77,7 +81,7 @@ function pathHasSpecial(coords, front = false) {
 		};
 	} : (location = "", first = false) => {
 		let loc = location.split(", ");
-		if (!first && game.map[loc[0]] && (game.map[loc[0]][loc[1]][0] === TREASUREROOM || game.map[loc[0]][loc[1]][0] === PRIMEROOM)) {
+		if (!first && game.map[loc[0]] && (game.map[loc[0]][loc[1]][0] === ROOM.TREASURE || game.map[loc[0]][loc[1]][0] === ROOM.PRIME)) {
 			boolean = true;
 			return;
 		};
@@ -127,7 +131,7 @@ function mapRow(row) {
 			rand = randomInt(0, 5);
 			past = [];
 			while (past.length < 6) {
-				if (arr[rand] && arr[rand][0] !== TREASUREROOM && !pathHasSpecial(row + ", " + rand)) {
+				if (arr[rand] && arr[rand][0] !== ROOM.TREASURE && !pathHasSpecial(row + ", " + rand)) {
 					arr[rand] = mapPiece(row, PRIME);
 					death_zones++;
 					break;
@@ -170,7 +174,7 @@ async function generateMap() {
 			if (past.includes(rand)) setRand();
 		};
 		while (past.length < 6) {
-			if (game.map[2][rand] && game.map[2][rand][0] !== TREASUREROOM && !pathHasSpecial("2, " + rand, true)) {
+			if (game.map[2][rand] && game.map[2][rand][0] !== ROOM.TREASURE && !pathHasSpecial("2, " + rand, true)) {
 				game.map[2][rand] = mapPiece(2, PRIME);
 				death_zones++;
 				break;
@@ -183,7 +187,7 @@ async function generateMap() {
 			rand = randomInt(0, 5);
 			past = [];
 			while (past.length < 6) {
-				if (game.map[3][rand] && game.map[3][rand][0] === TREASUREROOM && !pathHasSpecial("3, " + rand, true)) {
+				if (game.map[3][rand] && game.map[3][rand][0] === ROOM.TREASURE && !pathHasSpecial("3, " + rand, true)) {
 					game.map[3][rand] = mapPiece(3, PRIME);
 					death_zones++;
 					break;

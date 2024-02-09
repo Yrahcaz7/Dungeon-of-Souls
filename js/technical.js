@@ -160,7 +160,7 @@ window.onresize = () => {
 
 document.addEventListener("keydown", (event) => {
 	const key = event.key, prevAction = +action;
-	if ((key == "E" || key == "e") && game.turn == "player") {
+	if ((key == "E" || key == "e") && game.turn === TURN.PLAYER) {
 		if (game.select[0] != CONFIRM_END) endTurnConfirm();
 	} else if (key == "1" && actionTimer == -1) {
 		if (game.select[0] === DECK && game.select[1]) {

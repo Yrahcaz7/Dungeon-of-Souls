@@ -1265,10 +1265,10 @@ const graphics = {
 	rewards(focused = true) {
 		draw.box(150, 20, 100, 160);
 		const place = game.location.split(", ");
-		const type = (game.location == "-1" ? BATTLEROOM : game.map[place[0]][place[1]][0]);
-		if (type === BATTLEROOM) draw.lore(200 - 2, 21, "Battle Loot!", {"text-align": CENTER});
-		else if (type === TREASUREROOM) draw.lore(200 - 2, 21, "Treasure!", {"text-align": CENTER});
-		else if (type === ORBROOM) draw.lore(200 - 2, 21, "Healing!", {"text-align": CENTER});
+		const type = (game.location == "-1" ? ROOM.BATTLE : game.map[place[0]][place[1]][0]);
+		if (type === ROOM.BATTLE) draw.lore(200 - 2, 21, "Battle Loot!", {"text-align": CENTER});
+		else if (type === ROOM.TREASURE) draw.lore(200 - 2, 21, "Treasure!", {"text-align": CENTER});
+		else if (type === ROOM.ORB) draw.lore(200 - 2, 21, "Healing!", {"text-align": CENTER});
 		else draw.lore(200 - 2, 21, "Rewards!", {"text-align": CENTER});
 		for (let index = 0; index < game.rewards.length; index++) {
 			let item = game.rewards[index];
@@ -1332,7 +1332,7 @@ const graphics = {
 			draw.image(map.top, 3, 12);
 			draw.image(map.row, 16, 20, map.row.width, 164);
 			draw.image(map.bottom, 16, 184);
-			if (game.state == "event_fin") {
+			if (game.state === STATE.EVENT_FIN) {
 				if (game.floor % 10 == 9) {
 					draw.image(map.select, 18 + (9 * 32), 12);
 					draw.image(map.select, 12 + (10 * 32), 12);
@@ -1365,7 +1365,7 @@ const graphics = {
 				if (!game.map[x][y]) continue;
 				let drawX = 25 + (x * 32) + game.map[x][y][1];
 				let drawY = 18 + (y * 32) + game.map[x][y][2];
-				if (game.map[x][y][0] === BOSSROOM) {
+				if (game.map[x][y][0] === ROOM.BOSS) {
 					drawX = 25 + 10 + 8 + (x * 32);
 					drawY = 90 + 8;
 				};
@@ -1378,7 +1378,7 @@ const graphics = {
 					const calcNode = (nodeX, nodeY) => {
 						connectNode = [nodeX - x, nodeY];
 						store.push([x, y, nodeX, nodeY]);
-						if (game.map[nodeX][nodeY][0] === BOSSROOM) {
+						if (game.map[nodeX][nodeY][0] === ROOM.BOSS) {
 							posX = 25 + 10 + 8 + (nodeX * 32);
 							posY = 90 + 8;
 						} else {
@@ -1425,15 +1425,15 @@ const graphics = {
 					if (!game.map[x][y]) continue;
 					let drawX = 25 + (x * 32) + game.map[x][y][1];
 					let drawY = 18 + (y * 32) + game.map[x][y][2];
-					if (game.map[x][y][0] === BATTLEROOM) {
+					if (game.map[x][y][0] === ROOM.BATTLE) {
 						draw.image(map.battle, drawX, drawY);
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(select.battle, drawX - 1, drawY - 1);
 						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.battle_blue, drawX - 1, drawY - 1);
-					} else if (game.map[x][y][0] === PRIMEROOM) {
+					} else if (game.map[x][y][0] === ROOM.PRIME) {
 						draw.image(map.death_zone, drawX, drawY);
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(select.death_zone, drawX - 1, drawY - 1);
 						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.death_zone_blue, drawX - 1, drawY - 1);
-					} else if (game.map[x][y][0] === TREASUREROOM) {
+					} else if (game.map[x][y][0] === ROOM.TREASURE) {
 						if (game.map[x][y][3]) {
 							draw.image(map.treasure_open, drawX, drawY);
 							if (x == coordOn[0] && y == coordOn[1]) draw.image(select.treasure_open_blue, drawX - 1, drawY - 1);
@@ -1442,11 +1442,11 @@ const graphics = {
 							if (x == coordSel[0] && y == coordSel[1]) draw.image(select.treasure, drawX - 1, drawY - 1);
 							if (x == coordOn[0] && y == coordOn[1]) draw.image(select.treasure_blue, drawX - 1, drawY - 1);
 						};
-					} else if (game.map[x][y][0] === ORBROOM) {
+					} else if (game.map[x][y][0] === ROOM.ORB) {
 						draw.image(map.orb, drawX, drawY);
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(select.orb, drawX - 1, drawY - 1);
 						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.orb_blue, drawX - 1, drawY - 1);
-					} else if (game.map[x][y][0] === BOSSROOM) {
+					} else if (game.map[x][y][0] === ROOM.BOSS) {
 						drawX += 10;
 						draw.image(map.boss, drawX, 90);
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(select.boss, drawX - 1, 90 - 1);

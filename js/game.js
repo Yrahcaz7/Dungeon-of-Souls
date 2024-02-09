@@ -17,7 +17,11 @@
 
 const HAND = 300, LOOKAT_YOU = 301, LOOKAT_ENEMY = 302, ATTACK_ENEMY = 303, LOOKER = 304, HELP = 305, END = 306, CONFIRM_END = 307, DECK = 308, DISCARD = 309, MAP = 310, IN_MAP = 311, POPUPS = 312, REWARDS = 313, CARD_REWARDS = 314, ARTIFACTS = 315, VOID = 316, CONFIRM_EXIT = 317, OPTIONS = 318, GAME_OVER = 319, GAME_FIN = 320, GAME_WON = 321, CONFIRM_RESTART = 322, WELCOME = 323, ARTIFACT_REWARDS = 324, CONFIRM_FRAGMENT_UPGRADE = 325;
 
-const TITLE = 400, DIFFICULTY_CHANGE = 401;
+const MENU = {TITLE: 400, DIFFICULTY_CHANGE: 401};
+
+const STATE = {ENTER: 1000, BATTLE: 1001, EVENT_FIN: 1002, GAME_END: 1003};
+
+const TURN = {PLAYER: 1100, ENEMY: 1101};
 
 const PIXEL_SIZES = [1, 2, 0.5];
 
@@ -42,8 +46,8 @@ let global = {
 	gold: 0,
 	location: "-1",
 	rewards: [],
-	state: "enter",
-	turn: "none",
+	state: STATE.ENTER,
+	turn: -1,
 	select: [WELCOME, 0],
 	prevCard: -1,
 	cardSelect: [0, 0],
@@ -72,7 +76,7 @@ let global = {
 	map: [],
 	traveled: [],
 	seed: "" + (Math.round(new Date().getTime() * (Math.random() + 0.001)) % 1000000).toString().randomize(),
-}, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = TITLE, menuSelect = 0, enemyPos = [], handPos = [], paths = {}, gameWon = false;
+}, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = MENU.TITLE, menuSelect = 0, enemyPos = [], handPos = [], paths = {}, gameWon = false;
 
 /**
  * Pushes a popup.
@@ -100,7 +104,7 @@ function musicPopup() {
  * Enters the battle.
  */
 function enterBattle() {
-	game.state = "battle";
+	game.state = STATE.BATTLE;
 	game.rewards = [];
 	game.deckLocal = shuffle(game.deck.slice(0));
 	game.hand = [];
@@ -129,7 +133,7 @@ function startTurn() {
 	};
 	// start of your turn effects
 	drawHand();
-	game.turn = "player";
+	game.turn = TURN.PLAYER;
 	if (game.eff.reinforces) game.eff.reinforces--;
 	else game.shield = 0;
 	if (game.eff.resilience) game.eff.resilience--;
@@ -152,7 +156,7 @@ function endTurn() {
 	};
 	if (game.eff.weakness) game.eff.weakness--;
 	// start of enemy turn effects
-	game.turn = "enemy";
+	game.turn = TURN.ENEMY;
 	game.enemyNum = -1;
 	for (let index = 0; index < game.enemies.length; index++) {
 		if (game.enemies[index].eff.reinforces) game.enemies[index].eff.reinforces--;
@@ -294,23 +298,23 @@ function selection() {
 			actionTimer = 2;
 		};
 		return;
-	} else if (menuLocation === TITLE) {
+	} else if (menuLocation === MENU.TITLE) {
 		if (action === ENTER) {
 			menuLocation = -1;
 			actionTimer = 2;
 		} else if (!game.artifacts.includes(0)) {
 			if (action === LEFT && global.difficulty === 1) {
-				menuLocation = DIFFICULTY_CHANGE;
+				menuLocation = MENU.DIFFICULTY_CHANGE;
 				menuSelect = 1;
 				actionTimer = 2;
 			} else if (action === RIGHT && global.difficulty === 0) {
-				menuLocation = DIFFICULTY_CHANGE;
+				menuLocation = MENU.DIFFICULTY_CHANGE;
 				menuSelect = 1;
 				actionTimer = 2;
 			};
 		};
 		return;
-	} else if (menuLocation === DIFFICULTY_CHANGE) {
+	} else if (menuLocation === MENU.DIFFICULTY_CHANGE) {
 		if (action === LEFT && menuSelect) {
 			menuSelect = 0;
 			actionTimer = 1;
@@ -322,7 +326,7 @@ function selection() {
 				if (global.difficulty === 0) global.difficulty++;
 				else global.difficulty--;
 				restartRun();
-			} else menuLocation = TITLE;
+			} else menuLocation = MENU.TITLE;
 			actionTimer = 2;
 		};
 		return;
@@ -400,7 +404,7 @@ function selection() {
 				game.room = game.map[coor[0]][coor[1]];
 				game.select = [-1, 0];
 				game.mapSelect = -1;
-				game.state = "enter";
+				game.state = STATE.ENTER;
 				game.floor++;
 			};
 			actionTimer = 2;
@@ -509,7 +513,7 @@ function selection() {
 		return;
 	};
 	// map
-	if (game.select[0] === IN_MAP && game.state == "event_fin" && paths[game.location]) {
+	if (game.select[0] === IN_MAP && game.state === STATE.EVENT_FIN && paths[game.location]) {
 		if ((action === UP || action === RIGHT)) {
 			if (game.mapSelect == -1) {
 				game.mapSelect = paths[game.location].length - 1;
@@ -544,7 +548,7 @@ function selection() {
 				game.room = game.map[coor[0]][coor[1]];
 				game.select = [-1, 0];
 				game.mapSelect = -1;
-				game.state = "enter";
+				game.state = STATE.ENTER;
 				game.floor++;
 			};
 			actionTimer = 1;
@@ -763,7 +767,7 @@ function selection() {
 		else game.select[1] = 0;
 		actionTimer = 2;
 		return;
-	} else if (action === ENTER && game.select[0] === END && game.turn == "player") {
+	} else if (action === ENTER && game.select[0] === END && game.turn === TURN.PLAYER) {
 		endTurnConfirm();
 		return;
 	};
@@ -929,14 +933,14 @@ function manageGameplay() {
 	// update data
 	updateData();
 	// actions
-	if (game.turn == "player") playerTurn();
+	if (game.turn === TURN.PLAYER) playerTurn();
 	// end battle
-	if (game.state == "battle" && !game.enemies.length) {
+	if (game.state === STATE.BATTLE && !game.enemies.length) {
 		// normal stuff
 		endTurn();
 		game.select = [REWARDS, 0];
-		game.state = "event_fin";
-		game.turn = "none";
+		game.state = STATE.EVENT_FIN;
+		game.turn = -1;
 		// activate artifacts
 		for (let index = 0; index < game.artifacts.length; index++) {
 			const func = artifacts[game.artifacts[index]][ENDOFBATTLE];
@@ -946,7 +950,7 @@ function manageGameplay() {
 		game.rewards = [];
 		if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
 		if (get.cardRewardChoices() > 0) game.rewards.push("1 card");
-		if (game.room[0] === PRIMEROOM || game.room[0] === BOSSROOM) {
+		if (game.room[0] === ROOM.PRIME || game.room[0] === ROOM.BOSS) {
 			if (game.room[6]) {
 				for (let index = 0; index < game.room[6].length; index++) {
 					if (game.artifacts.includes(game.room[6][index])) {
@@ -959,10 +963,10 @@ function manageGameplay() {
 		game.rewards.push("finish");
 	};
 	// load floor
-	if (game.state == "enter") {
+	if (game.state === STATE.ENTER) {
 		const place = game.location.split(", ");
-		const type = (game.location == "-1" ? BATTLEROOM : game.map[place[0]][place[1]][0]);
-		if (type === BATTLEROOM || type === PRIMEROOM || type === BOSSROOM) {
+		const type = (game.location == "-1" ? ROOM.BATTLE : game.map[place[0]][place[1]][0]);
+		if (type === ROOM.BATTLE || type === ROOM.PRIME || type === ROOM.BOSS) {
 			primeAnim = 0;
 			if (game.location == "-1") game.room = game.firstRoom;
 			else game.traveled.push(+place[1]);
@@ -976,26 +980,26 @@ function manageGameplay() {
 				};
 			};
 			enterBattle();
-		} else if (type === TREASUREROOM) {
+		} else if (type === ROOM.TREASURE) {
 			game.traveled.push(+place[1]);
 			game.map[place[0]][place[1]][3] = true;
 			game.select = [REWARDS, 0];
-			game.state = "event_fin";
+			game.state = STATE.EVENT_FIN;
 			game.rewards = [];
 			if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
 			if (get.cardRewardChoices() > 0) game.rewards.push("1 card");
 			game.rewards.push("finish");
-		} else if (type === ORBROOM) {
+		} else if (type === ROOM.ORB) {
 			game.traveled.push(+place[1]);
 			game.select = [REWARDS, 0];
-			game.state = "event_fin";
+			game.state = STATE.EVENT_FIN;
 			game.rewards = [Math.floor(get.maxHealth() * 0.5) + " health", "finish"];
 		};
 	};
 	// update data again
 	updateData();
 	// enemy actions
-	if (game.turn == "enemy") enemyTurn();
+	if (game.turn === TURN.ENEMY) enemyTurn();
 };
 
 /**
@@ -1029,7 +1033,7 @@ function updateVisuals() {
 			draw.box(80, 83, 240, 34);
 			if (global.difficulty === 0) draw.lore(200 - 2, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": CENTER});
 			else draw.lore(200 - 2, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start a lot stronger from the beginning.\nAdditionally, the enemies get more powerful twice as fast as easy mode.\nOtherwise, this is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": CENTER});
-		} else if (menuLocation === DIFFICULTY_CHANGE) {
+		} else if (menuLocation === MENU.DIFFICULTY_CHANGE) {
 			let x = 116, y = 83;
 			draw.rect("#0008");
 			draw.box(x + 1, y + 1, 166, 26);
@@ -1127,7 +1131,7 @@ function updateVisuals() {
 	};
 	if (!hidden()) graphics.target();
 	graphics.popups();
-	if (game.select[0] == GAME_OVER) {
+	if (game.select[0] === GAME_OVER) {
 		if (game.select[1] > 204) game.select[1] = 204;
 		const num = Math.floor(game.select[1]).toString(16);
 		draw.rect("#000000" + (num.length < 2 ? "0" : "") + num);
@@ -1137,7 +1141,7 @@ function updateVisuals() {
 			if (game.artifacts.includes(0)) draw.lore(200 - 2, 53, "GAME OVER\n\nDIFFICULTY: <#fcf050>DETERMINATION</#fcf050>\n\nTOP FLOOR: " + game.floor + "\n\nPRESS ENTER TO START A NEW RUN", {"color": "#f00", "text-align": CENTER});
 			else draw.lore(200 - 2, 53, "GAME OVER\n\nDIFFICULTY: " + (global.difficulty ? "HARD" : "EASY") + "\n\nTOP FLOOR: " + game.floor + "\n\nPRESS ENTER TO START A NEW RUN", {"color": "#f00", "text-align": CENTER});
 		};
-	} else if (game.select[0] == GAME_FIN) {
+	} else if (game.select[0] === GAME_FIN) {
 		if (game.select[1] > 255) game.select[1] = 255;
 		const num = Math.floor(game.select[1]).toString(16);
 		draw.rect("#000000" + (num.length < 2 ? "0" : "") + num);
@@ -1145,7 +1149,6 @@ function updateVisuals() {
 		else {
 			save();
 			loaded = false;
-			game.state = "game_won";
 			game.select = [GAME_WON, 0];
 			actionTimer = 4;
 			gameWon = true;
@@ -1161,8 +1164,7 @@ function updateVisuals() {
 				} else actionTimer -= 0.1;
 			}, 10);
 		};
-	} else if (game.select[0] == GAME_WON && !gameWon) {
-		game.state = "game_fin";
+	} else if (game.select[0] === GAME_WON && !gameWon) {
 		game.select = [GAME_FIN, 0];
 	};
 	if (game.artifacts.includes(0) && game.floor == 10 && transition < 100) transition++;

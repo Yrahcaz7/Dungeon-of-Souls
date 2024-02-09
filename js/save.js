@@ -50,9 +50,9 @@ function fixEnemyIntent(item) {
  * @param {Array} item - the room to fix.
  */
 function fixRoom(item) {
-	if (item[0] == "battle") item[0] = BATTLEROOM;
-	else if (item[0] == "treasure") item[0] = TREASUREROOM;
-	else if (item[0] == "battle_prime") item[0] = PRIMEROOM;
+	if (item[0] == "battle") item[0] = ROOM.BATTLE;
+	else if (item[0] == "treasure") item[0] = ROOM.TREASURE;
+	else if (item[0] == "battle_prime") item[0] = ROOM.PRIME;
 	if (item[3] == "closed") item[3] = false;
 	else if (item[3] == "open") item[3] = true;
 	if (item[3]?.length) {
@@ -134,6 +134,15 @@ function fixSave() {
 	else if (game.enemyStage == "middle") game.enemyStage = MIDDLE;
 	else if (game.enemyStage == "end" || game.enemyStage === END) game.enemyStage = ENDING;
 	else if (game.enemyStage == "none") game.enemyStage = -1;
+	// fix state
+	if (game.state == "enter") game.state = STATE.ENTER;
+	else if (game.state == "battle") game.state = STATE.BATTLE;
+	else if (game.state == "event_fin") game.state = STATE.EVENT_FIN;
+	else if (game.state == "game_over" || game.state == "game_won" || game.state == "game_fin") game.state = STATE.GAME_END;
+	// fix turn
+	if (game.turn == "player") game.turn = TURN.PLAYER;
+	else if (game.turn == "enemy") game.turn = TURN.ENEMY;
+	else if (game.turn == "none") game.turn = -1;
 	// fix artifacts
 	for (let index = 0; index < game.artifacts.length; index++) {
 		if (game.artifacts[index] == "iron will") {
@@ -143,6 +152,11 @@ function fixSave() {
 	// delete unused vars
 	delete game.cardRewardChoices;
 	delete game.saveNum;
+	// fix PENDING enemy stage
+	if (game.enemyStage === PENDING) {
+		if (game.enemies[game.enemyNum].done) game.enemyStage = ENDING;
+		else game.enemyStage = STARTING;
+	};
 };
 
 /**
@@ -171,10 +185,6 @@ function load() {
 			obj.void[index] = new Card(obj.void[index].id, obj.void[index].level);
 		};
 		Object.assign(game, obj);
-		if (game.enemyStage === PENDING) {
-			if (game.enemies[game.enemyNum].done) game.enemyStage = ENDING;
-			else game.enemyStage = STARTING;
-		};
 	} else {
 		console.log("no local save found. creating new save...");
 	};

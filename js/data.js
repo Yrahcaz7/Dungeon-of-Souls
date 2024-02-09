@@ -235,14 +235,14 @@ function updateData() {
 	// game over
 	if (game.health === 0 && playerAnim[1] != "death") {
 		startAnim.player("death");
-		game.turn = "none";
-		game.state = "game_over";
+		game.turn = -1;
+		game.state = STATE.GAME_END;
 		game.select = [GAME_OVER, 0];
 	};
 	// game won
-	if (game.floor == 10 && game.state == "event_fin" && game.select[0] === IN_MAP) {
-		game.turn = "none";
-		game.state = "game_fin";
+	if (game.floor == 10 && game.state === STATE.EVENT_FIN && game.select[0] === IN_MAP) {
+		game.turn = -1;
+		game.state = STATE.GAME_END;
 		game.select = [GAME_FIN, 0];
 	};
 	// other
