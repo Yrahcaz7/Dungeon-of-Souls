@@ -120,6 +120,7 @@ class Enemy {
 			};
 			this.finishAction();
 		};
+		this.done = true;
 	};
 	/**
 	 * Finishes the enemy's action.
@@ -151,6 +152,7 @@ class Enemy {
 			game.enemyNum++;
 		};
 		game.enemyStage = -1;
+		delete this.done;
 	};
 	/**
 	 * Gets the enemy's intent.

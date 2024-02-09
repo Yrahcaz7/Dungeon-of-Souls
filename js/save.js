@@ -171,6 +171,10 @@ function load() {
 			obj.void[index] = new Card(obj.void[index].id, obj.void[index].level);
 		};
 		Object.assign(game, obj);
+		if (game.enemyStage === PENDING) {
+			if (game.enemies[game.enemyNum].done) game.enemyStage = ENDING;
+			else game.enemyStage = STARTING;
+		};
 	} else {
 		console.log("no local save found. creating new save...");
 	};

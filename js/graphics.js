@@ -318,8 +318,9 @@ const draw = {
 	 * @param {number} y - the y-coordinate to draw the card at.
 	 * @param {boolean} selected - whether the card is selected or not. Defaults to `false`.
 	 * @param {number} overrideX - overrides the calculated x-coordinate to draw at.
+	 * @param {boolean} outside - whether the card is outside the battle or not. Defaults to `false`.
 	 */
-	card(cardObject, index, y, selected = false, overrideX = NaN) {
+	card(cardObject, index, y, selected = false, overrideX = NaN, outside = false) {
 		// setup
 		if (!(cardObject instanceof Object)) cardObject = new Card(cardObject);
 		let x = handPos[index], img = card.error;
@@ -349,10 +350,10 @@ const draw = {
 		else draw.lore(x + 32, y + 42, name.title(), {"text-align": CENTER});
 		// card description
 		let desc = cards[cardObject.id].desc, exDamage = get.extraDamage(), mulDamage = get.dealDamageMult(), valueIsLess = false;
-		if (cards[cardObject.id].attackEffects !== false) {
+		if (cards[cardObject.id].attackEffects !== false && !outside) {
 			if (cards[cardObject.id].keywords.includes("uniform")) exDamage = Math.floor(exDamage * 0.5);
 			if (game.select[0] === ATTACK_ENEMY) mulDamage = get.dealDamageMult(game.select[1]);
-			if ((exDamage || mulDamage !== 1) && game.select[0] !== CARD_REWARDS) {
+			if (exDamage || mulDamage !== 1) {
 				desc = desc.replace(/(deal\s)(\d+)(\s<#f44>damage<\/#f44>)/gi, (substring, pre, number, post) => {
 					const original = parseInt(number);
 					let damage = Math.ceil((original + exDamage) * mulDamage);
@@ -368,7 +369,7 @@ const draw = {
 			};
 		};
 		let exShield = get.extraShield();
-		if (exShield && game.select[0] !== CARD_REWARDS) {
+		if (exShield && !outside) {
 			desc = desc.replace(/(gain\s)(\d+)(\s<#58f>shield<\/#58f>)/gi, (substring, pre, number, post) => {
 				const original = parseInt(number);
 				let shield = Math.ceil(original + exShield);
@@ -1049,12 +1050,13 @@ const graphics = {
 		const len = +deck.length;
 		if (len > 0) {
 			if (game.cardSelect[0] + (game.cardSelect[1] * 6) >= len) game.cardSelect = [(len - 1) % 6, Math.floor((len - 1) / 6)];
+			if (game.deckPos > Math.max(98 * (Math.floor((len - 1) / 6) - 1) + 11, 0)) game.deckPos = Math.max(98 * (Math.floor((len - 1) / 6) - 1) + 11, 0);
 			let selected;
 			for (let x = 0, y = 0; x + (y * 6) < len; x++) {
 				if (x === game.cardSelect[0] && y === game.cardSelect[1]) {
 					selected = [x, y];
 				} else {
-					draw.card(deck[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66));
+					draw.card(deck[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66), game.select[0] === IN_MAP);
 				};
 				if (x >= 5) {
 					x = -1;
@@ -1062,14 +1064,14 @@ const graphics = {
 				};
 			};
 			if (selected) {
-				draw.card(deck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66));
+				draw.card(deck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66), game.select[0] === IN_MAP);
 			};
 			graphics.target();
 			selected = game.cardSelect;
 			if (game.deckPos >= 98 * selected[1]) {
 				game.deckPos -= Math.min(10, Math.abs(game.deckPos - (98 * selected[1])));
 			} else if (game.deckPos <= (98 * (selected[1] - 1)) + 11) {
-				game.deckPos +=Math.min(10, Math.abs(game.deckPos - ((98 * (selected[1] - 1)) + 11)));
+				game.deckPos += Math.min(10, Math.abs(game.deckPos - ((98 * (selected[1] - 1)) + 11)));
 			};
 		};
 		draw.rect("#0004", 0, 0, 400, 13);
@@ -1291,10 +1293,10 @@ const graphics = {
 		handPos = [];
 		for (let index = 0; index < choices; index++) {
 			handPos.push((199 - (choices * 68 / 2)) + 1 + (index * 68));
-			draw.card(new Card(game.room[5][index]), index, 50);
+			draw.card(new Card(game.room[5][index]), index, 50, false, NaN, true);
 		};
 		if (game.select[1] > -1 && game.select[1] < choices && focused) {
-			draw.card(new Card(game.room[5][game.select[1]]), game.select[1], 50, true);
+			draw.card(new Card(game.room[5][game.select[1]]), game.select[1], 50, true, NaN, true);
 		};
 		if ((game.select[1] === -1 || game.select[1] === choices) && focused) draw.rect("#fff", x, y + height - 14, width, 14);
 		draw.box(x + 2, y + height - 12, width - 4, 10);

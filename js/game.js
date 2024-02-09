@@ -22,7 +22,6 @@ const TITLE = 400, DIFFICULTY_CHANGE = 401;
 const PIXEL_SIZES = [1, 2, 0.5];
 
 let global = {
-	// unlockedCards: [],
 	options: {
 		music: true,
 		sticky_cards: false,
@@ -769,12 +768,8 @@ function selection() {
 		return;
 	};
 	// scrolling
-	if (action === UP && game.select[0] === HELP && infPos > 0 && infLimit > 0) {
-		infPos -= infLimit / 8 + 0.5;
-	} else if (action === DOWN && game.select[0] === HELP) {
-		if (infPos < infLimit) infPos += infLimit / 8 + 0.5;
-		else infPos = infLimit;
-	};
+	if (action === UP && game.select[0] === HELP && infPos > 0 && infLimit > 0) infPos -= 11;
+	else if (action === DOWN && game.select[0] === HELP && infPos < infLimit) infPos += 11;
 	// select options
 	if (game.select[0] === OPTIONS) {
 		if (action === UP && game.select[1] > 1) {

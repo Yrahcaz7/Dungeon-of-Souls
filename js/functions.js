@@ -179,20 +179,6 @@ function shuffle(deck) {
 };
 
 /**
- * Shuffles `game.deck` and adds new cards to it while doing so.
- * @param  {...Card} newCards - the new cards, if any, to add.
- */
-function shuffleDeck(...newCards) {
-	if (newCards) {
-		for (let card of newCards) {
-			if (card instanceof Object) game.deckLocal.push(card);
-			else game.deckLocal.push(new Card("" + card));
-		};
-	};
-	game.deckLocal = shuffle(game.deckLocal);
-};
-
-/**
  * Has the player draw their hand.
  */
 function drawHand() {
@@ -210,7 +196,7 @@ function drawHand() {
 			game.deckLocal.push(game.discard[a]);
 		};
 		game.discard = [];
-		shuffleDeck();
+		game.deckLocal = shuffle(game.deckLocal);
 		len = game.deckLocal.length;
 		for (; index < handSize && index < len; index++) {
 			game.hand.push(game.deckLocal[0]);
