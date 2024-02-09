@@ -223,12 +223,13 @@ for (const key in cards) {
 	if (Object.hasOwnProperty.call(cards, key)) {
 		cards[key].desc = cards[key].desc.replace(/(health|damage|attack)/gi, "<#f44>$1</#f44>");
 		cards[key].desc = cards[key].desc.replace(/(shield|defense)/gi, "<#58f>$1</#58f>");
-		cards[key].desc = cards[key].desc.replace(/(one\suse|uniform)/gi, "<#666>$1</#666>");
+		cards[key].desc = cards[key].desc.replace(/(one\suse|uniform|unplayable)/gi, "<#666>$1</#666>");
 		cards[key].keywords = [];
 		if (/aura\sblade/i.test(cards[key].desc)) cards[key].keywords.push("aura blade");
 		if (/burn/i.test(cards[key].desc)) cards[key].keywords.push("burn");
 		if (/one\suse/i.test(cards[key].desc)) cards[key].keywords.push("one use");
 		if (/reinforce/i.test(cards[key].desc)) cards[key].keywords.push("reinforce");
+		if (/resilience/i.test(cards[key].desc)) cards[key].keywords.push("resilience");
 		if (/uniform/i.test(cards[key].desc)) cards[key].keywords.push("uniform");
 		if (/weakness/i.test(cards[key].desc)) cards[key].keywords.push("weakness");
 	};

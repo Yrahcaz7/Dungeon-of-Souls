@@ -21,10 +21,10 @@ const infoText = {
 	burn: "If something has X burn,\nat the end of its turn,\nit takes X damage, then\nX is reduced by 1.",
 	countdown: "If an enemy has X\ncountdown, at the end of\nits turn, its intent is\nset to what it was on\nthe Xth turn, and then\nX is reduced by 1.",
 	"one use": "When a one use card is\nplayed, it is sent to\nthe void. Cards in the\nvoid stay there until\nthe end of the battle.",
-	uniform: "Extra damage and extra\nshield have half the\neffect on uniform cards,\nrounded down.",
 	reinforce: "If something has X\nreinforces, at the start\nof its turn, its shield\nis kept, then X is\nreduced by 1.",
 	resilience: "If something has X\nresilience, it takes 25%\nless damage, rounded\ndown. At the start of\nits turn, X is reduced\nby 1.",
 	rewind: "If something has X\nrewinds, it is X times\n20 percent stronger. If\nsomething that has\nrewinds and 0 countdown\nreaches 0 health, it\ngains 1 rewind, all\nentities heal fully, and\nthe countdown begins.",
+	uniform: "Extra damage and extra\nshield have half the\neffect on uniform cards,\nrounded down.",
 	weakness: "If something has X\nweakness, its attack is\nreduced by 25%, rounded\ndown. At the end of its\nturn, X is reduced by 1.",
 	// intents
 	[ATTACK]: "This enemy intends to attack\nyou on its next turn.",
