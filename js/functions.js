@@ -291,7 +291,7 @@ function gainShield(amount = 0, exMod = 1) {
  */
 function activateAttackEffects(id) {
 	// stop if effects are not allowed
-	if (attributes["NO ATTACK EFFECTS"].includes(id)) return;
+	if (cards[id].attackEffects === false) return;
 	// start player anim
 	startAnim.player(cards[id].anim);
 	// trigger aura blades

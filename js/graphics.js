@@ -333,7 +333,7 @@ const draw = {
 		if (card.outline[type]) draw.image(card.outline[type], x + 3, y + 3);
 		// card selector
 		if (selected) {
-			if (attributes.unplayable.includes(cardObject.id)) {
+			if (cards[cardObject.id].keywords.includes("unplayable")) {
 				if (rarity == 2) draw.image(select.card_rare_unplayable, x - 3, y - 3);
 				else draw.image(select.card_unplayable, x + 1, y + 1);
 			} else {
@@ -349,8 +349,8 @@ const draw = {
 		else draw.lore(x + 32, y + 42, name.title(), {"text-align": CENTER});
 		// card description
 		let desc = cards[cardObject.id].desc, exDamage = get.extraDamage(), mulDamage = get.dealDamageMult(), valueIsLess = false;
-		if (!attributes["NO ATTACK EFFECTS"].includes(cardObject.id)) {
-			if (attributes.uniform.includes(cardObject.id)) exDamage = Math.floor(exDamage * 0.5);
+		if (cards[cardObject.id].attackEffects !== false) {
+			if (cards[cardObject.id].keywords.includes("uniform")) exDamage = Math.floor(exDamage * 0.5);
 			if (game.select[0] === ATTACK_ENEMY) mulDamage = get.dealDamageMult(game.select[1]);
 			if ((exDamage || mulDamage !== 1) && game.select[0] !== CARD_REWARDS) {
 				desc = desc.replace(/(deal\s)(\d+)(\s<#f44>damage<\/#f44>)/gi, (substring, pre, number, post) => {
@@ -385,7 +385,7 @@ const draw = {
 		if (rarity == 2) {
 			draw.image(card.rarity.rare, x - 2, y - 2);
 		};
-		if (!attributes.unplayable.includes(cardObject.id)) {
+		if (!cards[cardObject.id].keywords.includes("unplayable")) {
 			draw.image(card.energy, x, y);
 			draw.lore(x + 4, y + 2, cards[cardObject.id].cost);
 		};
@@ -441,7 +441,9 @@ const info = {
 	card(type, xPlus = 0, yPlus = 0) {
 		let x = handPos[game.prevCard] + xPlus, y = 147 - Math.floor(cardAnim[game.prevCard]) + yPlus;
 		if ((game.prevCard == game.hand.length - 1 && game.hand.length >= 4) || (game.prevCard == game.hand.length - 2 && game.hand.length >= 7)) {
-			x -= 145;
+			const ref = cards[game.hand[game.prevCard].id];
+			if (ref.keywords.includes("unplayable") && ref.rarity <= 1) x -= 143;
+			else x -= 145;
 		};
 		return draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});
 	},
@@ -454,7 +456,9 @@ const info = {
 	reward(type, xPlus = 0, yPlus = 0) {
 		let x = handPos[game.select[1]] + xPlus;
 		if (game.select[1] == get.cardRewardChoices() - 1 && get.cardRewardChoices() >= 4) {
-			x -= 145;
+			const ref = cards[game.hand[game.select[1]].id];
+			if (ref.keywords.includes("unplayable") && ref.rarity <= 1) x -= 143;
+			else x -= 145;
 		};
 		return draw.textBox(x + 69, 51 + yPlus, 24, infoText[type], {"text-small": true});
 	},
@@ -467,7 +471,10 @@ const info = {
 	deck(type, xPlus = 0, yPlus = 0) {
 		let x = (game.cardSelect[0] * 66) + xPlus, y = 15 + (game.cardSelect[1] * 98) - game.deckPos + yPlus;
 		if (game.cardSelect[0] >= 4) {
-			x -= 145;
+			const loc = (game.select[0] === DECK ? "deck" : (game.select[0] === VOID ? "void" : "discard"));
+			const ref = cards[game[loc][game.cardSelect[0] + (game.cardSelect[1] * 6)].id];
+			if (ref.keywords.includes("unplayable") && ref.rarity <= 1) x -= 143;
+			else x -= 145;
 		};
 		return draw.textBox(x + 71, y, 24, infoText[type], {"text-small": true});
 	},

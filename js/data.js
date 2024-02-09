@@ -25,6 +25,7 @@ const infoText = {
 	resilience: "If something has X\nresilience, it takes 25%\nless damage, rounded\ndown. At the start of\nits turn, X is reduced\nby 1.",
 	rewind: "If something has X\nrewinds, it is X times\n20 percent stronger. If\nsomething that has\nrewinds and 0 countdown\nreaches 0 health, it\ngains 1 rewind, all\nentities heal fully, and\nthe countdown begins.",
 	uniform: "Extra damage and extra\nshield have half the\neffect on uniform cards,\nrounded down.",
+	unplayable: "An unplayable card has\nno energy cost and\ncannot be played.",
 	weakness: "If something has X\nweakness, its attack is\nreduced by 25%, rounded\ndown. At the end of its\nturn, X is reduced by 1.",
 	// intents
 	[ATTACK]: "This enemy intends to attack\nyou on its next turn.",
@@ -38,7 +39,7 @@ for (const key in infoText) {
 	if (Object.hasOwnProperty.call(infoText, key)) {
 		infoText[key] = infoText[key].replace(/(health|heal|extra\sdamage|damage|attacks|attack)/gi, "<#f44>$1</#f44>");
 		infoText[key] = infoText[key].replace(/(extra\sshield|shield|defend|defense)/gi, "<#58f>$1</#58f>");
-		infoText[key] = infoText[key].replace(/(one\suse|uniform)/gi, "<#666>$1</#666>");
+		infoText[key] = infoText[key].replace(/(one\suse|uniform|unplayable)/gi, "<#666>$1</#666>");
 	};
 };
 

@@ -15,15 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const attributes = {
-	// gameplay
-	unplayable: [0],
-	"one use": [3000, 4001],
-	uniform: [1002, 1003],
-	// technical
-	"NO SELECT": [1002],
-	"NO ATTACK EFFECTS": [1003, 3001],
-}, cards = {
+const cards = {
 	0: {
 		name: "error",
 		desc: "Unplayable.",
@@ -58,6 +50,7 @@ const attributes = {
 		rarity: 1,
 		cost: 1,
 		anim: "attack_2",
+		select: false,
 		attack() {
 			for (let index = 0; index < game.enemies.length; index++) {
 				dealDamage(3, 0.5, index);
@@ -69,6 +62,7 @@ const attributes = {
 		desc: "Consume all X aura\nblades to deal\nX times 6 damage\nto one enemy and\nX to all others.\nUniform.",
 		rarity: 2,
 		cost: 2,
+		attackEffects: false,
 		attack() {
 			dealDamage(game.eff.aura_blades * 6, 0.5);
 			for (let index = 0; index < game.enemies.length; index++) {
@@ -174,6 +168,7 @@ const attributes = {
 		desc: "Kill a non-boss\nenemy. Take damage\nequal to half its\nhealth, rounded\ndown.",
 		rarity: 1,
 		cost: 0,
+		attackEffects: false,
 		attack() {
 			if (game.enemies[game.enemyAtt[1]].type !== FRAGMENT) {
 				takeDamage(Math.floor(game.enemies[game.enemyAtt[1]].health / 2));
@@ -231,6 +226,7 @@ for (const key in cards) {
 		if (/reinforce/i.test(cards[key].desc)) cards[key].keywords.push("reinforce");
 		if (/resilience/i.test(cards[key].desc)) cards[key].keywords.push("resilience");
 		if (/uniform/i.test(cards[key].desc)) cards[key].keywords.push("uniform");
+		if (/unplayable/i.test(cards[key].desc)) cards[key].keywords.push("unplayable");
 		if (/weakness/i.test(cards[key].desc)) cards[key].keywords.push("weakness");
 	};
 };

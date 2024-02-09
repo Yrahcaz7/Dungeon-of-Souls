@@ -170,7 +170,7 @@ function endTurnConfirm() {
 	if (game.hand.length >= 1) {
 		for (let index = 0; index < game.hand.length; index++) {
 			const id = game.hand[index].id;
-			if (cards[id].cost <= game.energy && !attributes.unplayable.includes(id)) {
+			if (cards[id].cost <= game.energy && !cards[id].keywords.includes("unplayable")) {
 				confirm = true;
 				break;
 			};
@@ -188,9 +188,9 @@ function playerTurn() {
 	// finish attack enemy
 	if (game.enemyAtt[3] && playerAnim[1] == "idle") {
 		const attCard = cards[game.enemyAtt[2].id];
-		if (!attributes["NO SELECT"].includes(game.enemyAtt[2].id) && attCard.damage) {
-			if (attributes.uniform.includes(game.enemyAtt[2].id)) dealDamage(attCard.damage, 0.5);
-			else dealDamage(attCard.damage, 0);
+		if (cards[game.enemyAtt[2].id].select !== false && attCard.damage) {
+			if (cards[game.enemyAtt[2].id].keywords.includes("uniform")) dealDamage(attCard.damage, 0.5);
+			else dealDamage(attCard.damage);
 		};
 		if (typeof attCard.attack == "function") attCard.attack();
 		game.enemyAtt = [-1, -1, new Card(), false];
@@ -204,7 +204,7 @@ function playerTurn() {
 		game.energy -= cards[game.enemyAtt[2].id].cost;
 		activateAttackEffects(game.enemyAtt[2].id);
 		game.enemyAtt[3] = true;
-		if (attributes["one use"].includes(game.enemyAtt[2].id)) game.void.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
+		if (cards[game.enemyAtt[2].id].keywords.includes("one use")) game.void.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
 		else game.discard.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
 		cardAnim.splice(game.enemyAtt[0], 1);
 		cardAnim.push(0);
@@ -218,7 +218,7 @@ function playerTurn() {
 	// play card
 	if (action === ENTER && game.select[0] === HAND) {
 		let selected = game.hand[game.select[1]], id = selected.id;
-		if (attributes.unplayable.includes(id)) {
+		if (cards[id].keywords.includes("unplayable")) {
 			if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
 			else notif = [game.select[1], 0, "unplayable", 0];
 			actionTimer = 1;
@@ -230,7 +230,7 @@ function playerTurn() {
 			if (cards[id].effect) { // effects of cards that activate right away
 				cards[id].effect();
 				game.energy -= cards[id].cost;
-				if (attributes["one use"].includes(id)) game.void.push(game.hand.splice(game.select[1], 1)[0]);
+				if (cards[id].keywords.includes("one use")) game.void.push(game.hand.splice(game.select[1], 1)[0]);
 				else game.discard.push(game.hand.splice(game.select[1], 1)[0]);
 				cardAnim.splice(game.select[1], 1);
 				cardAnim.push(0);
@@ -238,12 +238,12 @@ function playerTurn() {
 				else game.select = [HAND, 0];
 				actionTimer = 2;
 			} else if (cards[id].damage || cards[id].attack) { // effects of attack cards
-				if (attributes["NO SELECT"].includes(id)) {
+				if (cards[id].select === false) {
 					game.energy -= cards[id].cost;
 					game.enemyAtt[2] = game.hand[game.select[1]];
 					activateAttackEffects(id);
 					game.enemyAtt[3] = true;
-					if (attributes["one use"].includes(id)) game.void.push(game.hand.splice(game.select[1], 1)[0]);
+					if (cards[id].keywords.includes("one use")) game.void.push(game.hand.splice(game.select[1], 1)[0]);
 					else game.discard.push(game.hand.splice(game.select[1], 1)[0]);
 					cardAnim.splice(game.select[1], 1);
 					cardAnim.push(0);
@@ -439,7 +439,7 @@ function selection() {
 						};
 					};
 					if (bool) {
-						game.select = [CONFIRM_EXIT, 0];
+						game.select = [CONFIRM_EXIT, 1];
 					} else {
 						game.select = [MAP, 0];
 						pushPopup("go", "go to the map!");
