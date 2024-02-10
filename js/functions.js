@@ -40,15 +40,6 @@ String.prototype.randomize = function() {
 };
 
 /**
- * Returns the value of an interval at the current time.
- * @param {number} period - the period of the interval function.
- * @param {number} mag - the magnitude of the interval. Defaults to `1`.
- */
-function interval(period, mag = 1) {
-	return (Math.abs((new Date().getTime() % (2000 * period * mag) / (1000 * period)) - mag) * mag) - mag;
-};
-
-/**
  * Returns a boolean indicating whether the middleground layers are hidden.
  */
 function hidden() {
@@ -137,6 +128,22 @@ const get = {
 		let extra = 0;
 		if (game.artifacts.includes(2)) extra += 2;
 		return extra;
+	},
+	/**
+	 * Gets the score factors.
+	 */
+	scoreFactors() {
+		let factors = [];
+		for (const key in game.kills) {
+			if (Object.hasOwnProperty.call(game.kills, key)) {
+				const amt = game.kills[+key];
+				if (+key === FRAGMENT) factors.push(["killed the " + ENEMY_NAMES[+key], amt * ENEMY_WORTH[+key]]);
+				else factors.push(["killed " + amt + " " + ENEMY_NAMES[+key] + (amt > 1 ? "s" : ""), amt * ENEMY_WORTH[+key]]);
+			};
+		};
+		factors.push(["saved " + game.gold + " gold", Math.floor(game.gold / 5)]);
+		if (game.health > 0) factors.push(["saved " + game.health + " health", game.health * 5]);
+		return factors;
 	},
 };
 

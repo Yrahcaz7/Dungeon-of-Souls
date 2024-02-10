@@ -151,7 +151,7 @@ const draw = {
 			};
 			return space;
 		};
-		// print multi-line right aligned text
+		// print special multi-line text
 		if (str.includes("\n") && position !== RIGHT) {
 			let array = str.split("\n");
 			let space = 0;
@@ -196,7 +196,7 @@ const draw = {
 					"text-small": small,
 				});
 			} else if (position === LEFT) {
-				draw.char(char, x + (((a - enterIndex) - len + 1) * (small ? 3 : 6)), y + (enters * (small ? 5.5 : 11)), {
+				draw.char(char, x + (((a - enterIndex) - len) * (small ? 3 : 6)), y + (enters * (small ? 5.5 : 11)), {
 					"color": color,
 					"highlight-color": highlight,
 					"text-small": small,
@@ -296,7 +296,7 @@ const draw = {
 		};
 		draw.imageSector(bar.health_full, 0, 0, cutoff + 1, 12, x, y + 65);
 		draw.imageSector(bar.health_empty, cutoff + 1, 0, 64 - (cutoff + 1), 12, x + (cutoff + 1), y + 65);
-		draw.lore(x + 25, y + 67, health, {"text-align": LEFT});
+		draw.lore(x + 31, y + 67, health, {"text-align": LEFT});
 		draw.lore(x + 34, y + 67, maxHealth);
 		if (!shield || !maxShield) return;
 		percentage = shield / maxShield;
@@ -308,7 +308,7 @@ const draw = {
 		};
 		draw.imageSector(bar.shield_full, 0, 0, cutoff + 1, 12, x, y + 76);
 		draw.imageSector(bar.shield_empty, cutoff + 1, 0, 64 - (cutoff + 1), 12, x + (cutoff + 1), y + 76);
-		draw.lore(x + 25, y + 78, shield, {"text-align": LEFT});
+		draw.lore(x + 31, y + 78, shield, {"text-align": LEFT});
 		draw.lore(x + 34, y + 78, maxShield);
 	},
 	/**
@@ -702,10 +702,10 @@ const graphics = {
 					let img = icon[key.endsWith("s") && !key.endsWith("ss") ? key.slice(0, -1) : key];
 					if (game.shield) {
 						draw.image(img, x + 23, y + 104);
-						draw.lore(x + 34, y + 112, game.eff[key], {"color": "#fff", "text-align": LEFT});
+						draw.lore(x + 40, y + 112, game.eff[key], {"color": "#fff", "text-align": LEFT});
 					} else {
 						draw.image(img, x + 23, y + 93);
-						draw.lore(x + 34, y + 101, game.eff[key], {"color": "#fff", "text-align": LEFT});
+						draw.lore(x + 40, y + 101, game.eff[key], {"color": "#fff", "text-align": LEFT});
 					};
 					x += 17;
 				};
@@ -747,7 +747,7 @@ const graphics = {
 		};
 		draw.imageSector(bar.energy_full, 0, 0, cutoff + 1, 32, x, y + 16);
 		draw.imageSector(bar.energy_empty, cutoff + 1, 0, 32 - (cutoff + 1), 32, x + (cutoff + 1), y + 16);
-		draw.lore(x + 9, y + 28, energy, {"text-align": LEFT});
+		draw.lore(x + 15, y + 28, energy, {"text-align": LEFT});
 		draw.lore(x + 18, y + 28, get.maxEnergy());
 	},
 	/**
@@ -778,10 +778,10 @@ const graphics = {
 					if (select.eff[key]) {
 						if (select.shield) {
 							draw.image(img, x, y + 89);
-							draw.lore(x + 11, y + 97, select.eff[key], {"color": "#fff", "text-align": LEFT});
+							draw.lore(x + 17, y + 97, select.eff[key], {"color": "#fff", "text-align": LEFT});
 						} else {
 							draw.image(img, x, y + 78);
-							draw.lore(x + 11, y + 86, select.eff[key], {"color": "#fff", "text-align": LEFT});
+							draw.lore(x + 17, y + 86, select.eff[key], {"color": "#fff", "text-align": LEFT});
 						};
 						x += 17;
 					};
@@ -1007,7 +1007,7 @@ const graphics = {
 		};
 		draw.lore(1, 12 - infPos, 'Source can be found at "https://github.com/Yrahcaz7/Dungeon-of-Souls"', {"color": "#f44", "text-small": true});
 		if (infLimit > 0) {
-			draw.lore(360, 26, "Scrollable", {"color": "#fff", "text-align": LEFT});
+			draw.lore(360, 32, "Scrollable", {"color": "#fff", "text-align": LEFT});
 			draw.image(arrows, 367, 22);
 		};
 	},
@@ -1125,19 +1125,16 @@ const graphics = {
 			const enemy = game.enemies[game.select[1]];
 			const enemyType = enemy.type;
 			const pos = enemyPos[game.select[1]];
-			let coords = [], name = "";
+			let coords = [], name = ENEMY_NAMES[enemyType];
 			if (enemyType === SLIME.SMALL) {
 				coords = [19, 36, 26, 28];
-				name = "small slime";
 			} else if (enemyType === SLIME.BIG || (enemyType === SLIME.PRIME && primeAnim != -1 && primeAnim < 5)) {
 				coords = [5, 26, 54, 38];
 				name = "big slime";
 			} else if (enemyType === SLIME.PRIME) {
 				coords = [0, 7, 64, 57];
-				name = "prime slime";
 			} else if (enemyType === FRAGMENT && (primeAnim == -1 || primeAnim > 18)) {
 				coords = [7, 6, 50, 58];
-				name = "fragment of time";
 			};
 			if (coords) {
 				if (game.select[1] !== game.enemyNum) info.intent();
@@ -1146,7 +1143,7 @@ const graphics = {
 				draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "#fff", "text-align": CENTER, "text-small": true});
 				const exAtt = enemy.getExtraAttackPower();
 				const exDef = enemy.getExtraDefendPower();
-				if (left) draw.lore(pos[0] + coords[0] - 5.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-align": LEFT, "text-small": true});
+				if (left) draw.lore(pos[0] + coords[0] - 2.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-align": LEFT, "text-small": true});
 				else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-small": true});
 				let x = coords[0] - 5.5, y = coords[1] - 1;
 				for (const key in game.enemies[game.select[1]].eff) {
@@ -1366,7 +1363,7 @@ const graphics = {
 			draw.image(extra.end, 22, 179);
 			if (game.mapSelect == -1) draw.image(select.round, 21, 178);
 			draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
-			draw.lore(393, 1, "seed: " + game.seed, {"color": "#fff", "text-align": LEFT});
+			draw.lore(399, 1, "seed: " + game.seed, {"color": "#fff", "text-align": LEFT});
 		};
 		// calculate nodes
 		let store = [];

@@ -87,8 +87,7 @@ function fixSelect(item) {
 	else if (item == "confirm_exit") return CONFIRM_EXIT;
 	else if (item == "options") return OPTIONS;
 	else if (item == "game_over") return GAME_OVER;
-	else if (item == "game_fin") return GAME_FIN;
-	else if (item == "game_won") return GAME_WON;
+	else if (item == "game_fin" || item == "game_won" || item == GAME_WON) return GAME_FIN;
 	else if (item == "confirm_restart") return CONFIRM_RESTART;
 	else if (item == "welcome") return WELCOME;
 	else return -1;
