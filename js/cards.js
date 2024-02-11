@@ -193,7 +193,7 @@ const cards = {
 	},
 	3003: {
 		name: "memorize",
-		desc: "Choose a card from\nyour hand. The\nchosen card will\ngain 1 charge and\n1 retention.",
+		desc: "Choose a card from\nyour hand. Apply\n1 cost reduction\nand 1 retention to\nthe chosen card.",
 		rarity: 2,
 		cost: 1,
 		select: [SELECT_HAND, -1],
@@ -233,13 +233,14 @@ const cards = {
 
 for (const key in cards) {
 	if (Object.hasOwnProperty.call(cards, key)) {
+		// color text
 		cards[key].desc = cards[key].desc.replace(/(health|damage|attack)/gi, "<#f44>$1</#f44>");
 		cards[key].desc = cards[key].desc.replace(/(shield|defense)/gi, "<#58f>$1</#58f>");
-		cards[key].desc = cards[key].desc.replace(/(charge|one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
+		cards[key].desc = cards[key].desc.replace(/(one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
+		// list keywords
 		cards[key].keywords = [];
 		if (/aura\sblade/i.test(cards[key].desc)) cards[key].keywords.push("aura blade");
 		if (/burn/i.test(cards[key].desc)) cards[key].keywords.push("burn");
-		if (/charge/i.test(cards[key].desc)) cards[key].keywords.push("charge");
 		if (/one\suse/i.test(cards[key].desc)) cards[key].keywords.push("one use");
 		if (/reinforce/i.test(cards[key].desc)) cards[key].keywords.push("reinforce");
 		if (/resilience/i.test(cards[key].desc)) cards[key].keywords.push("resilience");
@@ -247,9 +248,8 @@ for (const key in cards) {
 		if (/uniform/i.test(cards[key].desc)) cards[key].keywords.push("uniform");
 		if (/unplayable/i.test(cards[key].desc)) cards[key].keywords.push("unplayable");
 		if (/weakness/i.test(cards[key].desc)) cards[key].keywords.push("weakness");
-		if (cards[key].keywords.includes("charge") || cards[key].keywords.includes("retention")) {
-			cards[key].keywords.push("card effect");
-		};
+		// extra info
+		if (/apply/i.test(cards[key].desc) && /card/i.test(cards[key].desc)) cards[key].keywords.push("card effect");
 	};
 };
 

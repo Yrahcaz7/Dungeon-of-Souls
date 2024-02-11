@@ -19,7 +19,6 @@ const infoText = {
 	// effects
 	"aura blade": "If something has X aura\nblades, every time it\nattacks, it deals 5 + X\nextra damage, then X is\nreduced by 1.",
 	burn: "If something has X burn,\nat the end of its turn,\nit takes X damage, then\nX is reduced by 1.",
-	charge: "A card with X charge\ncosts X less energy.",
 	countdown: "If an enemy has X\ncountdown, at the end of\nits turn, its intent is\nset to what it was on\nthe Xth turn, and then\nX is reduced by 1.",
 	"one use": "When a one use card is\nplayed, it is sent to\nthe void. Cards in the\nvoid stay there until\nthe end of the battle.",
 	reinforce: "If something has X\nreinforces, at the start\nof its turn, its shield\nis kept, then X is\nreduced by 1.",
@@ -42,7 +41,7 @@ for (const key in infoText) {
 	if (Object.hasOwnProperty.call(infoText, key)) {
 		infoText[key] = infoText[key].replace(/(health|heal|combat\sdamage|extra\sdamage|damage|attacks|attack)/gi, "<#f44>$1</#f44>");
 		infoText[key] = infoText[key].replace(/(extra\sshield|shield|defend|defense)/gi, "<#58f>$1</#58f>");
-		infoText[key] = infoText[key].replace(/(charge|one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
+		infoText[key] = infoText[key].replace(/(one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
 	};
 };
 
