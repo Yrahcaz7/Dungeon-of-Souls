@@ -1442,7 +1442,7 @@ const graphics = {
 		let store = [];
 		for (let x = 0; x < game.map.length; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
-				if (!game.map[x][y]) continue;
+				if (typeof game.map[x][y] != "object") continue;
 				let drawX = 25 + (x * 32) + game.map[x][y][1];
 				let drawY = 18 + (y * 32) + game.map[x][y][2];
 				if (game.map[x][y][0] === ROOM.BOSS) {
@@ -1468,18 +1468,18 @@ const graphics = {
 					};
 					for (num = 0; num < 7; num++) {
 						if (branch && x != game.map.length - 1) {
-							if (game.map[x + 1][y - num]) {
+							if (typeof game.map[x + 1][y - num] == "object") {
 								calcNode(x + 1, y - num);
 								break;
-							} else if (game.map[x + 1][y + num]) {
+							} else if (typeof game.map[x + 1][y + num] == "object") {
 								calcNode(x + 1, y + num);
 								break;
 							};
 						} else if (x !== 0) {
-							if (game.map[x - 1][y - num]) {
+							if (typeof game.map[x - 1][y - num] == "object") {
 								calcNode(x - 1, y - num);
 								break;
-							} else if (game.map[x - 1][y + num]) {
+							} else if (typeof game.map[x - 1][y + num] == "object") {
 								calcNode(x - 1, y + num);
 								break;
 							};
@@ -1519,7 +1519,7 @@ const graphics = {
 			const coordOn = game.location.split(", ");
 			for (let x = 0; x < game.map.length; x++) {
 				for (let y = 0; y < game.map[x].length; y++) {
-					if (!game.map[x][y]) continue;
+					if (typeof game.map[x][y] != "object") continue;
 					let drawX = 25 + (x * 32) + game.map[x][y][1];
 					let drawY = 18 + (y * 32) + game.map[x][y][2];
 					if (game.map[x][y][0] === ROOM.BATTLE) {
@@ -1549,6 +1549,16 @@ const graphics = {
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(select.boss, drawX - 1, 90 - 1);
 						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.boss_blue, drawX - 1, 90 - 1);
 					};
+				};
+			};
+		};
+		// draw scibbles
+		if (render) {
+			for (let x = 0; x < game.map.length; x++) {
+				for (let y = 0; y < game.map[x].length; y++) {
+					if (typeof game.map[x][y] != "number") continue;
+					draw.image(map.scribble_back, 25 + (x * 32) + 8 - 4, 18 + (y * 32) + 8 - 3 - 2.5, 80 / 2, 80 / 2);
+					draw.imageSector(map.scribbles, game.map[x][y] * 64, 0, 64, 70, 25 + (x * 32) + 8, 18 + (y * 32) + 8 - 3, 64 / 2, 70 / 2);
 				};
 			};
 		};

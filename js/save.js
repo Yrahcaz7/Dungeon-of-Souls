@@ -115,7 +115,7 @@ function fixSave() {
 	// fix rooms
 	for (let row = 0; row < game.map.length; row++) {
 		for (let col = 0; col < game.map[row].length; col++) {
-			if (game.map[row][col]) fixRoom(game.map[row][col]);
+			if (typeof game.map[row][col] == "object") fixRoom(game.map[row][col]);
 		};
 	};
 	if (game.firstRoom) fixRoom(game.firstRoom);

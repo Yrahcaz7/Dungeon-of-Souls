@@ -66,9 +66,9 @@ function internalRandom(a, b, c, d) {
 const random = internalRandom(seed(), seed(), seed(), seed());
 
 /**
- * Returns a seeded random integer in [min, max)
+ * Returns a seeded random integer in [min, max]
  * @param {number} min - the minimum integer, inclusive.
- * @param {number} max - the maximum integer, exclusive.
+ * @param {number} max - the maximum integer, inclusive.
  */
 function randomInt(min, max) {
 	min = Math.ceil(min);
@@ -87,7 +87,7 @@ function chance(chance = 1/2) {
 
 var loaded = false;
 
-window.onload = () => {
+window.onload = async function() {
 	// prep things
 	load();
 	seed = internalSeed(game.seed);
@@ -99,9 +99,7 @@ window.onload = () => {
 	// calculate things
 	graphics.map(true);
 	if (game.map.length === 0) {
-		setTimeout(() => {
-			generateMap();
-		}, 0);
+		await generateMap();
 	} else {
 		musicPopup();
 		updateVisuals();

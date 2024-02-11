@@ -43,7 +43,7 @@ function goldReward(row) {
 async function updateMapProg() {
 	clearCanvas();
 	if (mapProg === mapTotal) draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\nrunning final checks...", {"color": "#fff", "text-align": CENTER});
-	else draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\n" + (mapProg / mapTotal * 100).toFixed(1) + "%", {"color": "#fff", "text-align": CENTER});
+	else draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\n" + (mapProg / mapTotal * 100).toFixed(0) + "%", {"color": "#fff", "text-align": CENTER});
 	mapProg++;
 	if (mapProg > mapTotal) mapProg = 0;
 	await new Promise(r => setTimeout(r, 0));
@@ -160,6 +160,31 @@ async function mapRow(row) {
 };
 
 /**
+ * Adds scribbles to the map.
+ */
+function addScribbles() {
+	for (let x = 0; x < game.map.length - 1; x++) {
+		const offset = (x == 0 ? 1 : 0);
+		for (let y = offset; y < game.map[x].length - offset; y++) {
+			if (
+				typeof game.map[x][y] != "boolean" ||
+				typeof game.map[x + 1][y] != "boolean" ||
+				typeof game.map[x][y + 1] != "boolean" ||
+				typeof game.map[x + 1][y + 1] != "boolean" ||
+				(typeof game.map[x][y - 1] != "object" && typeof game.map[x][y - 2] != "object" && typeof game.map[x + 1][y - 1] == "object") ||
+				(typeof game.map[x][y + 2] != "object" && typeof game.map[x][y + 3] != "object" && typeof game.map[x + 1][y + 2] == "object") ||
+				(game.map[x - 1] && typeof game.map[x - 1][y] == "number") ||
+				(game.map[x - 1] && typeof game.map[x - 1][y - 1] == "number") ||
+				typeof game.map[x][y - 1] == "number" ||
+				typeof game.map[x + 1][y - 1] == "number" ||
+				typeof game.map[x + 1][y] == "number"
+			) continue;
+			game.map[x][y] = randomInt(0, 1);
+		};
+	};
+};
+
+/**
  * Generates a map and saves it.
  */
 async function generateMap() {
@@ -201,6 +226,7 @@ async function generateMap() {
 			};
 		};
 	};
+	addScribbles();
 	graphics.map(true);
 	musicPopup();
 	updateVisuals();

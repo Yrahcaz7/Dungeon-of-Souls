@@ -191,6 +191,8 @@ const player = {
 	boss: new Image,
 	select: new Image,
 	select_first: new Image,
+	scribbles: new Image,
+	scribble_back: new Image,
 }, rewards = {
 	item: new Image,
 	back: new Image,
