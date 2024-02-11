@@ -15,6 +15,8 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+const SELECT_HAND = 1200;
+
 const cards = {
 	0: {
 		name: "error",
@@ -50,7 +52,7 @@ const cards = {
 		rarity: 1,
 		cost: 1,
 		anim: "attack_2",
-		select: false,
+		target: false,
 		attack() {
 			for (let index = 0; index < game.enemies.length; index++) {
 				dealDamage(3, 0.5, index);
@@ -189,6 +191,21 @@ const cards = {
 			};
 		},
 	},
+	3003: {
+		name: "memorize",
+		desc: "Choose a card from\nyour hand. The\nchosen card will\ngain 1 charge and\n1 retention.",
+		rarity: 2,
+		cost: 1,
+		select: [SELECT_HAND, -1],
+		effect() {
+			game.hand[game.select[1]].retention = 1;
+			game.hand[game.select[1]].charge = 1;
+		},
+		can() {
+			return game.hand.length > 1;
+		},
+		cannotMessage: "no valid target",
+	},
 	4000: {
 		name: "aura blade",
 		desc: "Gain 1 aura blade.",
@@ -218,13 +235,15 @@ for (const key in cards) {
 	if (Object.hasOwnProperty.call(cards, key)) {
 		cards[key].desc = cards[key].desc.replace(/(health|damage|attack)/gi, "<#f44>$1</#f44>");
 		cards[key].desc = cards[key].desc.replace(/(shield|defense)/gi, "<#58f>$1</#58f>");
-		cards[key].desc = cards[key].desc.replace(/(one\suse|uniform|unplayable)/gi, "<#666>$1</#666>");
+		cards[key].desc = cards[key].desc.replace(/(charge|one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
 		cards[key].keywords = [];
 		if (/aura\sblade/i.test(cards[key].desc)) cards[key].keywords.push("aura blade");
 		if (/burn/i.test(cards[key].desc)) cards[key].keywords.push("burn");
+		if (/charge/i.test(cards[key].desc)) cards[key].keywords.push("charge");
 		if (/one\suse/i.test(cards[key].desc)) cards[key].keywords.push("one use");
 		if (/reinforce/i.test(cards[key].desc)) cards[key].keywords.push("reinforce");
 		if (/resilience/i.test(cards[key].desc)) cards[key].keywords.push("resilience");
+		if (/retention/i.test(cards[key].desc)) cards[key].keywords.push("retention");
 		if (/uniform/i.test(cards[key].desc)) cards[key].keywords.push("uniform");
 		if (/unplayable/i.test(cards[key].desc)) cards[key].keywords.push("unplayable");
 		if (/weakness/i.test(cards[key].desc)) cards[key].keywords.push("weakness");
@@ -237,6 +256,20 @@ class Card {
 		else this.id = id;
 		this.level = level;
 	};
+};
+
+/**
+ * Returns an object as a card.
+ * @param {object} object - the object to classify.
+ */
+function classifyCard(object = {}) {
+	let instance = new Card(0);
+	for (const key in object) {
+		if (Object.hasOwnProperty.call(object, key)) {
+			instance[key] = object[key];
+		};
+	};
+	return instance;
 };
 
 /**

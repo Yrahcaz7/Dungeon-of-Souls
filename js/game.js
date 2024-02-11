@@ -107,7 +107,11 @@ function musicPopup() {
 function enterBattle() {
 	game.state = STATE.BATTLE;
 	game.rewards = [];
-	game.deckLocal = shuffle(game.deck.slice(0));
+	const deck = shuffle(game.deck.slice(0));
+	game.deckLocal = [];
+	for (let index = 0; index < deck.length; index++) {
+		game.deckLocal.push(classifyCard(deck[index]));
+	};
 	game.hand = [];
 	game.discard = [];
 	game.void = [];
@@ -173,8 +177,7 @@ function endTurnConfirm() {
 	let confirm = false;
 	if (game.hand.length >= 1) {
 		for (let index = 0; index < game.hand.length; index++) {
-			const id = game.hand[index].id;
-			if (cards[id].cost <= game.energy && !cards[id].keywords.includes("unplayable")) {
+			if (getCardCost(game.hand[index]) <= game.energy && !cards[game.hand[index].id].keywords.includes("unplayable")) {
 				confirm = true;
 				break;
 			};
@@ -192,7 +195,7 @@ function playerTurn() {
 	// finish attack enemy
 	if (game.enemyAtt[3] && playerAnim[1] == "idle") {
 		const attCard = cards[game.enemyAtt[2].id];
-		if (cards[game.enemyAtt[2].id].select !== false && attCard.damage) {
+		if (attCard.target !== false && attCard.damage) {
 			if (cards[game.enemyAtt[2].id].keywords.includes("uniform")) dealDamage(attCard.damage, 0.5);
 			else dealDamage(attCard.damage);
 		};
@@ -205,7 +208,8 @@ function playerTurn() {
 	if (!actionTimer || actionTimer < -1) actionTimer = -1;
 	// attack enemy
 	if (action === ENTER && game.select[0] === ATTACK_ENEMY) {
-		game.energy -= cards[game.enemyAtt[2].id].cost;
+		game.energy -= getCardCost(game.enemyAtt[2]);
+		delete game.enemyAtt[2].charge;
 		activateAttackEffects(game.enemyAtt[2].id);
 		game.enemyAtt[3] = true;
 		if (cards[game.enemyAtt[2].id].keywords.includes("one use")) game.void.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
@@ -219,6 +223,28 @@ function playerTurn() {
 		actionTimer = 4;
 		return;
 	};
+	// activate special selection effect
+	if (action === ENTER && game.select[0] === SELECT_HAND) {
+		if (game.select[1] == -1 || game.select[1] == game.hand.length) {
+			game.select = [HAND, game.enemyAtt[0]];
+			game.enemyAtt = [-1, -1, new Card(), false];
+			actionTimer = 4;
+			return;
+		} else {
+			if (cards[game.enemyAtt[2].id].effect) cards[game.enemyAtt[2].id].effect();
+			game.energy -= getCardCost(game.enemyAtt[2]);
+			delete game.enemyAtt[2].charge;
+			if (cards[game.enemyAtt[2].id].keywords.includes("one use")) game.void.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
+			else game.discard.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
+			cardAnim.splice(game.enemyAtt[0], 1);
+			cardAnim.push(0);
+			if (game.enemyAtt[0]) game.select = [HAND, game.enemyAtt[0] - 1];
+			else game.select = [HAND, 0];
+			game.enemyAtt = [-1, -1, new Card(), false];
+			actionTimer = 4;
+			return;
+		};
+	};
 	// play card
 	if (action === ENTER && game.select[0] === HAND) {
 		let selected = game.hand[game.select[1]], id = selected.id;
@@ -230,20 +256,27 @@ function playerTurn() {
 			if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, cards[id].cannotMessage, -2];
 			else notif = [game.select[1], 0, cards[id].cannotMessage, 0];
 			actionTimer = 1;
-		} else if (game.energy >= cards[id].cost) {
-			if (cards[id].effect) { // effects of cards that activate right away
+		} else if (game.energy >= getCardCost(selected)) {
+			if (cards[id].select instanceof Array) { // effects of cards that have a special selection
+				game.enemyAtt[0] = game.select[1];
+				game.select = [cards[id].select[0], cards[id].select[1]];
+				game.enemyAtt[2] = game.hand[game.enemyAtt[0]];
+				actionTimer = 4;
+			} else if (cards[id].effect) { // effects of cards that activate right away
 				cards[id].effect();
-				game.energy -= cards[id].cost;
+				game.energy -= getCardCost(selected);
+				delete selected.charge;
 				if (cards[id].keywords.includes("one use")) game.void.push(game.hand.splice(game.select[1], 1)[0]);
 				else game.discard.push(game.hand.splice(game.select[1], 1)[0]);
 				cardAnim.splice(game.select[1], 1);
 				cardAnim.push(0);
 				if (game.prevCard) game.select = [HAND, game.prevCard - 1];
 				else game.select = [HAND, 0];
-				actionTimer = 2;
+				actionTimer = 4;
 			} else if (cards[id].damage || cards[id].attack) { // effects of attack cards
-				if (cards[id].select === false) {
-					game.energy -= cards[id].cost;
+				if (cards[id].target === false) {
+					game.energy -= getCardCost(selected);
+					delete selected.charge;
 					game.enemyAtt[2] = game.hand[game.select[1]];
 					activateAttackEffects(id);
 					game.enemyAtt[3] = true;
@@ -253,7 +286,7 @@ function playerTurn() {
 					cardAnim.push(0);
 					if (game.prevCard) game.select = [HAND, game.prevCard - 1];
 					else game.select = [HAND, 0];
-					actionTimer = 2;
+					actionTimer = 4;
 				} else {
 					game.enemyAtt[0] = game.select[1];
 					game.select = [ATTACK_ENEMY, game.enemies.length - 1];
@@ -584,8 +617,6 @@ function selection() {
 			if (game.mapSelect == len) game.mapSelect = -1;
 		};
 	};
-	// select hand
-	if (game.select[0] === -1) game.select = [HAND, 0];
 	// select extras
 	if (action === UP && game.select[0] === LOOKAT_ENEMY) {
 		game.select = [LOOKER, 0];
@@ -895,7 +926,9 @@ function selection() {
 		if (game.select[1] < 0) game.select[1] = 0;
 		else if (game.select[1] >= game.artifacts.length - 1) game.select[1] = game.artifacts.length - 1;
 	};
-	// select card
+	// select hand
+	if (game.select[0] === -1) game.select = [HAND, 0];
+	// cards in hand
 	if (game.select[0] === HAND) {
 		if (!game.hand) {
 			game.select = [END, 0];
@@ -928,6 +961,20 @@ function selection() {
 			};
 			if (game.select[1] < 0) game.select[1] = 0;
 			else if (game.select[1] >= game.hand.length - 1) game.select[1] = game.hand.length - 1;
+		};
+	};
+	// hand selection from effect
+	if (game.select[0] === SELECT_HAND) {
+		if (action === LEFT && game.select[1] >= 0) {
+			game.select[1]--;
+			if (game.select[1] == game.enemyAtt[0]) game.select[1]--;
+			actionTimer = 1;
+			return;
+		} else if (action === RIGHT && game.select[1] < game.hand.length) {
+			game.select[1]++;
+			if (game.select[1] == game.enemyAtt[0]) game.select[1]++;
+			actionTimer = 1;
+			return;
 		};
 	};
 	// select enemy
@@ -1085,7 +1132,8 @@ function updateVisuals() {
 	graphics.middleLayer();
 	graphics.foregrounds();
 	if (!hidden()) {
-		graphics.hand();
+		if (game.select[0] === SELECT_HAND) graphics.hand_select();
+		else graphics.hand();
 	};
 	if (game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY) {
 		graphics.rewards(false);

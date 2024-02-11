@@ -174,19 +174,19 @@ function load() {
 			obj.enemies[index] = classifyEnemy(obj.enemies[index]);
 		};
 		for (let index = 0; index < obj.deck?.length; index++) {
-			obj.deck[index] = new Card(obj.deck[index].id, obj.deck[index].level);
+			obj.deck[index] = classifyCard(obj.deck[index]);
 		};
 		for (let index = 0; index < obj.deckLocal?.length; index++) {
-			obj.deckLocal[index] = new Card(obj.deckLocal[index].id, obj.deckLocal[index].level);
+			obj.deckLocal[index] = classifyCard(obj.deckLocal[index]);
 		};
 		for (let index = 0; index < obj.hand?.length; index++) {
-			obj.hand[index] = new Card(obj.hand[index].id, obj.hand[index].level);
+			obj.hand[index] = classifyCard(obj.hand[index]);
 		};
 		for (let index = 0; index < obj.discard?.length; index++) {
-			obj.discard[index] = new Card(obj.discard[index].id, obj.discard[index].level);
+			obj.discard[index] = classifyCard(obj.discard[index]);
 		};
 		for (let index = 0; index < obj.void?.length; index++) {
-			obj.void[index] = new Card(obj.void[index].id, obj.void[index].level);
+			obj.void[index] = classifyCard(obj.void[index]);
 		};
 		Object.assign(game, obj);
 	} else {

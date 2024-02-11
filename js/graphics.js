@@ -387,8 +387,11 @@ const draw = {
 			draw.image(card.rarity.rare, x - 2, y - 2);
 		};
 		if (!cards[cardObject.id].keywords.includes("unplayable")) {
-			draw.image(card.energy, x, y);
-			draw.lore(x + 4, y + 2, cards[cardObject.id].cost);
+			let cost = getCardCost(cardObject);
+			if (cost < cards[cardObject.id].cost) draw.image(card.green_energy, x, y);
+			else if (cost > cards[cardObject.id].cost) draw.image(card.red_energy, x, y);
+			else draw.image(card.energy, x, y);
+			draw.lore(x + 4, y + 2, getCardCost(cardObject));
 		};
 	},
 	/**
@@ -539,13 +542,13 @@ const info = {
 	 * @param {number} xOveride - overrides the x-coordinate of the infobox.
 	 * @param {number} yOveride - overrides the y-coordinate of the infobox.
 	 */
-	artifact(type, xOveride = 0, yOveride = 0) {
+	artifact(type, xOveride = NaN, yOveride = NaN) {
 		if (type == "the map") {
-			let x = (xOveride ? xOveride : 21), y = (yOveride ? yOveride : 12);
+			let x = (xOveride === xOveride ? xOveride : 21), y = (yOveride === yOveride ? yOveride : 12);
 			draw.textBox(x, y, 12, "The Map", {"text-align": CENTER});
 			draw.textBox(x, y + 13, 24, infoText["the map"], {"text-small": true});
 		} else {
-			let x = (xOveride ? xOveride : 39 + (game.select[1] * 18)), y = (yOveride ? yOveride : 12);
+			let x = (xOveride === xOveride ? xOveride : 39 + (game.select[1] * 18)), y = (yOveride === yOveride ? yOveride : 12);
 			const obj = artifacts[type];
 			if (!obj) return;
 			if (obj.name.length <= 12) {
@@ -1013,7 +1016,7 @@ const graphics = {
 	},
 	/**
 	 * Draws the options on the canvas.
-	 * @param {boolean} focused - whether the option layer is focused.
+	 * @param {boolean} focused - whether the option layer is focused. Defaults to `true`.
 	 */
 	options(focused = true) {
 		const options = Object.keys(global.options);
@@ -1114,6 +1117,35 @@ const graphics = {
 			notif[1]++;
 			if (notif[1] > 16) notif = [-1, 0];
 		};
+	},
+	/**
+	 * Draws the player's hand in a special select on the canvas.
+	 */
+	hand_select() {
+		draw.rect("#000c");
+		draw.image(extra.end, 3, 55);
+		draw.image(extra.end, 381, 55);
+		if (game.select[1] == -1) draw.image(select.round, 2, 54);
+		else if (game.select[1] == game.hand.length) draw.image(select.round, 380, 54);
+		let temp = -1;
+		for (let index = 0; index < game.hand.length; index++) {
+			let card = game.hand[index];
+			if (index == game.select[1]) {
+				temp = index;
+			} else if (index == game.enemyAtt[0]) {
+				ctx.globalAlpha = 0.5;
+				draw.card(card, index, 14);
+				ctx.globalAlpha = 1;
+			} else {
+				draw.card(card, index, 14);
+			};
+		};
+		if (temp != -1) {
+			draw.card(game.hand[temp], temp, 14, true);
+		};
+		draw.rect("#0004", 0, 0, 400, 13);
+		draw.lore(200 - 2, 1, "Select a Card", {"color": "#fff", "text-align": CENTER});
+		draw.rect("#fff", 1, 12, 398, 1);
 	},
 	/**
 	 * Draws the selector and the info it targets on the canvas.
@@ -1267,7 +1299,7 @@ const graphics = {
 	},
 	/**
 	 * Draws the reward claiming box on the canvas.
-	 * @param {boolean} focused - whether the reward layer is focused.
+	 * @param {boolean} focused - whether the reward layer is focused. Defaults to `true`.
 	 */
 	rewards(focused = true) {
 		draw.box(150, 20, 100, 160);
@@ -1289,7 +1321,7 @@ const graphics = {
 	},
 	/**
 	 * Draws the card reward choosing box on the canvas.
-	 * @param {boolean} focused - whether the card reward layer is focused.
+	 * @param {boolean} focused - whether the card reward layer is focused. Defaults to `true`.
 	 */
 	cardRewards(focused = true) {
 		const choices = get.cardRewardChoices();
@@ -1311,7 +1343,7 @@ const graphics = {
 	},
 	/**
 	 * Draws the artifact reward choosing box on the canvas.
-	 * @param {boolean} focused - whether the artifact reward layer is focused.
+	 * @param {boolean} focused - whether the artifact reward layer is focused. Defaults to `true`.
 	 */
 	artifactRewards(focused = true) {
 		graphics.rewards(false);
@@ -1329,7 +1361,7 @@ const graphics = {
 	},
 	/**
 	 * Calculates the map paths, then draws the map on the canvas.
-	 * @param {boolean} onlyCalc - whether to only calculate the map paths.
+	 * @param {boolean} onlyCalc - whether to only calculate the map paths. Defaults to `false`.
 	 */
 	map(onlyCalc = false) {
 		let render = !onlyCalc;

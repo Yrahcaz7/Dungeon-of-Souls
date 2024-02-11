@@ -29,6 +29,8 @@ const player = {
 	death: new Image,
 }, card = {
 	energy: new Image,
+	green_energy: new Image,
+	red_energy: new Image,
 	back: new Image,
 	error: new Image,
 	outline: {
@@ -61,6 +63,7 @@ const player = {
 		"bladestorm": new Image,
 		"everlasting shield": new Image,
 		"heat wave": new Image,
+		"memorize": new Image,
 		"resilience": new Image,
 	},
 }, enemy = {
@@ -203,6 +206,8 @@ for (const image in player) {
 
 // card stuff
 card.energy.src = "images/cards/energy.png";
+card.green_energy.src = "images/cards/green_energy.png";
+card.red_energy.src = "images/cards/red_energy.png";
 card.back.src = "images/cards/back.png";
 card.error.src = "images/cards/error.png";
 

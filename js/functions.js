@@ -217,9 +217,24 @@ function drawHand() {
  */
 function discardHand() {
 	for (let index = 0; index < game.hand.length; ) {
-		game.discard.push(game.hand[index]);
-		game.hand.splice(index, 1);
+		if (game.hand[index].retention >= 1) {
+			game.hand[index].retention--;
+			if (!game.hand[index].retention) delete game.hand[index].retention;
+			index++;
+		} else {
+			game.discard.push(game.hand[index]);
+			game.hand.splice(index, 1);
+		};
 	};
+};
+
+/**
+ * Gets the cost of a card.
+ * @param {Card} obj - the card object.
+ */
+function getCardCost(obj) {
+	if (obj.charge > 0) return Math.max(cards[obj.id].cost - obj.charge, 0);
+	return +cards[obj.id].cost;
 };
 
 const AURA_BLADE = 200;

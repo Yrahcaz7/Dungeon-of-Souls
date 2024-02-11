@@ -19,10 +19,12 @@ const infoText = {
 	// effects
 	"aura blade": "If something has X aura\nblades, every time it\nattacks, it deals 5 + X\nextra damage, then X is\nreduced by 1.",
 	burn: "If something has X burn,\nat the end of its turn,\nit takes X damage, then\nX is reduced by 1.",
+	charge: "A card with X charge\ncosts X less. After a\ncard with charge leaves\nyour hand, it loses all\nof its charge.",
 	countdown: "If an enemy has X\ncountdown, at the end of\nits turn, its intent is\nset to what it was on\nthe Xth turn, and then\nX is reduced by 1.",
 	"one use": "When a one use card is\nplayed, it is sent to\nthe void. Cards in the\nvoid stay there until\nthe end of the battle.",
 	reinforce: "If something has X\nreinforces, at the start\nof its turn, its shield\nis kept, then X is\nreduced by 1.",
 	resilience: "If something has X\nresilience, it takes 25%\nless damage, rounded\ndown. At the start of\nits turn, X is reduced\nby 1.",
+	retention: "A card with X retention\nwill not be discarded at\nthe end of your turn.\nInstead, X will be\nreduced by 1.",
 	rewind: "If something has X\nrewinds, it is X times\n20 percent stronger. If\nsomething that has\nrewinds and 0 countdown\nreaches 0 health, it\ngains 1 rewind, all\nentities heal fully, and\nthe countdown begins.",
 	uniform: "Extra damage and extra\nshield have half the\neffect on uniform cards,\nrounded down.",
 	unplayable: "An unplayable card has\nno energy cost and\ncannot be played.",
@@ -39,7 +41,7 @@ for (const key in infoText) {
 	if (Object.hasOwnProperty.call(infoText, key)) {
 		infoText[key] = infoText[key].replace(/(health|heal|extra\sdamage|damage|attacks|attack)/gi, "<#f44>$1</#f44>");
 		infoText[key] = infoText[key].replace(/(extra\sshield|shield|defend|defense)/gi, "<#58f>$1</#58f>");
-		infoText[key] = infoText[key].replace(/(one\suse|uniform|unplayable)/gi, "<#666>$1</#666>");
+		infoText[key] = infoText[key].replace(/(charge|one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
 	};
 };
 
@@ -110,8 +112,9 @@ gameplay = ""
 changelog = ""
 	+ "<b>Version 1.3 - Deception<s>"
 	+ " - added THE SECRET ACT\n"
-	+ " - added three new cards\n"
-	+ " - some balancing changes\n"
+	+ " - four new cards, and many new effects\n"
+	+ " - you now get scored at the end of each run\n"
+	+ " - many balancing changes\n"
 	+ " - more coming soon!\n"
 	+ "<b>Version 1.2 - Reception<s>"
 	+ " - added a new option: pixel perfect size\n"
