@@ -210,6 +210,7 @@ function playerTurn() {
 	if (action === ENTER && game.select[0] === ATTACK_ENEMY) {
 		game.energy -= getCardCost(game.enemyAtt[2]);
 		delete game.enemyAtt[2].charge;
+		delete game.enemyAtt[2].retention;
 		activateAttackEffects(game.enemyAtt[2].id);
 		game.enemyAtt[3] = true;
 		if (cards[game.enemyAtt[2].id].keywords.includes("one use")) game.void.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
@@ -234,6 +235,7 @@ function playerTurn() {
 			if (cards[game.enemyAtt[2].id].effect) cards[game.enemyAtt[2].id].effect();
 			game.energy -= getCardCost(game.enemyAtt[2]);
 			delete game.enemyAtt[2].charge;
+			delete game.enemyAtt[2].retention;
 			if (cards[game.enemyAtt[2].id].keywords.includes("one use")) game.void.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
 			else game.discard.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
 			cardAnim.splice(game.enemyAtt[0], 1);
@@ -266,6 +268,7 @@ function playerTurn() {
 				cards[id].effect();
 				game.energy -= getCardCost(selected);
 				delete selected.charge;
+				delete selected.retention;
 				if (cards[id].keywords.includes("one use")) game.void.push(game.hand.splice(game.select[1], 1)[0]);
 				else game.discard.push(game.hand.splice(game.select[1], 1)[0]);
 				cardAnim.splice(game.select[1], 1);
@@ -277,6 +280,7 @@ function playerTurn() {
 				if (cards[id].target === false) {
 					game.energy -= getCardCost(selected);
 					delete selected.charge;
+					delete selected.retention;
 					game.enemyAtt[2] = game.hand[game.select[1]];
 					activateAttackEffects(id);
 					game.enemyAtt[3] = true;

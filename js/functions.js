@@ -219,9 +219,10 @@ function discardHand() {
 	for (let index = 0; index < game.hand.length; ) {
 		if (game.hand[index].retention >= 1) {
 			game.hand[index].retention--;
-			if (!game.hand[index].retention) delete game.hand[index].retention;
 			index++;
 		} else {
+			delete game.hand[index].charge;
+			delete game.hand[index].retention;
 			game.discard.push(game.hand[index]);
 			game.hand.splice(index, 1);
 		};

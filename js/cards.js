@@ -247,6 +247,9 @@ for (const key in cards) {
 		if (/uniform/i.test(cards[key].desc)) cards[key].keywords.push("uniform");
 		if (/unplayable/i.test(cards[key].desc)) cards[key].keywords.push("unplayable");
 		if (/weakness/i.test(cards[key].desc)) cards[key].keywords.push("weakness");
+		if (cards[key].keywords.includes("charge") || cards[key].keywords.includes("retention")) {
+			cards[key].keywords.push("card effect");
+		};
 	};
 };
 

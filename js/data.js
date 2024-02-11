@@ -19,12 +19,12 @@ const infoText = {
 	// effects
 	"aura blade": "If something has X aura\nblades, every time it\nattacks, it deals 5 + X\nextra damage, then X is\nreduced by 1.",
 	burn: "If something has X burn,\nat the end of its turn,\nit takes X damage, then\nX is reduced by 1.",
-	charge: "A card with X charge\ncosts X less. After a\ncard with charge leaves\nyour hand, it loses all\nof its charge.",
+	charge: "A card with X charge\ncosts X less energy.",
 	countdown: "If an enemy has X\ncountdown, at the end of\nits turn, its intent is\nset to what it was on\nthe Xth turn, and then\nX is reduced by 1.",
 	"one use": "When a one use card is\nplayed, it is sent to\nthe void. Cards in the\nvoid stay there until\nthe end of the battle.",
 	reinforce: "If something has X\nreinforces, at the start\nof its turn, its shield\nis kept, then X is\nreduced by 1.",
 	resilience: "If something has X\nresilience, it takes 25%\nless damage, rounded\ndown. At the start of\nits turn, X is reduced\nby 1.",
-	retention: "A card with X retention\nwill not be discarded at\nthe end of your turn.\nInstead, X will be\nreduced by 1.",
+	retention: "A card with X retention\nwill not be discarded\nat the end of your turn.\nInstead, X will be\nreduced by 1.",
 	rewind: "If something has X\nrewinds, it is X times\n20 percent stronger. If\nsomething that has\nrewinds and 0 countdown\nreaches 0 health, it\ngains 1 rewind, all\nentities heal fully, and\nthe countdown begins.",
 	uniform: "Extra damage and extra\nshield have half the\neffect on uniform cards,\nrounded down.",
 	unplayable: "An unplayable card has\nno energy cost and\ncannot be played.",
@@ -35,6 +35,7 @@ const infoText = {
 	[BUFF]: "This enemy intends to buff\nitself on its next turn.",
 	// other
 	"the map": "You can choose where\nyou go next. Cannot use\nduring a battle.",
+	"card effect": "After a card leaves\nyour hand, it loses all\nof its applied effects.",
 };
 
 for (const key in infoText) {
