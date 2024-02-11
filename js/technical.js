@@ -99,7 +99,6 @@ window.onload = () => {
 	// calculate things
 	graphics.map(true);
 	if (game.map.length === 0) {
-		updateMapProg();
 		setTimeout(() => {
 			generateMap();
 		}, 0);

@@ -80,6 +80,27 @@ const draw = {
 		ctx.stroke();
 	},
 	/**
+	 * Draws a curved line on the canvas.
+	 * @param {number} x1 - the x-coordinate to start drawing at.
+	 * @param {number} y1 - the y-coordinate to start drawing at.
+	 * @param {number} x2 - the x-coordinate of the control point.
+	 * @param {number} y2 - the y-coordinate of the control point.
+	 * @param {number} x3 - the x-coordinate to end drawing at.
+	 * @param {number} y3 - the y-coordinate to end drawing at.
+	 * @param {string} color - the color of the line. Defaults to `#000`.
+	 * @param {number} width - the width of the line. Defaults to `1`.
+	 */
+	curvedLine(x1, y1, x2, y2, x3, y3, color = "#000", width = 1) {
+		ctx.beginPath();
+		if (color) ctx.strokeStyle = color;
+		else ctx.strokeStyle = "#000";
+		if (width) ctx.lineWidth = width * scale;
+		else ctx.lineWidth = 1 * scale;
+		ctx.moveTo(x1 * scale, y1 * scale);
+		ctx.quadraticCurveTo(x2 * scale, y2 * scale, x3 * scale, y3 * scale);
+		ctx.stroke();
+	},
+	/**
 	 * Draws a character on the canvas.
 	 * @param {string} char - the character to draw.
 	 * @param {number} x - the x-coordinate to draw the character at.
@@ -1464,13 +1485,30 @@ const graphics = {
 							};
 						};
 					};
-					if (render) {
-						if (game.traveled[x] === y && game.traveled[x + connectNode[0]] === connectNode[1]) {
-							draw.line(drawX + 8, drawY + 8, posX + 8, posY + 8, "#842", 3);
-						} else {
-							draw.line(drawX + 8, drawY + 8, posX + 8, posY + 8, "#b84", 3);
-						};
+					if (render && !(game.traveled[x] === y && game.traveled[x + connectNode[0]] === connectNode[1])) {
+						draw.curvedLine(drawX + 8, drawY + 8, (drawX + posX) / 2 + 8, (x % 2 == 0 ? drawY : posY) + 8, posX + 8, posY + 8, "#b84", 3);
 					};
+				};
+			};
+		};
+		// draw traveled path
+		if (render) {
+			let drawX, drawY;
+			for (let index = 0; index < game.traveled.length; index++) {
+				let y = game.traveled[index];
+				if (drawX && drawY) {
+					let posX = 25 + (index * 32) + game.map[index][y][1];
+					let posY = 18 + (y * 32) + game.map[index][y][2];
+					if (game.map[index][y][0] === ROOM.BOSS) {
+						posX = 25 + 10 + 8 + (index * 32);
+						posY = 90 + 8;
+					};
+					draw.curvedLine(drawX + 8, drawY + 8, (drawX + posX) / 2 + 8, (index % 2 == 1 ? drawY : posY) + 8, posX + 8, posY + 8, "#842", 3);
+					drawX = posX;
+					drawY = posY;
+				} else {
+					drawX = 25 + (index * 32) + game.map[index][y][1];
+					drawY = 18 + (y * 32) + game.map[index][y][2];
 				};
 			};
 		};
