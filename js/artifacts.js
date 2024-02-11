@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const ENDOFBATTLE = 900, ONPICKUP = 901;
+const END_OF_BATTLE = 900, ON_PICKUP = 901, END_OF_TURN = 902;
 
 const artifacts = {
 	0: {
@@ -27,7 +27,7 @@ const artifacts = {
 		name: "iron will",
 		desc: "Every time a battle\nends, you heal 2 health.",
 		rarity: 0,
-		[ENDOFBATTLE]() {
+		[END_OF_BATTLE]() {
 			game.health += 2;
 		},
 	},
@@ -45,16 +45,16 @@ const artifacts = {
 		name: "candy",
 		rarity: 1,
 		desc: "You have 15 less max\nhealth, but you heal by\n3 after every battle.",
-		[ENDOFBATTLE]() {
+		[END_OF_BATTLE]() {
 			game.health += 3;
 		},
 	},
 	5: {
 		name: "corrosion",
 		rarity: 1,
-		desc: "You have 1 more energy,\nbut you lose 8 health\nafter every battle.",
-		[ENDOFBATTLE]() {
-			game.health -= 8;
+		desc: "You have 1 more max\nenergy, but you take\n4 damage after each of\nyour turns.",
+		[END_OF_TURN]() {
+			takeDamage(4, false);
 		},
 	},
 	6: {
@@ -66,7 +66,7 @@ const artifacts = {
 		name: "nutritious meal",
 		rarity: 1,
 		desc: "You have 15 more max health.\nOn pickup, heal 10 health.",
-		[ONPICKUP]() {
+		[ON_PICKUP]() {
 			game.health += 10;
 		},
 	},
@@ -76,7 +76,6 @@ for (const key in artifacts) {
 	if (Object.hasOwnProperty.call(artifacts, key)) {
 		artifacts[key].desc = artifacts[key].desc.replace(/(max\shealth|health|heal|damage|attack)/gi, "<#f44>$1</#f44>");
 		artifacts[key].desc = artifacts[key].desc.replace(/(shield|defense)/gi, "<#58f>$1</#58f>");
-		artifacts[key].desc = artifacts[key].desc.replace(/(energy|card\sreward\schoice)/gi, "<#ff0 highlight>$1</#ff0>");
 	};
 };
 

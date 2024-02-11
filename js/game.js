@@ -160,6 +160,11 @@ function endTurn() {
 		game.eff.burn--;
 	};
 	if (game.eff.weakness) game.eff.weakness--;
+	// activate artifacts
+	for (let index = 0; index < game.artifacts.length; index++) {
+		const func = artifacts[game.artifacts[index]][END_OF_TURN];
+		if (typeof func == "function") func();
+	};
 	// start of enemy turn effects
 	game.turn = TURN.ENEMY;
 	game.enemyNum = -1;
@@ -177,7 +182,8 @@ function endTurnConfirm() {
 	let confirm = false;
 	if (game.hand.length >= 1) {
 		for (let index = 0; index < game.hand.length; index++) {
-			if (getCardCost(game.hand[index]) <= game.energy && !cards[game.hand[index].id].keywords.includes("unplayable")) {
+			const id = game.hand[index].id;
+			if (getCardCost(game.hand[index]) <= game.energy && !cards[id].keywords.includes("unplayable") && (!cards[id].can || cards[id].can())) {
 				confirm = true;
 				break;
 			};
@@ -556,7 +562,7 @@ function selection() {
 				};
 			} else {
 				const index = game.room[6][game.select[1]];
-				const func = artifacts[index][ONPICKUP];
+				const func = artifacts[index][ON_PICKUP];
 				if (typeof func == "function") func();
 				game.artifacts.push(index);
 				for (let index = 0; index < game.rewards.length; index++) {
@@ -1016,13 +1022,15 @@ function manageGameplay() {
 	// end battle
 	if (game.state === STATE.BATTLE && !game.enemies.length) {
 		// normal stuff
-		endTurn();
+		if (game.hand.length > 0) discardHand();
+		cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		notif = [-1, 0, "", 0];
 		game.select = [REWARDS, 0];
 		game.state = STATE.EVENT_FIN;
 		game.turn = -1;
 		// activate artifacts
 		for (let index = 0; index < game.artifacts.length; index++) {
-			const func = artifacts[game.artifacts[index]][ENDOFBATTLE];
+			const func = artifacts[game.artifacts[index]][END_OF_BATTLE];
 			if (typeof func == "function") func();
 		};
 		// set rewards

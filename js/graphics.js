@@ -452,6 +452,21 @@ const info = {
 		return draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});
 	},
 	/**
+	 * Draws an infobox for a card in a special hand select.
+	 * @param {string} type - the infobox contains `infoText[type]`.
+	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
+	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
+	 */
+	card_select(type, xPlus = 0, yPlus = 0) {
+		let x = handPos[game.select[1]] + xPlus, y = 15 + yPlus;
+		if ((game.select[1] == game.hand.length - 1 && game.hand.length >= 4) || (game.select[1] == game.hand.length - 2 && game.hand.length >= 7)) {
+			const ref = cards[game.hand[game.select[1]].id];
+			if (ref.keywords.includes("unplayable") && ref.rarity <= 1) x -= 143;
+			else x -= 145;
+		};
+		return draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});
+	},
+	/**
 	 * Draws an infobox for a card reward choice.
 	 * @param {string} type - the infobox contains `infoText[type]`.
 	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
@@ -460,7 +475,7 @@ const info = {
 	reward(type, xPlus = 0, yPlus = 0) {
 		let x = handPos[game.select[1]] + xPlus;
 		if (game.select[1] == get.cardRewardChoices() - 1 && get.cardRewardChoices() >= 4) {
-			const ref = cards[game.hand[game.select[1]].id];
+			const ref = cards[game.room[5][game.select[1]]];
 			if (ref.keywords.includes("unplayable") && ref.rarity <= 1) x -= 143;
 			else x -= 145;
 		};
@@ -1133,7 +1148,7 @@ const graphics = {
 			if (index == game.select[1]) {
 				temp = index;
 			} else if (index == game.enemyAtt[0]) {
-				ctx.globalAlpha = 0.5;
+				ctx.globalAlpha = 0.75;
 				draw.card(card, index, 14);
 				ctx.globalAlpha = 1;
 			} else {
@@ -1257,13 +1272,18 @@ const graphics = {
 			};
 		};
 		if ((game.select[0] === HAND || (game.select[0] != ATTACK_ENEMY && game.select[0] != LOOKAT_ENEMY && !hidden() && global.options.sticky_cards)) && game.hand.length && game.prevCard < game.hand.length) {
-			const keywords = cards[game.hand[game.prevCard].id]?.keywords;
+			const keywords = cards[game.hand[game.prevCard].id].keywords;
 			let x = 0, y = 0;
-			if (keywords instanceof Array) {
-				for (let index = 0; index < keywords.length; index++) {
-					const key = "" + keywords[index];
-					if (key) y += info.card(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
-				};
+			for (let index = 0; index < keywords.length; index++) {
+				const key = "" + keywords[index];
+				if (key) y += info.card(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
+			};
+		} else if (game.select[0] === SELECT_HAND && game.select[1] >= 0 && game.select[1] < game.hand.length) {
+			const keywords = cards[game.hand[game.select[1]].id].keywords;
+			let x = 0, y = 0;
+			for (let index = 0; index < keywords.length; index++) {
+				const key = "" + keywords[index];
+				if (key) y += info.card_select(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
 			};
 		};
 	},
