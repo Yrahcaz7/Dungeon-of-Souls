@@ -1438,6 +1438,16 @@ const graphics = {
 			draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
 			draw.lore(399, 1, "seed: " + game.seed, {"color": "#fff", "text-align": LEFT});
 		};
+		// draw scibbles
+		if (render) {
+			for (let x = 0; x < game.map.length; x++) {
+				for (let y = 0; y < game.map[x].length; y++) {
+					if (typeof game.map[x][y] != "number") continue;
+					draw.image(map.scribble_back, 25 + (x * 32) + 8 - 4, 18 + (y * 32) + 8 - 3 - 2.5, 80 / 2, 80 / 2);
+					draw.imageSector(map.scribbles, game.map[x][y] * 64, 0, 64, 70, 25 + (x * 32) + 8, 18 + (y * 32) + 8 - 3, 64 / 2, 70 / 2);
+				};
+			};
+		};
 		// calculate nodes
 		let store = [];
 		for (let x = 0; x < game.map.length; x++) {
@@ -1549,16 +1559,6 @@ const graphics = {
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(select.boss, drawX - 1, 90 - 1);
 						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.boss_blue, drawX - 1, 90 - 1);
 					};
-				};
-			};
-		};
-		// draw scibbles
-		if (render) {
-			for (let x = 0; x < game.map.length; x++) {
-				for (let y = 0; y < game.map[x].length; y++) {
-					if (typeof game.map[x][y] != "number") continue;
-					draw.image(map.scribble_back, 25 + (x * 32) + 8 - 4, 18 + (y * 32) + 8 - 3 - 2.5, 80 / 2, 80 / 2);
-					draw.imageSector(map.scribbles, game.map[x][y] * 64, 0, 64, 70, 25 + (x * 32) + 8, 18 + (y * 32) + 8 - 3, 64 / 2, 70 / 2);
 				};
 			};
 		};
