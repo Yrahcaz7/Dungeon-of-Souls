@@ -52,7 +52,7 @@ async function updateMapProg() {
 /**
  * Returns a map piece.
  * @param {number} row - the row of the map piece.
- * @param {number} num - the number map pieces in the row so far.
+ * @param {number} num - the number of map pieces in the row so far.
  * @param {FIRSTBATTLE | TREASURE | PRIME | ORB | BOSS} attribute - the attribute of the map piece, if any.
  */
 async function mapPiece(row, num, attribute = -1) {
@@ -132,31 +132,30 @@ async function mapRow(row) {
 		game.map.push(arr);
 		graphics.map(true);
 		game.map.pop();
-		let rand = randomInt(0, 5), past = [];
-		const setRand = () => {
-			rand = randomInt(0, 5);
-			if (past.includes(rand)) setRand();
-		};
-		while (past.length < 6) {
+		let available = [0, 1, 2, 3, 4, 5];
+		let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+		while (true) {
 			if (arr[rand] && !pathHasSpecial(row + ", " + rand)) {
 				arr[rand] = await mapPiece(row, rand, TREASURE);
 				break;
+			} else if (available.length > 0) {
+				rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 			} else {
-				if (!past.includes(rand)) past.push(rand);
-				if (past.length < 6) setRand();
+				break;
 			};
 		};
 		if (row >= 3 && death_zones < 2) {
-			rand = randomInt(0, 5);
-			past = [];
-			while (past.length < 6) {
+			available = [0, 1, 2, 3, 4, 5];
+			rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+			while (true) {
 				if (arr[rand] && arr[rand][0] !== ROOM.TREASURE && !pathHasSpecial(row + ", " + rand)) {
 					arr[rand] = await mapPiece(row, rand, PRIME);
 					death_zones++;
 					break;
+				} else if (available.length > 0) {
+					rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 				} else {
-					if (!past.includes(rand)) past.push(rand);
-					if (past.length < 6) setRand();
+					break;
 				};
 			};
 		};
@@ -202,36 +201,24 @@ async function generateMap() {
 	for (let index = 0; index < 10; index++) {
 		game.map.push(await mapRow(index));
 	};
-	if (death_zones === 0) {
-		let rand = randomInt(0, 5), past = [];
-		const setRand = () => {
-			rand = randomInt(0, 5);
-			if (past.includes(rand)) setRand();
-		};
-		while (past.length < 6) {
-			if (game.map[2][rand] && game.map[2][rand][0] !== ROOM.TREASURE && !pathHasSpecial("2, " + rand, true)) {
-				game.map[2][rand] = await mapPiece(2, rand, PRIME);
+	let row = 3;
+	while (death_zones === 0) {
+		let available = [0, 1, 2, 3, 4, 5];
+		let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+		while (true) {
+			if (game.map[row][rand] && game.map[row][rand][0] === ROOM.TREASURE && !pathHasSpecial(row + ", " + rand, true)) {
+				game.map[row][rand] = await mapPiece(row, rand, PRIME);
 				death_zones++;
 				break;
+			} else if (available.length > 0) {
+				rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 			} else {
-				if (!past.includes(rand)) past.push(rand);
-				if (past.length < 6) setRand();
+				break;
 			};
 		};
-		if (death_zones === 0) {
-			rand = randomInt(0, 5);
-			past = [];
-			while (past.length < 6) {
-				if (game.map[3][rand] && game.map[3][rand][0] === ROOM.TREASURE && !pathHasSpecial("3, " + rand, true)) {
-					game.map[3][rand] = await mapPiece(3, rand, PRIME);
-					death_zones++;
-					break;
-				} else {
-					if (!past.includes(rand)) past.push(rand);
-					if (past.length < 6) setRand();
-				};
-			};
-		};
+		row++;
+		if (row >= 8) row = 2;
+		else if (row == 2) break;
 	};
 	addScribbles();
 	graphics.map(true);
