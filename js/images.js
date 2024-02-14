@@ -52,6 +52,7 @@ const player = {
 		"burn": new Image,
 		"cower": new Image,
 		"gold slash": new Image,
+		"iron slash": new Image,
 		"rage": new Image,
 		"reinforce": new Image,
 		"sweeping slash": new Image,

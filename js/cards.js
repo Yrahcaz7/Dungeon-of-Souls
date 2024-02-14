@@ -88,6 +88,14 @@ const cards = {
 		},
 		cannotMessage: "not enough gold",
 	},
+	1005: {
+		name: "iron slash",
+		desc: "Deal 12 damage.",
+		rarity: 1,
+		cost: 2,
+		anim: "attack",
+		damage: 12,
+	},
 	2000: {
 		name: "block",
 		desc: "Gain 4 shield.",
