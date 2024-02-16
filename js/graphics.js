@@ -1558,6 +1558,10 @@ const graphics = {
 						draw.image(map.boss, drawX, 90);
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(select.boss, drawX - 1, 90 - 1);
 						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.boss_blue, drawX - 1, 90 - 1);
+					} else if (game.map[x][y][0] === ROOM.EVENT) {
+						draw.image(map.event, drawX, drawY);
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(select.orb, drawX - 1, drawY - 1);
+						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.orb_blue, drawX - 1, drawY - 1);
 					};
 				};
 			};

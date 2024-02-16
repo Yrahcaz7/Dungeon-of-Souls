@@ -15,11 +15,11 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const HAND = 300, LOOKAT_YOU = 301, LOOKAT_ENEMY = 302, ATTACK_ENEMY = 303, LOOKER = 304, HELP = 305, END = 306, CONFIRM_END = 307, DECK = 308, DISCARD = 309, MAP = 310, IN_MAP = 311, POPUPS = 312, REWARDS = 313, CARD_REWARDS = 314, ARTIFACTS = 315, VOID = 316, CONFIRM_EXIT = 317, OPTIONS = 318, GAME_OVER = 319, GAME_FIN = 320, GAME_WON = 321, CONFIRM_RESTART = 322, WELCOME = 323, ARTIFACT_REWARDS = 324, CONFIRM_FRAGMENT_UPGRADE = 325, PURIFIER = 326, CONFIRM_PURIFY = 327;
+const HAND = 300, LOOKAT_YOU = 301, LOOKAT_ENEMY = 302, ATTACK_ENEMY = 303, LOOKER = 304, HELP = 305, END = 306, CONFIRM_END = 307, DECK = 308, DISCARD = 309, MAP = 310, IN_MAP = 311, POPUPS = 312, REWARDS = 313, CARD_REWARDS = 314, ARTIFACTS = 315, VOID = 316, CONFIRM_EXIT = 317, OPTIONS = 318, GAME_OVER = 319, GAME_FIN = 320, GAME_WON = 321, CONFIRM_RESTART = 322, WELCOME = 323, ARTIFACT_REWARDS = 324, CONFIRM_FRAGMENT_UPGRADE = 325, PURIFIER = 326, CONFIRM_PURIFY = 327, CONFIRM_EVENT = 328;
 
 const MENU = {TITLE: 400, DIFFICULTY_CHANGE: 401};
 
-const STATE = {ENTER: 1000, BATTLE: 1001, EVENT_FIN: 1002, GAME_END: 1003};
+const STATE = {ENTER: 1000, BATTLE: 1001, EVENT_FIN: 1002, GAME_END: 1003, EVENT: 1004};
 
 const TURN = {PLAYER: 1100, ENEMY: 1101};
 
@@ -116,11 +116,6 @@ function enterBattle() {
 	game.discard = [];
 	game.void = [];
 	game.shield = 0;
-	for (const effect in game.eff) {
-		if (Object.hasOwnProperty.call(game.eff, effect)) {
-			game.eff[effect] = 0;
-		};
-	};
 	startTurn();
 };
 
@@ -1049,8 +1044,15 @@ function manageGameplay() {
 		};
 		game.rewards.push("finish");
 	};
-	// load floor
+	// load room
 	if (game.state === STATE.ENTER) {
+		// clear effects
+		for (const effect in game.eff) {
+			if (Object.hasOwnProperty.call(game.eff, effect)) {
+				game.eff[effect] = 0;
+			};
+		};
+		// enter room
 		const place = game.location.split(", ");
 		const type = (game.location == "-1" ? ROOM.BATTLE : game.map[place[0]][place[1]][0]);
 		if (type === ROOM.BATTLE || type === ROOM.PRIME || type === ROOM.BOSS) {
@@ -1081,6 +1083,10 @@ function manageGameplay() {
 			game.select = [REWARDS, 0];
 			game.state = STATE.EVENT_FIN;
 			game.rewards = [Math.floor(get.maxHealth() * 0.5) + " health", "1 purifier", "finish"];
+		} else if (type === ROOM.EVENT) {
+			game.traveled.push(+place[1]);
+			game.select = [CONFIRM_EVENT, 0];
+			game.state = STATE.EVENT;
 		};
 	};
 	// update data again
