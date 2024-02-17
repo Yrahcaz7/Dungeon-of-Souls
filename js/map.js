@@ -59,7 +59,11 @@ async function mapPiece(row, num, attribute = -1) {
 	if (attribute === FIRSTBATTLE) return [ROOM.BATTLE, 0, 0, [SLIME.SMALL], goldReward(row), randomCardSet(5)];
 	if (attribute === TREASURE) return [ROOM.TREASURE, randomInt(-5, 5), randomInt(-5, 5), false, goldReward(row) * 2, randomCardSet(5)];
 	if (attribute === PRIME) return [ROOM.PRIME, randomInt(-5, 5), randomInt(-5, 5), [weakerSmallSlime(row), SLIME.PRIME, weakerSmallSlime(row)], goldReward(row) * 2, randomCardSet(5), randomArtifactSet(3)];
-	if (attribute === EVENT) return [ROOM.EVENT, randomInt(-5, 5), randomInt(-5, 5), randomInt(0, EVENTS.any.length + EVENTS[1].length - 1), goldReward(row), randomCardSet(5)];
+	if (attribute === EVENT) {
+		let index = randomInt(0, EVENTS.any.length + EVENTS[1].length - 1);
+		if (index >= EVENTS.any.length) index += 100 - EVENTS.any.length;
+		return [ROOM.EVENT, randomInt(-5, 5), randomInt(-5, 5), index, goldReward(row), randomCardSet(5)];
+	};
 	await updateMapProg();
 	if (attribute === ORB) return [ROOM.ORB, randomInt(-5, 5), randomInt(-5, 5)];
 	if (attribute === BOSS) return [ROOM.BOSS, 0, 0, [FRAGMENT], goldReward(row) * 4, randomCardSet(5), randomArtifactSet(3)];

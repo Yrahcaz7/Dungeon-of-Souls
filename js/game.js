@@ -632,7 +632,8 @@ function selection() {
 			actionTimer = 1;
 			return;
 		} else if (action === ENTER && event[game.select[1]]) {
-			game.turn = 10000 + event[game.select[1] + 2][1];
+			let next = 10000 + event[game.select[1] + 2][1];
+			game.turn = (typeof next == "function" ? next() : next);
 			getCurrentEvent()[0]();
 			if (game.select[0] === CONFIRM_EVENT) game.select[1] = -1;
 			actionTimer = 2;
