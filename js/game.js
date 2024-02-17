@@ -106,16 +106,10 @@ function musicPopup() {
  */
 function enterBattle() {
 	game.state = STATE.BATTLE;
-	game.rewards = [];
 	const deck = shuffle(game.deck.slice(0));
-	game.deckLocal = [];
 	for (let index = 0; index < deck.length; index++) {
 		game.deckLocal.push(classifyCard(deck[index]));
 	};
-	game.hand = [];
-	game.discard = [];
-	game.void = [];
-	game.shield = 0;
 	startTurn();
 };
 
@@ -622,6 +616,29 @@ function selection() {
 			if (game.mapSelect == len) game.mapSelect = -1;
 		};
 	};
+	// event
+	if (game.select[0] === CONFIRM_EVENT) {
+		const event = getCurrentEvent();
+		if (game.select[1] === -1 && action !== -1) {
+			game.select[1] = 0;
+			actionTimer = 1;
+			return;
+		} else if (action === UP && game.select[1] > 0) {
+			game.select[1]--;
+			actionTimer = 1;
+			return;
+		} else if (action === DOWN && game.select[1] < event.length - 3) {
+			game.select[1]++;
+			actionTimer = 1;
+			return;
+		} else if (action === ENTER && event[game.select[1]]) {
+			game.turn = 10000 + event[game.select[1] + 2][1];
+			getCurrentEvent()[0]();
+			if (game.select[0] === CONFIRM_EVENT) game.select[1] = -1;
+			actionTimer = 2;
+			return;
+		};
+	};
 	// select extras
 	if (action === UP && game.select[0] === LOOKAT_ENEMY) {
 		game.select = [LOOKER, 0];
@@ -1052,6 +1069,15 @@ function manageGameplay() {
 				game.eff[effect] = 0;
 			};
 		};
+		// reset things
+		game.rewards = [];
+		game.energy = get.maxEnergy();
+		game.shield = 0;
+		game.hand = [];
+		game.deckLocal = [];
+		game.discard = [];
+		game.void = [];
+		game.enemies = [];
 		// enter room
 		const place = game.location.split(", ");
 		const type = (game.location == "-1" ? ROOM.BATTLE : game.map[place[0]][place[1]][0]);
@@ -1085,8 +1111,9 @@ function manageGameplay() {
 			game.rewards = [Math.floor(get.maxHealth() * 0.5) + " health", "1 purifier", "finish"];
 		} else if (type === ROOM.EVENT) {
 			game.traveled.push(+place[1]);
-			game.select = [CONFIRM_EVENT, 0];
+			game.select = [CONFIRM_EVENT, -1];
 			game.state = STATE.EVENT;
+			game.turn = 10000;
 		};
 	};
 	// update data again
@@ -1159,6 +1186,8 @@ function updateVisuals() {
 	};
 	if (game.select[0] === IN_MAP) {
 		graphics.map();
+	} else if (game.select[0] === CONFIRM_EVENT) {
+		graphics.event();
 	} else if (game.select[0] === REWARDS) {
 		graphics.rewards();
 	} else if (game.select[0] === CARD_REWARDS) {
