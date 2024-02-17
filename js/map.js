@@ -81,6 +81,8 @@ async function mapPiece(row, num, attribute = -1) {
 	return result;
 };
 
+let pathEntries = [];
+
 /**
  * Checks if a map path has any nodes of specified types.
  * @param {string} coords - the coordinates of the node to start searching from.
@@ -88,7 +90,6 @@ async function mapPiece(row, num, attribute = -1) {
  * @param {boolean} front - whether to seach the front instead of the back.
  */
 function pathHasTypes(coords, types = [], front = false) {
-	const entries = Object.entries(paths);
 	let boolean = false;
 	const looping = front ? (location = "", first = false) => {
 		let loc = location.split(", ");
@@ -105,10 +106,8 @@ function pathHasTypes(coords, types = [], front = false) {
 			boolean = true;
 			return;
 		};
-		for (let index = 0; index < location.length; index++) {
-			for (let ind2 = 0; ind2 < entries.length; ind2++) {
-				if (entries[ind2] && entries[ind2][1].includes(location)) looping(entries[ind2][0]);
-			};
+		for (let index = 0; index < pathEntries.length; index++) {
+			if (pathEntries[index][1].includes(location)) looping(pathEntries[index][0]);
 		};
 	};
 	looping(coords, true);
@@ -138,6 +137,7 @@ async function mapRow(row) {
 		game.map.push(arr);
 		graphics.map(true);
 		game.map.pop();
+		pathEntries = Object.entries(paths);
 		if (row > 1) {
 			let available = [0, 1, 2, 3, 4, 5];
 			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
@@ -224,6 +224,7 @@ async function generateMap() {
 	for (let index = 0; index < 10; index++) {
 		game.map.push(await mapRow(index));
 	};
+	pathEntries = Object.entries(paths);
 	let row = 3;
 	while (death_zones === 0) {
 		let available = [0, 1, 2, 3, 4, 5];
