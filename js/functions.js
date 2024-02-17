@@ -145,6 +145,24 @@ const get = {
 		if (game.health > 0) factors.push(["saved " + game.health + " health", game.health * 5]);
 		return factors;
 	},
+	/**
+	 * Gets the total score.
+	 */
+	totalScore() {
+		let score = 0;
+		for (const key in game.kills) {
+			if (Object.hasOwnProperty.call(game.kills, key)) {
+				score += game.kills[+key] * ENEMY_WORTH[+key];
+			};
+		};
+		score += Math.floor(game.gold / 5);
+		if (game.health > 0) score += game.health * 5;
+		if (game.difficulty) {
+			if (game.artifacts.includes(0) && game.kills[FRAGMENT]) score *= 3;
+			else score *= 2;
+		};
+		return score;
+	},
 };
 
 /**

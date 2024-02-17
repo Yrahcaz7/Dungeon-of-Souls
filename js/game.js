@@ -77,7 +77,7 @@ let global = {
 	firstRoom: [],
 	map: [],
 	traveled: [],
-	seed: "" + (Math.round(new Date().getTime() * (Math.random() + 0.001)) % 1000000).toString().randomize(),
+	seed: "" + (Math.round(new Date().getTime() * (Math.random() + 0.001)) % (16 ** 6 - 1)).toString(16).toUpperCase().randomize(),
 }, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = MENU.TITLE, menuSelect = 0, enemyPos = [], handPos = [], paths = {}, winAnim = 0;
 
 /**
@@ -395,6 +395,10 @@ function selection() {
 	// game end
 	if ((game.select[0] === GAME_OVER || game.select[0] === GAME_FIN) && game.select[1] == 50) {
 		if (action === ENTER) {
+			let score = get.totalScore();
+			if (!global.highScore || score > global.highScore) {
+				global.highScore = score;
+			};
 			restartRun();
 			actionTimer = 2;
 		};
@@ -1171,6 +1175,7 @@ function updateVisuals() {
 	if (menuLocation !== -1) {
 		graphics.middleLayer();
 		draw.image(title, (400 - title.width) / 2, 0);
+		if (global.highScore > 0) draw.lore(1, 1, "HIGH SCORE: " + global.highScore + " points", {"color": "#fff", "text-small": true});
 		if (game.artifacts.includes(0) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": CENTER});
 		else draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": CENTER});
 		if (new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "#fff", "text-align": CENTER});
@@ -1361,6 +1366,9 @@ function updateVisuals() {
 			text += "\n" + totalScore + " points";
 		};
 		draw.lore(275, 100 - (len - 7) * 2.75, text, {"color": "#f00", "text-align": LEFT, "text-small": true});
+		if (!global.highScore || totalScore > global.highScore) {
+			draw.lore(275, 100 + (len + 9) * 2.75, ": NEW HIGH SCORE!", {"color": "#f00", "text-small": true});
+		};
 		ctx.globalAlpha = 1;
 	} else if (game.select[0] === GAME_FIN) {
 		if (game.select[1] < 50) {
@@ -1418,6 +1426,9 @@ function updateVisuals() {
 			text += "\n" + totalScore + " points";
 		};
 		draw.lore(275, 100 - (len - 7) * 2.75, text, {"color": "#0f0", "text-align": LEFT, "text-small": true});
+		if (!global.highScore || totalScore > global.highScore) {
+			draw.lore(275, 100 + (len + 9) * 2.75, ": NEW HIGH SCORE!", {"color": "#0f0", "text-small": true});
+		};
 		ctx.globalAlpha = 1;
 	};
 	if (game.artifacts.includes(0) && game.floor == 10 && transition < 100) transition++;
