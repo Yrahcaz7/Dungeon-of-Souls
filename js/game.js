@@ -99,7 +99,38 @@ function musicPopup() {
 		pushPopup("music", "music is off");
 	} else if (/Ruins_of_Caelum/.test(src)) {
 		pushPopup("music", "Ruins of Caelum");
+	} else if (/The_Final_Ruins/.test(src)) {
+		pushPopup("music", "The Final Ruins");
 	};
+};
+
+/**
+ * Changes the music track to the appropriate one.
+ */
+function changeMusic() {
+	if (game.floor === 10) document.getElementById("music").src = "music/The_Final_Ruins.wav";
+	else document.getElementById("music").src = "music/Ruins_of_Caelum.wav";
+	musicPopup();
+};
+
+/**
+ * Fades out the music, then changes it.
+ */
+function fadeMusic() {
+	if (!document.getElementById("music") || document.getElementById("music").volume < 1) return;
+	let timer = 0;
+	let fade = setInterval(() => {
+		let volume = document.getElementById("music").volume;
+		if (volume > 0) {
+			volume -= 0.0025;
+			document.getElementById("music").volume = Math.max(volume, 0);
+		} else if (timer >= 500) {
+			changeMusic();
+			document.getElementById("music").volume = 1;
+			clearInterval(fade);
+		};
+		timer++;
+	}, 2);
 };
 
 /**
@@ -1096,6 +1127,7 @@ function manageGameplay() {
 					game.enemies.push(new Enemy(+enemy));
 				};
 			};
+			if (type === ROOM.BOSS) fadeMusic();
 			enterBattle();
 		} else if (type === ROOM.TREASURE) {
 			game.traveled.push(+place[1]);
@@ -1423,12 +1455,12 @@ const gameloop = setInterval(() => {
 		save();
 	};
 }, 100), musicloop = setInterval(() => {
-	if (document.getElementById("music")) {
+	if (document.getElementById("music")?.src) {
 		let time = document.getElementById("music").currentTime;
 		if (global.options.music) {
 			if (time === 0 && menuLocation === -1) {
 				document.getElementById("music").play();
-			} else if (time > document.getElementById("music").duration - 0.1) {
+			} else if (time > document.getElementById("music").duration - 1.001) {
 				document.getElementById("music").currentTime = 0;
 			};
 		};

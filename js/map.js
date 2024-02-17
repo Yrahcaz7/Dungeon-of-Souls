@@ -246,7 +246,7 @@ async function generateMap() {
 	};
 	addScribbles();
 	graphics.map(true);
-	musicPopup();
+	changeMusic();
 	updateVisuals();
 	loaded = true;
 };
