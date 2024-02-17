@@ -34,7 +34,10 @@ const EVENTS = {
 		110: [() => {}, "You ready yourself and charge at the enemy.", ["Battle Start!", 111]],
 		111: [() => {startEventBattle(SLIME_AMBUSH)}],
 		120: [() => {}, "You are back at the front of the chasm. What will you do?", ["jump across the chasm", 200], ["climb down the side", 300]],
-		200: [() => {takeDamage(5)}, "You fail and fall into the chasm.\nLuckily, the chasm is not that deep.\nYou only took 5 damage.\nWhat do you do now?", ["look around", 400], ["climb up", 500]],
+		200: [() => {
+			takeDamage(5);
+			screenShake = 20;
+		}, "You fail and fall into the chasm.\nLuckily, the chasm is not that deep.\nYou only took 5 damage.\nWhat do you do now?", ["look around", 400], ["climb up", 500]],
 		300: [() => {}, "You climb down into the chasm unexpectedly easily.\nHowever, going back up will be harder.\nWhat will you do?", ["look around", 400], ["climb up", 500]],
 		400: [() => {}, "You find a platform with two giant cups on it.\nThe left cup is filled with purple ooze.\nThe right cup is filled with glowing water.\nClearly one is all you can drink.\nYou would vomit if you had both.", ["look closer at left cup", 410], ["look closer at right cup", 420], ["forget this, climb back up", 500]],
 		410: [() => {}, "There is an engraving on the cup.\nIt says: ENVIGORATING BUT DANGEROUS.\nCONSUME AT YOUR OWN RISK.", ["drink from the left cup", 411], ["look closer at right cup", 420], ["forget this, climb back up", 500]],

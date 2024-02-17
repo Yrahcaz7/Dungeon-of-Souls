@@ -28,6 +28,7 @@ const PIXEL_SIZES = [1, 2, 0.5];
 let global = {
 	options: {
 		music: true,
+		screen_shake: true,
 		sticky_cards: false,
 		pixel_perfect_screen: false,
 		pixel_perfect_size: 1,
@@ -1401,9 +1402,24 @@ const gameloop = setInterval(() => {
 	};
 	// normal things
 	if (loaded) {
+		// gameplay
 		if (menuLocation === -1) manageGameplay();
+		// selection
 		selection();
+		// visuals
+		if (screenShake > 0) {
+			if (global.options.screen_shake) {
+				clearCanvas();
+				ctx.save();
+				ctx.translate((Math.random() - 0.5) * Math.min(screenShake, 10), (Math.random() - 0.5) * Math.min(screenShake, 10));
+				screenShake--;
+			} else {
+				screenShake = 0;
+			};
+		};
 		updateVisuals();
+		ctx.restore();
+		// save
 		save();
 	};
 }, 100), musicloop = setInterval(() => {
