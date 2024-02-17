@@ -15,11 +15,11 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const FIRSTBATTLE = 0, TREASURE = 1, PRIME = 2, ORB = 3, BOSS = 4;
+const FIRSTBATTLE = 0, TREASURE = 1, PRIME = 2, ORB = 3, BOSS = 4, EVENT = 5;
 
-const ROOM = {BATTLE: 100, TREASURE: 101, PRIME: 102, ORB: 103, BOSS: 104};
+const ROOM = {BATTLE: 100, TREASURE: 101, PRIME: 102, ORB: 103, BOSS: 104, EVENT: 105};
 
-let mapProg = 0, mapTotal = 50, death_zones = 0, rowFalses = 0, rowNodes = 0;
+let mapProg = 0, mapTotal = 50, death_zones = 0, rowFalses = 0, rowNodes = 0, eventShift = 0;
 
 /**
  * Gets a weaker small slime in the map syntax.
@@ -59,6 +59,11 @@ async function mapPiece(row, num, attribute = -1) {
 	if (attribute === FIRSTBATTLE) return [ROOM.BATTLE, 0, 0, [SLIME.SMALL], goldReward(row), randomCardSet(5)];
 	if (attribute === TREASURE) return [ROOM.TREASURE, randomInt(-5, 5), randomInt(-5, 5), false, goldReward(row) * 2, randomCardSet(5)];
 	if (attribute === PRIME) return [ROOM.PRIME, randomInt(-5, 5), randomInt(-5, 5), [weakerSmallSlime(row), SLIME.PRIME, weakerSmallSlime(row)], goldReward(row) * 2, randomCardSet(5), randomArtifactSet(3)];
+	if (attribute === EVENT) {
+		let index = randomInt(0, EVENTS.any.length + EVENTS[1].length - 1);
+		if (index >= EVENTS.any.length) index += 100 - EVENTS.any.length;
+		return [ROOM.EVENT, randomInt(-5, 5), randomInt(-5, 5), index, goldReward(row), randomCardSet(5)];
+	};
 	await updateMapProg();
 	if (attribute === ORB) return [ROOM.ORB, randomInt(-5, 5), randomInt(-5, 5)];
 	if (attribute === BOSS) return [ROOM.BOSS, 0, 0, [FRAGMENT], goldReward(row) * 4, randomCardSet(5), randomArtifactSet(3)];
@@ -77,16 +82,17 @@ async function mapPiece(row, num, attribute = -1) {
 };
 
 /**
- * Checks if a map path has a special node.
+ * Checks if a map path has any nodes of specified types.
  * @param {string} coords - the coordinates of the node to start searching from.
+ * @param {Array<number>} types - an array of the node types to check for.
  * @param {boolean} front - whether to seach the front instead of the back.
  */
-function pathHasSpecial(coords, front = false) {
+function pathHasTypes(coords, types = [], front = false) {
 	const entries = Object.entries(paths);
 	let boolean = false;
 	const looping = front ? (location = "", first = false) => {
 		let loc = location.split(", ");
-		if (!first && game.map[loc[0]] && (game.map[loc[0]][loc[1]][0] === ROOM.TREASURE || game.map[loc[0]][loc[1]][0] === ROOM.PRIME)) {
+		if (!first && game.map[loc[0]] && types.includes(game.map[loc[0]][loc[1]][0])) {
 			boolean = true;
 			return;
 		};
@@ -95,7 +101,7 @@ function pathHasSpecial(coords, front = false) {
 		};
 	} : (location = "", first = false) => {
 		let loc = location.split(", ");
-		if (!first && game.map[loc[0]] && (game.map[loc[0]][loc[1]][0] === ROOM.TREASURE || game.map[loc[0]][loc[1]][0] === ROOM.PRIME)) {
+		if (!first && game.map[loc[0]] && types.includes(game.map[loc[0]][loc[1]][0])) {
 			boolean = true;
 			return;
 		};
@@ -128,29 +134,45 @@ async function mapRow(row) {
 	};
 	if (row === 9) return [false, false, await mapPiece(9, 0, BOSS), false, false, false];
 	let arr = [await mapPiece(row, 0), await mapPiece(row, 1), await mapPiece(row, 2), await mapPiece(row, 3), await mapPiece(row, 4), await mapPiece(row, 5)];
-	if (row > 1) {
+	if (row > 0) {
 		game.map.push(arr);
 		graphics.map(true);
 		game.map.pop();
-		let available = [0, 1, 2, 3, 4, 5];
-		let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-		while (true) {
-			if (arr[rand] && !pathHasSpecial(row + ", " + rand)) {
-				arr[rand] = await mapPiece(row, rand, TREASURE);
-				break;
-			} else if (available.length > 0) {
-				rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-			} else {
-				break;
+		if (row > 1) {
+			let available = [0, 1, 2, 3, 4, 5];
+			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+			while (true) {
+				if (arr[rand] && !pathHasTypes(row + ", " + rand, [ROOM.TREASURE, ROOM.PRIME])) {
+					arr[rand] = await mapPiece(row, rand, TREASURE);
+					break;
+				} else if (available.length > 0) {
+					rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+				} else {
+					break;
+				};
 			};
 		};
 		if (row >= 3 && death_zones < 2) {
-			available = [0, 1, 2, 3, 4, 5];
-			rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+			let available = [0, 1, 2, 3, 4, 5];
+			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 			while (true) {
-				if (arr[rand] && arr[rand][0] !== ROOM.TREASURE && !pathHasSpecial(row + ", " + rand)) {
+				if (arr[rand] && arr[rand][0] !== ROOM.TREASURE && !pathHasTypes(row + ", " + rand, [ROOM.TREASURE, ROOM.PRIME])) {
 					arr[rand] = await mapPiece(row, rand, PRIME);
 					death_zones++;
+					break;
+				} else if (available.length > 0) {
+					rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+				} else {
+					break;
+				};
+			};
+		};
+		if (row % 2 == eventShift && row < 7) {
+			let available = [0, 1, 2, 3, 4, 5];
+			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+			while (true) {
+				if (arr[rand] && arr[rand][0] !== ROOM.TREASURE && arr[rand][0] !== ROOM.PRIME && !pathHasTypes(row + ", " + rand, [ROOM.EVENT])) {
+					arr[rand] = await mapPiece(row, rand, EVENT);
 					break;
 				} else if (available.length > 0) {
 					rand = available.splice(randomInt(0, available.length - 1), 1)[0];
@@ -198,6 +220,7 @@ async function generateMap() {
 	game.firstRoom = await mapPiece(0, 0, FIRSTBATTLE);
 	game.map = [];
 	death_zones = 0;
+	eventShift = randomInt(0, 1);
 	for (let index = 0; index < 10; index++) {
 		game.map.push(await mapRow(index));
 	};
@@ -206,7 +229,7 @@ async function generateMap() {
 		let available = [0, 1, 2, 3, 4, 5];
 		let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 		while (true) {
-			if (game.map[row][rand] && game.map[row][rand][0] === ROOM.TREASURE && !pathHasSpecial(row + ", " + rand, true)) {
+			if (game.map[row][rand] && game.map[row][rand][0] === ROOM.TREASURE && !pathHasTypes(row + ", " + rand, [ROOM.TREASURE, ROOM.PRIME], true)) {
 				game.map[row][rand] = await mapPiece(row, rand, PRIME);
 				death_zones++;
 				break;
@@ -216,9 +239,9 @@ async function generateMap() {
 				break;
 			};
 		};
-		row++;
-		if (row >= 8) row = 2;
+		if (row >= 7) row = 2;
 		else if (row == 2) break;
+		else row++;
 	};
 	addScribbles();
 	graphics.map(true);

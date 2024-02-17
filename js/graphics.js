@@ -1504,21 +1504,23 @@ const graphics = {
 		// draw traveled path
 		if (render) {
 			let drawX, drawY;
-			for (let index = 0; index < game.traveled.length; index++) {
+			for (let index = 0; index < game.traveled.length && index < game.map.length; index++) {
 				let y = game.traveled[index];
-				if (drawX && drawY) {
-					let posX = 25 + (index * 32) + game.map[index][y][1];
-					let posY = 18 + (y * 32) + game.map[index][y][2];
-					if (game.map[index][y][0] === ROOM.BOSS) {
-						posX = 25 + 10 + 8 + (index * 32);
-						posY = 90 + 8;
+				if (game.map[index][y]) {
+					if (drawX && drawY) {
+						let posX = 25 + (index * 32) + game.map[index][y][1];
+						let posY = 18 + (y * 32) + game.map[index][y][2];
+						if (game.map[index][y][0] === ROOM.BOSS) {
+							posX = 25 + 10 + 8 + (index * 32);
+							posY = 90 + 8;
+						};
+						draw.curvedLine(drawX + 8, drawY + 8, (drawX + posX) / 2 + 8, (index % 2 == 1 ? drawY : posY) + 8, posX + 8, posY + 8, "#842", 3);
+						drawX = posX;
+						drawY = posY;
+					} else {
+						drawX = 25 + (index * 32) + game.map[index][y][1];
+						drawY = 18 + (y * 32) + game.map[index][y][2];
 					};
-					draw.curvedLine(drawX + 8, drawY + 8, (drawX + posX) / 2 + 8, (index % 2 == 1 ? drawY : posY) + 8, posX + 8, posY + 8, "#842", 3);
-					drawX = posX;
-					drawY = posY;
-				} else {
-					drawX = 25 + (index * 32) + game.map[index][y][1];
-					drawY = 18 + (y * 32) + game.map[index][y][2];
 				};
 			};
 		};
@@ -1558,6 +1560,10 @@ const graphics = {
 						draw.image(map.boss, drawX, 90);
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(select.boss, drawX - 1, 90 - 1);
 						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.boss_blue, drawX - 1, 90 - 1);
+					} else if (game.map[x][y][0] === ROOM.EVENT) {
+						draw.image(map.event, drawX, drawY);
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(select.orb, drawX - 1, drawY - 1);
+						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.orb_blue, drawX - 1, drawY - 1);
 					};
 				};
 			};
@@ -1582,6 +1588,24 @@ const graphics = {
 			if (Object.hasOwnProperty.call(paths, item)) {
 				paths[item].sort();
 			};
+		};
+	},
+	/**
+	 * Draws the current event on the canvas.
+	 */
+	event() {
+		draw.rect("#0006");
+		graphics.foregrounds();
+		const event = getCurrentEvent();
+		if (!event[1]) return;
+		draw.lore(200 - 2, 50, (typeof event[1] == "function" ? event[1]() : event[1]), {"color": "#fff", "text-align": CENTER});
+		if (game.select[1] !== -1) {
+			let len = event[game.select[1] + 2][0].length * 6 + 2;
+			draw.box(200 - len / 2, 99 + (game.select[1] + 2) * 20, len, 12, {"background-color": "#0000", "border-color": "#fff"});
+		};
+		for (let index = 2; index < event.length; index++) {
+			let text = event[index][0];
+			draw.lore(200 - 2, 100 + index * 20, (typeof text == "function" ? text() : text), {"color": "#fff", "text-align": CENTER});
 		};
 	},
 };
