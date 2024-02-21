@@ -162,6 +162,7 @@ const player = {
 	reinforce: new Image,
 	resilience: new Image,
 	rewind: new Image,
+	shroud: new Image,
 	weakness: new Image,
 }, artifact = {
 	candy: new Image,

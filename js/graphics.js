@@ -526,7 +526,7 @@ const info = {
 	 */
 	player(type, xPlus = 0, yPlus = 0) {
 		if (typeof type != "string") return 0;
-		const ending = (type.endsWith("s") || type == "burn" || type == "countdown" || type == "resilience") ? "" : "s";
+		const ending = (type.endsWith("s") || type == "burn" || type == "countdown" || type == "resilience" || type == "shroud") ? "" : "s";
 		const eff = game.eff[type.replace(/\s/g, "_") + ending];
 		let y = 71 + yPlus, desc = "You have " + eff + " " + type + (eff >= 2 ? ending : "") + ".", move = 0;
 		move += draw.textBox(85 + xPlus, y + move, desc.length, desc, {"text-small": true});
@@ -542,7 +542,7 @@ const info = {
 	enemy(type, xPlus = 0, yPlus = 0) {
 		if (typeof type != "string") return 0;
 		const pos = enemyPos[game.select[1]];
-		const ending = (type.endsWith("s") || type == "burn" || type == "countdown" || type == "resilience") ? "" : "s";
+		const ending = (type.endsWith("s") || type == "burn" || type == "countdown" || type == "resilience" || type == "shroud") ? "" : "s";
 		const eff = game.enemies[game.select[1]].eff[type.replace(/\s/g, "_") + ending];
 		let y = pos[1] + yPlus, desc = "This has " + eff + " " + type + (eff >= 2 ? ending : "") + ".", move = 0;
 		move += draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, y + move, desc.length, desc, {"text-small": true});
@@ -994,6 +994,7 @@ const graphics = {
 		// intents
 		for (let index = 0; index < game.enemies.length; index++) {
 			let select = game.enemies[index], pos = enemyPos[index];
+			if (select.eff.shroud) return;
 			if (starAnim[index] >= 4) starAnim[index] = 0;
 			if (index !== game.enemyNum) {
 				let y = Math.round(pos[1] + Math.abs(starAnim[index] - 2));
@@ -1205,7 +1206,9 @@ const graphics = {
 				coords = [7, 6, 50, 58];
 			};
 			if (coords) {
-				if (game.select[1] !== game.enemyNum) info.intent();
+				if (game.select[1] !== game.enemyNum && !game.enemies[game.select[1]].eff.shroud) {
+					info.intent();
+				};
 				let left = game.select[1] === 0 && game.enemies.length > 1;
 				draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
 				draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "#fff", "text-align": CENTER, "text-small": true});

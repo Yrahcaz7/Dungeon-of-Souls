@@ -10,7 +10,7 @@ function startEventBattle(type, num) {
 	if (type === SLIME_CROWD) {
 		if (num > 6) num = 6;
 		for (let index = 0; index < num; index++) {
-			game.enemies.push(new Enemy(SLIME.SMALL, 1 - (index + num) / 10));
+			game.enemies.push(new Enemy(SLIME.SMALL, 1 - (index * 2 + num) / 10));
 		};
 	} else if (type === SLIME_AMBUSH) {
 		game.enemies = [new Enemy(SLIME.BIG, num)];
@@ -20,12 +20,19 @@ function startEventBattle(type, num) {
 
 const EVENTS = {
 	any: [{
-		0: [() => {}, "You see a crowd of enemies up ahead.\nNone of the enemies seem to have noticed you.\nHow will you get past them?", ["charge through", 10], ["sneak past", 20], ["fight them fairly", 30]],
+		0: [() => {}, "You see a crowd of enemies up ahead.\nNone of the enemies seem to have noticed you.\nHow will you get past them?", ["charge through", () => chance() ? 20 : 10], ["sneak past", () => chance(1/4) ? 40 : 30], ["fight them fairly", 50]],
 		10: [() => {takeDamage(8)}, "You tried to charge through as fast as you could,\nbut the enemies hit you for 8 damage!\nAlso, one enemy was particularly agile.\nYou will have to fight it off.", ["Battle Start!", 11]],
 		11: [() => {startEventBattle(SLIME_CROWD, 1)}],
-		20: [() => {game.eff.weakness = 1}, "You tried to sneak past as best as you could,\nbut the enemies still spotted you!\nYou have also have hard time getting up.\nYou were crawling around for a while...", ["Battle Start!", 21]],
-		21: [() => {startEventBattle(SLIME_CROWD, randomInt(2, 3))}],
-		30: [() => {}, "You vaugely feel something long forgotten...\nYou want to fight these enemies fair and square.", ["Battle Start!", 21]],
+		20: [() => {takeDamage(4)}, "You successfully got past the enemies!\nHowever, you took 4 damage while doing so.", ["get a move on", 21]],
+		21: [() => {
+			game.select = [MAP, 0];
+			game.state = STATE.EVENT_FIN;
+			pushPopup("go", "go to the map!");
+		}],
+		30: [() => {game.eff.weakness = 1}, "You tried to sneak past as best as you could,\nbut the enemies still spotted you!\nYou have also have hard time getting up.\nYou were crawling around for a while...", ["Battle Start!", 31]],
+		31: [() => {startEventBattle(SLIME_CROWD, randomInt(2, 3))}],
+		40: [() => {}, "You successfully got past the enemies!\nYou must have been very lucky.\nStealth isn't your strong suit.", ["get a move on", 21]],
+		50: [() => {}, "You vaugely feel something long forgotten...\nYou want to fight these enemies fair and square.", ["Battle Start!", 31]],
 	}, {
 		0: [() => {}, "You observe a chasm in the ground.\nIt is clearly blocking your way forward.\nWhat do you do?", ["navigate around the chasm", 100], ["jump across the chasm", 200], ["climb down the side", 300]],
 		100: [() => {game.eff.weakness = 99}, "You begin navigating around the chasm.\nIt is very exhausting.\nYou see an enemy in the way.\nWill you fight or go back?", ["fight the enemy", 110], ["go back", 120]],
@@ -33,7 +40,7 @@ const EVENTS = {
 		111: [() => {startEventBattle(SLIME_AMBUSH)}],
 		120: [() => {}, "You are back at the front of the chasm. What will you do?", ["jump across the chasm", 200], ["climb down the side", 300]],
 		200: [() => {
-			takeDamage(5);
+			takeDamage(5, false);
 			screenShake = 20;
 		}, "You fail and fall into the chasm.\nLuckily, the chasm is not that deep.\nYou only took 5 damage.\nWhat do you do now?", ["look around", 400], ["climb up", 500]],
 		300: [() => {}, "You climb down into the chasm unexpectedly easily.\nHowever, going back up will be harder.\nWhat will you do?", ["look around", 400], ["climb up", 500]],
@@ -53,6 +60,27 @@ const EVENTS = {
 			game.state = STATE.EVENT_FIN;
 			pushPopup("go", "go to the map!");
 		}],
+	}, {
+		0: [() => {}, "You find a very ominous altar.\nIt is pitch black except some dried blood stains.\nThere is some engraved text on the base.\nWhat do you do?", ["read the text", 100], ["push it over", 200], ["ignore it", 300]],
+		100: [() => {}, "The engraved text reads:\nOFFER YOUR BLOOD, AND YOU SHALL BE BLESSED\nDENY HOLINESS AND EMBRACE THE DARKNESS\nWill you offer your blood?", ["offer 8 health", 110], ["offer 25 health", () => game.artifacts.includes(3) ? 130 : 120], ["cancel", 0]],
+		110: [() => {takeDamage(8, false)}, "You cut yourself and bleed onto the altar.\nYou see an enemy in the distance flee.", ["get a move on", 111]],
+		111: [() => {
+			game.select = [MAP, 0];
+			game.state = STATE.EVENT_FIN;
+			pushPopup("go", "go to the map!");
+		}],
+		120: [() => {takeDamage(25, false)}, "You brutally stab yourself and bleed onto the altar.\nSeemingly in response, a compartment in the altar opens.\nInside is a brilliant red gem.\nJust holding it makes you feel stronger.", ["take the gem", 121]],
+		121: [() => {game.artifacts.push(3)}, "You pocket the gem.\nYou then stumble around lightheadedly for a bit.\nMaybe you should be a bit more careful with your blood.", ["get a move on", 111]],
+		130: [() => {game.health += 5}, "You brutally stab yourself and bleed onto the altar.\nYour Gem of Rage glows ever brighter...\nSuddenly, your blood starts to trickle back into your wound.\nThe blood stains become liquid again and enter as well.\nYou heal 5 health, but you feel rather queasy...", ["get a move on", 111]],
+		200: [() => {}, "You have a bad feeling about this...", ["do it anyway", 201], ["cancel", 0]],
+		201: [() => {}, "You topple the altar, and a dark cloud spreads...\nYou feel sluggish, and you can't see ahead of you.", ["run out of the cloud", 202]],
+		202: [() => {}, "Blindly running ahead, you smack into an enemy.", ["Battle Start!", 203]],
+		203: [() => {
+			startEventBattle(SLIME_AMBUSH);
+			game.enemies[0].eff.shroud = 99;
+		}],
+		300: [() => {}, "You decide to ignore the altar and continue on.\nHowever, an enemy blocks your path.", ["Battle Start!", 301]],
+		301: [() => {startEventBattle(SLIME_AMBUSH)}],
 	}],
 	1: [{
 		0: [() => {}, "You approach some strange-looking ruins.\nYou see light coming from within.", ["enter the ruins", 100], ["walk around the ruins", 200]],
@@ -80,8 +108,7 @@ const EVENTS = {
 		210: [() => {
 			game.shield = 10;
 			game.eff.reinforces = 1;
-		}, "You charge toward the enemy, shield at the ready.", ["Battle Start!", 211]],
-		211: [() => {startEventBattle(SLIME_AMBUSH, 1.1)}],
+		}, "You charge toward the enemy, shield at the ready.", ["Battle Start!", 111]],
 		220: [() => {}, "You decide to be wary and avoid the enemy.", ["creep further", 221]],
 		221: [() => {}, "You sucessfully got past the enemy!", ["get a move on", 222]],
 		222: [() => {

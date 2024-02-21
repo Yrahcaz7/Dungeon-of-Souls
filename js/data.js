@@ -25,6 +25,7 @@ const infoText = {
 	resilience: "If something has X\nresilience, it takes 25%\nless combat damage,\nrounded down. At the\nstart of its turn, X is\nreduced by 1.",
 	retention: "A card with X retention\nwill not be discarded\nat the end of your turn.\nInstead, X will be\nreduced by 1.",
 	rewind: "If something has X\nrewinds, it is X times\n20 percent stronger. If\nsomething that has\nrewinds and 0 countdown\nreaches 0 health, it\ngains 1 rewind, all\nentities heal fully, and\nthe countdown begins.",
+	shroud: "If something has X\nshroud, its intent is\nnot visible. At the end\nof its turn, X is\nreduced by 1.",
 	uniform: "Extra damage and extra\nshield have half the\neffect on uniform cards,\nrounded down.",
 	unplayable: "An unplayable card has\nno energy cost and\ncannot be played.",
 	weakness: "If something has X\nweakness, its attack is\nreduced by 25%, rounded\ndown. At the end of its\nturn, X is reduced by 1.",
@@ -112,7 +113,7 @@ gameplay = ""
 changelog = ""
 	+ "<b>Version 1.3 - Deception<s>"
 	+ " - added THE SECRET ACT\n"
-	+ " - added special events (3 so far)\n"
+	+ " - added special events (4 so far)\n"
 	+ " - added a new option: screen shake\n"
 	+ " - five new cards, and many new effects\n"
 	+ " - you now get scored at the end of each run\n"
