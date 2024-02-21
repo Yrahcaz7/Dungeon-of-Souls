@@ -23,6 +23,8 @@ const STATE = {ENTER: 1000, BATTLE: 1001, EVENT_FIN: 1002, GAME_END: 1003, EVENT
 
 const TURN = {PLAYER: 1100, ENEMY: 1101};
 
+const CHARACTER = {KNIGHT: 1400};
+
 const PIXEL_SIZES = [1, 2, 0.5];
 
 let global = {
@@ -35,10 +37,10 @@ let global = {
 		allow_fast_movement: true,
 	},
 	charStage: {
-		knight: 0,
+		[CHARACTER.KNIGHT]: 0,
 	},
 }, game = {
-	character: "knight",
+	character: CHARACTER.KNIGHT,
 	difficulty: 0,
 	health: 60,
 	shield: 0,
@@ -77,7 +79,7 @@ let global = {
 	firstRoom: [],
 	map: [],
 	traveled: [],
-	seed: "" + (Math.round(new Date().getTime() * (Math.random() + 0.001)) % (16 ** 6 - 1)).toString(16).toUpperCase().randomize(),
+	seed: "" + (Math.round(new Date().getTime() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase().randomize(),
 }, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = MENU.TITLE, menuSelect = 0, enemyPos = [], handPos = [], paths = {}, winAnim = 0;
 
 /**
@@ -919,7 +921,7 @@ function selection() {
 				musicPopup();
 			} else if (option == "pixel_perfect_screen" || option == "pixel_perfect_size") {
 				if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: " + (800 * global.options.pixel_perfect_size) + "px";
-				else document.getElementById("canvas").style = "";
+				else delete document.getElementById("canvas").style;
 				fixCanvas();
 			};
 			actionTimer = 2;

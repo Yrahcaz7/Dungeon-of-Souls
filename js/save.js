@@ -157,9 +157,18 @@ function fixSave() {
 		else game.enemyStage = STARTING;
 	};
 	// fix difficulty
-	if (global.difficulty) {
+	if (global.difficulty !== undefined) {
 		game.difficulty = global.difficulty;
 		delete global.difficulty;
+	};
+	// fix character
+	if (game.character == "knight") {
+		game.character = CHARACTER.KNIGHT;
+	};
+	// fix charStage stage
+	if (global.charStage.knight !== undefined) {
+		global.charStage[CHARACTER.KNIGHT] = global.charStage.knight;
+		delete global.charStage.knight;
 	};
 };
 

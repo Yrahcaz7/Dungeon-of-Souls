@@ -90,28 +90,23 @@ let pathEntries = [];
  * @param {boolean} front - whether to seach the front instead of the back.
  */
 function pathHasTypes(coords, types = [], front = false) {
-	let boolean = false;
-	const looping = front ? (location = "", first = false) => {
-		let loc = location.split(", ");
-		if (!first && game.map[loc[0]] && types.includes(game.map[loc[0]][loc[1]][0])) {
-			boolean = true;
-			return;
+	let locations = [coords];
+	for (let a = 0; a < locations.length; a++) {
+		const loc = locations[a].split(", ");
+		if (a > 0 && game.map[loc[0]] && types.includes(game.map[loc[0]][loc[1]][0])) {
+			return true;
 		};
-		for (let index = 0; index < paths[location].length; index++) {
-			if (paths[paths[location][index]]) looping(paths[location][index]);
-		};
-	} : (location = "", first = false) => {
-		let loc = location.split(", ");
-		if (!first && game.map[loc[0]] && types.includes(game.map[loc[0]][loc[1]][0])) {
-			boolean = true;
-			return;
-		};
-		for (let index = 0; index < pathEntries.length; index++) {
-			if (pathEntries[index][1].includes(location)) looping(pathEntries[index][0]);
+		if (front) {
+			for (let b = 0; b < paths[locations[a]].length; b++) {
+				if (paths[paths[locations[a]][b]]) locations.push(paths[locations[a]][b]);
+			};
+		} else {
+			for (let b = 0; b < pathEntries.length; b++) {
+				if (pathEntries[b][1].includes(locations[a])) locations.push(pathEntries[b][0]);
+			};
 		};
 	};
-	looping(coords, true);
-	return boolean;
+	return false;
 };
 
 /**
@@ -230,7 +225,7 @@ async function generateMap() {
 		let available = [0, 1, 2, 3, 4, 5];
 		let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 		while (true) {
-			if (game.map[row][rand] && game.map[row][rand][0] === ROOM.TREASURE && !pathHasTypes(row + ", " + rand, [ROOM.TREASURE, ROOM.PRIME], true)) {
+			if (game.map[row][rand] && (game.map[row][rand][0] === ROOM.TREASURE || (row == 2 && game.map[row][rand][0] === ROOM.BATTLE)) && !pathHasTypes(row + ", " + rand, [ROOM.TREASURE, ROOM.PRIME], true)) {
 				game.map[row][rand] = await mapPiece(row, rand, PRIME);
 				death_zones++;
 				break;

@@ -1236,9 +1236,9 @@ const graphics = {
 			if (playerAnim[1] == "shield" || playerAnim[1] == "shield_reinforced") coords = [58, 72, 23, 39];
 			else if (playerAnim[1] == "crouch_shield" || playerAnim[1] == "crouch_shield_reinforced") coords = [58, 72, 22, 39];
 			draw.selector(coords[0], coords[1], coords[2], coords[3]);
-			if (game.character == "knight") {
-				if (global.charStage.knight === 0) draw.lore(coords[0] + (coords[2] / 2) - 1, 64.5, "the forgotten one", {"color": "#fff", "text-align": CENTER, "text-small": true});
-				else if (global.charStage.knight == 1) draw.lore(coords[0] + (coords[2] / 2) - 1, 64.5, "the true knight", {"color": "#fff", "text-align": CENTER, "text-small": true});
+			if (game.character === CHARACTER.KNIGHT) {
+				if (global.charStage[CHARACTER.KNIGHT] === 0) draw.lore(coords[0] + (coords[2] / 2) - 1, 64.5, "the forgotten one", {"color": "#fff", "text-align": CENTER, "text-small": true});
+				else if (global.charStage[CHARACTER.KNIGHT] === 1) draw.lore(coords[0] + (coords[2] / 2) - 1, 64.5, "the true knight", {"color": "#fff", "text-align": CENTER, "text-small": true});
 			};
 			let x = coords[0] + coords[2] - 80, y = 0;
 			for (const key in game.eff) {

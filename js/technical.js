@@ -95,12 +95,14 @@ window.onload = async function() {
 	// set things
 	if (game.select[0] == GAME_FIN) game.select[1] = 0;
 	if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: " + (800 * global.options.pixel_perfect_size) + "px";
-	else document.getElementById("canvas").style = "";
+	else delete document.getElementById("canvas").style;
+	// fix things
+	fixCanvas();
 	// calculate things
-	graphics.map(true);
 	if (game.map.length === 0) {
 		await generateMap();
 	} else {
+		graphics.map(true);
 		changeMusic();
 		updateVisuals();
 		loaded = true;
