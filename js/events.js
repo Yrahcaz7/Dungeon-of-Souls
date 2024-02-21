@@ -6,9 +6,7 @@ const SLIME_CROWD = 1300, SLIME_AMBUSH = 1301;
  * @param {number} num - the number of enemies of a crowd, or the power of an ambush.
  */
 function startEventBattle(type, num) {
-	const place = game.location.split(", ");
 	primeAnim = 0;
-	game.traveled.push(+place[1]);
 	if (type === SLIME_CROWD) {
 		if (num > 6) num = 6;
 		for (let index = 0; index < num; index++) {

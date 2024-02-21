@@ -107,11 +107,11 @@ const cards = {
 	},
 	2001: {
 		name: "reinforce",
-		desc: "Gain 1 shield and\n1 reinforce.",
+		desc: "Gain 2 shield and\n1 reinforce.",
 		rarity: 1,
 		cost: 1,
 		effect() {
-			gainShield(1);
+			gainShield(2);
 			game.eff.reinforces++;
 		},
 	},
