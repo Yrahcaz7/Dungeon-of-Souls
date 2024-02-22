@@ -556,20 +556,10 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	intent(xPlus = 0, yPlus = 0) {
-		const pos = enemyPos[game.select[1]], select = game.enemies[game.select[1]];
-		let y = pos[1] + 14 + yPlus;
-		if (select.type === SLIME.BIG) y -= 17;
-		else if (select.type === SLIME.SMALL) y -= 7;
-		else if (select.type === SLIME.PRIME) {
-			if (primeAnim == -1 || primeAnim >= 5) y -= 37;
-			else y -= 17;
-		} else if (select.type === FRAGMENT) {
-			if (primeAnim == -1 || primeAnim > 18) y -= 36;
-			else y = NaN;
-		};
+		let y = getEnemyIntentPos(game.select[1]) + yPlus;
 		if (y === y) {
-			let desc = infoText[select.intent];
-			if (desc) draw.textBox(pos[0] - 71 + xPlus, y - (desc.match(/\n/g) || []).length * 3, 28, desc, {"text-small": true});
+			let desc = infoText[game.enemies[game.select[1]]?.intent];
+			if (desc) draw.textBox(enemyPos[game.select[1]][0] - 71 + xPlus, y - (desc.match(/\n/g) || []).length * 3, 28, desc, {"text-small": true});
 		};
 	},
 	/**
@@ -866,6 +856,9 @@ const graphics = {
 						draw.imageSector(enemy.fragment.roll, Math.floor(primeAnim % 4) * 64, 0, 64, 64, pos[0] + ((18 - primeAnim) * 8), pos[1] + 1);
 						primeAnim++;
 					};
+				} else if (select.type === SENTRY.BIG) {
+					if (select.shield > 0) draw.imageSector(enemy.sentry.big_defend, Math.floor(enemyAnim[index] + 7) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+					else draw.imageSector(enemy.sentry.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 				};
 			};
 		};
@@ -946,6 +939,23 @@ const graphics = {
 					} else {
 						game.enemyStage = PENDING;
 					};
+				} else if (tempAnim[1] === SENTRY.BIG) {
+					draw.imageSector(enemy.sentry.big_attack, Math.floor(tempAnim[0]) * 64, 0, 64, 70, pos[0], pos[1] - 1, 64, 70);
+					if (tempAnim[2] === STARTING) tempAnim[0]++;
+					else if (tempAnim[2] === ENDING) tempAnim[0]--;
+					if (tempAnim[0] >= 4) {
+						tempAnim[0] = 3;
+						tempAnim[2] = ENDING;
+						game.enemyStage = MIDDLE;
+					} else if (tempAnim[0] < 0) {
+						tempAnim = [0, -1, STARTING, -1];
+						enemyAnim[game.enemyNum] = 0;
+						game.enemyStage = ENDING;
+						invNum = -1;
+					} else {
+						game.enemyStage = PENDING;
+						invNum = game.enemyNum;
+					};
 				};
 			} else if (tempAnim[3] === DEFEND) {
 				if (tempAnim[1] === SLIME.SMALL) {
@@ -984,6 +994,20 @@ const graphics = {
 					} else {
 						game.enemyStage = PENDING;
 					};
+				} else if (tempAnim[1] === SENTRY.BIG) {
+					draw.imageSector(enemy.sentry.big_defend, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+					tempAnim[0]++;
+					if (game.enemyStage === MIDDLE) {
+						tempAnim = [0, -1, STARTING, -1];
+						game.enemyStage = ENDING;
+						invNum = -1;
+					} else if (tempAnim[0] >= 7) {
+						tempAnim[0] = 7;
+						game.enemyStage = MIDDLE;
+					} else {
+						game.enemyStage = PENDING;
+						invNum = game.enemyNum;
+					};
 				};
 			};
 		};
@@ -993,20 +1017,9 @@ const graphics = {
 		};
 		// intents
 		for (let index = 0; index < game.enemies.length; index++) {
-			let select = game.enemies[index], pos = enemyPos[index];
-			if (select.eff.shroud) return;
+			if (game.enemies[index].eff.shroud) return;
 			if (starAnim[index] >= 4) starAnim[index] = 0;
 			if (index !== game.enemyNum) {
-				let y = Math.round(pos[1] + Math.abs(starAnim[index] - 2));
-				if (select.type === SLIME.BIG) y -= 17;
-				else if (select.type === SLIME.SMALL) y -= 7;
-				else if (select.type === SLIME.PRIME) {
-					if (primeAnim == -1 || primeAnim >= 5) y -= 37;
-					else y -= 17;
-				} else if (select.type === FRAGMENT) {
-					if (primeAnim == -1 || primeAnim > 18) y -= 36;
-					else y = NaN;
-				};
 				let power = 0;
 				if (game.enemies[index].intent === ATTACK) {
 					power = game.enemies[index].getTotalAttackPower();
@@ -1014,7 +1027,7 @@ const graphics = {
 				} else if (game.enemies[index].intent === DEFEND) {
 					power = game.enemies[index].getTotalDefendPower();
 				};
-				draw.intent(pos[0] + 16, y, power, game.enemies[index].intent);
+				draw.intent(enemyPos[index][0] + 16, getEnemyIntentPos(index, true), power, game.enemies[index].intent);
 			};
 			starAnim[index] += (Math.random() + 0.5) * 0.15;
 		};
@@ -1204,6 +1217,8 @@ const graphics = {
 				coords = [0, 7, 64, 57];
 			} else if (enemyType === FRAGMENT && (primeAnim == -1 || primeAnim > 18)) {
 				coords = [7, 6, 50, 58];
+			} else if (enemyType === SENTRY.BIG) {
+				coords = [5, 3, 54, 61];
 			};
 			if (coords) {
 				if (game.select[1] !== game.enemyNum && !game.enemies[game.select[1]].eff.shroud) {

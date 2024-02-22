@@ -60,7 +60,7 @@ async function mapPiece(row, num, attribute = -1) {
 	if (attribute === TREASURE) return [ROOM.TREASURE, randomInt(-5, 5), randomInt(-5, 5), false, goldReward(row) * 2, randomCardSet(5)];
 	if (attribute === PRIME) return [ROOM.PRIME, randomInt(-5, 5), randomInt(-5, 5), [weakerSmallSlime(row), SLIME.PRIME, weakerSmallSlime(row)], goldReward(row) * 2, randomCardSet(5), randomArtifactSet(3)];
 	if (attribute === EVENT) {
-		let index = randomInt(0, EVENTS.any.length + EVENTS[1].length - 1);
+		let index = randomInt(0, EVENTS.any.length + EVENTS[get.area(row - 1)].length - 1);
 		if (index >= EVENTS.any.length) index += 100 - EVENTS.any.length;
 		return [ROOM.EVENT, randomInt(-5, 5), randomInt(-5, 5), index, goldReward(row), randomCardSet(5)];
 	};

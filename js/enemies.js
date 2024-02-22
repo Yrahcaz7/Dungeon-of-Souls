@@ -15,13 +15,16 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const SLIME = {BIG: 600, SMALL: 601, PRIME: 602}, FRAGMENT = 603;
+const SLIME = {BIG: 600, SMALL: 601, PRIME: 602}, FRAGMENT = 603, SENTRY = {BIG: 604, SMALL: 605, PRIME: 606};
 
 const ENEMY_NAMES = {
 	[SLIME.BIG]: "big slime",
 	[SLIME.SMALL]: "small slime",
 	[SLIME.PRIME]: "prime slime",
 	[FRAGMENT]: "fragment of time",
+	[SENTRY.BIG]: "big sentry",
+	[SENTRY.SMALL]: "small sentry",
+	[SENTRY.PRIME]: "prime sentry",
 };
 
 const ENEMY_WORTH = {
@@ -29,6 +32,9 @@ const ENEMY_WORTH = {
 	[SLIME.SMALL]: 50,
 	[SLIME.PRIME]: 500,
 	[FRAGMENT]: 1000,
+	[SENTRY.BIG]: 150,
+	[SENTRY.SMALL]: 75,
+	[SENTRY.PRIME]: 750,
 };
 
 const ATTACK = 700, DEFEND = 701, BUFF = 702;
@@ -42,15 +48,17 @@ class Enemy {
 	 * @param {number} power - the enemy's power. Defaults to 1.
 	 */
 	constructor(type, power = 1) {
-		if (type === SLIME.SMALL) power--;
-		else if (type === SLIME.PRIME) power++;
+		if (type === SLIME.SMALL || type === SENTRY.SMALL) power--;
+		else if (type === SLIME.PRIME || type === SENTRY.PRIME) power++;
 		else if (type === FRAGMENT) power += 2;
 		power += (game.difficulty * 0.75) + 2;
 		power += (game.floor * 0.05) * (2 ** game.difficulty);
+		power += get.area() * 0.2;
 		if (game.artifacts.includes(0)) power += 0.5;
 		this.type = +type;
-		if (type === FRAGMENT) this.maxHealth = Math.max(Math.round((power * 10) * 1.05), 1);
-		else this.maxHealth = Math.max(Math.round((power * 10) * ((random() / 10) + 0.95)), 1);
+		if (type === FRAGMENT) this.maxHealth = (power * 10) * 1.05;
+		else this.maxHealth = (power * 10) * ((random() / 10) + 0.95);
+		this.maxHealth = Math.max(Math.round(this.maxHealth), 1);
 		this.health = this.maxHealth;
 		this.maxShield = Math.max(Math.floor(this.maxHealth / 2), 1);
 		this.shield = 0;
@@ -98,17 +106,12 @@ class Enemy {
 				if (game.eff.weakness) startAnim.player("crouch_shield");
 				else startAnim.player("shield");
 			};
-			if (this.type >= 600 && this.type <= FRAGMENT) {
-				startAnim.enemy();
-			} else {
-				this.middleAction();
-				this.finishAction();
-			};
+			startAnim.enemy();
 		} else if (this.intent === DEFEND) {
-			if (this.type < SLIME.PRIME || (this.type === SLIME.PRIME && primeAnim == -1)) {
-				startAnim.enemy();
-			} else {
+			if (this.type === FRAGMENT || (this.type === SLIME.PRIME && primeAnim != -1)) {
 				this.middleAction();
+			} else {
+				startAnim.enemy();
 			};
 		} else if (this.intent === BUFF) {
 			this.middleAction();
@@ -124,7 +127,7 @@ class Enemy {
 			if (game.health < prevHealth) startAnim.player("hit");
 		} else if (this.intent === DEFEND) {
 			this.shield += this.getTotalDefendPower();
-			if (this.type > SLIME.PRIME || (this.type === SLIME.PRIME && primeAnim != -1)) {
+			if (this.type === FRAGMENT || (this.type === SLIME.PRIME && primeAnim != -1)) {
 				this.finishAction();
 			};
 		} else if (this.intent === BUFF) {
@@ -221,4 +224,26 @@ function classifyEnemy(object = {}) {
 		};
 	};
 	return instance;
+};
+
+/**
+ * Gets the position of an enemy's intent.
+ * @param {number} index - the index of the enemy.
+ * @param {boolean} moving - whether the intent is moving. Defaults to `false`.
+ */
+function getEnemyIntentPos(index, moving = false) {
+	let y = enemyPos[index][1];
+	if (moving) y += Math.abs(starAnim[index] - 2);
+	else y += 14;
+	const type = game.enemies[index]?.type;
+	if (type === SLIME.BIG) y -= 17;
+	else if (type === SLIME.SMALL) y -= 7;
+	else if (type === SLIME.PRIME) {
+		if (primeAnim == -1 || primeAnim >= 5) y -= 37;
+		else y -= 17;
+	} else if (type === FRAGMENT) {
+		if (primeAnim == -1 || primeAnim > 18) y -= 36;
+		else y = NaN;
+	} else if (type === SENTRY.BIG) y -= 40;
+	return Math.round(y);
 };

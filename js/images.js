@@ -87,6 +87,11 @@ const player = {
 		idle: new Image,
 		attack: new Image,
 	},
+	sentry: {
+		big: new Image,
+		big_attack: new Image,
+		big_defend: new Image,
+	},
 }, background = {
 	cave: new Image,
 	temple: new Image,

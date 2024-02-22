@@ -48,6 +48,14 @@ function hidden() {
 
 const get = {
 	/**
+	 * Gets the current area number based on the floor.
+	 * @param {number} floor - Defaults to `game.floor`.
+	 */
+	area(floor = game.floor) {
+		if (floor < 1) return 0;
+		return Math.floor((floor - 1) / 10);
+	},
+	/**
 	 * Gets the hand size.
 	 */
 	handSize() {

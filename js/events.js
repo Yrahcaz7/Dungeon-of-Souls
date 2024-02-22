@@ -82,7 +82,7 @@ const EVENTS = {
 		300: [() => {}, "You decide to ignore the altar and continue on.\nHowever, an enemy blocks your path.", ["Battle Start!", 301]],
 		301: [() => {startEventBattle(SLIME_AMBUSH)}],
 	}],
-	1: [{
+	0: [{
 		0: [() => {}, "You approach some strange-looking ruins.\nYou see light coming from within.", ["enter the ruins", 100], ["walk around the ruins", 200]],
 		100: [() => {}, "You approach the source of the light.\nThis light seems oddly familiar...", ["walk closer", 101]],
 		101: [() => {}, "You find the source of the light.\nIt is a block that looks otherworldy.\nThe block is emitting light on one side.\nThe light seems to be forming numbers...", ["read the numbers", 102]],
@@ -126,5 +126,5 @@ const EVENTS = {
 function getCurrentEvent() {
 	if (game.state !== STATE.EVENT) return [];
 	if (game.room[3] < EVENTS.any.length) return EVENTS.any[game.room[3]][game.turn - 10000] || [];
-	return EVENTS[Math.floor(game.floor / 10) + 1][game.room[3] - 100][game.turn - 10000] || [];
+	return EVENTS[get.area()][game.room[3] - 100][game.turn - 10000] || [];
 };
