@@ -41,6 +41,8 @@ const ATTACK = 700, DEFEND = 701, BUFF = 702;
 
 const INTENT = {[ATTACK]: "<#f44>attack</#f44> you", [DEFEND]: "<#58f>defend</#58f> itself", [BUFF]: "buff itself"};
 
+const TRANSITION = {SHIELD: 1500};
+
 class Enemy {
 	/**
 	 * Returns a new enemy.
@@ -102,7 +104,7 @@ class Enemy {
 	 */
 	startAction() {
 		if (this.intent === ATTACK) {
-			if (game.shield && !playerAnim[1].includes("shield")) {
+			if (game.shield && !/shield/.test(playerAnim[1])) {
 				if (game.eff.weakness) startAnim.player("crouch_shield");
 				else startAnim.player("shield");
 			};
@@ -233,17 +235,22 @@ function classifyEnemy(object = {}) {
  */
 function getEnemyIntentPos(index, moving = false) {
 	let y = enemyPos[index][1];
-	if (moving) y += Math.abs(starAnim[index] - 2);
-	else y += 14;
 	const type = game.enemies[index]?.type;
-	if (type === SLIME.BIG) y -= 17;
-	else if (type === SLIME.SMALL) y -= 7;
-	else if (type === SLIME.PRIME) {
+	if (type === SLIME.BIG) {
+		y -= 17;
+	} else if (type === SLIME.SMALL) {
+		y -= 7;
+	} else if (type === SLIME.PRIME) {
 		if (primeAnim == -1 || primeAnim >= 5) y -= 37;
 		else y -= 17;
 	} else if (type === FRAGMENT) {
 		if (primeAnim == -1 || primeAnim > 18) y -= 36;
 		else y = NaN;
-	} else if (type === SENTRY.BIG) y -= 40;
+	} else if (type === SENTRY.BIG) {
+		y -= 40;
+	};
+	y = Math.max(y, -2);
+	if (moving) y += Math.abs(starAnim[index] - 2);
+	else y += 14;
 	return Math.round(y);
 };

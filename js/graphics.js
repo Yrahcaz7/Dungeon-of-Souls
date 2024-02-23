@@ -674,12 +674,14 @@ const graphics = {
 	 * Draws the foreground layer on the canvas.
 	 */
 	foregrounds() {
+		// menus
 		const past = game.select[2];
 		if (past) {
 			if (past[0] === REWARDS) graphics.rewards(false);
 			else if (past[0] === CARD_REWARDS) graphics.cardRewards(false);
 			else if (past[0] === ARTIFACT_REWARDS) graphics.artifactRewards(false);
 		};
+		// extras
 		if (game.select[0] === LOOKER && game.select[1] === 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 343, 3);
 		else draw.imageSector(extra.looker, 0, 0, 16, 16, 343, 3);
 		draw.image(extra.help, 362, 3);
@@ -689,12 +691,14 @@ const graphics = {
 		if (game.void.length) draw.image(extra.void, 381, 163);
 		draw.image(extra.discard, 382, 182);
 		draw.image(extra.map, 2, 12);
+		// artifacts
 		for (let index = 0; index < game.artifacts.length; index++) {
 			const name = ("" + artifacts[game.artifacts[index]].name).replace(/\s/g, "_");
 			if (!name) continue;
 			draw.image(artifact[name], 20 + (index * 18), 12);
 			if (game.select[0] === ARTIFACTS && game.select[1] === index) draw.image(select[name], 19 + (index * 18), 11);
 		};
+		// selected
 		if (game.select[0] === LOOKER) draw.image(select.round, 342, 2);
 		else if (game.select[0] === HELP) draw.image(select.round, 361, 2);
 		else if (game.select[0] === OPTIONS) draw.image(select.options, 380, 2);
@@ -703,7 +707,24 @@ const graphics = {
 		else if (game.select[0] === VOID) draw.image(select.round, 380, 162);
 		else if (game.select[0] === DISCARD) draw.image(select.discard, 381, 181);
 		else if (game.select[0] === MAP) draw.image(select.map, 1, 11);
+		// info
 		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
+		// intents
+		for (let index = 0; index < game.enemies.length; index++) {
+			if (game.enemies[index].eff.shroud) return;
+			if (starAnim[index] >= 4) starAnim[index] = 0;
+			if (index !== game.enemyNum) {
+				let power = 0;
+				if (game.enemies[index].intent === ATTACK) {
+					power = game.enemies[index].getTotalAttackPower();
+					power = Math.ceil(power * get.takeDamageMult(index));
+				} else if (game.enemies[index].intent === DEFEND) {
+					power = game.enemies[index].getTotalDefendPower();
+				};
+				draw.intent(enemyPos[index][0] + 16, getEnemyIntentPos(index, true), power, game.enemies[index].intent);
+			};
+			starAnim[index] += (Math.random() + 0.5) * 0.15;
+		};
 	},
 	/**
 	 * Draws the player on the canvas.
@@ -752,12 +773,9 @@ const graphics = {
 		} else if (playerAnim[1] == "attack_2" || playerAnim[1] == "attack_2_aura") {
 			playerAnim[0]++;
 			if (playerAnim[0] >= 6) playerAnim = [0, "idle"];
-		} else if (playerAnim[1] == "shield" || playerAnim[1] == "shield_reinforced") {
-			playerAnim[0] += 0.25;
-			if (playerAnim[0] >= 3) playerAnim[0] = 2;
-		} else if (playerAnim[1] == "crouch_shield" || playerAnim[1] == "crouch_shield_reinforced") {
+		} else if (/shield/.test(playerAnim[1])) {
 			playerAnim[0] += 0.5;
-			if (playerAnim[0] >= 4) playerAnim[0] = 3;
+			if (playerAnim[0] >= 3) playerAnim[0] = 2;
 		} else if (playerAnim[1] == "hit") {
 			playerAnim[0] += 0.25;
 			if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
@@ -795,22 +813,22 @@ const graphics = {
 	enemy() {
 		// icons
 		for (let index = 0; index < game.enemies.length; index++) {
-			let select = game.enemies[index], pos = enemyPos[index];
-			draw.bars(pos[0], pos[1], select.health, select.maxHealth, select.shield, select.maxShield);
+			let selected = game.enemies[index], pos = enemyPos[index];
+			draw.bars(pos[0], pos[1], selected.health, selected.maxHealth, selected.shield, selected.maxShield);
 			let x = +pos[0], y = +pos[1];
-			for (const key in select.eff) {
-				if (Object.hasOwnProperty.call(select.eff, key)) {
+			for (const key in selected.eff) {
+				if (Object.hasOwnProperty.call(selected.eff, key)) {
 					let img = new Image();
 					if (icon[key]) img = icon[key];
 					else if (key == "reinforces") img = icon.reinforce;
 					else if (key == "rewinds") img = icon.rewind;
-					if (select.eff[key]) {
-						if (select.shield) {
+					if (selected.eff[key]) {
+						if (selected.shield) {
 							draw.image(img, x, y + 89);
-							draw.lore(x + 17, y + 97, select.eff[key], {"color": "#fff", "text-align": LEFT});
+							draw.lore(x + 17, y + 97, selected.eff[key], {"color": "#fff", "text-align": LEFT});
 						} else {
 							draw.image(img, x, y + 78);
-							draw.lore(x + 17, y + 86, select.eff[key], {"color": "#fff", "text-align": LEFT});
+							draw.lore(x + 17, y + 86, selected.eff[key], {"color": "#fff", "text-align": LEFT});
 						};
 						x += 17;
 					};
@@ -819,22 +837,22 @@ const graphics = {
 		};
 		// enemy drawing
 		for (let index = 0; index < game.enemies.length; index++) {
-			let select = game.enemies[index], pos = enemyPos[index];
+			let selected = game.enemies[index], pos = enemyPos[index];
 			if (!pos) return;
 			if (enemyAnim[index] >= 4) enemyAnim[index] = 0;
 			if (index !== invNum) {
-				if (select.type === SLIME.BIG) {
-					if (select.shield > 0) draw.imageSector(enemy.slime.big_defend, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
+				if (selected.type === SLIME.BIG) {
+					if (selected.shield > 0) draw.imageSector(enemy.slime.big_defend, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
 					else draw.imageSector(enemy.slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
-				} else if (select.type === SLIME.SMALL) {
-					if (select.shield > 0) draw.imageSector(enemy.slime.small_defend, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
+				} else if (selected.type === SLIME.SMALL) {
+					if (selected.shield > 0) draw.imageSector(enemy.slime.small_defend, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
 					else draw.imageSector(enemy.slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
-				} else if (select.type === SLIME.PRIME) {
+				} else if (selected.type === SLIME.PRIME) {
 					if (primeAnim == -1) {
-						if (select.shield > 0) draw.imageSector(enemy.slime.prime_defend, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+						if (selected.shield > 0) draw.imageSector(enemy.slime.prime_defend, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 						else draw.imageSector(enemy.slime.prime, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 					} else {
-						if (select.shield > 0) draw.imageSector(enemy.slime.to_prime_defend, Math.floor(primeAnim) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+						if (selected.shield > 0) draw.imageSector(enemy.slime.to_prime_defend, Math.floor(primeAnim) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 						else draw.imageSector(enemy.slime.to_prime, Math.floor(primeAnim) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 						primeAnim += (Math.random() + 0.5) * 0.1;
 						if (primeAnim >= 12) {
@@ -842,7 +860,7 @@ const graphics = {
 							enemyAnim[index] = 0;
 						};
 					};
-				} else if (select.type === FRAGMENT) {
+				} else if (selected.type === FRAGMENT) {
 					if (primeAnim == -1) {
 						draw.imageSector(enemy.fragment.idle, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
 					} else if (primeAnim >= 18) {
@@ -856,14 +874,21 @@ const graphics = {
 						draw.imageSector(enemy.fragment.roll, Math.floor(primeAnim % 4) * 64, 0, 64, 64, pos[0] + ((18 - primeAnim) * 8), pos[1] + 1);
 						primeAnim++;
 					};
-				} else if (select.type === SENTRY.BIG) {
-					if (select.shield > 0) draw.imageSector(enemy.sentry.big_defend, Math.floor(enemyAnim[index] + 7) * 64, 0, 64, 64, pos[0], pos[1] + 1);
-					else draw.imageSector(enemy.sentry.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+				} else if (selected.type === SENTRY.BIG) {
+					if (selected.shield > 0) {
+						draw.imageSector(enemy.sentry.big_defend, Math.floor(enemyAnim[index] + 7) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+					} else if (selected.transition && selected.transition[1] === TRANSITION.SHIELD) {
+						draw.imageSector(enemy.sentry.big_defend, Math.floor(7 - selected.transition[0]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+						selected.transition[0]++;
+						if (selected.transition[0] >= 7) delete selected.transition;
+					} else {
+						draw.imageSector(enemy.sentry.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+					};
 				};
 			};
 		};
 		// action animations
-		if (game.enemyNum != -1) {
+		if (game.enemyNum != -1 && !game.enemies[game.enemyNum].transition) {
 			let pos = enemyPos[game.enemyNum];
 			if (tempAnim[3] === ATTACK) {
 				if (tempAnim[1] === SLIME.SMALL) {
@@ -927,9 +952,9 @@ const graphics = {
 					} else {
 						game.enemyStage = PENDING;
 					};
-				} else if (tempAnim[1] === FRAGMENT) {
+				} else if (tempAnim[1] === FRAGMENT && primeAnim == -1) {
 					draw.imageSector(enemy.fragment.attack, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
-					if (tempAnim[0] == 4 || tempAnim[0] == 5) draw.rect("#f00", 0, pos[1] + 4, pos[0], 60);
+					if (tempAnim[0] >= 4 && tempAnim[0] < 6) draw.rect("#f00", 0, pos[1] + 4, pos[0], 60);
 					tempAnim[0]++;
 					if (tempAnim[0] >= 7) {
 						tempAnim = [0, -1, STARTING, -1];
@@ -940,12 +965,18 @@ const graphics = {
 						game.enemyStage = PENDING;
 					};
 				} else if (tempAnim[1] === SENTRY.BIG) {
-					draw.imageSector(enemy.sentry.big_attack, Math.floor(tempAnim[0]) * 64, 0, 64, 70, pos[0], pos[1] - 1, 64, 70);
+					draw.imageSector(enemy.sentry.big_attack, Math.floor(tempAnim[0]) * 88, 0, 88, 70, pos[0] - 12, pos[1] - 1, 88, 70);
+					if (tempAnim[0] >= 4) {
+						const start = [pos[0] + 17, pos[1] + 16];
+						const end = (game.shield > 0 ? [92, 90] : [72, 85]);
+						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
+					};
 					if (tempAnim[2] === STARTING) tempAnim[0]++;
 					else if (tempAnim[2] === ENDING) tempAnim[0]--;
-					if (tempAnim[0] >= 4) {
-						tempAnim[0] = 3;
+					if (tempAnim[0] >= 5) {
+						tempAnim[0] = 4;
 						tempAnim[2] = ENDING;
+					} else if (tempAnim[0] == 4 && tempAnim[2] === ENDING) {
 						game.enemyStage = MIDDLE;
 					} else if (tempAnim[0] < 0) {
 						tempAnim = [0, -1, STARTING, -1];
@@ -1014,22 +1045,6 @@ const graphics = {
 		// move idle animations along
 		for (let index = 0; index < game.enemies.length; index++) {
 			enemyAnim[index] += (Math.random() + 0.5) * 0.1;
-		};
-		// intents
-		for (let index = 0; index < game.enemies.length; index++) {
-			if (game.enemies[index].eff.shroud) return;
-			if (starAnim[index] >= 4) starAnim[index] = 0;
-			if (index !== game.enemyNum) {
-				let power = 0;
-				if (game.enemies[index].intent === ATTACK) {
-					power = game.enemies[index].getTotalAttackPower();
-					power = Math.ceil(power * get.takeDamageMult(index));
-				} else if (game.enemies[index].intent === DEFEND) {
-					power = game.enemies[index].getTotalDefendPower();
-				};
-				draw.intent(enemyPos[index][0] + 16, getEnemyIntentPos(index, true), power, game.enemies[index].intent);
-			};
-			starAnim[index] += (Math.random() + 0.5) * 0.15;
 		};
 	},
 	/**
@@ -1212,7 +1227,7 @@ const graphics = {
 				coords = [19, 36, 26, 28];
 			} else if (enemyType === SLIME.BIG || (enemyType === SLIME.PRIME && primeAnim != -1 && primeAnim < 5)) {
 				coords = [5, 26, 54, 38];
-				name = "big slime";
+				name = ENEMY_NAMES[SLIME.BIG];
 			} else if (enemyType === SLIME.PRIME) {
 				coords = [0, 7, 64, 57];
 			} else if (enemyType === FRAGMENT && (primeAnim == -1 || primeAnim > 18)) {
@@ -1221,12 +1236,12 @@ const graphics = {
 				coords = [5, 3, 54, 61];
 			};
 			if (coords) {
-				if (game.select[1] !== game.enemyNum && !game.enemies[game.select[1]].eff.shroud) {
-					info.intent();
-				};
 				let left = game.select[1] === 0 && game.enemies.length > 1;
 				draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
 				draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "#fff", "text-align": CENTER, "text-small": true});
+				if (game.select[1] !== game.enemyNum && !game.enemies[game.select[1]].eff.shroud) {
+					info.intent();
+				};
 				const exAtt = enemy.getExtraAttackPower();
 				const exDef = enemy.getExtraDefendPower();
 				if (left) draw.lore(pos[0] + coords[0] - 2.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-align": LEFT, "text-small": true});

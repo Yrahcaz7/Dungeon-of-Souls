@@ -192,9 +192,13 @@ function endTurn() {
 	game.turn = TURN.ENEMY;
 	game.enemyNum = -1;
 	for (let index = 0; index < game.enemies.length; index++) {
+		// effects
+		let prevShield = game.enemies[index].shield;
 		if (game.enemies[index].eff.reinforces) game.enemies[index].eff.reinforces--;
 		else game.enemies[index].shield = 0;
 		if (game.enemies[index].eff.resilience) game.enemies[index].eff.resilience--;
+		// transitions
+		startEnemyTransition(index, prevShield);
 	};
 };
 

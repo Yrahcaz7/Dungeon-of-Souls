@@ -49,7 +49,7 @@ function hidden() {
 const get = {
 	/**
 	 * Gets the current area number based on the floor.
-	 * @param {number} floor - Defaults to `game.floor`.
+	 * @param {number} floor - defaults to `game.floor`.
 	 */
 	area(floor = game.floor) {
 		if (floor < 1) return 0;
@@ -267,26 +267,40 @@ function getCardCost(obj) {
 const AURA_BLADE = 200;
 
 /**
+ * Starts a transition animation of an enemy.
+ * @param {number} index - the index of the enemy.
+ * @param {number} prevShield - defaults to `game.enemies[index].shield`.
+ */
+function startEnemyTransition(index, prevShield = game.enemies[index].shield) {
+	if (game.enemies[index].type !== SENTRY.BIG) return;
+	if (prevShield > 0 && game.enemies[index].shield == 0) game.enemies[index].transition = [0, TRANSITION.SHIELD];
+};
+
+/**
  * Deals damage to an enemy.
  * @param {number} amount - the amount of damage.
  * @param {number} exMod - the extra damage modifier. Defaults to `1`.
- * @param {number} enemy - the index of the enemy. Defaults to `game.enemyAtt[1]`.
+ * @param {number} index - the index of the enemy. Defaults to `game.enemyAtt[1]`.
  * @param {boolean} attack - whether the damage is considered an attack. Defaults to `true`.
  */
-function dealDamage(amount, exMod = 1, enemy = game.enemyAtt[1], attack = true) {
+function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true) {
 	if (isNaN(amount)) return;
+	// setup
+	let prevShield = game.enemies[index].shield;
 	// increase damage
 	if (attack) amount += Math.floor(get.extraDamage(true) * exMod);
 	// multiply damage
-	if (attack) amount = Math.ceil(amount * get.dealDamageMult(enemy));
+	if (attack) amount = Math.ceil(amount * get.dealDamageMult(index));
 	// damage enemy
-	if (amount < game.enemies[enemy].shield) {
-		game.enemies[enemy].shield -= amount;
+	if (amount < game.enemies[index].shield) {
+		game.enemies[index].shield -= amount;
 	} else {
-		amount -= game.enemies[enemy].shield;
-		game.enemies[enemy].shield = 0;
-		game.enemies[enemy].health -= amount;
+		amount -= game.enemies[index].shield;
+		game.enemies[index].shield = 0;
+		game.enemies[index].health -= amount;
 	};
+	// transitions
+	startEnemyTransition(index, prevShield);
 };
 
 /**
