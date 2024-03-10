@@ -248,6 +248,8 @@ function getEnemyIntentPos(index, moving = false) {
 		else y = NaN;
 	} else if (type === SENTRY.BIG) {
 		y -= 40;
+	} else if (type === SENTRY.SMALL) {
+		y -= 9;
 	};
 	y = Math.max(y, -2);
 	if (moving) y += Math.abs(starAnim[index] - 2);

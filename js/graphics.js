@@ -884,6 +884,16 @@ const graphics = {
 					} else {
 						draw.imageSector(enemy.sentry.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 					};
+				} else if (selected.type === SENTRY.SMALL) {
+					if (selected.shield > 0) {
+						draw.imageSector(enemy.sentry.small_defend, Math.floor(enemyAnim[index] + 5) * 64, 0, 64, 64, pos[0], pos[1]);
+					} else if (selected.transition && selected.transition[1] === TRANSITION.SHIELD) {
+						draw.imageSector(enemy.sentry.small_defend, Math.floor(5 - selected.transition[0]) * 64, 0, 64, 64, pos[0], pos[1]);
+						selected.transition[0]++;
+						if (selected.transition[0] >= 5) delete selected.transition;
+					} else {
+						draw.imageSector(enemy.sentry.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
+					};
 				};
 			};
 		};
@@ -976,7 +986,30 @@ const graphics = {
 					if (tempAnim[0] >= 5) {
 						tempAnim[0] = 4;
 						tempAnim[2] = ENDING;
-					} else if (tempAnim[0] == 4 && tempAnim[2] === ENDING) {
+					} else if (tempAnim[0] == 3 && tempAnim[2] === ENDING) {
+						game.enemyStage = MIDDLE;
+					} else if (tempAnim[0] < 0) {
+						tempAnim = [0, -1, STARTING, -1];
+						enemyAnim[game.enemyNum] = 0;
+						game.enemyStage = ENDING;
+						invNum = -1;
+					} else {
+						game.enemyStage = PENDING;
+						invNum = game.enemyNum;
+					};
+				} else if (tempAnim[1] === SENTRY.SMALL) {
+					draw.imageSector(enemy.sentry.small_attack, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
+					if (tempAnim[0] >= 11) {
+						const start = [pos[0] + 14, pos[1] + 30];
+						const end = (game.shield > 0 ? [92, 90] : [72, 85]);
+						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
+					};
+					if (tempAnim[2] === STARTING) tempAnim[0]++;
+					else if (tempAnim[2] === ENDING) tempAnim[0]--;
+					if (tempAnim[0] >= 12) {
+						tempAnim[0] = 11;
+						tempAnim[2] = ENDING;
+					} else if (tempAnim[0] == 10 && tempAnim[2] === ENDING) {
 						game.enemyStage = MIDDLE;
 					} else if (tempAnim[0] < 0) {
 						tempAnim = [0, -1, STARTING, -1];
@@ -1034,6 +1067,20 @@ const graphics = {
 						invNum = -1;
 					} else if (tempAnim[0] >= 7) {
 						tempAnim[0] = 7;
+						game.enemyStage = MIDDLE;
+					} else {
+						game.enemyStage = PENDING;
+						invNum = game.enemyNum;
+					};
+				} else if (tempAnim[1] === SENTRY.SMALL) {
+					draw.imageSector(enemy.sentry.small_defend, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
+					tempAnim[0]++;
+					if (game.enemyStage === MIDDLE) {
+						tempAnim = [0, -1, STARTING, -1];
+						game.enemyStage = ENDING;
+						invNum = -1;
+					} else if (tempAnim[0] >= 5) {
+						tempAnim[0] = 5;
 						game.enemyStage = MIDDLE;
 					} else {
 						game.enemyStage = PENDING;
@@ -1220,20 +1267,22 @@ const graphics = {
 			info.artifact("the map");
 		} else if (game.select[0] === ATTACK_ENEMY || game.select[0] === LOOKAT_ENEMY) {
 			const enemy = game.enemies[game.select[1]];
-			const enemyType = enemy.type;
+			const type = enemy.type;
 			const pos = enemyPos[game.select[1]];
-			let coords = [], name = ENEMY_NAMES[enemyType];
-			if (enemyType === SLIME.SMALL) {
-				coords = [19, 36, 26, 28];
-			} else if (enemyType === SLIME.BIG || (enemyType === SLIME.PRIME && primeAnim != -1 && primeAnim < 5)) {
+			let coords = [], name = ENEMY_NAMES[type];
+			if (type === SLIME.BIG || (type === SLIME.PRIME && primeAnim != -1 && primeAnim < 5)) {
 				coords = [5, 26, 54, 38];
 				name = ENEMY_NAMES[SLIME.BIG];
-			} else if (enemyType === SLIME.PRIME) {
+			} else if (type === SLIME.SMALL) {
+				coords = [19, 36, 26, 28];
+			} else if (type === SLIME.PRIME) {
 				coords = [0, 7, 64, 57];
-			} else if (enemyType === FRAGMENT && (primeAnim == -1 || primeAnim > 18)) {
+			} else if (type === FRAGMENT && (primeAnim == -1 || primeAnim > 18)) {
 				coords = [7, 6, 50, 58];
-			} else if (enemyType === SENTRY.BIG) {
+			} else if (type === SENTRY.BIG) {
 				coords = [5, 3, 54, 61];
+			} else if (type === SENTRY.SMALL) {
+				coords = [4, 34, 56, 30];
 			};
 			if (coords) {
 				let left = game.select[1] === 0 && game.enemies.length > 1;

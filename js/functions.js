@@ -272,7 +272,7 @@ const AURA_BLADE = 200;
  * @param {number} prevShield - defaults to `game.enemies[index].shield`.
  */
 function startEnemyTransition(index, prevShield = game.enemies[index].shield) {
-	if (game.enemies[index].type !== SENTRY.BIG) return;
+	if (game.enemies[index].type !== SENTRY.BIG && game.enemies[index].type !== SENTRY.SMALL) return;
 	if (prevShield > 0 && game.enemies[index].shield == 0) game.enemies[index].transition = [0, TRANSITION.SHIELD];
 };
 
