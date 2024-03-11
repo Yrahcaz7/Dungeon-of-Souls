@@ -110,7 +110,7 @@ class Enemy {
 			};
 			startAnim.enemy();
 		} else if (this.intent === DEFEND) {
-			if (this.type === FRAGMENT || (this.type === SLIME.PRIME && primeAnim != -1)) {
+			if (this.type === FRAGMENT || (this.type === SLIME.PRIME && primeAnim != -1) || this.type === SENTRY.PRIME) {
 				this.middleAction();
 			} else {
 				startAnim.enemy();
@@ -129,7 +129,7 @@ class Enemy {
 			if (game.health < prevHealth) startAnim.player("hit");
 		} else if (this.intent === DEFEND) {
 			this.shield += this.getTotalDefendPower();
-			if (this.type === FRAGMENT || (this.type === SLIME.PRIME && primeAnim != -1)) {
+			if (this.type === FRAGMENT || (this.type === SLIME.PRIME && primeAnim != -1) || this.type === SENTRY.PRIME) {
 				this.finishAction();
 			};
 		} else if (this.intent === BUFF) {
@@ -250,6 +250,8 @@ function getEnemyIntentPos(index, moving = false) {
 		y -= 40;
 	} else if (type === SENTRY.SMALL) {
 		y -= 9;
+	} else if (type === SENTRY.PRIME) {
+		y -= 43;
 	};
 	y = Math.max(y, -2);
 	if (moving) y += Math.abs(starAnim[index] - 2);

@@ -130,6 +130,7 @@ const draw = {
 	 * @param {number} offsetM - the offset of the minute hand. Defaults to `0`.
 	 */
 	clock(x, y, hours = 0, minutes = 0, offsetH = 0, offsetM = 0) {
+		ctx.filter = `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="discrete" tableValues="0 1"/></feComponentTransfer></filter></svg>#filter')`;
 		let coords = [(x + 30) * scale, (y + 30) * scale];
 		if (hours >= 0) {
 			ctx.save();
@@ -157,6 +158,7 @@ const draw = {
 			draw.polygon(points, {"background-color": "#f0e000"});
 			ctx.restore();
 		};
+		ctx.filter = "none";
 		draw.image(background.clock_node, x + 26, y + 26);
 	},
 	/**
@@ -955,6 +957,17 @@ const graphics = {
 					} else {
 						draw.imageSector(enemy.sentry.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
 					};
+				} else if (selected.type === SENTRY.PRIME) {
+					if (primeAnim == -1) {
+						draw.imageSector(enemy.sentry.prime, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
+					} else {
+						draw.imageSector(enemy.sentry.to_prime, Math.floor(primeAnim) * 64, 0, 64, 64, pos[0], pos[1]);
+						primeAnim += (Math.random() + 0.5) * 0.1;
+						if (primeAnim >= 9) {
+							primeAnim = -1;
+							enemyAnim[index] = 0;
+						};
+					};
 				};
 			};
 		};
@@ -1072,6 +1085,31 @@ const graphics = {
 						tempAnim[0] = 11;
 						tempAnim[2] = ENDING;
 					} else if (tempAnim[0] == 10 && tempAnim[2] === ENDING) {
+						game.enemyStage = MIDDLE;
+					} else if (tempAnim[0] < 0) {
+						tempAnim = [0, -1, STARTING, -1];
+						enemyAnim[game.enemyNum] = 0;
+						game.enemyStage = ENDING;
+						invNum = -1;
+					} else {
+						game.enemyStage = PENDING;
+						invNum = game.enemyNum;
+					};
+				} else if (tempAnim[1] === SENTRY.PRIME && primeAnim == -1) {
+					draw.imageSector(enemy.sentry.prime_attack, Math.floor(tempAnim[0]) * 64, 0, 64, 86, pos[0], pos[1] - 22);
+					if (tempAnim[0] >= 12) {
+						let start = [pos[0] + 12, pos[1] + 29];
+						const end = (game.shield > 0 ? [92, 90] : [72, 85]);
+						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
+						start[1] += 7;
+						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
+					};
+					if (tempAnim[2] === STARTING) tempAnim[0]++;
+					else if (tempAnim[2] === ENDING) tempAnim[0]--;
+					if (tempAnim[0] >= 13) {
+						tempAnim[0] = 12;
+						tempAnim[2] = ENDING;
+					} else if (tempAnim[0] == 11 && tempAnim[2] === ENDING) {
 						game.enemyStage = MIDDLE;
 					} else if (tempAnim[0] < 0) {
 						tempAnim = [0, -1, STARTING, -1];
@@ -1345,6 +1383,8 @@ const graphics = {
 				coords = [5, 3, 54, 61];
 			} else if (type === SENTRY.SMALL) {
 				coords = [4, 34, 56, 30];
+			} else if (type === SENTRY.PRIME) {
+				coords = [9, 0, 46, 64];
 			};
 			if (coords) {
 				let left = game.select[1] === 0 && game.enemies.length > 1;

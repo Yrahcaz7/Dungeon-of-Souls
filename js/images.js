@@ -94,6 +94,9 @@ const player = {
 		small: new Image,
 		small_attack: new Image,
 		small_defend: new Image,
+		to_prime: new Image,
+		prime: new Image,
+		prime_attack: new Image,
 	},
 }, background = {
 	cave: new Image,
