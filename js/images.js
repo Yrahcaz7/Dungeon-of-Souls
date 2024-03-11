@@ -101,12 +101,9 @@ const player = {
 	floating_arch: new Image,
 	debris: new Image,
 	column_debri: new Image,
+	clock_face: new Image,
+	clock_node: new Image,
 	tunnel_of_time: new Image,
-}, clock = {
-	face: new Image,
-	hour_hand: new Image,
-	min_hand: new Image,
-	node: new Image,
 }, bar = {
 	health_empty: new Image,
 	health_full: new Image,
@@ -250,13 +247,6 @@ for (const folder in enemy) {
 for (const image in background) {
 	if (Object.hasOwnProperty.call(background, image)) {
 		background[image].src = "images/background/" + image + ".png";
-	};
-};
-
-// the clock
-for (const image in clock) {
-	if (Object.hasOwnProperty.call(clock, image)) {
-		clock[image].src = "images/clock/" + image + ".png";
 	};
 };
 

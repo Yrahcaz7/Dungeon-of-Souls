@@ -101,6 +101,65 @@ const draw = {
 		ctx.stroke();
 	},
 	/**
+	 * Draws a polygon on the canvas.
+	 * @param {number[]} points - the coordinates of the polygon's points.
+	 * @param style - the polygon's style object.
+	 */
+	polygon(points, style = {"background-color": "#000", "border-width": 0, "border-color": "#000"}) {
+		if (!style["background-color"]) style["background-color"] = "#000";
+		if (!style["border-width"]) style["border-width"] = 0;
+		if (!style["border-color"]) style["border-color"] = "#000";
+		ctx.beginPath();
+		ctx.fillStyle = style["background-color"];
+		ctx.strokeStyle = style["border-color"];
+		ctx.lineWidth = style["border-width"] * scale;
+		for (let index = 0; index + 1 < points.length; index += 2) {
+			ctx.lineTo(points[index] * scale, points[index + 1] * scale);
+		};
+		ctx.closePath();
+		ctx.fill();
+		if (style["border-width"] > 0) ctx.stroke();
+	},
+	/**
+	 * Draws a clock's hands and node on the canvas.
+	 * @param {number} x - the x-coordinate of the clock.
+	 * @param {number} y - the y-coordinate of the clock.
+	 * @param {number} hours - the time of the hour hand. Defaults to `0`.
+	 * @param {number} minutes - the time of the minute hand. Defaults to `0`.
+	 * @param {number} offsetH - the offset of the hour hand. Defaults to `0`.
+	 * @param {number} offsetM - the offset of the minute hand. Defaults to `0`.
+	 */
+	clock(x, y, hours = 0, minutes = 0, offsetH = 0, offsetM = 0) {
+		let coords = [(x + 30) * scale, (y + 30) * scale];
+		if (hours >= 0) {
+			ctx.save();
+			ctx.translate(coords[0], coords[1]);
+			ctx.rotate(hours / 6 * Math.PI);
+			let points = [-1, -3, -1, -9, -3, -9, -3, -10, 0, -13, 3, -10, 3, -9, 1, -9, 1, -3];
+			if (offsetH) {
+				for (let index = 0; index + 1 < points.length; index += 2) {
+					points[index + 1] = Math.max(points[index + 1] - offsetH, -30);
+				};
+			};
+			draw.polygon(points, {"background-color": "#f07000"});
+			ctx.restore();
+		};
+		if (minutes >= 0) {
+			ctx.save();
+			ctx.translate(coords[0], coords[1]);
+			ctx.rotate(minutes / 30 * Math.PI);
+			let points = [-1, -3, -1, -12, -3, -12, -3, -13, 0, -16, 3, -13, 3, -12, 1, -12, 1, -3];
+			if (offsetM) {
+				for (let index = 0; index + 1 < points.length; index += 2) {
+					points[index + 1] = Math.max(points[index + 1] - offsetM, -30);
+				};
+			};
+			draw.polygon(points, {"background-color": "#f0e000"});
+			ctx.restore();
+		};
+		draw.image(background.clock_node, x + 26, y + 26);
+	},
+	/**
 	 * Draws a character on the canvas.
 	 * @param {string} char - the character to draw.
 	 * @param {number} x - the x-coordinate to draw the character at.
@@ -109,7 +168,7 @@ const draw = {
 	 */
 	char(char, x, y, style = {"color": "#000", "highlight-color": "", "text-small": false}) {
 		// defualt values
-		if (!style["color"]) style["color"] = "black";
+		if (!style["color"]) style["color"] = "#000";
 		if (!style["text-small"]) style["text-small"] = false;
 		// highlight
 		if (style["highlight-color"] && char.charCodeAt() >= 32) {
@@ -138,7 +197,7 @@ const draw = {
 	 */
 	lore(x, y, str, style = {"color": "#000", "highlight-color": "#222", "text-align": RIGHT, "text-small": false}) {
 		str = "" + str;
-		if (!style["color"]) style["color"] = "black";
+		if (!style["color"]) style["color"] = "#000";
 		if (!style["highlight-color"]) style["highlight-color"] = "#222";
 		if (!style["text-align"]) style["text-align"] = RIGHT;
 		if (!style["text-small"]) style["text-small"] = false;
@@ -423,8 +482,8 @@ const draw = {
 	 * @param {string} str - the string containing the lore to insert into the textbox.
 	 * @param style - the textbox's style object.
 	 */
-	textBox(x, y, width, str, style = {"color": "black", "highlight-color": "#222", "text-align": RIGHT, "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
-		if (!style["color"]) style["color"] = "black";
+	textBox(x, y, width, str, style = {"color": "#000", "highlight-color": "#222", "text-align": RIGHT, "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
+		if (!style["color"]) style["color"] = "#000";
 		if (!style["highlight-color"]) style["highlight-color"] = "#222";
 		if (!style["text-align"]) style["text-align"] = RIGHT;
 		if (!style["text-small"]) style["text-small"] = false;
@@ -612,15 +671,11 @@ const graphics = {
 			ctx.globalAlpha = 1;
 		};
 		if (game.floor != 10) {
-			let now = new Date(), time = [now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds()], x = 170, y = 63 - Math.round(backAnim[4]);
-			time[2] += (time[3] / 1000);
-			time[1] += (time[2] / 60);
+			let now = new Date(), time = [now.getHours(), now.getMinutes()], x = 170, y = 63 - Math.round(backAnim[4]);
 			time[0] += (time[1] / 60);
 			if (time[0] >= 12) time[0] = time[0] - 12;
-			draw.image(clock.face, x, y);
-			draw.imageSector(clock.hour_hand, Math.floor((time[0]) * 82 / 12) * 24, 0, 24, 24, x + 18, y + 18);
-			draw.imageSector(clock.min_hand, Math.floor((time[1]) * 80 / 60) * 34, 0, 34, 34, x + 13, y + 13);
-			draw.image(clock.node, x + 26, y + 26);
+			draw.image(background.clock_face, x, y);
+			draw.clock(x, y, time[0], time[1]);
 		};
 		for (let index = 0; index < backAnim.length; index += 2) {
 			if (backAnim[index] >= 1) backAnim[index + 1] = DOWN;
@@ -863,15 +918,21 @@ const graphics = {
 				} else if (selected.type === FRAGMENT) {
 					if (primeAnim == -1) {
 						draw.imageSector(enemy.fragment.idle, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
+						if (index !== game.enemyNum || tempAnim[3] !== ATTACK) {
+							draw.clock(pos[0] + 2, pos[1] + 4, -1, 2 - Math.abs(Math.floor(enemyAnim[index]) - 2));
+						};
 					} else if (primeAnim >= 18) {
 						draw.imageSector(enemy.fragment.open, Math.floor(primeAnim - 18) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+						draw.clock(pos[0] + 2, pos[1] + 5, 6, 0, (primeAnim - 18) * 5);
 						primeAnim += 0.5;
 						if (primeAnim >= 25) {
 							primeAnim = -1;
 							enemyAnim[index] = 0;
 						};
 					} else {
-						draw.imageSector(enemy.fragment.roll, Math.floor(primeAnim % 4) * 64, 0, 64, 64, pos[0] + ((18 - primeAnim) * 8), pos[1] + 1);
+						let x = pos[0] + ((18 - primeAnim) * 8);
+						draw.imageSector(enemy.fragment.roll, Math.floor(primeAnim % 4) * 64, 0, 64, 64, x, pos[1] + 1);
+						draw.clock(x + 2, pos[1] + 5, (4 - Math.floor((primeAnim - 2) % 4)) * 3, (4 - Math.floor(primeAnim % 4)) * 15);
 						primeAnim++;
 					};
 				} else if (selected.type === SENTRY.BIG) {
@@ -964,6 +1025,7 @@ const graphics = {
 					};
 				} else if (tempAnim[1] === FRAGMENT && primeAnim == -1) {
 					draw.imageSector(enemy.fragment.attack, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
+					draw.clock(pos[0] + 2, pos[1] + 4, -1, (tempAnim[0] >= 3 ? 0 : Math.floor(tempAnim[0] + 1) * 15));
 					if (tempAnim[0] >= 4 && tempAnim[0] < 6) draw.rect("#f00", 0, pos[1] + 4, pos[0], 60);
 					tempAnim[0]++;
 					if (tempAnim[0] >= 7) {
