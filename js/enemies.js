@@ -110,7 +110,7 @@ class Enemy {
 			};
 			startAnim.enemy();
 		} else if (this.intent === DEFEND) {
-			if (this.type === FRAGMENT || (this.type === SLIME.PRIME && primeAnim != -1) || this.type === SENTRY.PRIME) {
+			if (this.type === FRAGMENT || (this.type === SLIME.PRIME && primeAnim != -1)) {
 				this.middleAction();
 			} else {
 				startAnim.enemy();
@@ -129,7 +129,7 @@ class Enemy {
 			if (game.health < prevHealth) startAnim.player("hit");
 		} else if (this.intent === DEFEND) {
 			this.shield += this.getTotalDefendPower();
-			if (this.type === FRAGMENT || (this.type === SLIME.PRIME && primeAnim != -1) || this.type === SENTRY.PRIME) {
+			if (this.type === FRAGMENT || (this.type === SLIME.PRIME && primeAnim != -1)) {
 				this.finishAction();
 			};
 		} else if (this.intent === BUFF) {
@@ -226,6 +226,20 @@ function classifyEnemy(object = {}) {
 		};
 	};
 	return instance;
+};
+
+/**
+ * Checks if an enemy should be visible.
+ * @param {number} index - the index of the enemy.
+ */
+function isEnemyVisible(index) {
+	if (!game.enemies[index]) return false;
+	if (index !== game.enemyNum || game.enemies[index].transition) return true;
+	const type = game.enemies[index].type;
+	const intent = game.enemies[index].intent;
+	if (intent === ATTACK) return !(type === SLIME.SMALL || type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && primeAnim == -1));
+	else if (intent === DEFEND) return !(type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && primeAnim == -1));
+	else return true;
 };
 
 /**

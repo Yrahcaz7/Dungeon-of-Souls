@@ -97,6 +97,7 @@ const player = {
 		to_prime: new Image,
 		prime: new Image,
 		prime_attack: new Image,
+		prime_defend: new Image,
 	},
 }, background = {
 	cave: new Image,
