@@ -83,27 +83,53 @@ let global = {
 }, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = MENU.TITLE, menuSelect = 0, enemyPos = [], handPos = [], paths = {}, winAnim = 0;
 
 /**
- * Pushes a popup.
+ * Checks if there is any active popups.
+ */
+function hasPopups() {
+	for (let index = 0; index < popups.length; index++) {
+		if (popups[index].length) return true;
+	};
+	return false;
+};
+
+/**
+ * Creates a popup.
  * @param {string} type - the type of the popup.
  * @param {string} description - the description of the popup.
  * @param {string} secondLine - the second line of the popup, if any.
  */
-function pushPopup(type, description, secondLine = "") {
-	popups.push([type, description, 400, 0, secondLine]);
+function createPopup(type, description, secondLine = "") {
+	let oldest = 0;
+	for (let index = 0; index <= popups.length && index < 7; index++) {
+		if (popups[index]?.length) {
+			if (popups[index] && popups[index][2] > popups[oldest][2]) oldest = index;
+			continue;
+		};
+		popups[index] = [type, description, 0, secondLine];
+		return;
+	};
+	popups[oldest] = [type, description, 0, secondLine];
 };
 
 /**
- * Pushes the current music popup.
+ * Creates the current music popup.
  */
 function musicPopup() {
 	let src = "" + document.getElementById("music").src;
 	if (!global.options.music) {
-		pushPopup("music", "music is off");
+		createPopup("music", "music is off");
 	} else if (/Ruins_of_Caelum/.test(src)) {
-		pushPopup("music", "Ruins of Caelum");
+		createPopup("music", "Ruins of Caelum");
 	} else if (/The_Final_Ruins/.test(src)) {
-		pushPopup("music", "The Final Ruins");
+		createPopup("music", "The Final Ruins");
 	};
+};
+
+/**
+ * Creates a "go to the map" popup.
+ */
+function mapPopup() {
+	createPopup("go", "go to the map!");
 };
 
 /**
@@ -175,7 +201,7 @@ function startTurn() {
  */
 function endTurn() {
 	// end of your turn effects
-	if (game.hand.length > 0) discardHand();
+	if (game.hand.length) discardHand();
 	cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 	notif = [-1, 0, "", 0];
 	if (game.eff.burn) {
@@ -436,7 +462,7 @@ function selection() {
 		} else if (action === ENTER) {
 			if (!game.select[1]) {
 				game.select = [MAP, 0];
-				pushPopup("go", "go to the map!");
+				mapPopup();
 			} else {
 				game.select = [REWARDS, game.rewards.length - 1];
 			};
@@ -541,7 +567,7 @@ function selection() {
 						game.select = [CONFIRM_EXIT, 1];
 					} else {
 						game.select = [MAP, 0];
-						pushPopup("go", "go to the map!");
+						mapPopup();
 					};
 				};
 			};
@@ -694,9 +720,16 @@ function selection() {
 		actionTimer = 1;
 		return;
 	} else if (action === UP && game.select[0] === VOID && !game.select[1]) {
-		if (popups[0]) game.select = [POPUPS, 0];
-		else if (!game.enemies.length) game.select = [LOOKER, 0];
-		else game.select = [LOOKAT_ENEMY, 0];
+		if (hasPopups()) {
+			game.select = [POPUPS, 0];
+			while (game.select[1] < popups.length && !popups[game.select[1]].length) {
+				game.select[1]++;
+			};
+		} else if (!game.enemies.length) {
+			game.select = [LOOKER, 0];
+		} else {
+			game.select = [LOOKAT_ENEMY, 0];
+		};
 		actionTimer = 1;
 		return;
 	} else if ((action === RIGHT || action === DOWN) && game.select[0] === VOID && !game.select[1]) {
@@ -704,10 +737,18 @@ function selection() {
 		actionTimer = 1;
 		return;
 	} else if (action === UP && game.select[0] === DISCARD && !game.select[1]) {
-		if (game.void.length) game.select = [VOID, 0];
-		else if (popups[0]) game.select = [POPUPS, 0];
-		else if (!game.enemies.length) game.select = [LOOKER, 0];
-		else game.select = [LOOKAT_ENEMY, 0];
+		if (game.void.length) {
+			game.select = [VOID, 0];
+		} else if (hasPopups()) {
+			game.select = [POPUPS, 0];
+			while (game.select[1] < popups.length && !popups[game.select[1]].length) {
+				game.select[1]++;
+			};
+		} else if (!game.enemies.length) {
+			game.select = [LOOKER, 0];
+		} else {
+			game.select = [LOOKAT_ENEMY, 0];
+		};
 		actionTimer = 1;
 		return;
 	} else if (action === LEFT) {
@@ -739,8 +780,11 @@ function selection() {
 			actionTimer = 1;
 			return;
 		} else if (game.select[0] === HAND && game.select[1] == game.hand.length - 1) {
-			if (popups[0]) {
+			if (hasPopups()) {
 				game.select = [POPUPS, 0];
+				while (game.select[1] < popups.length && !popups[game.select[1]].length) {
+					game.select[1]++;
+				};
 			} else {
 				if (game.void.length) game.select = [VOID, 0];
 				else game.select = [DISCARD, 0];
@@ -772,29 +816,38 @@ function selection() {
 	};
 	// popup selection
 	if (game.select[0] === POPUPS) {
-		if (popups.length == 0) {
-			if (!game.hand.length) {
-				if (game.void.length) game.select = [VOID, 0];
-				else game.select = [DISCARD, 0];
-			} else game.select = [HAND, game.prevCard];
+		if (!popups[game.select[1]].length) {
+			while (game.select[1] >= 0 && !popups[game.select[1]].length) {
+				game.select[1]--;
+			};
+			if (game.select[1] == -1) {
+				if (!game.hand.length) {
+					if (game.void.length) game.select = [VOID, 0];
+					else game.select = [DISCARD, 0];
+				} else game.select = [HAND, game.prevCard];
+			};
 			return;
 		} else if (game.select[1] >= popups.length) {
 			game.select[1] = popups.length - 1;
 			return;
 		} else if (action === UP) {
-			if (game.select[1] >= popups.length - 1 || game.select[1] >= 6) {
-				game.select = [LOOKER, 0];
-			} else {
+			game.select[1]++;
+			while (game.select[1] < popups.length && !popups[game.select[1]].length) {
 				game.select[1]++;
+			};
+			if (game.select[1] == popups.length) {
+				game.select = [LOOKER, 0];
 			};
 			actionTimer = 1;
 			return;
 		} else if (action === DOWN) {
-			if (!game.select[1]) {
+			game.select[1]--;
+			while (game.select[1] >= 0 && !popups[game.select[1]].length) {
+				game.select[1]--;
+			};
+			if (game.select[1] == -1) {
 				if (game.void.length) game.select = [VOID, 0];
 				else game.select = [DISCARD, 0];
-			} else {
-				game.select[1]--;
 			};
 			actionTimer = 1;
 			return;
@@ -804,14 +857,15 @@ function selection() {
 			actionTimer = 1;
 			return;
 		} else if (action === ENTER) {
-			popups.splice(game.select[1], 1);
-			if (popups.length == 0) {
+			popups[game.select[1]] = [];
+			while (game.select[1] >= 0 && !popups[game.select[1]].length) {
+				game.select[1]--;
+			};
+			if (game.select[1] == -1) {
 				if (!game.hand.length) {
 					if (game.void.length) game.select = [VOID, 0];
 					else game.select = [DISCARD, 0];
 				} else game.select = [HAND, game.prevCard];
-			} else if (game.select[1] > 0) {
-				game.select[1]--;
 			};
 			actionTimer = 1;
 			return;
@@ -961,12 +1015,19 @@ function selection() {
 			actionTimer = 1;
 			return;
 		} else if (action === DOWN) {
-			if (game.select[0] === MAP) game.select = [LOOKAT_YOU, 0];
-			else if (popups.length) game.select = [POPUPS, popups.length - 1];
-			else if (!game.enemies.length) {
+			if (game.select[0] === MAP) {
+				game.select = [LOOKAT_YOU, 0];
+			} else if (hasPopups()) {
+				game.select = [POPUPS, popups.length - 1];
+				while (game.select[1] >= 0 && !popups[game.select[1]].length) {
+					game.select[1]--;
+				};
+			} else if (!game.enemies.length) {
 				if (game.void.length) game.select = [VOID, 0];
 				else game.select = [DISCARD, 0];
-			} else game.select = [LOOKAT_ENEMY, 0];
+			} else {
+				game.select = [LOOKAT_ENEMY, 0];
+			};
 			actionTimer = 1;
 			return;
 		};
@@ -1077,7 +1138,7 @@ function manageGameplay() {
 	// end battle
 	if (game.state === STATE.BATTLE && !game.enemies.length) {
 		// normal stuff
-		if (game.hand.length > 0) discardHand();
+		if (game.hand.length) discardHand();
 		cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 		notif = [-1, 0, "", 0];
 		game.select = [REWARDS, 0];

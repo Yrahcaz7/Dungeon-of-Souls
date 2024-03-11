@@ -995,11 +995,11 @@ const graphics = {
 						tempAnim = [0, STARTING];
 						game.enemyStage = ENDING;
 					} else if (game.enemyStage === MIDDLE) {
-						draw.imageSector(enemy.slime.slime_ball, 4 * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
+						draw.imageSector(enemy.slime.big_attack, 4 * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
 						tempAnim[1] = ENDING;
 						game.enemyStage = PENDING;
 					} else {
-						draw.imageSector(enemy.slime.slime_ball, (tempAnim[0] % 4) * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
+						draw.imageSector(enemy.slime.big_attack, (tempAnim[0] % 4) * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
 						tempAnim[0]++;
 						game.enemyStage = PENDING;
 						if (tempAnim[0] >= 11) {
@@ -1012,8 +1012,8 @@ const graphics = {
 						let phase = ((tempAnim[0] - 9) / 10),
 							posX = Math.round(((pos[0] - 68) - 64) * phase),
 							posY = Math.round(((pos[1] - (50 + 10))) * phase);
-						draw.imageSector(enemy.slime.small_launch, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
-					} else draw.imageSector(enemy.slime.small_launch, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
+						draw.imageSector(enemy.slime.small_attack, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
+					} else draw.imageSector(enemy.slime.small_attack, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
 					if (tempAnim[1] === STARTING) tempAnim[0]++;
 					else if (tempAnim[1] === ENDING) tempAnim[0]--;
 					if (tempAnim[0] >= 20) {
@@ -1030,8 +1030,8 @@ const graphics = {
 				} else if (type === SLIME.PRIME) {
 					if (tempAnim[0] >= 4) {
 						let phase = ((tempAnim[0] - 4) / 10), posX = Math.round(((pos[0] - 68) - 40) * phase);
-						draw.imageSector(enemy.slime.prime_fist, 4 * 36, 0, 36, 18, pos[0] - 32 - posX, 80, 36, 18);
-					} else draw.imageSector(enemy.slime.prime_fist, Math.floor(tempAnim[0]) * 36, 0, 36, 18, pos[0] - 32, 80, 36, 18);
+						draw.imageSector(enemy.slime.prime_attack, 4 * 36, 0, 36, 18, pos[0] - 32 - posX, 80, 36, 18);
+					} else draw.imageSector(enemy.slime.prime_attack, Math.floor(tempAnim[0]) * 36, 0, 36, 18, pos[0] - 32, 80, 36, 18);
 					tempAnim[0]++;
 					if (game.enemyStage === MIDDLE) {
 						tempAnim = [0, STARTING];
@@ -1505,30 +1505,28 @@ const graphics = {
 	 * Draws the popups on the canvas.
 	 */
 	popups() {
-		if (popups.length > 7) {
-			popups.shift();
-		};
-		if (popups.length >= 1) {
-			for (let a = 0; a < popups.length && a <= 6; a++) {
-				let stopPoint = (popups[a][1].length * 6) + 13;
-				if (popups[a][4].length > popups[a][1].length) stopPoint = (popups[a][4].length * 3) + 13;
-				else if (popups[a][4]) stopPoint = (popups[a][1].length * 3) + 13;
-				if (popups[a][2] > 400) {
-					popups.splice(a, 1);
-					continue;
-				};
-				stopPoint = 400 - stopPoint;
-				if (popups[a][3] >= 1) popups[a][2] += (popups[a][1].length + 1) / 3;
-				else if (popups[a][2] > stopPoint) popups[a][2] -= (popups[a][1].length + 1) / 3;
-				if (popups[a][2] < stopPoint) popups[a][2] = stopPoint;
-				if (popups[a][2] == stopPoint) popups[a][3] += 0.025;
-				draw.image(popup.back, popups[a][2], 150 - (a * 21));
-				draw.lore(popups[a][2] + 13, 150 - (a * 21) + 8, popups[a][4] ? popups[a][1] + "\n" + popups[a][4] : popups[a][1], {"text-small": !!popups[a][4]});
-				if (popup[popups[a][0]]) draw.image(popup[popups[a][0]], popups[a][2] + 2, 150 - (a * 21) + 2);
-				if (game.select[0] === POPUPS && game.select[1] == a) {
-					draw.image(select.popup, popups[a][2] - 1, 150 - (a * 21) - 1);
-				};
+		for (let index = 0; index < popups.length && index <= 6; index++) {
+			if (popups[index].length == 0) continue;
+			if (popups[index][2] >= 150) {
+				popups[index] = [];
+				continue;
 			};
+			popups[index][2]++;
+			if (popups[index][2] >= 100) {
+				ctx.globalAlpha = 3 - (popups[index][2] / 50);
+			} else if (popups[index][2] < 25) {
+				ctx.globalAlpha = popups[index][2] / 25;
+			};
+			let x = (popups[index][1].length * 6) + 13;
+			if (popups[index][3]) x = (Math.max(popups[index][1].length, popups[index][3].length) * 3) + 13;
+			x = 400 - x;
+			draw.image(popup.back, x, 150 - (index * 21));
+			draw.lore(x + 13, 150 - (index * 21) + 8, popups[index][3] ? popups[index][1] + "\n" + popups[index][3] : popups[index][1], {"text-small": !!popups[index][3]});
+			if (popup[popups[index][0]]) draw.image(popup[popups[index][0]], x + 2, 150 - (index * 21) + 2);
+			if (game.select[0] === POPUPS && game.select[1] == index) {
+				draw.image(select.popup, x - 1, 150 - (index * 21) - 1);
+			};
+			ctx.globalAlpha = 1;
 		};
 	},
 	/**

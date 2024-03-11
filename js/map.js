@@ -140,7 +140,7 @@ async function mapRow(row) {
 				if (arr[rand] && !pathHasTypes(row + ", " + rand, [ROOM.TREASURE, ROOM.PRIME])) {
 					arr[rand] = await mapPiece(row, rand, TREASURE);
 					break;
-				} else if (available.length > 0) {
+				} else if (available.length) {
 					rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 				} else {
 					break;
@@ -155,7 +155,7 @@ async function mapRow(row) {
 					arr[rand] = await mapPiece(row, rand, PRIME);
 					death_zones++;
 					break;
-				} else if (available.length > 0) {
+				} else if (available.length) {
 					rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 				} else {
 					break;
@@ -169,7 +169,7 @@ async function mapRow(row) {
 				if (arr[rand] && arr[rand][0] !== ROOM.TREASURE && arr[rand][0] !== ROOM.PRIME && !pathHasTypes(row + ", " + rand, [ROOM.EVENT])) {
 					arr[rand] = await mapPiece(row, rand, EVENT);
 					break;
-				} else if (available.length > 0) {
+				} else if (available.length) {
 					rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 				} else {
 					break;
@@ -229,7 +229,7 @@ async function generateMap() {
 				game.map[row][rand] = await mapPiece(row, rand, PRIME);
 				death_zones++;
 				break;
-			} else if (available.length > 0) {
+			} else if (available.length) {
 				rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 			} else {
 				break;

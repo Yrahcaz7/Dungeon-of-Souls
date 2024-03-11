@@ -27,7 +27,7 @@ const EVENTS = {
 		21: [() => {
 			game.select = [MAP, 0];
 			game.state = STATE.EVENT_FIN;
-			pushPopup("go", "go to the map!");
+			mapPopup();
 		}],
 		30: [() => {game.eff.weakness = 1}, "You tried to sneak past as best as you could,\nbut the enemies still spotted you!\nYou have also have hard time getting up.\nYou were crawling around for a while...", ["Battle Start!", 31]],
 		31: [() => {startEventBattle(SLIME_CROWD, randomInt(2, 3))}],
@@ -58,7 +58,7 @@ const EVENTS = {
 		501: [() => {
 			game.select = [MAP, 0];
 			game.state = STATE.EVENT_FIN;
-			pushPopup("go", "go to the map!");
+			mapPopup();
 		}],
 	}, {
 		0: [() => {}, "You find a very ominous altar.\nIt is pitch black except some dried blood stains.\nThere is some engraved text on the base.\nWhat do you do?", ["read the text", 100], ["push it over", 200], ["ignore it", 300]],
@@ -67,7 +67,7 @@ const EVENTS = {
 		111: [() => {
 			game.select = [MAP, 0];
 			game.state = STATE.EVENT_FIN;
-			pushPopup("go", "go to the map!");
+			mapPopup();
 		}],
 		120: [() => {takeDamage(25, false)}, "You brutally stab yourself and bleed onto the altar.\nSeemingly in response, a compartment in the altar opens.\nInside is a brilliant red gem.\nJust holding it makes you feel stronger.", ["take the gem", 121]],
 		121: [() => {game.artifacts.push(3)}, "You pocket the gem.\nYou then stumble around lightheadedly for a bit.\nMaybe you should be a bit more careful with your blood.", ["get a move on", 111]],
@@ -114,7 +114,7 @@ const EVENTS = {
 		222: [() => {
 			game.select = [MAP, 0];
 			game.state = STATE.EVENT_FIN;
-			pushPopup("go", "go to the map!");
+			mapPopup();
 		}],
 	}],
 };
