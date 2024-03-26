@@ -649,41 +649,91 @@ const info = {
 	},
 };
 
+let isInSecondArea = false;
+
 const graphics = {
 	/**
 	 * Draws the background layer on the canvas.
 	 */
 	backgrounds() {
-		if (transition < 100) {
-			draw.image(background.cave);
-			draw.rect("#10106080");
-			draw.image(background.temple);
-			draw.image(background.floating_arch, 136, 34 - Math.round(backAnim[0]));
-			draw.image(background.debris, 151, 92 - Math.round(backAnim[2]));
-		};
-		if (game.artifacts.includes(0) && game.floor == 10) {
-			if (transition < 100) {
-				ctx.globalAlpha = transition / 100;
+		if (isInSecondArea) {
+			for (let col = 0; col < 14 + 15; col++) {
+				if (!backAnim[col]?.length) backAnim[col] = [];
+				for (let index = 0; index < 9; index++) {
+					if (!backAnim[col][index]?.length) backAnim[col][index] = [0];
+					if (backAnim[col][index][0] == 0 && Math.random() < 1/100) {
+						backAnim[col][index] = [Math.floor(Math.random() * 10) + 10, Math.floor(Math.random() * 6)];
+					};
+				};
 			};
-			draw.image(background.tunnel_of_time, 0 - backAnim[6]);
-			if (!game.enemies[0]?.eff?.countdown) backAnim[6]++;
-			else backAnim[6]--;
-			if (backAnim[6] >= 16) backAnim[6] -= 16;
-			else if (backAnim[6] < 0) backAnim[6] += 16;
-			ctx.globalAlpha = 1;
-		};
-		if (game.floor != 10) {
-			let now = new Date(), time = [now.getHours(), now.getMinutes()], x = 170, y = 63 - Math.round(backAnim[4]);
-			time[0] += (time[1] / 60);
-			if (time[0] >= 12) time[0] = time[0] - 12;
-			draw.image(background.clock_face, x, y);
-			draw.clock(x, y, time[0], time[1]);
-		};
-		for (let index = 0; index < backAnim.length; index += 2) {
-			if (backAnim[index] >= 1) backAnim[index + 1] = DOWN;
-			else if (backAnim[index] <= -1) backAnim[index + 1] = UP;
-			if (backAnim[index + 1] === UP) backAnim[index] += (Math.random() + 0.5) * 0.075;
-			else if (backAnim[index + 1] === DOWN) backAnim[index] -= (Math.random() + 0.5) * 0.075;
+			for (let col = 0; col < 12; col++) {
+				if (!backAnim[col][9]) backAnim[col][9] = [];
+				for (let index = 0; index < 6; index++) {
+					if (!backAnim[col][9][index]) backAnim[col][9][index] = 0;
+					if (backAnim[col][9][index] == 0 && Math.random() < 1/200) {
+						backAnim[col][9][index] = Math.floor(Math.random() * 20) + 20;
+					};
+				};
+			};
+			draw.image(background.hallway, 0, 42);
+			if (!backAnim[29]) backAnim[29] = 0;
+			for (let col = 0; col < 12; col++) {
+				draw.imageSector(background.panel, Math.floor(backAnim[29]) * 35, 0, 35, 42, col * 34 - 6, 0);
+				for (let index = 0; index < 6; index++) {
+					if (backAnim[col][9][index] > 0) backAnim[col][9][index]--;
+					else draw.imageSector(background.panel_cover, index * 35, 0, 35, 42, col * 34 - 6, 0);
+				};
+			};
+			backAnim[29]++;
+			if (backAnim[29] >= 12) backAnim[29] = 0;
+			for (let col = 0; col < 14; col++) {
+				for (let index = 0; index < 9; index++) {
+					if (backAnim[col][index][0] > 0) {
+						draw.imageSector(background.tiles, backAnim[col][index][1] * 15, 0, 15, 8, col * 34 - index * 9 + 9, index * 18 + 44);
+						backAnim[col][index][0]--;
+					};
+				};
+			};
+			for (let col = 0; col < 15; col++) {
+				for (let index = 0; index < 9; index++) {
+					if (backAnim[col + 14][index][0] > 0) {
+						draw.imageSector(background.tiles, backAnim[col][index][1] * 15, 8, 15, 8, col * 34 - index * 9 - 12, index * 18 + 53);
+						backAnim[col + 14][index][0]--;
+					};
+				};
+			};
+		} else {
+			if (transition < 100) {
+				draw.image(background.cave);
+				draw.rect("#10106080");
+				draw.image(background.temple);
+				draw.image(background.floating_arch, 136, 34 - Math.round(backAnim[0]));
+				draw.image(background.debris, 151, 92 - Math.round(backAnim[2]));
+			};
+			if (game.artifacts.includes(0) && game.floor == 10) {
+				if (transition < 100) {
+					ctx.globalAlpha = transition / 100;
+				};
+				draw.image(background.tunnel_of_time, 0 - backAnim[6]);
+				if (!game.enemies[0]?.eff?.countdown) backAnim[6]++;
+				else backAnim[6]--;
+				if (backAnim[6] >= 16) backAnim[6] -= 16;
+				else if (backAnim[6] < 0) backAnim[6] += 16;
+				ctx.globalAlpha = 1;
+			};
+			if (game.floor != 10) {
+				let now = new Date(), time = [now.getHours(), now.getMinutes()], x = 170, y = 63 - Math.round(backAnim[4]);
+				time[0] += (time[1] / 60);
+				if (time[0] >= 12) time[0] = time[0] - 12;
+				draw.image(background.clock_face, x, y);
+				draw.clock(x, y, time[0], time[1]);
+			};
+			for (let index = 0; index < backAnim.length; index += 2) {
+				if (backAnim[index] >= 1) backAnim[index + 1] = DOWN;
+				else if (backAnim[index] <= -1) backAnim[index + 1] = UP;
+				if (backAnim[index + 1] === UP) backAnim[index] += (Math.random() + 0.5) * 0.075;
+				else if (backAnim[index + 1] === DOWN) backAnim[index] -= (Math.random() + 0.5) * 0.075;
+			};
 		};
 	},
 	/**
@@ -767,6 +817,7 @@ const graphics = {
 		// info
 		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
 		// intents
+		if (hidden()) return;
 		for (let index = 0; index < game.enemies.length; index++) {
 			if (game.enemies[index].eff.shroud) return;
 			if (starAnim[index] >= 4) starAnim[index] = 0;

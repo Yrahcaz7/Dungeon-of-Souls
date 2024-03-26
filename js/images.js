@@ -108,6 +108,10 @@ const player = {
 	clock_face: new Image,
 	clock_node: new Image,
 	tunnel_of_time: new Image,
+	hallway: new Image,
+	panel: new Image,
+	panel_cover: new Image,
+	tiles: new Image,
 }, bar = {
 	health_empty: new Image,
 	health_full: new Image,
