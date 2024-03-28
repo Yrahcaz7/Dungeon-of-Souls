@@ -1244,7 +1244,7 @@ function updateVisuals() {
 		draw.image(title, (400 - title.width) / 2, 0);
 		if (global.highScore > 0) draw.lore(1, 1, "HIGH SCORE: " + global.highScore + " points", {"color": "#fff", "text-small": true});
 		if (game.artifacts.includes(0) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": CENTER});
-		else if (isInSecondArea) draw.lore(200 - 2, 53, "Act 2: The Color of Consciousness", {"color": "#fff", "text-align": CENTER});
+		else if (isInSecondArea) draw.lore(200 - 2, 53, "Act 2: The Color of the Soul", {"color": "#fff", "text-align": CENTER});
 		else draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": CENTER});
 		if (!isInSecondArea && new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "#fff", "text-align": CENTER});
 		if (game.difficulty === undefined) game.difficulty = 0;

@@ -123,6 +123,7 @@ const player = {
 	// menu stuff
 	round: new Image,
 	options: new Image,
+	options_yellow: new Image,
 	// card stuff
 	card_normal: new Image,
 	card_unplayable: new Image,
@@ -168,6 +169,11 @@ const player = {
 	discard: new Image,
 	void: new Image,
 	map: new Image,
+	top_left: new Image,
+	top_left_big: new Image,
+	top_right: new Image,
+	bottom_left: new Image,
+	bottom_right: new Image,
 }, icon = {
 	aura_blade: new Image,
 	burn: new Image,

@@ -702,6 +702,7 @@ const graphics = {
 					};
 				};
 			};
+			draw.rect("#0003");
 		} else {
 			if (transition < 100) {
 				draw.image(background.cave);
@@ -788,9 +789,24 @@ const graphics = {
 			else if (past[0] === CARD_REWARDS) graphics.cardRewards(false);
 			else if (past[0] === ARTIFACT_REWARDS) graphics.artifactRewards(false);
 		};
+		// looker
+		if (game.select[0] === LOOKER && game.select[1] === 1) {
+			draw.imageSector(extra.looker, 15, 0, 16, 16, 343, 3);
+			draw.image(select.round, 342, 2);
+			return;
+		};
+		// extra covers
+		if (isInSecondArea) {
+			let topLeftX = [(("" + game.floor).length + ("" + game.gold).length - 2) * 6 - 100, (game.artifacts.length - 1) * 18 - 160];
+			if (topLeftX[0] >= topLeftX[1]) draw.image(extra.top_left, topLeftX[0], 0);
+			else draw.rect("#000", topLeftX[1] + 199, 0, 1, 12);
+			draw.image(extra.top_left_big, topLeftX[1], 0);
+			draw.image(extra.top_right, 339, 0);
+			draw.image(extra.bottom_left, 0, 159);
+			draw.image(extra.bottom_right, 377, game.void.length ? 159 : 178);
+		};
 		// extras
-		if (game.select[0] === LOOKER && game.select[1] === 1) draw.imageSector(extra.looker, 15, 0, 16, 16, 343, 3);
-		else draw.imageSector(extra.looker, 0, 0, 16, 16, 343, 3);
+		draw.imageSector(extra.looker, 0, 0, 16, 16, 343, 3);
 		draw.image(extra.help, 362, 3);
 		draw.image(extra.options, 380, 2);
 		draw.image(extra.end, 3, 163);
@@ -808,14 +824,14 @@ const graphics = {
 		// selected
 		if (game.select[0] === LOOKER) draw.image(select.round, 342, 2);
 		else if (game.select[0] === HELP) draw.image(select.round, 361, 2);
-		else if (game.select[0] === OPTIONS) draw.image(select.options, 380, 2);
+		else if (game.select[0] === OPTIONS) draw.image(isInSecondArea ? select.options : select.options_yellow, 380, 2);
 		else if (game.select[0] === END) draw.image(select.round, 2, 162);
 		else if (game.select[0] === DECK) draw.image(select.deck, 3, 181);
 		else if (game.select[0] === VOID) draw.image(select.round, 380, 162);
 		else if (game.select[0] === DISCARD) draw.image(select.discard, 381, 181);
 		else if (game.select[0] === MAP) draw.image(select.map, 1, 11);
 		// info
-		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
+		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": (isInSecondArea ? "#000" : "#f44")});
 		// intents
 		if (hidden()) return;
 		for (let index = 0; index < game.enemies.length; index++) {
@@ -1314,7 +1330,7 @@ const graphics = {
 		draw.rect("#fff", 1, 12, 378, 1);
 		draw.lore(200 - 2, 15, text.trim().replace(/_/g, " "), {"color": "#fff", "text-align": CENTER});
 		draw.image(extra.options, 380, 2);
-		if (game.select[1] == 1 && focused) draw.image(select.options, 380, 2);
+		if (game.select[1] == 1 && focused) draw.image(isInSecondArea ? select.options : select.options_yellow, 380, 2);
 	},
 	/**
 	 * Draws a deck on the canvas.
