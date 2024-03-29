@@ -80,12 +80,8 @@ const cards = {
 		cost: 1,
 		anim: "attack",
 		damage: 8,
-		attack() {
-			game.gold -= 25;
-		},
-		can() {
-			return game.gold >= 25;
-		},
+		attack() {game.gold -= 25},
+		can() {return game.gold >= 25},
 		cannotMessage: "not enough gold",
 	},
 	1005: {
@@ -101,9 +97,7 @@ const cards = {
 		desc: "Gain 4 shield.",
 		rarity: 0,
 		cost: 1,
-		effect() {
-			gainShield(4);
-		},
+		effect() {gainShield(4)},
 	},
 	2001: {
 		name: "reinforce",
@@ -120,9 +114,7 @@ const cards = {
 		desc: "Gain 3 reinforces.",
 		rarity: 2,
 		cost: 2,
-		effect() {
-			game.eff.reinforces += 3;
-		},
+		effect() {game.eff.reinforces += 3},
 	},
 	2003: {
 		name: "cower",
@@ -139,9 +131,7 @@ const cards = {
 		desc: "Gain 2 resilience.",
 		rarity: 2,
 		cost: 1,
-		effect() {
-			game.eff.resilience += 2;
-		},
+		effect() {game.eff.resilience += 2},
 	},
 	2005: {
 		name: "the eternal gold",
@@ -153,9 +143,7 @@ const cards = {
 			game.eff.reinforces++;
 			game.gold -= 45;
 		},
-		can() {
-			return game.gold >= 45;
-		},
+		can() {return game.gold >= 45},
 		cannotMessage: "not enough gold",
 	},
 	3000: {
@@ -206,12 +194,12 @@ const cards = {
 		cost: 1,
 		select: [SELECT_HAND, -1],
 		effect() {
-			game.hand[game.select[1]].retention = 1;
-			game.hand[game.select[1]].charge = 1;
+			if (game.hand[game.select[1]].retention) game.hand[game.select[1]].retention++;
+			else game.hand[game.select[1]].retention = 1;
+			if (game.hand[game.select[1]].charge) game.hand[game.select[1]].charge++;
+			else game.hand[game.select[1]].charge = 1;
 		},
-		can() {
-			return game.hand.length > 1;
-		},
+		can() {return game.hand.length > 1},
 		cannotMessage: "no valid target",
 	},
 	4000: {
@@ -219,18 +207,14 @@ const cards = {
 		desc: "Gain 1 aura blade.",
 		rarity: 1,
 		cost: 1,
-		effect() {
-			game.eff.aura_blades++;
-		},
+		effect() {game.eff.aura_blades++},
 	},
 	4001: {
 		name: "aura blaze",
 		desc: "Gain 4 aura blades.\nOne use.",
 		rarity: 2,
 		cost: 3,
-		effect() {
-			game.eff.aura_blades += 4;
-		},
+		effect() {game.eff.aura_blades += 4},
 	},
 }, rarities = {
 	[-1]: "error",

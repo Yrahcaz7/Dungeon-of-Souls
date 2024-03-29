@@ -114,6 +114,7 @@ changelog = ""
 	+ "<b>Version 2.0 - Coming Soon!<s>"
 	+ " - in progress of adding Act 2\n"
 	+ " - added 3 new types of enemies!\n"
+	+ " - improved game performance\n"
 	+ " - improved some visuals\n"
 	+ "<b>Version 1.3 - Deception<s>"
 	+ " - added THE SECRET ACT\n"
@@ -181,33 +182,29 @@ changelog = ""
  */
 function updateData() {
 	if (!loaded) return;
-	// enemyPos
+	// delete excess enemies
 	if (game.enemies.length > 6) game.enemies.splice(6);
-	let number = game.enemies.length, x = 400;
-	if (number == 1) enemyPos = [[x - 105, 40]];
-	else if (number == 2) enemyPos = [[x - 70, 35], [x - 140, 50]];
-	else if (number == 3) enemyPos = [[x - 70, 70], [x - 140, 80], [x - 110, 14]];
-	else if (number == 4) enemyPos = [[x - 70, 80], [x - 140, 80], [x - 110, 14], [x - 200, 30]];
-	else if (number == 5) enemyPos = [[x - 70, 80], [x - 140, 80], [x - 100, 14], [x - 170, 14], [x - 210, 80]];
-	else if (number == 6) enemyPos = [[x - 70, 80], [x - 140, 80], [x - 100, 14], [x - 170, 14], [x - 210, 80], [x - 240, 14]];
-	else enemyPos = [];
+	// enemyPos
+	if (game.enemies.length !== enemyPos.length) {
+		if (game.enemies.length == 1) enemyPos = [[400 - 105, 40]];
+		else if (game.enemies.length == 2) enemyPos = [[400 - 70, 35], [400 - 140, 50]];
+		else if (game.enemies.length == 3) enemyPos = [[400 - 70, 70], [400 - 140, 80], [400 - 110, 14]];
+		else if (game.enemies.length == 4) enemyPos = [[400 - 70, 80], [400 - 140, 80], [400 - 110, 14], [400 - 200, 30]];
+		else if (game.enemies.length == 5) enemyPos = [[400 - 70, 80], [400 - 140, 80], [400 - 100, 14], [400 - 170, 14], [400 - 210, 80]];
+		else if (game.enemies.length == 6) enemyPos = [[400 - 70, 80], [400 - 140, 80], [400 - 100, 14], [400 - 170, 14], [400 - 210, 80], [400 - 240, 14]];
+		else enemyPos = [];
+	};
 	// handPos
-	if (game.hand.length > 12) game.hand.splice(12);
-	number = game.hand.length;
-	x = 198;
-	if (number == 1) handPos = [x - 32];
-	else if (number == 2) handPos = [x - 64 - 1, x + 1];
-	else if (number == 3) handPos = [x - 96 - 2, x - 32, x + 32 + 2];
-	else if (number == 4) handPos = [x - 128 - 3, x - 64 - 1, x + 1, x + 64 + 3];
-	else if (number == 5) handPos = [x - 160 - 4, x - 96 - 2, x - 32, x + 32 + 2, x + 96 + 4];
-	else if (number == 6) handPos = [x - 192 + 15, x - 128 + 9, x - 64 + 3, x - 3, x + 64 - 9, x + 128 - 15];
-	else if (number == 7) handPos = [x - 224 + 45, x - 160 + 30, x - 96 + 15, x - 32, x + 32 - 15, x + 96 - 30, x + 160 - 45];
-	else if (number == 8) handPos = [x - 256 + 77, x - 192 + 55, x - 128 + 33, x - 64 + 11, x - 11, x + 64 - 33, x + 128 - 55, x + 192 - 77];
-	else if (number == 9) handPos = [x - 288 + 108, x - 224 + 81, x - 160 + 54, x - 96 + 27, x - 32, x + 32 - 27, x + 96 - 54, x + 160 - 81, x + 224 - 108];
-	else if (number == 10) handPos = [x - 320 + 144, x - 256 + 112, x - 192 + 80, x - 128 + 48, x - 64 + 16, x - 16, x + 64 - 48, x + 128 - 80, x + 192 - 112, x + 256 - 144];
-	else if (number == 11) handPos = [x - 352 + 175, x - 288 + 140, x - 224 + 105, x - 160 + 70, x - 96 + 35, x - 32, x + 32 - 35, x + 96 - 70, x + 160 - 105, x + 224 - 140, x + 288 - 175];
-	else if (number == 12) handPos = [x - 384 + 209, x - 320 + 171, x - 256 + 133, x - 192 + 95, x - 128 + 57, x - 64 + 19, x - 19, x + 64 - 57, x + 128 - 95, x + 192 - 133, x + 256 - 171, x + 320 - 209];
-	else handPos = [];
+	if (game.hand.length !== handPos.length) {
+		handPos = [];
+		const margin = [-2, -2, -2, -2, -2, 8, 16, 24, 28, 32, 36, 38, 40, 42, 44, 46, 46, 48, 48, 50, 50, 52, 52, 52, 52];
+		if (game.hand.length > margin.length) game.hand.splice(margin.length);
+		if (margin[game.hand.length - 1]) {
+			for (let index = 0; index < game.hand.length; index++) {
+				handPos.push(198 + (index - (game.hand.length / 2)) * 64 - (index - ((game.hand.length - 1) / 2)) * margin[game.hand.length - 1]);
+			};
+		};
+	};
 	// info
 	if (infPos < 0) infPos = 0;
 	if (infPos > infLimit) infPos = infLimit;

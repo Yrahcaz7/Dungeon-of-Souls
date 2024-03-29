@@ -25,16 +25,20 @@ const TURN = {PLAYER: 1100, ENEMY: 1101};
 
 const CHARACTER = {KNIGHT: 1400};
 
+const OPTION = {MUSIC: 1600, SCREEN_SHAKE: 1601, STICKY_CARDS: 1602, PIXEL_PERFECT_SCREEN: 1603, PIXEL_PERFECT_SIZE: 1604, ALLOW_FAST_MOVEMENT: 1605};
+
+const OPTION_NAMES = {[OPTION.MUSIC]: "Music", [OPTION.SCREEN_SHAKE]: "Screen shake", [OPTION.STICKY_CARDS]: "Sticky cards", [OPTION.PIXEL_PERFECT_SCREEN]: "Pixel perfect screen", [OPTION.PIXEL_PERFECT_SIZE]: "Pixel perfect size", [OPTION.ALLOW_FAST_MOVEMENT]: "Allow fast movement"};
+
 const PIXEL_SIZES = [1, 2, 0.5];
 
 let global = {
 	options: {
-		music: true,
-		screen_shake: true,
-		sticky_cards: false,
-		pixel_perfect_screen: false,
-		pixel_perfect_size: 1,
-		allow_fast_movement: true,
+		[OPTION.MUSIC]: true,
+		[OPTION.SCREEN_SHAKE]: true,
+		[OPTION.STICKY_CARDS]: false,
+		[OPTION.PIXEL_PERFECT_SCREEN]: false,
+		[OPTION.PIXEL_PERFECT_SIZE]: 1,
+		[OPTION.ALLOW_FAST_MOVEMENT]: true,
 	},
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
@@ -116,7 +120,7 @@ function createPopup(type, description, secondLine = "") {
  */
 function musicPopup() {
 	let src = "" + document.getElementById("music").src;
-	if (!global.options.music) {
+	if (!global.options[OPTION.MUSIC]) {
 		createPopup("music", "music is off");
 	} else if (/Ruins_of_Caelum/.test(src)) {
 		createPopup("music", "Ruins of Caelum");
@@ -199,7 +203,7 @@ function startTurn() {
 function endTurn() {
 	// end of your turn effects
 	if (game.hand.length) discardHand();
-	cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	cardAnim = [];
 	notif = [-1, 0, "", 0];
 	if (game.eff.burn) {
 		takeDamage(game.eff.burn, false);
@@ -783,7 +787,6 @@ function performAction() {
 			if (cards[game.enemyAtt[2].id].keywords.includes("one use")) game.void.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
 			else game.discard.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
 			cardAnim.splice(game.enemyAtt[0], 1);
-			cardAnim.push(0);
 			game.enemyAtt[0] = -1;
 			game.enemyAtt[1] = game.select[1];
 			if (game.prevCard) game.select = [HAND, game.prevCard - 1];
@@ -807,7 +810,6 @@ function performAction() {
 				if (cards[game.enemyAtt[2].id].keywords.includes("one use")) game.void.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
 				else game.discard.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
 				cardAnim.splice(game.enemyAtt[0], 1);
-				cardAnim.push(0);
 				if (game.enemyAtt[0]) game.select = [HAND, game.enemyAtt[0] - 1];
 				else game.select = [HAND, 0];
 				game.enemyAtt = [-1, -1, new Card(), false];
@@ -841,7 +843,6 @@ function performAction() {
 					if (cards[id].keywords.includes("one use")) game.void.push(game.hand.splice(game.select[1], 1)[0]);
 					else game.discard.push(game.hand.splice(game.select[1], 1)[0]);
 					cardAnim.splice(game.select[1], 1);
-					cardAnim.push(0);
 					if (game.prevCard) game.select = [HAND, game.prevCard - 1];
 					else game.select = [HAND, 0];
 					actionTimer = 4;
@@ -856,7 +857,6 @@ function performAction() {
 						if (cards[id].keywords.includes("one use")) game.void.push(game.hand.splice(game.select[1], 1)[0]);
 						else game.discard.push(game.hand.splice(game.select[1], 1)[0]);
 						cardAnim.splice(game.select[1], 1);
-						cardAnim.push(0);
 						if (game.prevCard) game.select = [HAND, game.prevCard - 1];
 						else game.select = [HAND, 0];
 						actionTimer = 4;
@@ -1126,21 +1126,21 @@ function performAction() {
 	// options
 	if (game.select[0] === OPTIONS) {
 		const option = Object.keys(global.options)[game.select[1] - 2];
-		if (option == "pixel_perfect_size") {
-			let index = PIXEL_SIZES.indexOf(global.options.pixel_perfect_size) + 1;
+		if (option === OPTION.PIXEL_PERFECT_SIZE) {
+			let index = PIXEL_SIZES.indexOf(global.options[OPTION.PIXEL_PERFECT_SIZE]) + 1;
 			if (index >= PIXEL_SIZES.length) index = 0;
-			global.options.pixel_perfect_size = PIXEL_SIZES[index];
+			global.options[OPTION.PIXEL_PERFECT_SIZE] = PIXEL_SIZES[index];
 		} else if (option) {
 			global.options[option] = !global.options[option];
 		} else {
 			game.select = [CONFIRM_RESTART, 1];
 		};
-		if (option == "music") {
-			if (global.options.music) document.getElementById("music").play();
+		if (option === OPTION.MUSIC) {
+			if (global.options[OPTION.MUSIC]) document.getElementById("music").play();
 			else document.getElementById("music").pause();
 			musicPopup();
-		} else if (option == "pixel_perfect_screen" || option == "pixel_perfect_size") {
-			if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: " + (800 * global.options.pixel_perfect_size) + "px";
+		} else if (option === OPTION.PIXEL_PERFECT_SCREEN || option === OPTION.PIXEL_PERFECT_SIZE) {
+			if (global.options[OPTION.PIXEL_PERFECT_SCREEN]) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PIXEL_PERFECT_SIZE]) + "px";
 			else document.getElementById("canvas").style = "";
 			fixCanvas();
 		};
@@ -1156,7 +1156,7 @@ function endBattle() {
 	if (game.state === STATE.BATTLE && !game.enemies.length) {
 		// normal stuff
 		if (game.hand.length) discardHand();
-		cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+		cardAnim = [];
 		notif = [-1, 0, "", 0];
 		game.select = [REWARDS, 0];
 		game.state = STATE.EVENT_FIN;
@@ -1276,9 +1276,9 @@ function updateVisuals() {
 		draw.image(title, (400 - title.width) / 2, 0);
 		if (global.highScore > 0) draw.lore(1, 1, "HIGH SCORE: " + global.highScore + " points", {"color": "#fff", "text-small": true});
 		if (game.artifacts.includes(0) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": CENTER});
-		else if (isInSecondArea) draw.lore(200 - 2, 53, "Act 2: The Color of the Soul", {"color": "#fff", "text-align": CENTER});
+		else if (get.area() == 1) draw.lore(200 - 2, 53, "Act 2: The Color of the Soul", {"color": "#fff", "text-align": CENTER});
 		else draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": CENTER});
-		if (!isInSecondArea && new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "#fff", "text-align": CENTER});
+		if (get.area() == 0 && new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "#fff", "text-align": CENTER});
 		if (game.difficulty === undefined) game.difficulty = 0;
 		draw.imageSector(difficulty, 0, game.difficulty * 16, 64, 16, 168, 146);
 		if (game.artifacts.includes(0)) {
@@ -1316,7 +1316,7 @@ function updateVisuals() {
 	graphics.middleLayer();
 	graphics.foregrounds();
 	if (!hidden()) {
-		if (game.select[0] === SELECT_HAND) graphics.hand_select();
+		if (game.select[0] === SELECT_HAND) graphics.handSelect();
 		else graphics.hand();
 	};
 	if (game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY) {
@@ -1554,7 +1554,7 @@ const gameloop = setInterval(() => {
 		selection();
 		// visuals
 		if (screenShake > 0) {
-			if (global.options.screen_shake) {
+			if (global.options[OPTION.SCREEN_SHAKE]) {
 				clearCanvas();
 				ctx.save();
 				ctx.translate((Math.random() - 0.5) * Math.min(screenShake, 10), (Math.random() - 0.5) * Math.min(screenShake, 10));
@@ -1569,7 +1569,7 @@ const gameloop = setInterval(() => {
 		save();
 	};
 }, 100), musicloop = setInterval(() => {
-	if (global.options.music && document.getElementById("music")?.src) {
+	if (global.options[OPTION.MUSIC] && document.getElementById("music")?.src) {
 		let time = document.getElementById("music").currentTime;
 		if (time === 0 && menuLocation === -1) {
 			document.getElementById("music").play();

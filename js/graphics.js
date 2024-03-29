@@ -19,7 +19,7 @@ const UP = 501, LEFT = 502, CENTER = 503, RIGHT = 504, DOWN = 505;
 
 const PENDING = 800, STARTING = 801, MIDDLE = 802, ENDING = 803;
 
-let backAnim = [0, UP, 0.5, DOWN, -1, UP, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], tempAnim = [0, STARTING], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], extraAnim = [], primeAnim = 0, transition = 0, screenShake = 0, auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]], auraBladeAnim = [0, UP, 2.5, UP, 3, DOWN, 0.5, DOWN], popups = [], infPos = 0, infLimit = 0;
+let backAnim = [0, UP, 0.5, DOWN, -1, UP, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], tempAnim = [0, STARTING], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], extraAnim = [], primeAnim = 0, transition = 0, screenShake = 0, auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]], auraBladeAnim = [0, UP, 2.5, UP, 3, DOWN, 0.5, DOWN], popups = [], infPos = 0, infLimit = 0;
 
 const draw = {
 	/**
@@ -395,28 +395,28 @@ const draw = {
 	},
 	/**
 	 * Draws a card on the canvas.
-	 * @param {Card} cardObject - the card object.
+	 * @param {Card} cardObj - the card object.
 	 * @param {number} index - the index of the card.
 	 * @param {number} y - the y-coordinate to draw the card at.
 	 * @param {boolean} selected - whether the card is selected or not. Defaults to `false`.
 	 * @param {number} overrideX - overrides the calculated x-coordinate to draw at.
 	 * @param {boolean} outside - whether the card is outside the battle or not. Defaults to `false`.
 	 */
-	card(cardObject, index, y, selected = false, overrideX = NaN, outside = false) {
+	card(cardObj, index, y, selected = false, overrideX = NaN, outside = false) {
 		// setup
-		if (!(cardObject instanceof Object)) cardObject = new Card(cardObject);
+		if (!(cardObj instanceof Object)) cardObj = new Card(cardObj);
 		let x = handPos[index], img = card.error;
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
-		const rarity = +cards[cardObject.id].rarity, name = cards[cardObject.id].name;
+		const rarity = +cards[cardObj.id].rarity, name = cards[cardObj.id].name;
 		if (card[rarities[rarity]] && rarity >= 0) img = card[rarities[rarity]][name];
 		// card back
-		if (cardObject.id !== 0) draw.image(card.back, x + 2, y + 2);
+		if (cardObj.id !== 0) draw.image(card.back, x + 2, y + 2);
 		// card outline
-		const type = types[Math.floor(cardObject.id / 1000)];
+		const type = types[Math.floor(cardObj.id / 1000)];
 		if (card.outline[type]) draw.image(card.outline[type], x + 3, y + 3);
 		// card selector
 		if (selected) {
-			if (cards[cardObject.id].keywords.includes("unplayable")) {
+			if (cards[cardObj.id].keywords.includes("unplayable")) {
 				if (rarity == 2) draw.image(select.card_rare_unplayable, x - 3, y - 3);
 				else draw.image(select.card_unplayable, x + 1, y + 1);
 			} else {
@@ -431,9 +431,9 @@ const draw = {
 		if (name.length >= 11) draw.lore(x + 33, y + 44, name.title(), {"text-align": CENTER, "text-small": true});
 		else draw.lore(x + 32, y + 42, name.title(), {"text-align": CENTER});
 		// card description
-		let desc = cards[cardObject.id].desc, exDamage = get.extraDamage(), mulDamage = get.dealDamageMult(), valueIsLess = false;
-		if (cards[cardObject.id].attackEffects !== false && !outside) {
-			if (cards[cardObject.id].keywords.includes("uniform")) exDamage = Math.floor(exDamage * 0.5);
+		let desc = cards[cardObj.id].desc, exDamage = get.extraDamage(), mulDamage = get.dealDamageMult(), valueIsLess = false;
+		if (cards[cardObj.id].attackEffects !== false && !outside) {
+			if (cards[cardObj.id].keywords.includes("uniform")) exDamage = Math.floor(exDamage * 0.5);
 			if (game.select[0] === ATTACK_ENEMY) mulDamage = get.dealDamageMult(game.select[1]);
 			if (exDamage || mulDamage !== 1) {
 				desc = desc.replace(/(deal\s)(\d+)(\s<#f44>damage<\/#f44>)/gi, (substring, pre, number, post) => {
@@ -468,12 +468,12 @@ const draw = {
 		if (rarity == 2) {
 			draw.image(card.rarity.rare, x - 2, y - 2);
 		};
-		if (!cards[cardObject.id].keywords.includes("unplayable")) {
-			let cost = getCardCost(cardObject);
-			if (cost < cards[cardObject.id].cost) draw.image(card.green_energy, x, y);
-			else if (cost > cards[cardObject.id].cost) draw.image(card.red_energy, x, y);
+		if (!cards[cardObj.id].keywords.includes("unplayable")) {
+			let cost = getCardCost(cardObj);
+			if (cost < cards[cardObj.id].cost) draw.image(card.green_energy, x, y);
+			else if (cost > cards[cardObj.id].cost) draw.image(card.red_energy, x, y);
 			else draw.image(card.energy, x, y);
-			draw.lore(x + 4, y + 2, getCardCost(cardObject));
+			draw.lore(x + 4, y + 2, getCardCost(cardObj));
 		};
 	},
 	/**
@@ -525,13 +525,15 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	card(type, xPlus = 0, yPlus = 0) {
-		let x = handPos[game.prevCard] + xPlus, y = 147 - Math.floor(cardAnim[game.prevCard]) + yPlus;
-		if ((game.prevCard == game.hand.length - 1 && game.hand.length >= 4) || (game.prevCard == game.hand.length - 2 && game.hand.length >= 7)) {
+		let x = handPos[game.prevCard] + 69 + xPlus, y = 147 - Math.floor(cardAnim[game.prevCard]) + yPlus;
+		if (x + 24 * 3 + 2 > 400) {
 			const ref = cards[game.hand[game.prevCard].id];
 			if (ref.keywords.includes("unplayable") && ref.rarity <= 1) x -= 143;
 			else x -= 145;
+			if (!infoText[type]) x += (24 - type.replace(/<.+?>/g, "").length) * 3;
 		};
-		return draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});
+		if (infoText[type]) return draw.textBox(x, y, 24, infoText[type], {"text-small": true});
+		else return draw.textBox(x, y, type.replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
 	/**
 	 * Draws an infobox for a card in a special hand select.
@@ -539,14 +541,16 @@ const info = {
 	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
-	card_select(type, xPlus = 0, yPlus = 0) {
-		let x = handPos[game.select[1]] + xPlus, y = 15 + yPlus;
-		if ((game.select[1] == game.hand.length - 1 && game.hand.length >= 4) || (game.select[1] == game.hand.length - 2 && game.hand.length >= 7)) {
+	cardSelect(type, xPlus = 0, yPlus = 0) {
+		let x = handPos[game.select[1]] + 69 + xPlus, y = 15 + yPlus;
+		if (x + 24 * 3 + 2 > 400) {
 			const ref = cards[game.hand[game.select[1]].id];
 			if (ref.keywords.includes("unplayable") && ref.rarity <= 1) x -= 143;
 			else x -= 145;
+			if (!infoText[type]) x += (24 - type.replace(/<.+?>/g, "").length) * 3;
 		};
-		return draw.textBox(x + 69, y, 24, infoText[type], {"text-small": true});
+		if (infoText[type]) return draw.textBox(x, y, 24, infoText[type], {"text-small": true});
+		else return draw.textBox(x, y, type.replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
 	/**
 	 * Draws an infobox for a card reward choice.
@@ -560,8 +564,10 @@ const info = {
 			const ref = cards[game.room[5][game.select[1]]];
 			if (ref.keywords.includes("unplayable") && ref.rarity <= 1) x -= 143;
 			else x -= 145;
+			if (!infoText[type]) x += (24 - type.replace(/<.+?>/g, "").length) * 3;
 		};
-		return draw.textBox(x + 69, 51 + yPlus, 24, infoText[type], {"text-small": true});
+		if (infoText[type]) return draw.textBox(x + 69, 51 + yPlus, 24, infoText[type], {"text-small": true});
+		else return draw.textBox(x + 69, 51 + yPlus, type.replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
 	/**
 	 * Draws an infobox for a card in a deck.
@@ -576,8 +582,10 @@ const info = {
 			const ref = cards[game[loc][game.cardSelect[0] + (game.cardSelect[1] * 6)].id];
 			if (ref.keywords.includes("unplayable") && ref.rarity <= 1) x -= 143;
 			else x -= 145;
+			if (!infoText[type]) x += (24 - type.replace(/<.+?>/g, "").length) * 3;
 		};
-		return draw.textBox(x + 71, y, 24, infoText[type], {"text-small": true});
+		if (infoText[type]) return draw.textBox(x + 71, y, 24, infoText[type], {"text-small": true});
+		else return draw.textBox(x + 71, y, type.replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
 	/**
 	 * Draws an infobox for the player.
@@ -649,14 +657,12 @@ const info = {
 	},
 };
 
-let isInSecondArea = false;
-
 const graphics = {
 	/**
 	 * Draws the background layer on the canvas.
 	 */
 	backgrounds() {
-		if (isInSecondArea) {
+		if (get.area() == 1) {
 			for (let col = 0; col < 14 + 15; col++) {
 				if (!backAnim[col]?.length) backAnim[col] = [];
 				for (let index = 0; index < 9; index++) {
@@ -796,7 +802,7 @@ const graphics = {
 			return;
 		};
 		// extra covers
-		if (isInSecondArea) {
+		if (get.area() == 1) {
 			let topLeftX = [(("" + game.floor).length + ("" + game.gold).length - 2) * 6 - 100, (game.artifacts.length - 1) * 18 - 160];
 			if (topLeftX[0] >= topLeftX[1]) draw.image(extra.top_left, topLeftX[0], 0);
 			else draw.rect("#000", topLeftX[1] + 199, 0, 1, 12);
@@ -824,14 +830,14 @@ const graphics = {
 		// selected
 		if (game.select[0] === LOOKER) draw.image(select.round, 342, 2);
 		else if (game.select[0] === HELP) draw.image(select.round, 361, 2);
-		else if (game.select[0] === OPTIONS) draw.image(isInSecondArea ? select.options : select.options_yellow, 380, 2);
+		else if (game.select[0] === OPTIONS) draw.image(get.area() == 1 ? select.options : select.options_yellow, 380, 2);
 		else if (game.select[0] === END) draw.image(select.round, 2, 162);
 		else if (game.select[0] === DECK) draw.image(select.deck, 3, 181);
 		else if (game.select[0] === VOID) draw.image(select.round, 380, 162);
 		else if (game.select[0] === DISCARD) draw.image(select.discard, 381, 181);
 		else if (game.select[0] === MAP) draw.image(select.map, 1, 11);
 		// info
-		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": (isInSecondArea ? "#000" : "#f44")});
+		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": (get.area() == 1 ? "#000" : "#f44")});
 		// intents
 		if (hidden()) return;
 		for (let index = 0; index < game.enemies.length; index++) {
@@ -1312,14 +1318,14 @@ const graphics = {
 		for (let index = 0; index < options.length; index++) {
 			let option = global.options[options[index]];
 			if (typeof option == "boolean") {
-				if (game.select[1] - 2 === index && focused) text += "<#ff0>" + options[index].title() + ": " + (option ? "ON" : "OFF") + "</#ff0>\n";
-				else text += options[index].title() + ": " + (option ? "ON" : "OFF") + "\n";
+				if (game.select[1] - 2 === index && focused) text += "<#ff0>" + OPTION_NAMES[options[index]] + ": " + (option ? "ON" : "OFF") + "</#ff0>\n";
+				else text += OPTION_NAMES[options[index]] + ": " + (option ? "ON" : "OFF") + "\n";
 			} else if (typeof option == "number") {
-				if (game.select[1] - 2 === index && focused) text += "<#ff0>" + options[index].title() + ": " + option + "x</#ff0>\n";
-				else text += options[index].title() + ": " + option + "x\n";
+				if (game.select[1] - 2 === index && focused) text += "<#ff0>" + OPTION_NAMES[options[index]] + ": " + option + "x</#ff0>\n";
+				else text += OPTION_NAMES[options[index]] + ": " + option + "x\n";
 			} else {
-				if (game.select[1] - 2 === index && focused) text += "<#ff0>" + options[index].title() + ": " + option + "</#ff0>\n";
-				else text += options[index].title() + ": " + option + "\n";
+				if (game.select[1] - 2 === index && focused) text += "<#ff0>" + OPTION_NAMES[options[index]] + ": " + option + "</#ff0>\n";
+				else text += OPTION_NAMES[options[index]] + ": " + option + "\n";
 			};
 		};
 		if (game.select[1] - 2 === options.length && focused) text += "\n<#ff0>RESTART RUN</#ff0>";
@@ -1330,7 +1336,7 @@ const graphics = {
 		draw.rect("#fff", 1, 12, 378, 1);
 		draw.lore(200 - 2, 15, text.trim().replace(/_/g, " "), {"color": "#fff", "text-align": CENTER});
 		draw.image(extra.options, 380, 2);
-		if (game.select[1] == 1 && focused) draw.image(isInSecondArea ? select.options : select.options_yellow, 380, 2);
+		if (game.select[1] == 1 && focused) draw.image(get.area() == 1 ? select.options : select.options_yellow, 380, 2);
 	},
 	/**
 	 * Draws a deck on the canvas.
@@ -1383,8 +1389,9 @@ const graphics = {
 		if (game.select[0] === ATTACK_ENEMY || game.select[0] === LOOKAT_ENEMY) return;
 		let temp = -1;
 		for (let index = 0; index < game.hand.length; index++) {
+			if (!cardAnim[index]) cardAnim[index] = 0;
 			let card = game.hand[index];
-			if ((game.select[0] === HAND && game.select[1] == index) || (index == game.prevCard && global.options.sticky_cards)) {
+			if ((game.select[0] === HAND && game.select[1] == index) || (index == game.prevCard && global.options[OPTION.STICKY_CARDS])) {
 				temp = index;
 			} else {
 				if (cardAnim[index] > 0) cardAnim[index] -= 6 + Math.random();
@@ -1409,7 +1416,7 @@ const graphics = {
 	/**
 	 * Draws the player's hand in a special select on the canvas.
 	 */
-	hand_select() {
+	handSelect() {
 		draw.rect("#000c");
 		draw.image(extra.end, 3, 55);
 		draw.image(extra.end, 381, 55);
@@ -1434,6 +1441,23 @@ const graphics = {
 		draw.rect("#0004", 0, 0, 400, 13);
 		draw.lore(200 - 2, 1, "Select a Card", {"color": "#fff", "text-align": CENTER});
 		draw.rect("#fff", 1, 12, 398, 1);
+	},
+	/**
+	 * Draws the info of a card on the canvas.
+	 * @param {"card" | "cardSelect" | "reward" | "deck"} type - the type of the card's selection.
+	 * @param {Card} cardObj - the card object.
+	 */
+	cardInfo(type, cardObj) {
+		let x = 0, y = 0;
+		if (cardObj.retention >= 1) {
+			y += info[type]("This has " + cardObj.retention + " <#666>retention</#666>.", x, y);
+		};
+		const keywords = cards[cardObj.id]?.keywords;
+		if (keywords instanceof Array) {
+			for (let index = 0; index < keywords.length; index++) {
+				if (keywords[index]) y += info[type](keywords[index], x, y);
+			};
+		};
 	},
 	/**
 	 * Draws the selector and the info it targets on the canvas.
@@ -1516,56 +1540,18 @@ const graphics = {
 		} else if (game.select[0] === ARTIFACT_REWARDS) {
 			info.artifact(game.room[6][game.select[1]], 179 + (game.select[1] * 32), 90);
 		} else if (game.select[0] === DECK && game.select[1] == 1 && game.deckLocal.length) {
-			const keywords = cards[game.deckLocal.slice(0).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)].id]?.keywords;
-			let x = 0, y = 0;
-			if (keywords instanceof Array) {
-				for (let index = 0; index < keywords.length; index++) {
-					const key = "" + keywords[index];
-					if (key) y += info.deck(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
-				};
-			};
+			graphics.cardInfo("deck", game.deckLocal.slice(0).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)]);
 		} else if ((game.select[0] === VOID || game.select[0] === DISCARD) && game.select[1] == 1 && game[game.select[0] === VOID ? "void" : "discard"].length) {
-			const keywords = cards[game[game.select[0] === VOID ? "void" : "discard"][game.cardSelect[0] + (game.cardSelect[1] * 6)].id]?.keywords;
-			let x = 0, y = 0;
-			if (keywords instanceof Array) {
-				for (let index = 0; index < keywords.length; index++) {
-					const key = "" + keywords[index];
-					if (key) y += info.deck(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
-				};
-			};
+			graphics.cardInfo("deck", game[game.select[0] === VOID ? "void" : "discard"][game.cardSelect[0] + (game.cardSelect[1] * 6)]);
 		} else if (game.select[0] === CARD_REWARDS && game.select[1] > -1 && game.select[1] < get.cardRewardChoices()) {
-			const keywords = cards[game.room[5][game.select[1]]]?.keywords;
-			let x = 0, y = 0;
-			if (keywords instanceof Array) {
-				for (let index = 0; index < keywords.length; index++) {
-					const key = "" + keywords[index];
-					if (key) y += info.reward(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
-				};
-			};
+			graphics.cardInfo("reward", new Card(game.room[5][game.select[1]]));
 		} else if ((game.select[0] === IN_MAP && game.select[1]) || game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY) {
-			const keywords = cards[game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)].id]?.keywords;
-			let x = 0, y = 0;
-			if (keywords instanceof Array) {
-				for (let index = 0; index < keywords.length; index++) {
-					const key = "" + keywords[index];
-					if (key) y += info.deck(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
-				};
-			};
+			graphics.cardInfo("deck", game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)]);
 		};
-		if ((game.select[0] === HAND || (game.select[0] != ATTACK_ENEMY && game.select[0] != LOOKAT_ENEMY && !hidden() && global.options.sticky_cards)) && game.hand.length && game.prevCard < game.hand.length) {
-			const keywords = cards[game.hand[game.prevCard].id].keywords;
-			let x = 0, y = 0;
-			for (let index = 0; index < keywords.length; index++) {
-				const key = "" + keywords[index];
-				if (key) y += info.card(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
-			};
+		if ((game.select[0] === HAND || (game.select[0] != ATTACK_ENEMY && game.select[0] != LOOKAT_ENEMY && !hidden() && global.options[OPTION.STICKY_CARDS])) && game.hand.length && game.prevCard < game.hand.length) {
+			graphics.cardInfo("card", game.hand[game.prevCard]);
 		} else if (game.select[0] === SELECT_HAND && game.select[1] >= 0 && game.select[1] < game.hand.length) {
-			const keywords = cards[game.hand[game.select[1]].id].keywords;
-			let x = 0, y = 0;
-			for (let index = 0; index < keywords.length; index++) {
-				const key = "" + keywords[index];
-				if (key) y += info.card_select(key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " "), x, y);
-			};
+			graphics.cardInfo("cardSelect", game.hand[game.select[1]]);
 		};
 	},
 	/**

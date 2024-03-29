@@ -170,6 +170,16 @@ function fixSave() {
 		global.charStage[CHARACTER.KNIGHT] = global.charStage.knight;
 		delete global.charStage.knight;
 	};
+	// fix options
+	let options = {music: OPTION.MUSIC, screen_shake: OPTION.SCREEN_SHAKE, sticky_cards: OPTION.STICKY_CARDS, pixel_perfect_screen: OPTION.PIXEL_PERFECT_SCREEN, pixel_perfect_size: OPTION.PIXEL_PERFECT_SIZE, allow_fast_movement: OPTION.ALLOW_FAST_MOVEMENT};
+	for (const option in options) {
+		if (Object.hasOwnProperty.call(options, option)) {
+			if (global.options[option] !== undefined) {
+				global.options[options[option]] = global.options[option];
+				delete global.options[option];
+			};
+		};
+	};
 };
 
 /**

@@ -94,7 +94,7 @@ window.onload = async function() {
 	canvasData();
 	// set things
 	if (game.select[0] == GAME_FIN) game.select[1] = 0;
-	if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: " + (800 * global.options.pixel_perfect_size) + "px";
+	if (global.options[OPTION.PIXEL_PERFECT_SCREEN]) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PIXEL_PERFECT_SIZE]) + "px";
 	else document.getElementById("canvas").style = "";
 	// fix things
 	fixCanvas();
@@ -139,7 +139,7 @@ function clearCanvas() {
  * Fixes the canvas in the html.
  */
 function fixCanvas() {
-	if (global.options.pixel_perfect_screen) {
+	if (global.options[OPTION.PIXEL_PERFECT_SCREEN]) {
 		const width = +(document.getElementById("canvas").style.width.match(/\d+/) || [800])[0];
 		if (window.innerHeight <= width / 2) {
 			if (window.innerWidth <= width) document.getElementById("canvas").className = "onlyScroll";
@@ -200,7 +200,7 @@ document.addEventListener("keydown", event => {
 	else action = -1;
 	if (key == "Escape") fullscreen(true);
 	else if (key == "Tab") fullscreen();
-	if (!event.repeat && prevAction === -1 && lastAction === action && global.options.allow_fast_movement && loaded) {
+	if (!event.repeat && prevAction === -1 && lastAction === action && global.options[OPTION.ALLOW_FAST_MOVEMENT] && loaded) {
 		if (menuLocation === -1) manageGameplay();
 		selection();
 		updateVisuals();
