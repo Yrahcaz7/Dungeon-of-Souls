@@ -258,6 +258,9 @@ function updateData() {
 		game.state = STATE.GAME_END;
 		game.select = [GAME_FIN, 0];
 	};
+	// state changes
+	endBattle();
+	loadRoom();
 	// other
 	game.deck.cardSort();
 	game.void.cardSort();

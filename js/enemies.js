@@ -164,7 +164,9 @@ class Enemy {
 				this.intentHistory.push(this.intent);
 			};
 		};
-		if (game.enemyNum == game.enemies.length - 1) {
+		if (game.turn !== TURN.ENEMY) {
+			game.enemyNum = -1;
+		} else if (game.enemyNum == game.enemies.length - 1) {
 			game.enemyNum = -1;
 			startTurn();
 		} else {

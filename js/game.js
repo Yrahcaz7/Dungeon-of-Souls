@@ -166,10 +166,7 @@ function fadeMusic() {
  */
 function enterBattle() {
 	game.state = STATE.BATTLE;
-	const deck = shuffle(game.deck.slice(0));
-	for (let index = 0; index < deck.length; index++) {
-		game.deckLocal.push(classifyCard(deck[index]));
-	};
+	game.deckLocal = shuffle(game.deck.slice(0));
 	startTurn();
 };
 
@@ -262,108 +259,6 @@ function playerTurn() {
 		game.enemyAtt = [-1, -1, new Card(), false];
 		game.attackEffects = [];
 	};
-	// action timer
-	if (actionTimer > -1 || game.enemyAtt[3]) return;
-	if (!actionTimer || actionTimer < -1) actionTimer = -1;
-	// attack enemy
-	if (action === ENTER && game.select[0] === ATTACK_ENEMY) {
-		game.energy -= getCardCost(game.enemyAtt[2]);
-		delete game.enemyAtt[2].charge;
-		delete game.enemyAtt[2].retention;
-		activateAttackEffects(game.enemyAtt[2].id);
-		game.enemyAtt[3] = true;
-		if (cards[game.enemyAtt[2].id].keywords.includes("one use")) game.void.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
-		else game.discard.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
-		cardAnim.splice(game.enemyAtt[0], 1);
-		cardAnim.push(0);
-		game.enemyAtt[0] = -1;
-		game.enemyAtt[1] = game.select[1];
-		if (game.prevCard) game.select = [HAND, game.prevCard - 1];
-		else game.select = [HAND, 0];
-		actionTimer = 4;
-		return;
-	};
-	// activate special selection effect
-	if (action === ENTER && game.select[0] === SELECT_HAND) {
-		if (game.select[1] == -1 || game.select[1] == game.hand.length) {
-			game.select = [HAND, game.enemyAtt[0]];
-			game.enemyAtt = [-1, -1, new Card(), false];
-			actionTimer = 4;
-			return;
-		} else {
-			if (cards[game.enemyAtt[2].id].effect) cards[game.enemyAtt[2].id].effect();
-			game.energy -= getCardCost(game.enemyAtt[2]);
-			delete game.enemyAtt[2].charge;
-			delete game.enemyAtt[2].retention;
-			if (cards[game.enemyAtt[2].id].keywords.includes("one use")) game.void.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
-			else game.discard.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
-			cardAnim.splice(game.enemyAtt[0], 1);
-			cardAnim.push(0);
-			if (game.enemyAtt[0]) game.select = [HAND, game.enemyAtt[0] - 1];
-			else game.select = [HAND, 0];
-			game.enemyAtt = [-1, -1, new Card(), false];
-			actionTimer = 4;
-			return;
-		};
-	};
-	// play card
-	if (action === ENTER && game.select[0] === HAND) {
-		let selected = game.hand[game.select[1]], id = selected.id;
-		if (cards[id].keywords.includes("unplayable")) {
-			if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
-			else notif = [game.select[1], 0, "unplayable", 0];
-			actionTimer = 1;
-		} else if (cards[id].can && !cards[id].can()) {
-			if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, cards[id].cannotMessage, -2];
-			else notif = [game.select[1], 0, cards[id].cannotMessage, 0];
-			actionTimer = 1;
-		} else if (game.energy >= getCardCost(selected)) {
-			if (cards[id].select instanceof Array) { // effects of cards that have a special selection
-				game.enemyAtt[0] = game.select[1];
-				game.select = [cards[id].select[0], cards[id].select[1]];
-				game.enemyAtt[2] = game.hand[game.enemyAtt[0]];
-				actionTimer = 4;
-			} else if (cards[id].effect) { // effects of cards that activate right away
-				cards[id].effect();
-				game.energy -= getCardCost(selected);
-				delete selected.charge;
-				delete selected.retention;
-				if (cards[id].keywords.includes("one use")) game.void.push(game.hand.splice(game.select[1], 1)[0]);
-				else game.discard.push(game.hand.splice(game.select[1], 1)[0]);
-				cardAnim.splice(game.select[1], 1);
-				cardAnim.push(0);
-				if (game.prevCard) game.select = [HAND, game.prevCard - 1];
-				else game.select = [HAND, 0];
-				actionTimer = 4;
-			} else if (cards[id].damage || cards[id].attack) { // effects of attack cards
-				if (cards[id].target === false) {
-					game.energy -= getCardCost(selected);
-					delete selected.charge;
-					delete selected.retention;
-					game.enemyAtt[2] = game.hand[game.select[1]];
-					activateAttackEffects(id);
-					game.enemyAtt[3] = true;
-					if (cards[id].keywords.includes("one use")) game.void.push(game.hand.splice(game.select[1], 1)[0]);
-					else game.discard.push(game.hand.splice(game.select[1], 1)[0]);
-					cardAnim.splice(game.select[1], 1);
-					cardAnim.push(0);
-					if (game.prevCard) game.select = [HAND, game.prevCard - 1];
-					else game.select = [HAND, 0];
-					actionTimer = 4;
-				} else {
-					game.enemyAtt[0] = game.select[1];
-					game.select = [ATTACK_ENEMY, game.enemies.length - 1];
-					game.enemyAtt[2] = game.hand[game.enemyAtt[0]];
-					actionTimer = 4;
-				};
-			};
-		} else {
-			if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "not enough energy", -2];
-			else notif = [game.select[1], 0, "not enough energy", 0];
-			actionTimer = 1;
-		};
-		return;
-	};
 };
 
 /**
@@ -389,17 +284,8 @@ function selection() {
 	if (actionTimer > -1) return;
 	if (!actionTimer || actionTimer < -1) actionTimer = -1;
 	// menus
-	if (game.select[0] === WELCOME) {
-		if (action === ENTER) {
-			game.select = [-1, 0];
-			actionTimer = 2;
-		};
-		return;
-	} else if (menuLocation === MENU.TITLE) {
-		if (action === ENTER) {
-			menuLocation = -1;
-			actionTimer = 2;
-		} else if (!game.artifacts.includes(0)) {
+	if (menuLocation === MENU.TITLE) {
+		if (!game.artifacts.includes(0)) {
 			if ((action === LEFT && game.difficulty === 1) || (action === RIGHT && game.difficulty === 0)) {
 				menuLocation = MENU.DIFFICULTY_CHANGE;
 				menuSelect = 1;
@@ -414,120 +300,26 @@ function selection() {
 		} else if (action === RIGHT && !menuSelect) {
 			menuSelect = 1;
 			actionTimer = 1;
-		} else if (action === ENTER) {
-			if (!menuSelect) {
-				if (game.difficulty === 0) game.difficulty++;
-				else game.difficulty--;
-				restartRun();
-			} else menuLocation = MENU.TITLE;
-			actionTimer = 2;
-		};
-		return;
-	};
-	// game end
-	if ((game.select[0] === GAME_OVER || game.select[0] === GAME_FIN) && game.select[1] == 50) {
-		if (action === ENTER) {
-			let score = get.totalScore();
-			if (!global.highScore || score > global.highScore) {
-				global.highScore = score;
-			};
-			restartRun();
-			actionTimer = 2;
 		};
 		return;
 	};
 	// confirmation
-	if (game.select[0] === CONFIRM_END) {
+	if (game.select[0] === CONFIRM_END || game.select[0] === CONFIRM_EXIT || game.select[0] === CONFIRM_RESTART) {
 		if (action === LEFT && game.select[1]) {
 			game.select[1] = 0;
 			actionTimer = 1;
 		} else if (action === RIGHT && !game.select[1]) {
 			game.select[1] = 1;
 			actionTimer = 1;
-		} else if (action === ENTER) {
-			if (!game.select[1]) {
-				endTurn();
-				game.select = [END, 0];
-			} else if (game.hand.length) game.select = [HAND, game.prevCard];
-			actionTimer = 2;
 		};
 		return;
-	} else if (game.select[0] === CONFIRM_EXIT) {
-		if (action === LEFT && game.select[1]) {
-			game.select[1] = 0;
-			actionTimer = 1;
-		} else if (action === RIGHT && !game.select[1]) {
-			game.select[1] = 1;
-			actionTimer = 1;
-		} else if (action === ENTER) {
-			if (!game.select[1]) {
-				game.select = [MAP, 0];
-				mapPopup();
-			} else {
-				game.select = [REWARDS, game.rewards.length - 1];
-			};
-			actionTimer = 2;
-		};
-		return;
-	} else if (game.select[0] === CONFIRM_RESTART) {
-		if (action === LEFT && game.select[1]) {
-			game.select[1] = 0;
-			actionTimer = 1;
-		} else if (action === RIGHT && !game.select[1]) {
-			game.select[1] = 1;
-			actionTimer = 1;
-		} else if (action === ENTER) {
-			if (!game.select[1]) {
-				restartRun();
-				game.select = [OPTIONS, 0];
-			} else game.select = [OPTIONS, Object.keys(global.options).length + 2];
-			actionTimer = 2;
-		};
-		return;
-	} else if (game.select[0] === CONFIRM_FRAGMENT_UPGRADE) {
+	} else if (game.select[0] === CONFIRM_FRAGMENT_UPGRADE || game.select[0] === CONFIRM_PURIFY) {
 		if (action === LEFT && game.select[1] > 0) {
 			game.select[1]--;
 			actionTimer = 1;
 		} else if (action === RIGHT && game.select[1] < 2) {
 			game.select[1]++;
 			actionTimer = 1;
-		} else if (action === ENTER) {
-			if (game.select[1] == 2) {
-				game.select = [IN_MAP, 0];
-			} else {
-				game.location = paths[game.location][game.mapSelect];
-				let coor = game.location.split(", ");
-				if (game.select[1] == 0) game.artifacts.push(0);
-				game.room = game.map[coor[0]][coor[1]];
-				game.select = [-1, 0];
-				game.mapSelect = -1;
-				game.state = STATE.ENTER;
-				game.floor++;
-			};
-			actionTimer = 2;
-		};
-		return;
-	} else if (game.select[0] === CONFIRM_PURIFY) {
-		if (action === LEFT && game.select[1] > 0) {
-			game.select[1]--;
-			actionTimer = 1;
-		} else if (action === RIGHT && game.select[1] < 2) {
-			game.select[1]++;
-			actionTimer = 1;
-		} else if (action === ENTER) {
-			if (game.select[1] == 1) {
-				game.select = [PURIFIER, 0];
-			} else {
-				if (game.select[1] == 0) game.deck.splice(game.cardSelect[0] + game.cardSelect[1] * 6, 1);
-				for (let index = 0; index < game.rewards.length; index++) {
-					if (game.rewards[index] == "1 purifier") {
-						if (game.select[1] == 0) game.rewards[index] += " - claimed";
-						game.select = [REWARDS, index];
-						break;
-					};
-				};
-			};
-			actionTimer = 2;
 		};
 		return;
 	};
@@ -539,39 +331,6 @@ function selection() {
 		} else if ((action === UP || action === LEFT) && game.select[1] > 0) {
 			game.select[1]--;
 			actionTimer = 1;
-		} else if (action === ENTER) {
-			const item = "" + game.rewards[game.select[1]];
-			if (!item.endsWith(" - claimed")) {
-				let arr = item.split(" ");
-				if (arr[1] == "gold") {
-					game.gold += +arr[0];
-					game.rewards[game.select[1]] += " - claimed";
-				} else if (arr[1] == "card") {
-					game.select = [CARD_REWARDS, 0];
-				} else if (arr[1] == "artifact") {
-					game.select = [ARTIFACT_REWARDS, -1];
-				} else if (arr[1] == "health") {
-					game.health += +arr[0];
-					game.rewards[game.select[1]] += " - claimed";
-				} else if (arr[1] == "purifier") {
-					game.select = [PURIFIER, 0];
-				} else if (item == "finish") {
-					let bool = false;
-					for (let index = 0; index < game.rewards.length; index++) {
-						if (!game.rewards[index].endsWith(" - claimed") && game.rewards[index] != "finish") {
-							bool = true;
-							break;
-						};
-					};
-					if (bool) {
-						game.select = [CONFIRM_EXIT, 1];
-					} else {
-						game.select = [MAP, 0];
-						mapPopup();
-					};
-				};
-			};
-			actionTimer = 2;
 		};
 		return;
 	} else if (game.select[0] === CARD_REWARDS) {
@@ -581,25 +340,6 @@ function selection() {
 		} else if (action === LEFT && game.select[1] > -1) {
 			game.select[1]--;
 			actionTimer = 1;
-		} else if (action === ENTER) {
-			if (game.select[1] === -1 || game.select[1] === get.cardRewardChoices()) {
-				for (let index = 0; index < game.rewards.length; index++) {
-					if (game.rewards[index] == "1 card") {
-						game.select = [REWARDS, index];
-						break;
-					};
-				};
-			} else {
-				game.deck.push(new Card(game.room[5][game.select[1]]));
-				for (let index = 0; index < game.rewards.length; index++) {
-					if (game.rewards[index] == "1 card") {
-						game.rewards[index] += " - claimed";
-						game.select = [REWARDS, index];
-						break;
-					};
-				};
-			};
-			actionTimer = 2;
 		};
 		return;
 	} else if (game.select[0] === ARTIFACT_REWARDS) {
@@ -609,28 +349,6 @@ function selection() {
 		} else if (action === LEFT && game.select[1] > -1) {
 			game.select[1]--;
 			actionTimer = 1;
-		} else if (action === ENTER) {
-			if (game.select[1] === -1 || game.select[1] === 3) {
-				for (let index = 0; index < game.rewards.length; index++) {
-					if (game.rewards[index] == "1 artifact") {
-						game.select = [REWARDS, index];
-						break;
-					};
-				};
-			} else {
-				const index = game.room[6][game.select[1]];
-				const func = artifacts[index][ON_PICKUP];
-				if (typeof func == "function") func();
-				game.artifacts.push(index);
-				for (let index = 0; index < game.rewards.length; index++) {
-					if (game.rewards[index] == "1 artifact") {
-						game.rewards[index] += " - claimed";
-						game.select = [REWARDS, index];
-						break;
-					};
-				};
-			};
-			actionTimer = 2;
 		};
 		return;
 	};
@@ -660,21 +378,6 @@ function selection() {
 			};
 			actionTimer = 1;
 			return;
-		} else if (action === ENTER && paths[game.location][game.mapSelect]) {
-			const now = new Date();
-			if (game.floor == 9 && game.difficulty === 1 && ((now.getHours() % 12 == 11 && now.getMinutes() >= 59) || (now.getHours() % 12 == 0 && now.getMinutes() <= 1))) {
-				game.select = [CONFIRM_FRAGMENT_UPGRADE, 2];
-			} else {
-				game.location = paths[game.location][game.mapSelect];
-				let coor = game.location.split(", ");
-				game.room = game.map[coor[0]][coor[1]];
-				game.select = [-1, 0];
-				game.mapSelect = -1;
-				game.state = STATE.ENTER;
-				game.floor++;
-			};
-			actionTimer = 1;
-			return;
 		};
 	} else if (game.select[0] === IN_MAP) {
 		const len = (paths[game.location] || []).length;
@@ -698,13 +401,6 @@ function selection() {
 		} else if (action === DOWN && game.select[1] < event.length - 3) {
 			game.select[1]++;
 			actionTimer = 1;
-			return;
-		} else if (action === ENTER && event[game.select[1]]) {
-			const next = event[game.select[1] + 2][1];
-			game.turn = 10000 + (typeof next == "function" ? next() : next);
-			getCurrentEvent()[0]();
-			if (game.select[0] === CONFIRM_EVENT) game.select[1] = -1;
-			actionTimer = 2;
 			return;
 		};
 	};
@@ -816,7 +512,10 @@ function selection() {
 	};
 	// popup selection
 	if (game.select[0] === POPUPS) {
-		if (!popups[game.select[1]].length) {
+		if (game.select[1] >= popups.length) {
+			game.select[1] = popups.length - 1;
+			return;
+		} else if (!popups[game.select[1]].length) {
 			while (game.select[1] >= 0 && !popups[game.select[1]].length) {
 				game.select[1]--;
 			};
@@ -826,9 +525,6 @@ function selection() {
 					else game.select = [DISCARD, 0];
 				} else game.select = [HAND, game.prevCard];
 			};
-			return;
-		} else if (game.select[1] >= popups.length) {
-			game.select[1] = popups.length - 1;
 			return;
 		} else if (action === UP) {
 			game.select[1]++;
@@ -854,19 +550,6 @@ function selection() {
 		} else if (action === LEFT) {
 			if (!game.hand.length) game.select = [LOOKAT_YOU, 0];
 			else game.select = [HAND, game.prevCard];
-			actionTimer = 1;
-			return;
-		} else if (action === ENTER) {
-			popups[game.select[1]] = [];
-			while (game.select[1] >= 0 && !popups[game.select[1]].length) {
-				game.select[1]--;
-			};
-			if (game.select[1] == -1) {
-				if (!game.hand.length) {
-					if (game.void.length) game.select = [VOID, 0];
-					else game.select = [DISCARD, 0];
-				} else game.select = [HAND, game.prevCard];
-			};
 			actionTimer = 1;
 			return;
 		};
@@ -905,50 +588,6 @@ function selection() {
 			return;
 		};
 	};
-	// activate purifier
-	if (action === ENTER && game.select[0] === PURIFIER) {
-		game.select = [CONFIRM_PURIFY, 1];
-		actionTimer = 2;
-		return;
-	};
-	// activate / deactivate extras
-	if (action === ENTER && (game.select[0] === DECK || game.select[0] === VOID || game.select[0] === DISCARD)) {
-		if (game.select[1] == 0) game.select[1] = 1;
-		else game.select[1] = 0;
-		actionTimer = 2;
-		return;
-	} else if (action === ENTER && game.select[0] === MAP) {
-		game.select = [IN_MAP, 0];
-		actionTimer = 2;
-		return;
-	} else if (action === ENTER && game.select[0] === IN_MAP && game.mapSelect == -1) {
-		game.select = [MAP, 0];
-		actionTimer = 2;
-		return;
-	} else if (action === ENTER && game.select[0] === IN_MAP && game.mapSelect == (paths[game.location] || []).length) {
-		if (game.select[1] == 0) game.select[1] = 1;
-		else game.select[1] = 0;
-		actionTimer = 2;
-		return;
-	} else if (action === ENTER && game.select[0] === LOOKER) {
-		if (game.select[1] == 0) game.select[1] = 1;
-		else game.select[1] = 0;
-		actionTimer = 2;
-		return;
-	} else if (action === ENTER && game.select[0] === HELP) {
-		if (game.select[1] <= 2) game.select[1]++;
-		else game.select[1] = 0;
-		actionTimer = 2;
-		return;
-	} else if (action === ENTER && game.select[0] === OPTIONS && game.select[1] <= 1) {
-		if (game.select[1] === 0) game.select[1] = 1;
-		else game.select[1] = 0;
-		actionTimer = 2;
-		return;
-	} else if (action === ENTER && game.select[0] === END && game.turn === TURN.PLAYER) {
-		endTurnConfirm();
-		return;
-	};
 	// scrolling
 	if (action === UP && game.select[0] === HELP && infPos > 0 && infLimit > 0) infPos -= 11;
 	else if (action === DOWN && game.select[0] === HELP && infPos < infLimit) infPos += 11;
@@ -961,28 +600,6 @@ function selection() {
 		} else if (action === DOWN && game.select[1] > 0 && game.select[1] - 2 < Object.keys(global.options).length) {
 			game.select[1]++;
 			actionTimer = 1;
-			return;
-		} else if (action === ENTER) {
-			const option = Object.keys(global.options)[game.select[1] - 2];
-			if (option == "pixel_perfect_size") {
-				let index = PIXEL_SIZES.indexOf(global.options.pixel_perfect_size) + 1;
-				if (index >= PIXEL_SIZES.length) index = 0;
-				global.options.pixel_perfect_size = PIXEL_SIZES[index];
-			} else if (option) {
-				global.options[option] = !global.options[option];
-			} else {
-				game.select = [CONFIRM_RESTART, 1];
-			};
-			if (option == "music") {
-				if (global.options.music) document.getElementById("music").play();
-				else document.getElementById("music").pause();
-				musicPopup();
-			} else if (option == "pixel_perfect_screen" || option == "pixel_perfect_size") {
-				if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: " + (800 * global.options.pixel_perfect_size) + "px";
-				else delete document.getElementById("canvas").style;
-				fixCanvas();
-			};
-			actionTimer = 2;
 			return;
 		};
 	};
@@ -1128,14 +745,414 @@ function selection() {
 };
 
 /**
- * Handles the gameplay.
+ * Performs the current action.
  */
-function manageGameplay() {
-	// update data
-	updateData();
-	// actions
-	if (game.turn === TURN.PLAYER) playerTurn();
-	// end battle
+function performAction() {
+	// action timer
+	if (actionTimer > -1) return;
+	if (!actionTimer || actionTimer < -1) actionTimer = -1;
+	// menus
+	if (game.select[0] === WELCOME) {
+		game.select = [-1, 0];
+		actionTimer = 2;
+		return;
+	} else if (menuLocation === MENU.TITLE) {
+		menuLocation = -1;
+		actionTimer = 2;
+		return;
+	} else if (menuLocation === MENU.DIFFICULTY_CHANGE) {
+		if (!menuSelect) {
+			if (game.difficulty === 0) game.difficulty++;
+			else game.difficulty--;
+			restartRun();
+		} else menuLocation = MENU.TITLE;
+		actionTimer = 2;
+		return;
+	};
+	// player turn
+	if (game.turn === TURN.PLAYER) {
+		// only one card can be active
+		if (game.enemyAtt[3]) return;
+		// attack enemy
+		if (game.select[0] === ATTACK_ENEMY) {
+			game.energy -= getCardCost(game.enemyAtt[2]);
+			delete game.enemyAtt[2].charge;
+			delete game.enemyAtt[2].retention;
+			activateAttackEffects(game.enemyAtt[2].id);
+			game.enemyAtt[3] = true;
+			if (cards[game.enemyAtt[2].id].keywords.includes("one use")) game.void.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
+			else game.discard.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
+			cardAnim.splice(game.enemyAtt[0], 1);
+			cardAnim.push(0);
+			game.enemyAtt[0] = -1;
+			game.enemyAtt[1] = game.select[1];
+			if (game.prevCard) game.select = [HAND, game.prevCard - 1];
+			else game.select = [HAND, 0];
+			actionTimer = 4;
+			updateData();
+			return;
+		};
+		// activate special selection effect
+		if (game.select[0] === SELECT_HAND) {
+			if (game.select[1] == -1 || game.select[1] == game.hand.length) {
+				game.select = [HAND, game.enemyAtt[0]];
+				game.enemyAtt = [-1, -1, new Card(), false];
+				actionTimer = 4;
+				return;
+			} else {
+				if (cards[game.enemyAtt[2].id].effect) cards[game.enemyAtt[2].id].effect();
+				game.energy -= getCardCost(game.enemyAtt[2]);
+				delete game.enemyAtt[2].charge;
+				delete game.enemyAtt[2].retention;
+				if (cards[game.enemyAtt[2].id].keywords.includes("one use")) game.void.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
+				else game.discard.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
+				cardAnim.splice(game.enemyAtt[0], 1);
+				cardAnim.push(0);
+				if (game.enemyAtt[0]) game.select = [HAND, game.enemyAtt[0] - 1];
+				else game.select = [HAND, 0];
+				game.enemyAtt = [-1, -1, new Card(), false];
+				actionTimer = 4;
+				updateData();
+				return;
+			};
+		};
+		// play card
+		if (game.select[0] === HAND) {
+			let selected = game.hand[game.select[1]], id = selected.id;
+			if (cards[id].keywords.includes("unplayable")) {
+				if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
+				else notif = [game.select[1], 0, "unplayable", 0];
+				actionTimer = 1;
+			} else if (cards[id].can && !cards[id].can()) {
+				if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, cards[id].cannotMessage, -2];
+				else notif = [game.select[1], 0, cards[id].cannotMessage, 0];
+				actionTimer = 1;
+			} else if (game.energy >= getCardCost(selected)) {
+				if (cards[id].select instanceof Array) { // effects of cards that have a special selection
+					game.enemyAtt[0] = game.select[1];
+					game.select = [cards[id].select[0], cards[id].select[1]];
+					game.enemyAtt[2] = game.hand[game.enemyAtt[0]];
+					actionTimer = 4;
+				} else if (cards[id].effect) { // effects of cards that activate right away
+					cards[id].effect();
+					game.energy -= getCardCost(selected);
+					delete selected.charge;
+					delete selected.retention;
+					if (cards[id].keywords.includes("one use")) game.void.push(game.hand.splice(game.select[1], 1)[0]);
+					else game.discard.push(game.hand.splice(game.select[1], 1)[0]);
+					cardAnim.splice(game.select[1], 1);
+					cardAnim.push(0);
+					if (game.prevCard) game.select = [HAND, game.prevCard - 1];
+					else game.select = [HAND, 0];
+					actionTimer = 4;
+				} else if (cards[id].damage || cards[id].attack) { // effects of attack cards
+					if (cards[id].target === false) {
+						game.energy -= getCardCost(selected);
+						delete selected.charge;
+						delete selected.retention;
+						game.enemyAtt[2] = game.hand[game.select[1]];
+						activateAttackEffects(id);
+						game.enemyAtt[3] = true;
+						if (cards[id].keywords.includes("one use")) game.void.push(game.hand.splice(game.select[1], 1)[0]);
+						else game.discard.push(game.hand.splice(game.select[1], 1)[0]);
+						cardAnim.splice(game.select[1], 1);
+						cardAnim.push(0);
+						if (game.prevCard) game.select = [HAND, game.prevCard - 1];
+						else game.select = [HAND, 0];
+						actionTimer = 4;
+					} else {
+						game.enemyAtt[0] = game.select[1];
+						game.select = [ATTACK_ENEMY, game.enemies.length - 1];
+						game.enemyAtt[2] = game.hand[game.enemyAtt[0]];
+						actionTimer = 4;
+					};
+				};
+			} else {
+				if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "not enough energy", -2];
+				else notif = [game.select[1], 0, "not enough energy", 0];
+				actionTimer = 1;
+			};
+			updateData();
+			return;
+		};
+	};
+	// game end
+	if ((game.select[0] === GAME_OVER || game.select[0] === GAME_FIN) && game.select[1] == 50) {
+		let score = get.totalScore();
+		if (!global.highScore || score > global.highScore) {
+			global.highScore = score;
+		};
+		restartRun();
+		actionTimer = 2;
+		return;
+	};
+	// confirmation
+	if (game.select[0] === CONFIRM_END) {
+		if (!game.select[1]) {
+			endTurn();
+			game.select = [END, 0];
+		} else if (game.hand.length) game.select = [HAND, game.prevCard];
+		actionTimer = 2;
+		return;
+	} else if (game.select[0] === CONFIRM_EXIT) {
+		if (!game.select[1]) {
+			game.select = [MAP, 0];
+			mapPopup();
+		} else {
+			game.select = [REWARDS, game.rewards.length - 1];
+		};
+		actionTimer = 2;
+		return;
+	} else if (game.select[0] === CONFIRM_RESTART) {
+		if (!game.select[1]) {
+			restartRun();
+			game.select = [OPTIONS, 0];
+		} else game.select = [OPTIONS, Object.keys(global.options).length + 2];
+		actionTimer = 2;
+		return;
+	} else if (game.select[0] === CONFIRM_FRAGMENT_UPGRADE) {
+		if (game.select[1] == 2) {
+			game.select = [IN_MAP, 0];
+		} else {
+			game.location = paths[game.location][game.mapSelect];
+			let coor = game.location.split(", ");
+			if (game.select[1] == 0) game.artifacts.push(0);
+			game.room = game.map[coor[0]][coor[1]];
+			game.select = [-1, 0];
+			game.mapSelect = -1;
+			game.state = STATE.ENTER;
+			game.floor++;
+		};
+		actionTimer = 2;
+		return;
+	} else if (game.select[0] === CONFIRM_PURIFY) {
+		if (game.select[1] == 1) {
+			game.select = [PURIFIER, 0];
+		} else {
+			if (game.select[1] == 0) game.deck.splice(game.cardSelect[0] + game.cardSelect[1] * 6, 1);
+			for (let index = 0; index < game.rewards.length; index++) {
+				if (game.rewards[index] == "1 purifier") {
+					if (game.select[1] == 0) game.rewards[index] += " - claimed";
+					game.select = [REWARDS, index];
+					break;
+				};
+			};
+		};
+		actionTimer = 2;
+		return;
+	};
+	// rewards
+	if (game.select[0] === REWARDS) {
+		const item = "" + game.rewards[game.select[1]];
+		if (!item.endsWith(" - claimed")) {
+			let arr = item.split(" ");
+			if (arr[1] == "gold") {
+				game.gold += +arr[0];
+				game.rewards[game.select[1]] += " - claimed";
+			} else if (arr[1] == "card") {
+				game.select = [CARD_REWARDS, 0];
+			} else if (arr[1] == "artifact") {
+				game.select = [ARTIFACT_REWARDS, -1];
+			} else if (arr[1] == "health") {
+				game.health += +arr[0];
+				game.rewards[game.select[1]] += " - claimed";
+			} else if (arr[1] == "purifier") {
+				game.select = [PURIFIER, 0];
+			} else if (item == "finish") {
+				let bool = false;
+				for (let index = 0; index < game.rewards.length; index++) {
+					if (!game.rewards[index].endsWith(" - claimed") && game.rewards[index] != "finish") {
+						bool = true;
+						break;
+					};
+				};
+				if (bool) {
+					game.select = [CONFIRM_EXIT, 1];
+				} else {
+					game.select = [MAP, 0];
+					mapPopup();
+				};
+			};
+		};
+		actionTimer = 2;
+		return;
+	} else if (game.select[0] === CARD_REWARDS) {
+		if (game.select[1] === -1 || game.select[1] === get.cardRewardChoices()) {
+			for (let index = 0; index < game.rewards.length; index++) {
+				if (game.rewards[index] == "1 card") {
+					game.select = [REWARDS, index];
+					break;
+				};
+			};
+		} else {
+			game.deck.push(new Card(game.room[5][game.select[1]]));
+			for (let index = 0; index < game.rewards.length; index++) {
+				if (game.rewards[index] == "1 card") {
+					game.rewards[index] += " - claimed";
+					game.select = [REWARDS, index];
+					break;
+				};
+			};
+		};
+		actionTimer = 2;
+		return;
+	} else if (game.select[0] === ARTIFACT_REWARDS) {
+		if (game.select[1] === -1 || game.select[1] === 3) {
+			for (let index = 0; index < game.rewards.length; index++) {
+				if (game.rewards[index] == "1 artifact") {
+					game.select = [REWARDS, index];
+					break;
+				};
+			};
+		} else {
+			const index = game.room[6][game.select[1]];
+			const func = artifacts[index][ON_PICKUP];
+			if (typeof func == "function") func();
+			game.artifacts.push(index);
+			for (let index = 0; index < game.rewards.length; index++) {
+				if (game.rewards[index] == "1 artifact") {
+					game.rewards[index] += " - claimed";
+					game.select = [REWARDS, index];
+					break;
+				};
+			};
+		};
+		actionTimer = 2;
+		return;
+	};
+	// map
+	if (game.select[0] === IN_MAP && game.state === STATE.EVENT_FIN && paths[game.location] && paths[game.location][game.mapSelect]) {
+		const now = new Date();
+		if (game.floor == 9 && game.difficulty === 1 && ((now.getHours() % 12 == 11 && now.getMinutes() >= 59) || (now.getHours() % 12 == 0 && now.getMinutes() <= 1))) {
+			game.select = [CONFIRM_FRAGMENT_UPGRADE, 2];
+		} else {
+			game.location = paths[game.location][game.mapSelect];
+			let coor = game.location.split(", ");
+			game.room = game.map[coor[0]][coor[1]];
+			game.select = [-1, 0];
+			game.mapSelect = -1;
+			game.state = STATE.ENTER;
+			game.floor++;
+		};
+		actionTimer = 1;
+		return;
+	};
+	// event
+	if (game.select[0] === CONFIRM_EVENT) {
+		const event = getCurrentEvent();
+		if (event[game.select[1]]) {
+			const next = event[game.select[1] + 2][1];
+			game.turn = 10000 + (typeof next == "function" ? next() : next);
+			getCurrentEvent()[0]();
+			if (game.select[0] === CONFIRM_EVENT) game.select[1] = -1;
+			actionTimer = 2;
+			return;
+		};
+	};
+	// popups
+	if (game.select[0] === POPUPS) {
+		if (game.select[1] >= popups.length) {
+			game.select[1] = popups.length - 1;
+			return;
+		} else if (!popups[game.select[1]].length) {
+			while (game.select[1] >= 0 && !popups[game.select[1]].length) {
+				game.select[1]--;
+			};
+			if (game.select[1] == -1) {
+				if (!game.hand.length) {
+					if (game.void.length) game.select = [VOID, 0];
+					else game.select = [DISCARD, 0];
+				} else game.select = [HAND, game.prevCard];
+			};
+		} else {
+			popups[game.select[1]] = [];
+			while (game.select[1] >= 0 && !popups[game.select[1]].length) {
+				game.select[1]--;
+			};
+			if (game.select[1] == -1) {
+				if (!game.hand.length) {
+					if (game.void.length) game.select = [VOID, 0];
+					else game.select = [DISCARD, 0];
+				} else game.select = [HAND, game.prevCard];
+			};
+			actionTimer = 1;
+		};
+		return;
+	};
+	// activate purifier
+	if (game.select[0] === PURIFIER) {
+		game.select = [CONFIRM_PURIFY, 1];
+		actionTimer = 2;
+		return;
+	};
+	// activate / deactivate extras
+	if (game.select[0] === DECK || game.select[0] === VOID || game.select[0] === DISCARD) {
+		if (game.select[1] == 0) game.select[1] = 1;
+		else game.select[1] = 0;
+		actionTimer = 2;
+		return;
+	} else if (game.select[0] === MAP) {
+		game.select = [IN_MAP, 0];
+		actionTimer = 2;
+		return;
+	} else if (game.select[0] === IN_MAP && game.mapSelect == -1) {
+		game.select = [MAP, 0];
+		actionTimer = 2;
+		return;
+	} else if (game.select[0] === IN_MAP && game.mapSelect == (paths[game.location] || []).length) {
+		if (game.select[1] == 0) game.select[1] = 1;
+		else game.select[1] = 0;
+		actionTimer = 2;
+		return;
+	} else if (game.select[0] === LOOKER) {
+		if (game.select[1] == 0) game.select[1] = 1;
+		else game.select[1] = 0;
+		actionTimer = 2;
+		return;
+	} else if (game.select[0] === HELP) {
+		if (game.select[1] <= 2) game.select[1]++;
+		else game.select[1] = 0;
+		actionTimer = 2;
+		return;
+	} else if (game.select[0] === OPTIONS && game.select[1] <= 1) {
+		if (game.select[1] === 0) game.select[1] = 1;
+		else game.select[1] = 0;
+		actionTimer = 2;
+		return;
+	} else if (game.select[0] === END && game.turn === TURN.PLAYER) {
+		endTurnConfirm();
+		return;
+	};
+	// options
+	if (game.select[0] === OPTIONS) {
+		const option = Object.keys(global.options)[game.select[1] - 2];
+		if (option == "pixel_perfect_size") {
+			let index = PIXEL_SIZES.indexOf(global.options.pixel_perfect_size) + 1;
+			if (index >= PIXEL_SIZES.length) index = 0;
+			global.options.pixel_perfect_size = PIXEL_SIZES[index];
+		} else if (option) {
+			global.options[option] = !global.options[option];
+		} else {
+			game.select = [CONFIRM_RESTART, 1];
+		};
+		if (option == "music") {
+			if (global.options.music) document.getElementById("music").play();
+			else document.getElementById("music").pause();
+			musicPopup();
+		} else if (option == "pixel_perfect_screen" || option == "pixel_perfect_size") {
+			if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: " + (800 * global.options.pixel_perfect_size) + "px";
+			else document.getElementById("canvas").style = "";
+			fixCanvas();
+		};
+		actionTimer = 2;
+		return;
+	};
+};
+
+/**
+ * Ends the battle if there are no enemies remaining.
+ */
+function endBattle() {
 	if (game.state === STATE.BATTLE && !game.enemies.length) {
 		// normal stuff
 		if (game.hand.length) discardHand();
@@ -1165,7 +1182,12 @@ function manageGameplay() {
 		};
 		game.rewards.push("finish");
 	};
-	// load room
+};
+
+/**
+ * Loads the room that is being entered.
+ */
+function loadRoom() {
 	if (game.state === STATE.ENTER) {
 		// clear effects
 		for (const effect in game.eff) {
@@ -1221,10 +1243,20 @@ function manageGameplay() {
 			game.turn = 10000;
 		};
 	};
+};
+
+/**
+ * Handles the gameplay.
+ */
+function manageGameplay() {
+	// update data
+	updateData();
+	// actions
+	if (game.turn === TURN.PLAYER) playerTurn();
 	// update data again
 	updateData();
 	// enemy actions
-	if (game.turn === TURN.ENEMY) enemyTurn();
+	if (game.turn === TURN.ENEMY || game.enemyNum >= 0 || game.enemyStage !== -1) enemyTurn();
 };
 
 /**
@@ -1306,10 +1338,13 @@ function updateVisuals() {
 	} else if (game.select[0] === OPTIONS && game.select[1]) {
 		graphics.options();
 	} else if (game.select[0] === DECK && game.select[1]) {
+		if (game.select[2] && game.select[2][0] === IN_MAP) graphics.map();
 		graphics.deck(game.deckLocal.slice(0).cardSort());
 	} else if (game.select[0] === VOID && game.select[1]) {
+		if (game.select[2] && game.select[2][0] === IN_MAP) graphics.map();
 		graphics.deck(game.void);
 	} else if (game.select[0] === DISCARD && game.select[1]) {
+		if (game.select[2] && game.select[2][0] === IN_MAP) graphics.map();
 		graphics.deck(game.discard);
 	};
 	if (game.select[0] === IN_MAP && game.select[1]) {
@@ -1534,14 +1569,12 @@ const gameloop = setInterval(() => {
 		save();
 	};
 }, 100), musicloop = setInterval(() => {
-	if (document.getElementById("music")?.src) {
+	if (global.options.music && document.getElementById("music")?.src) {
 		let time = document.getElementById("music").currentTime;
-		if (global.options.music) {
-			if (time === 0 && menuLocation === -1) {
-				document.getElementById("music").play();
-			} else if (time > document.getElementById("music").duration - 1.001) {
-				document.getElementById("music").currentTime = 0;
-			};
+		if (time === 0 && menuLocation === -1) {
+			document.getElementById("music").play();
+		} else if (time > document.getElementById("music").duration - 1.001) {
+			document.getElementById("music").currentTime = 0;
 		};
 	};
 }, 2);

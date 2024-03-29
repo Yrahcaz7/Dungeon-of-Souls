@@ -95,7 +95,7 @@ window.onload = async function() {
 	// set things
 	if (game.select[0] == GAME_FIN) game.select[1] = 0;
 	if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: " + (800 * global.options.pixel_perfect_size) + "px";
-	else delete document.getElementById("canvas").style;
+	else document.getElementById("canvas").style = "";
 	// fix things
 	fixCanvas();
 	// calculate things
@@ -157,11 +157,10 @@ window.onresize = () => {
 	fixCanvas();
 };
 
-document.addEventListener("keydown", (event) => {
-	const key = event.key, prevAction = +action;
-	if ((key == "E" || key == "e") && game.turn === TURN.PLAYER) {
-		if (game.select[0] != CONFIRM_END) endTurnConfirm();
-	} else if (key == "1" && actionTimer == -1) {
+document.addEventListener("keydown", event => {
+	const key = event.key, prevAction = action;
+	if ((key == "E" || key == "e") && game.turn === TURN.PLAYER && game.select[0] !== CONFIRM_END) endTurnConfirm();
+	else if (key == "1" && actionTimer == -1) {
 		if (game.select[0] === DECK && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [DECK, 0];
@@ -191,8 +190,10 @@ document.addEventListener("keydown", (event) => {
 			action = -1;
 		};
 		actionTimer = 2;
-	} else if ((key == " " || key == "Enter") && !(game.select[2] && menuLocation === -1)) action = ENTER;
-	else if (key == "W" || key == "w" || key == "ArrowUp") action = UP;
+	} else if ((key == " " || key == "Enter") && !event.repeat && !(game.select[2] && menuLocation === -1) && actionTimer == -1) {
+		action = -1;
+		performAction();
+	} else if (key == "W" || key == "w" || key == "ArrowUp") action = UP;
 	else if (key == "A" || key == "a" || key == "ArrowLeft") action = LEFT;
 	else if (key == "S" || key == "s" || key == "ArrowDown") action = DOWN;
 	else if (key == "D" || key == "d" || key == "ArrowRight") action = RIGHT;
@@ -201,13 +202,13 @@ document.addEventListener("keydown", (event) => {
 	else if (key == "Tab") fullscreen();
 	if (!event.repeat && prevAction === -1 && lastAction === action && global.options.allow_fast_movement && loaded) {
 		if (menuLocation === -1) manageGameplay();
-		if (action !== ENTER) selection();
+		selection();
 		updateVisuals();
 	};
 	if (action !== -1) lastAction = action;
 });
 
-document.addEventListener("keyup", (event) => {
+document.addEventListener("keyup", event => {
 	const key = event.key;
 	if (key == " " || key == "Enter" || key == "W" || key == "w" || key == "ArrowUp" || key == "A" || key == "a" || key == "ArrowLeft" || key == "S" || key == "s" || key == "ArrowDown" || key == "D" || key == "d" || key == "ArrowRight") action = -1;
 });

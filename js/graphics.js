@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const ENTER = 500, UP = 501, LEFT = 502, CENTER = 503, RIGHT = 504, DOWN = 505;
+const UP = 501, LEFT = 502, CENTER = 503, RIGHT = 504, DOWN = 505;
 
 const PENDING = 800, STARTING = 801, MIDDLE = 802, ENDING = 803;
 
@@ -1690,13 +1690,13 @@ const graphics = {
 				};
 			};
 			draw.image(extra.deck, 22, 16);
-			if (game.mapSelect == (paths[game.location] || []).length) draw.image(select.deck, 21, 15);
+			if (game.select[0] === IN_MAP && game.mapSelect == (paths[game.location] || []).length) draw.image(select.deck, 21, 15);
 			draw.image(extra.end, 22, 179);
-			if (game.mapSelect == -1) draw.image(select.round, 21, 178);
+			if (game.select[0] === IN_MAP && game.mapSelect == -1) draw.image(select.round, 21, 178);
 			draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
 			draw.lore(399, 1, "seed: " + game.seed, {"color": "#fff", "text-align": LEFT});
 		};
-		// draw scibbles
+		// draw scribbles
 		if (render) {
 			for (let x = 0; x < game.map.length; x++) {
 				for (let y = 0; y < game.map[x].length; y++) {
@@ -1874,7 +1874,7 @@ const startAnim = {
 	 * @param {string} name - the name of the player animation.
 	 */
 	player(name) {
-		if (!player[name]) return;
+		if (!player[name] || playerAnim[1] == "death") return;
 		if (game.eff.aura_blades && (name == "attack" || name == "attack_2")) name += "_aura";
 		if (game.eff.reinforces && (name == "shield" || name == "crouch_shield")) name += "_reinforced";
 		playerAnim = [0, name];

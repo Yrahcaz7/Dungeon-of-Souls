@@ -5,7 +5,7 @@ const SLIME_CROWD = 1300, SLIME_AMBUSH = 1301;
  * @param {SLIME_CROWD | SLIME_AMBUSH} type - the type of battle.
  * @param {number} num - the number of enemies of a crowd, or the power of an ambush.
  */
-function startEventBattle(type, num) {
+function startEventBattle(type, num = 1) {
 	primeAnim = 0;
 	if (type === SLIME_CROWD) {
 		if (num > 6) num = 6;
@@ -30,7 +30,10 @@ const EVENTS = {
 			mapPopup();
 		}],
 		30: [() => {game.eff.weakness = 1}, "You tried to sneak past as best as you could,\nbut the enemies still spotted you!\nYou have also have hard time getting up.\nYou were crawling around for a while...", ["Battle Start!", 31]],
-		31: [() => {startEventBattle(SLIME_CROWD, randomInt(2, 3))}],
+		31: [() => {
+			if (game.floor >= 5) startEventBattle(SLIME_CROWD, randomInt(2, 3));
+			else startEventBattle(SLIME_CROWD, 2);
+		}],
 		40: [() => {}, "You successfully got past the enemies!\nYou must have been very lucky.\nStealth isn't your strong suit.", ["get a move on", 21]],
 		50: [() => {}, "You vaugely feel something long forgotten...\nYou want to fight these enemies fair and square.", ["Battle Start!", 31]],
 	}, {
