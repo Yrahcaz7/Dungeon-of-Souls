@@ -270,7 +270,7 @@ function getEnemyIntentPos(index, moving = false) {
 		y -= 43;
 	};
 	y = Math.max(y, -2);
-	if (moving) y += Math.abs(starAnim[index] - 2);
+	if (moving) y += Math.abs(intentAnim[index] - 2);
 	else y += 14;
 	return Math.round(y);
 };

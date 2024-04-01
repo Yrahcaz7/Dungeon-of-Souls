@@ -163,13 +163,13 @@ const cards = {
 	},
 	3001: {
 		name: "rage",
-		desc: "Kill a non-boss\nenemy. Take damage\nequal to half its\nhealth, rounded\ndown.",
+		desc: "Kill a non-boss\nenemy. Take damage\nequal to half its\nhealth, rounded up.",
 		rarity: 1,
 		cost: 0,
 		attackEffects: false,
 		attack() {
 			if (game.enemies[game.enemyAtt[1]].type !== FRAGMENT) {
-				takeDamage(Math.floor(game.enemies[game.enemyAtt[1]].health / 2));
+				takeDamage(Math.ceil(game.enemies[game.enemyAtt[1]].health / 2));
 				game.enemies[game.enemyAtt[1]].health = 0;
 			};
 		},

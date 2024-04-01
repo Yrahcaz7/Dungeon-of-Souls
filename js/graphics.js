@@ -19,7 +19,7 @@ const UP = 501, LEFT = 502, CENTER = 503, RIGHT = 504, DOWN = 505;
 
 const PENDING = 800, STARTING = 801, MIDDLE = 802, ENDING = 803;
 
-let backAnim = [0, UP, 0.5, DOWN, -1, UP, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], tempAnim = [0, STARTING], effAnim = [0, "none"], playerAnim = [0, "idle"], starAnim = [0, 1.5, 3, 0.5, 2, 3.5], extraAnim = [], primeAnim = 0, transition = 0, screenShake = 0, auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]], auraBladeAnim = [0, UP, 2.5, UP, 3, DOWN, 0.5, DOWN], popups = [], infPos = 0, infLimit = 0;
+let backAnim = [0, 1.5, 3, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], intentAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], tempAnim = [0, STARTING], effAnim = [0, "none"], playerAnim = [0, "idle"], extraAnim = [], primeAnim = 0, transition = 0, screenShake = 0, auraBladePos = [[65, 10], [80, 25], [42, 0], [28, 35]], auraBladeAnim = [0, 3, 6, 1], popups = [], infPos = 0, infLimit = 0;
 
 const draw = {
 	/**
@@ -714,32 +714,30 @@ const graphics = {
 				draw.image(background.cave);
 				draw.rect("#10106080");
 				draw.image(background.temple);
-				draw.image(background.floating_arch, 136, 34 - Math.round(backAnim[0]));
-				draw.image(background.debris, 151, 92 - Math.round(backAnim[2]));
+				draw.image(background.floating_arch, 136, 35 - Math.abs(Math.round(backAnim[0]) - 2));
+				draw.image(background.debris, 151, 93 - Math.abs(Math.round(backAnim[1]) - 2));
 			};
 			if (game.artifacts.includes(0) && game.floor == 10) {
 				if (transition < 100) {
 					ctx.globalAlpha = transition / 100;
 				};
-				draw.image(background.tunnel_of_time, 0 - backAnim[6]);
-				if (!game.enemies[0]?.eff?.countdown) backAnim[6]++;
-				else backAnim[6]--;
-				if (backAnim[6] >= 16) backAnim[6] -= 16;
-				else if (backAnim[6] < 0) backAnim[6] += 16;
+				draw.image(background.tunnel_of_time, 0 - backAnim[3]);
+				if (!game.enemies[0]?.eff?.countdown) backAnim[3]++;
+				else backAnim[3]--;
+				if (backAnim[3] >= 16) backAnim[3] -= 16;
+				else if (backAnim[3] < 0) backAnim[3] += 16;
 				ctx.globalAlpha = 1;
 			};
 			if (game.floor != 10) {
-				let now = new Date(), time = [now.getHours(), now.getMinutes()], x = 170, y = 63 - Math.round(backAnim[4]);
+				let now = new Date(), time = [now.getHours(), now.getMinutes()], y = 64 - Math.abs(Math.round(backAnim[2]) - 2);
 				time[0] += (time[1] / 60);
 				if (time[0] >= 12) time[0] = time[0] - 12;
-				draw.image(background.clock_face, x, y);
-				draw.clock(x, y, time[0], time[1]);
+				draw.image(background.clock_face, 170, y);
+				draw.clock(170, y, time[0], time[1]);
 			};
-			for (let index = 0; index < backAnim.length; index += 2) {
-				if (backAnim[index] >= 1) backAnim[index + 1] = DOWN;
-				else if (backAnim[index] <= -1) backAnim[index + 1] = UP;
-				if (backAnim[index + 1] === UP) backAnim[index] += (Math.random() + 0.5) * 0.075;
-				else if (backAnim[index + 1] === DOWN) backAnim[index] -= (Math.random() + 0.5) * 0.075;
+			for (let index = 0; index < 3; index++) {
+				backAnim[index] += (Math.random() + 0.5) * 0.075;
+				if (backAnim[index] >= 4) backAnim[index] -= 4;
 			};
 		};
 	},
@@ -842,7 +840,7 @@ const graphics = {
 		if (hidden()) return;
 		for (let index = 0; index < game.enemies.length; index++) {
 			if (game.enemies[index].eff.shroud) return;
-			if (starAnim[index] >= 4) starAnim[index] = 0;
+			if (intentAnim[index] >= 4) intentAnim[index] = 0;
 			if (index !== game.enemyNum) {
 				let power = 0;
 				if (game.enemies[index].intent === ATTACK) {
@@ -853,7 +851,7 @@ const graphics = {
 				};
 				draw.intent(enemyPos[index][0] + 16, getEnemyIntentPos(index, true), power, game.enemies[index].intent);
 			};
-			starAnim[index] += (Math.random() + 0.5) * 0.15;
+			intentAnim[index] += (Math.random() + 0.5) * 0.15;
 		};
 	},
 	/**
@@ -862,18 +860,10 @@ const graphics = {
 	player() {
 		let x = 15, y = 30;
 		// aura blades
-		if (game.eff.aura_blades) {
-			auraBladePos = [[65, 10], [80, 25], [40, 0], [25, 35]];
-			for (let num = 0; num < auraBladePos.length && num <= 4; num++) {
-				auraBladePos[num][1] += Math.round(auraBladeAnim[num * 2]);
-				if (auraBladeAnim[num * 2 + 1] === UP) auraBladeAnim[num * 2] += (Math.random() + 0.5) * 0.05;
-				else auraBladeAnim[num * 2] -= (Math.random() + 0.5) * 0.05;
-				if (auraBladeAnim[num * 2] >= 4) auraBladeAnim[num * 2 + 1] = DOWN;
-				else if (auraBladeAnim[num * 2] <= 0) auraBladeAnim[num * 2 + 1] = UP;
-			};
-			for (let blade = 0; blade < game.eff.aura_blades && blade < 4; blade++) {
-				draw.image(aura_blade, x + auraBladePos[blade][0], y + auraBladePos[blade][1]);
-			};
+		for (let index = 0; index < game.eff.aura_blades && index < 4; index++) {
+			draw.image(aura_blade, x + auraBladePos[index][0], y + auraBladePos[index][1] + 4 - Math.abs(Math.round(auraBladeAnim[index]) - 4));
+			auraBladeAnim[index] += (Math.random() + 0.5) * 0.05;
+			if (auraBladeAnim[index] >= 8) auraBladeAnim[index] -= 8;
 		};
 		// icons
 		for (const key in game.eff) {
