@@ -212,34 +212,36 @@ function shuffle(deck) {
 };
 
 /**
- * Has the player draw their hand.
+ * Draws cards.
+ * @param {number} num - the number of cards to draw.
  */
-function drawHand() {
-	const handSize = get.handSize();
-	let index = 0, len = game.deckLocal.length;
+function drawCards(num) {
 	if (game.deckLocal.length) {
-		for (; index < handSize && index < len; index++) {
-			game.hand.push(game.deckLocal[0]);
-			game.deckLocal.splice(0, 1);
+		for (; num > 0 && game.deckLocal.length > 0; num--) {
+			game.hand.push(game.deckLocal.shift());
 		};
 	};
-	if (index != handSize) {
-		len = game.discard.length;
-		for (let a = 0; a < len; a++) {
-			game.deckLocal.push(game.discard[a]);
-		};
+	if (num > 0) {
+		game.deckLocal = shuffle(game.discard.slice());
 		game.discard = [];
-		game.deckLocal = shuffle(game.deckLocal);
-		len = game.deckLocal.length;
-		for (; index < handSize && index < len; index++) {
-			game.hand.push(game.deckLocal[0]);
-			game.deckLocal.splice(0, 1);
+		for (; num > 0 && game.deckLocal.length > 0; num--) {
+			game.hand.push(game.deckLocal.shift());
 		};
 	};
 };
 
 /**
- * Has the player discard their hand.
+ * Discards a card, not including removing the card from the hand.
+ * @param {Card} cardObj - the card object.
+ * @param {boolean} used - whether the card was used. Defaults to `false`.
+ */
+function discardCard(cardObj, used = false) {
+	if (used && cards[cardObj.id].keywords.includes("one use")) game.void.push(new Card(cardObj.id, cardObj.level));
+	else game.discard.push(new Card(cardObj.id, cardObj.level));
+};
+
+/**
+ * Discards the player's hand.
  */
 function discardHand() {
 	for (let index = 0; index < game.hand.length; ) {
@@ -247,9 +249,7 @@ function discardHand() {
 			game.hand[index].retention--;
 			index++;
 		} else {
-			delete game.hand[index].charge;
-			delete game.hand[index].retention;
-			game.discard.push(game.hand[index]);
+			discardCard(game.hand[index]);
 			game.hand.splice(index, 1);
 		};
 	};
@@ -257,11 +257,11 @@ function discardHand() {
 
 /**
  * Gets the cost of a card.
- * @param {Card} obj - the card object.
+ * @param {Card} cardObj - the card object.
  */
-function getCardCost(obj) {
-	if (obj.charge > 0) return Math.max(cards[obj.id].cost - obj.charge, 0);
-	return +cards[obj.id].cost;
+function getCardCost(cardObj) {
+	if (cardObj.charge > 0) return Math.max(getCardAttr("cost", cardObj.id, cardObj.level) - cardObj.charge, 0);
+	return +getCardAttr("cost", cardObj.id, cardObj.level);
 };
 
 const AURA_BLADE = 200;

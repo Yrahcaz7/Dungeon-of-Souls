@@ -47,12 +47,12 @@ class Enemy {
 	/**
 	 * Returns a new enemy.
 	 * @param {number} type - the enemy's type.
-	 * @param {number} power - the enemy's power. Defaults to 1.
+	 * @param {number} power - the enemy's power. Defaults to `1`.
 	 */
 	constructor(type, power = 1) {
 		if (type === SLIME.SMALL || type === SENTRY.SMALL) power--;
-		else if (type === SLIME.PRIME || type === SENTRY.PRIME) power++;
-		else if (type === FRAGMENT) power += 2;
+		else if (type === SLIME.PRIME || type === SENTRY.BIG) power++;
+		else if (type === FRAGMENT || type === SENTRY.PRIME) power += 2;
 		power += (game.difficulty * 0.75) + 2;
 		power += (game.floor * 0.05) * (2 ** game.difficulty);
 		power += get.area() * 0.2;
@@ -177,7 +177,7 @@ class Enemy {
 	};
 	/**
 	 * Gets the enemy's intent.
-	 * @param {boolean} first - whether this is the enemy's first intent. Defaults to false.
+	 * @param {boolean} first - whether this is the enemy's first intent. Defaults to `false`.
 	 */
 	getIntent(first = false) {
 		if (this.type === FRAGMENT) {

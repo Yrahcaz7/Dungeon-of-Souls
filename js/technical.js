@@ -160,35 +160,35 @@ window.onresize = () => {
 document.addEventListener("keydown", event => {
 	const key = event.key, prevAction = action;
 	if ((key == "E" || key == "e") && game.turn === TURN.PLAYER && game.select[0] !== CONFIRM_END) endTurnConfirm();
-	else if (key == "1" && actionTimer == -1) {
+	else if (key == "1" && !event.repeat && actionTimer == -1) {
 		if (game.select[0] === DECK && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [DECK, 0];
 		} else {
 			if (game.select[2]) game.select = [DECK, 1, game.select[2]];
 			else game.select = [DECK, 1, game.select];
-			action = -1;
 		};
+		action = -1;
 		actionTimer = 2;
-	} else if (key == "2" && game.void.length && actionTimer == -1) {
+	} else if (key == "2" && !event.repeat && game.void.length && actionTimer == -1) {
 		if (game.select[0] === VOID && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [VOID, 0];
 		} else {
 			if (game.select[2]) game.select = [VOID, 1, game.select[2]];
 			else game.select = [VOID, 1, game.select];
-			action = -1;
 		};
+		action = -1;
 		actionTimer = 2;
-	} else if (key == "3" && actionTimer == -1) {
+	} else if (key == "3" && !event.repeat && actionTimer == -1) {
 		if (game.select[0] === DISCARD && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [DISCARD, 0];
 		} else {
 			if (game.select[2]) game.select = [DISCARD, 1, game.select[2]];
 			else game.select = [DISCARD, 1, game.select];
-			action = -1;
 		};
+		action = -1;
 		actionTimer = 2;
 	} else if ((key == " " || key == "Enter") && !event.repeat && !(game.select[2] && menuLocation === -1) && actionTimer == -1) {
 		action = -1;

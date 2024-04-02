@@ -407,8 +407,8 @@ const draw = {
 		if (!(cardObj instanceof Object)) cardObj = new Card(cardObj);
 		let x = handPos[index], img = card.error;
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
-		const rarity = +cards[cardObj.id].rarity, name = cards[cardObj.id].name;
-		if (card[rarities[rarity]] && rarity >= 0) img = card[rarities[rarity]][name];
+		const rarity = +cards[cardObj.id].rarity;
+		if (card[rarities[rarity]] && rarity >= 0) img = card[rarities[rarity]][cards[cardObj.id].name];
 		// card back
 		if (cardObj.id !== 0) draw.image(card.back, x + 2, y + 2);
 		// card outline
@@ -428,10 +428,11 @@ const draw = {
 		if (img == card.error) draw.image(card.error, x + 2, y + 2);
 		else draw.image(img, x + 7, y + 7);
 		// card title
-		if (name.length >= 11) draw.lore(x + 33, y + 44, name.title(), {"text-align": CENTER, "text-small": true});
-		else draw.lore(x + 32, y + 42, name.title(), {"text-align": CENTER});
+		const name = getCardAttr("name", cardObj.id, cardObj.level);
+		if (name.length >= 11) draw.lore(x + 33, y + 44, name, {"text-align": CENTER, "text-small": true});
+		else draw.lore(x + 32, y + 42, name, {"text-align": CENTER});
 		// card description
-		let desc = cards[cardObj.id].desc, exDamage = get.extraDamage(), mulDamage = get.dealDamageMult(), valueIsLess = false;
+		let desc = getCardAttr("desc", cardObj.id, cardObj.level), exDamage = get.extraDamage(), mulDamage = get.dealDamageMult(), valueIsLess = false;
 		if (cards[cardObj.id].attackEffects !== false && !outside) {
 			if (cards[cardObj.id].keywords.includes("uniform")) exDamage = Math.floor(exDamage * 0.5);
 			if (game.select[0] === ATTACK_ENEMY) mulDamage = get.dealDamageMult(game.select[1]);
@@ -469,9 +470,10 @@ const draw = {
 			draw.image(card.rarity.rare, x - 2, y - 2);
 		};
 		if (!cards[cardObj.id].keywords.includes("unplayable")) {
+			let originalCost = getCardAttr("cost", cardObj.id, cardObj.level);
 			let cost = getCardCost(cardObj);
-			if (cost < cards[cardObj.id].cost) draw.image(card.green_energy, x, y);
-			else if (cost > cards[cardObj.id].cost) draw.image(card.red_energy, x, y);
+			if (cost < originalCost) draw.image(card.green_energy, x, y);
+			else if (cost > originalCost) draw.image(card.red_energy, x, y);
 			else draw.image(card.energy, x, y);
 			draw.lore(x + 4, y + 2, getCardCost(cardObj));
 		};
@@ -1530,7 +1532,7 @@ const graphics = {
 		} else if (game.select[0] === ARTIFACT_REWARDS) {
 			info.artifact(game.room[6][game.select[1]], 179 + (game.select[1] * 32), 90);
 		} else if (game.select[0] === DECK && game.select[1] == 1 && game.deckLocal.length) {
-			graphics.cardInfo("deck", game.deckLocal.slice(0).cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)]);
+			graphics.cardInfo("deck", game.deckLocal.slice().cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)]);
 		} else if ((game.select[0] === VOID || game.select[0] === DISCARD) && game.select[1] == 1 && game[game.select[0] === VOID ? "void" : "discard"].length) {
 			graphics.cardInfo("deck", game[game.select[0] === VOID ? "void" : "discard"][game.cardSelect[0] + (game.cardSelect[1] * 6)]);
 		} else if (game.select[0] === CARD_REWARDS && game.select[1] > -1 && game.select[1] < get.cardRewardChoices()) {

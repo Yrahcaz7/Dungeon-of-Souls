@@ -170,7 +170,7 @@ function fadeMusic() {
  */
 function enterBattle() {
 	game.state = STATE.BATTLE;
-	game.deckLocal = shuffle(game.deck.slice(0));
+	game.deckLocal = shuffle(game.deck.slice());
 	startTurn();
 };
 
@@ -187,7 +187,7 @@ function startTurn() {
 		if (game.enemies[index].eff.weakness) game.enemies[index].eff.weakness--;
 	};
 	// start of your turn effects
-	drawHand();
+	drawCards(get.handSize());
 	game.turn = TURN.PLAYER;
 	if (game.eff.reinforces) game.eff.reinforces--;
 	else game.shield = 0;
@@ -234,13 +234,11 @@ function endTurn() {
  */
 function endTurnConfirm() {
 	let confirm = false;
-	if (game.hand.length >= 1) {
-		for (let index = 0; index < game.hand.length; index++) {
-			const id = game.hand[index].id;
-			if (getCardCost(game.hand[index]) <= game.energy && !cards[id].keywords.includes("unplayable") && (!cards[id].can || cards[id].can())) {
-				confirm = true;
-				break;
-			};
+	for (let index = 0; index < game.hand.length; index++) {
+		const id = game.hand[index].id;
+		if (getCardCost(game.hand[index]) <= game.energy && !cards[id].keywords.includes("unplayable") && (!cards[id].can || cards[id].can(game.hand[index].level))) {
+			confirm = true;
+			break;
 		};
 	};
 	if (confirm) game.select = [CONFIRM_END, 0];
@@ -256,10 +254,10 @@ function playerTurn() {
 	if (game.enemyAtt[3] && playerAnim[1] == "idle") {
 		const attCard = cards[game.enemyAtt[2].id];
 		if (attCard.target !== false && attCard.damage) {
-			if (cards[game.enemyAtt[2].id].keywords.includes("uniform")) dealDamage(attCard.damage, 0.5);
-			else dealDamage(attCard.damage);
+			if (cards[game.enemyAtt[2].id].keywords.includes("uniform")) dealDamage(getCardAttr("damage", game.enemyAtt[2].id, game.enemyAtt[2].level), 0.5);
+			else dealDamage(getCardAttr("damage", game.enemyAtt[2].id, game.enemyAtt[2].level));
 		};
-		if (typeof attCard.attack == "function") attCard.attack();
+		if (typeof attCard.attack == "function") attCard.attack(game.enemyAtt[2].level);
 		game.enemyAtt = [-1, -1, new Card(), false];
 		game.attackEffects = [];
 	};
@@ -780,12 +778,9 @@ function performAction() {
 		// attack enemy
 		if (game.select[0] === ATTACK_ENEMY) {
 			game.energy -= getCardCost(game.enemyAtt[2]);
-			delete game.enemyAtt[2].charge;
-			delete game.enemyAtt[2].retention;
 			activateAttackEffects(game.enemyAtt[2].id);
 			game.enemyAtt[3] = true;
-			if (cards[game.enemyAtt[2].id].keywords.includes("one use")) game.void.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
-			else game.discard.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
+			discardCard(game.hand.splice(game.enemyAtt[0], 1)[0], true);
 			cardAnim.splice(game.enemyAtt[0], 1);
 			game.enemyAtt[0] = -1;
 			game.enemyAtt[1] = game.select[1];
@@ -803,12 +798,9 @@ function performAction() {
 				actionTimer = 4;
 				return;
 			} else {
-				if (cards[game.enemyAtt[2].id].effect) cards[game.enemyAtt[2].id].effect();
+				if (cards[game.enemyAtt[2].id].effect) cards[game.enemyAtt[2].id].effect(game.enemyAtt[2].level);
 				game.energy -= getCardCost(game.enemyAtt[2]);
-				delete game.enemyAtt[2].charge;
-				delete game.enemyAtt[2].retention;
-				if (cards[game.enemyAtt[2].id].keywords.includes("one use")) game.void.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
-				else game.discard.push(game.hand.splice(game.enemyAtt[0], 1)[0]);
+				discardCard(game.hand.splice(game.enemyAtt[0], 1)[0], true);
 				cardAnim.splice(game.enemyAtt[0], 1);
 				if (game.enemyAtt[0]) game.select = [HAND, game.enemyAtt[0] - 1];
 				else game.select = [HAND, 0];
@@ -825,9 +817,9 @@ function performAction() {
 				if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
 				else notif = [game.select[1], 0, "unplayable", 0];
 				actionTimer = 1;
-			} else if (cards[id].can && !cards[id].can()) {
-				if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, cards[id].cannotMessage, -2];
-				else notif = [game.select[1], 0, cards[id].cannotMessage, 0];
+			} else if (cards[id].can && !cards[id].can(selected.level)) {
+				if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, getCardAttr("cannotMessage", id, selected.level), -2];
+				else notif = [game.select[1], 0, getCardAttr("cannotMessage", id, selected.level), 0];
 				actionTimer = 1;
 			} else if (game.energy >= getCardCost(selected)) {
 				if (cards[id].select instanceof Array) { // effects of cards that have a special selection
@@ -836,12 +828,9 @@ function performAction() {
 					game.enemyAtt[2] = game.hand[game.enemyAtt[0]];
 					actionTimer = 4;
 				} else if (cards[id].effect) { // effects of cards that activate right away
-					cards[id].effect();
+					cards[id].effect(selected.level);
 					game.energy -= getCardCost(selected);
-					delete selected.charge;
-					delete selected.retention;
-					if (cards[id].keywords.includes("one use")) game.void.push(game.hand.splice(game.select[1], 1)[0]);
-					else game.discard.push(game.hand.splice(game.select[1], 1)[0]);
+					discardCard(game.hand.splice(game.select[1], 1)[0], true);
 					cardAnim.splice(game.select[1], 1);
 					if (game.prevCard) game.select = [HAND, game.prevCard - 1];
 					else game.select = [HAND, 0];
@@ -854,8 +843,7 @@ function performAction() {
 						game.enemyAtt[2] = game.hand[game.select[1]];
 						activateAttackEffects(id);
 						game.enemyAtt[3] = true;
-						if (cards[id].keywords.includes("one use")) game.void.push(game.hand.splice(game.select[1], 1)[0]);
-						else game.discard.push(game.hand.splice(game.select[1], 1)[0]);
+						discardCard(game.hand.splice(game.select[1], 1)[0], true);
 						cardAnim.splice(game.select[1], 1);
 						if (game.prevCard) game.select = [HAND, game.prevCard - 1];
 						else game.select = [HAND, 0];
@@ -1339,7 +1327,7 @@ function updateVisuals() {
 		graphics.options();
 	} else if (game.select[0] === DECK && game.select[1]) {
 		if (game.select[2] && game.select[2][0] === IN_MAP) graphics.map();
-		graphics.deck(game.deckLocal.slice(0).cardSort());
+		graphics.deck(game.deckLocal.slice().cardSort());
 	} else if (game.select[0] === VOID && game.select[1]) {
 		if (game.select[2] && game.select[2][0] === IN_MAP) graphics.map();
 		graphics.deck(game.void);
@@ -1407,7 +1395,8 @@ function updateVisuals() {
 		let x = 99, y = 83;
 		draw.rect("#0008");
 		draw.box(x + 1, y + 1, 200, 26);
-		draw.lore(x + 2, y + 2, "Are you sure you want to destroy the card " + cards[game.deck[game.cardSelect[0] + game.cardSelect[1] * 6].id].name.title() + "?\nIf you have multiple, this will only destroy one copy of the card.", {"text-small": true});
+		let card = game.deck[game.cardSelect[0] + game.cardSelect[1] * 6];
+		draw.lore(x + 2, y + 2, "Are you sure you want to destroy the card " + getCardAttr("name", card.id, card.level) + "?\nIf you have multiple, this will only destroy one copy of the card.", {"text-small": true});
 		if (game.select[1] == 0) draw.rect("#fff", x + 1, y + 13, 23, 14);
 		else if (game.select[1] == 1) draw.rect("#fff", x + 23, y + 13, 17, 14);
 		else draw.rect("#fff", x + 39, y + 13, 29, 14);

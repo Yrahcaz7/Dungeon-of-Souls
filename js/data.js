@@ -92,7 +92,8 @@ gameplay = ""
 	+ "After each battle, you will get rewards, including a choice of 3 cards.\n"
 	+ "Some special things can give you more or less card choices, but it's normally 3.\n"
 	+ "Choose cards wisely, and try to get a good synergy between the cards in your deck.\n"
-	+ " - Put info about enhancements here when they are added.\n"
+	+ " - Sometimes you will get a purifier, which will let you remove a card from your deck.\n"
+	+ " - In Act 2, you can also get refiners, which let you upgrade one of your cards.\n"
 	+ "<b>Artifacts<s>"
 	+ "Artifacts are very important. You start with two, <#f0c060>The Map</#f0c060> and Iron Will.\n"
 	+ "<#f0c060>The map</#f0c060> you always have, and it lets you pick where you go next after a battle.\n"
@@ -114,6 +115,7 @@ changelog = ""
 	+ "<b>Version 2.0 - Coming Soon!<s>"
 	+ " - in progress of adding Act 2\n"
 	+ " - added 3 new types of enemies!\n"
+	+ " - you can now enhance cards!\n"
 	+ " - improved game performance\n"
 	+ " - improved some visuals\n"
 	+ "<b>Version 1.3 - Deception<s>"
@@ -198,11 +200,16 @@ function updateData() {
 	if (game.hand.length !== handPos.length) {
 		handPos = [];
 		const margin = [-2, -2, -2, -2, -2, 8, 16, 24, 28, 32, 36, 38, 40, 42, 44, 46, 46, 48, 48, 50, 50, 52, 52, 52, 52];
-		if (game.hand.length > margin.length) game.hand.splice(margin.length);
-		if (margin[game.hand.length - 1]) {
-			for (let index = 0; index < game.hand.length; index++) {
-				handPos.push(198 + (index - (game.hand.length / 2)) * 64 - (index - ((game.hand.length - 1) / 2)) * margin[game.hand.length - 1]);
+		// discard extra cards
+		if (game.hand.length > margin.length) {
+			let extraCards = game.hand.splice(margin.length);
+			for (const key of extraCards) {
+				discardCard(key);
 			};
+		};
+		// calculate handPos
+		for (let index = 0; index < game.hand.length; index++) {
+			handPos.push(198 + (index - (game.hand.length / 2)) * 64 - (index - ((game.hand.length - 1) / 2)) * margin[game.hand.length - 1]);
 		};
 	};
 	// info
