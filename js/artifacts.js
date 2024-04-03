@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const END_OF_BATTLE = 900, ON_PICKUP = 901, END_OF_TURN = 902;
+const END_OF_BATTLE = 900, ON_PICKUP = 901, END_OF_TURN = 902, CARD_PLAY = 903;
 
 const artifacts = {
 	0: {
@@ -25,7 +25,7 @@ const artifacts = {
 	},
 	1: {
 		name: "iron will",
-		desc: "Every time a battle\nends, you heal 2 health.",
+		desc: "You heal 2 health each\ntime you clear a floor.",
 		rarity: 0,
 		[END_OF_BATTLE]() {
 			game.health += 2;
@@ -44,7 +44,7 @@ const artifacts = {
 	4: {
 		name: "candy",
 		rarity: 1,
-		desc: "You have 15 less max\nhealth, but you heal by\n3 after every battle.",
+		desc: "You have 15 less max\nhealth, but you heal by\n3 each time you clear a\nfloor.",
 		[END_OF_BATTLE]() {
 			game.health += 3;
 		},
@@ -70,12 +70,39 @@ const artifacts = {
 			game.health += 10;
 		},
 	},
+	8: {
+		name: "magic book",
+		rarity: 1,
+		desc: "You draw a card each\ntime you play a magic\ntype card.",
+		[CARD_PLAY](cardObj) {
+			if (Math.floor(cardObj.id / 1000) == 4) {
+				drawCards(1);
+			};
+		},
+	},
+	9: {
+		name: "bottled fire",
+		rarity: 1,
+		desc: "If an enemy takes damage\nfrom a non-additional\nburn effect, it triggers\nan additional time.",
+	},
 };
 
 for (const key in artifacts) {
 	if (Object.hasOwnProperty.call(artifacts, key)) {
 		artifacts[key].desc = artifacts[key].desc.replace(/(max\shealth|health|heal|damage|attack)/gi, "<#f44>$1</#f44>");
 		artifacts[key].desc = artifacts[key].desc.replace(/(shield|defense)/gi, "<#58f>$1</#58f>");
+		artifacts[key].desc = artifacts[key].desc.replace(/(magic)(\stype)/gi, "<#f0f>$1</#f0f>$2");
+	};
+};
+
+/**
+ * Activates all artifact effects of a type.
+ * @param {END_OF_BATTLE | END_OF_TURN | CARD_PLAY} type - the type of effect.
+ */
+function activateArtifacts(type, ...params) {
+	for (let index = 0; index < game.artifacts.length; index++) {
+		const func = artifacts[game.artifacts[index]][type];
+		if (typeof func == "function") func(...params);
 	};
 };
 

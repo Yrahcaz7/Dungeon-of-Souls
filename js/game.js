@@ -181,8 +181,13 @@ function startTurn() {
 	// end of enemy turn effects
 	for (let index = 0; index < game.enemies.length; index++) {
 		if (game.enemies[index].eff.burn) {
+			let prevHealth = game.enemies[index].health;
 			dealDamage(game.enemies[index].eff.burn, 0, index, false);
 			game.enemies[index].eff.burn--;
+			if (game.artifacts.includes(9) && game.enemies[index].eff.burn && game.enemies[index].health < prevHealth) {
+				dealDamage(game.enemies[index].eff.burn, 0, index, false);
+				game.enemies[index].eff.burn--;
+			};
 		};
 		if (game.enemies[index].eff.weakness) game.enemies[index].eff.weakness--;
 	};
@@ -211,10 +216,7 @@ function endTurn() {
 	};
 	if (game.eff.weakness) game.eff.weakness--;
 	// activate artifacts
-	for (let index = 0; index < game.artifacts.length; index++) {
-		const func = artifacts[game.artifacts[index]][END_OF_TURN];
-		if (typeof func == "function") func();
-	};
+	activateArtifacts(END_OF_TURN);
 	// start of enemy turn effects
 	game.turn = TURN.ENEMY;
 	game.enemyNum = -1;
@@ -849,6 +851,7 @@ function performAction() {
 			game.enemyAtt[3] = true;
 			discardCard(game.hand.splice(game.enemyAtt[0], 1)[0], true);
 			cardAnim.splice(game.enemyAtt[0], 1);
+			activateArtifacts(CARD_PLAY, game.enemyAtt[2]);
 			game.enemyAtt[0] = -1;
 			game.enemyAtt[1] = game.select[1];
 			if (game.prevCard) game.select = [HAND, game.prevCard - 1];
@@ -869,6 +872,7 @@ function performAction() {
 				game.energy -= getCardCost(game.enemyAtt[2]);
 				discardCard(game.hand.splice(game.enemyAtt[0], 1)[0], true);
 				cardAnim.splice(game.enemyAtt[0], 1);
+				activateArtifacts(CARD_PLAY, game.enemyAtt[2]);
 				if (game.enemyAtt[0]) game.select = [HAND, game.enemyAtt[0] - 1];
 				else game.select = [HAND, 0];
 				game.enemyAtt = [-1, -1, new Card(), false];
@@ -897,8 +901,10 @@ function performAction() {
 				} else if (cards[id].effect) { // effects of cards that activate right away
 					cards[id].effect(selected.level);
 					game.energy -= getCardCost(selected);
-					discardCard(game.hand.splice(game.select[1], 1)[0], true);
+					let cardObj = game.hand.splice(game.select[1], 1)[0];
+					discardCard(cardObj, true);
 					cardAnim.splice(game.select[1], 1);
+					activateArtifacts(CARD_PLAY, cardObj);
 					if (game.prevCard) game.select = [HAND, game.prevCard - 1];
 					else game.select = [HAND, 0];
 					actionTimer = 4;
@@ -910,8 +916,10 @@ function performAction() {
 						game.enemyAtt[2] = game.hand[game.select[1]];
 						activateAttackEffects(id);
 						game.enemyAtt[3] = true;
-						discardCard(game.hand.splice(game.select[1], 1)[0], true);
+						let cardObj = game.hand.splice(game.select[1], 1)[0];
+						discardCard(cardObj, true);
 						cardAnim.splice(game.select[1], 1);
+						activateArtifacts(CARD_PLAY, cardObj);
 						if (game.prevCard) game.select = [HAND, game.prevCard - 1];
 						else game.select = [HAND, 0];
 						actionTimer = 4;
@@ -1207,7 +1215,7 @@ function performAction() {
 	};
 	// options
 	if (game.select[0] === OPTIONS) {
-		const option = Object.keys(global.options)[game.select[1] - 2];
+		const option = +Object.keys(global.options)[game.select[1] - 2];
 		if (option === OPTION.PIXEL_PERFECT_SIZE) {
 			let index = PIXEL_SIZES.indexOf(global.options[OPTION.PIXEL_PERFECT_SIZE]) + 1;
 			if (index >= PIXEL_SIZES.length) index = 0;
@@ -1244,10 +1252,7 @@ function endBattle() {
 		game.state = STATE.EVENT_FIN;
 		game.turn = -1;
 		// activate artifacts
-		for (let index = 0; index < game.artifacts.length; index++) {
-			const func = artifacts[game.artifacts[index]][END_OF_BATTLE];
-			if (typeof func == "function") func();
-		};
+		activateArtifacts(END_OF_BATTLE);
 		// set rewards
 		game.rewards = [];
 		if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");

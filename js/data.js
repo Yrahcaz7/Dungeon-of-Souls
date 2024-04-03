@@ -34,7 +34,7 @@ const infoText = {
 	[DEFEND]: "This enemy intends to defend\nitself on its next turn.",
 	[BUFF]: "This enemy intends to buff\nitself on its next turn.",
 	// other
-	"the map": "You can choose where\nyou go next. Cannot use\nduring a battle.",
+	"the map": "You can choose where\nto go next each time\nyou clear a floor.",
 	"card effect": "After a card leaves\nyour hand, it loses all\nof its applied effects.",
 };
 
@@ -114,8 +114,9 @@ gameplay = ""
 changelog = ""
 	+ "<b>Version 2.0 - Coming Soon!<s>"
 	+ " - in progress of adding Act 2\n"
-	+ " - added 3 new types of enemies!\n"
-	+ " - you can now enhance cards!\n"
+	+ " - added three new types of enemies!\n"
+	+ " - you can now refine your cards!\n"
+	+ " - there is two new artifacts\n"
 	+ " - improved game performance\n"
 	+ " - improved some visuals\n"
 	+ "<b>Version 1.3 - Deception<s>"

@@ -148,12 +148,14 @@ const player = {
 	boss: new Image,
 	boss_blue: new Image,
 	// artifacts
+	bottled_fire: new Image,
 	candy: new Image,
 	card_charm: new Image,
 	corrosion: new Image,
 	determination: new Image,
 	gem_of_rage: new Image,
 	iron_will: new Image,
+	magic_book: new Image,
 	nutritious_meal: new Image,
 	supershield: new Image,
 	// other
@@ -175,6 +177,7 @@ const player = {
 	top_right: new Image,
 	bottom_left: new Image,
 	bottom_right: new Image,
+	corner: new Image,
 }, icon = {
 	aura_blade: new Image,
 	burn: new Image,
@@ -185,12 +188,14 @@ const player = {
 	shroud: new Image,
 	weakness: new Image,
 }, artifact = {
+	bottled_fire: new Image,
 	candy: new Image,
 	card_charm: new Image,
 	corrosion: new Image,
 	determination: new Image,
 	gem_of_rage: new Image,
 	iron_will: new Image,
+	magic_book: new Image,
 	nutritious_meal: new Image,
 	supershield: new Image,
 }, intent = {

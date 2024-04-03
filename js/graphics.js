@@ -646,11 +646,11 @@ const info = {
 	 */
 	artifact(type, xOveride = NaN, yOveride = NaN) {
 		if (type == "the map") {
-			let x = (xOveride === xOveride ? xOveride : 21), y = (yOveride === yOveride ? yOveride : 12);
+			let x = (xOveride === xOveride ? xOveride : 21), y = (yOveride === yOveride ? yOveride : 13);
 			draw.textBox(x, y, 12, "The Map", {"text-align": CENTER});
 			draw.textBox(x, y + 13, 24, infoText["the map"], {"text-small": true});
 		} else {
-			let x = (xOveride === xOveride ? xOveride : 39 + (game.select[1] * 18)), y = (yOveride === yOveride ? yOveride : 12);
+			let x = (xOveride === xOveride ? xOveride : 39 + (game.select[1] * 18)), y = (yOveride === yOveride ? yOveride : 13);
 			const obj = artifacts[type];
 			if (!obj) return;
 			if (obj.name.length <= 12) {
@@ -809,9 +809,10 @@ const graphics = {
 		// extra covers
 		if (get.area() == 1) {
 			let topLeftX = [(("" + game.floor).length + ("" + game.gold).length - 2) * 6 - 100, (game.artifacts.length - 1) * 18 - 160];
-			if (topLeftX[0] >= topLeftX[1]) draw.image(extra.top_left, topLeftX[0], 0);
+			if (topLeftX[0] > topLeftX[1]) draw.image(extra.top_left, topLeftX[0], 0);
 			else draw.rect("#000", topLeftX[1] + 199, 0, 1, 12);
 			draw.image(extra.top_left_big, topLeftX[1], 0);
+			if (topLeftX[0] >= topLeftX[1] + 12) draw.image(extra.corner, topLeftX[1] + 199, 12);
 			draw.image(extra.top_right, 339, 0);
 			draw.image(extra.bottom_left, 0, 159);
 			draw.image(extra.bottom_right, 377, game.void.length ? 159 : 178);
@@ -824,13 +825,13 @@ const graphics = {
 		draw.image(extra.deck, 4, 182);
 		if (game.void.length) draw.image(extra.void, 381, 163);
 		draw.image(extra.discard, 382, 182);
-		draw.image(extra.map, 2, 12);
+		draw.image(extra.map, 2, 13);
 		// artifacts
 		for (let index = 0; index < game.artifacts.length; index++) {
 			const name = ("" + artifacts[game.artifacts[index]].name).replace(/\s/g, "_");
 			if (!name) continue;
-			draw.image(artifact[name], 20 + (index * 18), 12);
-			if (game.select[0] === ARTIFACTS && game.select[1] === index) draw.image(select[name], 19 + (index * 18), 11);
+			draw.image(artifact[name], 20 + (index * 18), 13);
+			if (game.select[0] === ARTIFACTS && game.select[1] === index) draw.image(select[name], 19 + (index * 18), 12);
 		};
 		// selected
 		if (game.select[0] === LOOKER) draw.image(select.round, 342, 2);
@@ -840,7 +841,7 @@ const graphics = {
 		else if (game.select[0] === DECK) draw.image(select.deck, 3, 181);
 		else if (game.select[0] === VOID) draw.image(select.round, 380, 162);
 		else if (game.select[0] === DISCARD) draw.image(select.discard, 381, 181);
-		else if (game.select[0] === MAP) draw.image(select.map, 1, 11);
+		else if (game.select[0] === MAP) draw.image(select.map, 1, 12);
 		// info
 		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": (get.area() == 1 ? "#000" : "#f44")});
 		// intents
