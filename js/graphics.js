@@ -471,11 +471,16 @@ const draw = {
 		};
 		if (!cards[cardObj.id].keywords.includes("unplayable")) {
 			let originalCost = getCardAttr("cost", cardObj.id, cardObj.level);
-			let cost = getCardCost(cardObj);
-			if (cost < originalCost) draw.image(card.green_energy, x, y);
-			else if (cost > originalCost) draw.image(card.red_energy, x, y);
-			else draw.image(card.energy, x, y);
-			draw.lore(x + 4, y + 2, getCardCost(cardObj));
+			if (outside) {
+				draw.image(card.energy, x, y);
+				draw.lore(x + 4, y + 2, originalCost);
+			} else {
+				let cost = getCardCost(cardObj);
+				if (cost < originalCost) draw.image(card.green_energy, x, y);
+				else if (cost > originalCost) draw.image(card.red_energy, x, y);
+				else draw.image(card.energy, x, y);
+				draw.lore(x + 4, y + 2, cost);
+			};
 		};
 	},
 	/**
@@ -580,7 +585,7 @@ const info = {
 	deck(type, xPlus = 0, yPlus = 0) {
 		let x = (game.cardSelect[0] * 66) + xPlus, y = 15 + (game.cardSelect[1] * 98) - game.deckPos + yPlus;
 		if (game.cardSelect[0] >= 4) {
-			const loc = (((game.select[0] === IN_MAP && game.select[1]) || game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY) ? "deck" : (game.select[0] === DECK ? "deckLocal" : (game.select[0] === VOID ? "void" : "discard")));
+			const loc = (inOutsideDeck() ? "deck" : (game.select[0] === DECK ? "deckLocal" : (game.select[0] === VOID ? "void" : "discard")));
 			const ref = cards[game[loc][game.cardSelect[0] + (game.cardSelect[1] * 6)].id];
 			if (ref.keywords.includes("unplayable") && ref.rarity <= 1) x -= 143;
 			else x -= 145;
@@ -1342,10 +1347,14 @@ const graphics = {
 			if (game.deckPos > Math.max(98 * (Math.floor((len - 1) / 6) - 1) + 11, 0)) game.deckPos = Math.max(98 * (Math.floor((len - 1) / 6) - 1) + 11, 0);
 			let selected;
 			for (let x = 0, y = 0; x + (y * 6) < len; x++) {
-				if (x === game.cardSelect[0] && y === game.cardSelect[1]) {
+				if (x === game.cardSelect[0] && y === game.cardSelect[1] && game.select[0] !== CONFIRM_REFINE) {
 					selected = [x, y];
+				} else if ((game.select[0] === REFINER || game.select[0] === CONFIRM_REFINE) && deck[x + (y * 6)].level > 0) {
+					ctx.globalAlpha = 0.75;
+					draw.card(deck[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66), inOutsideDeck());
+					ctx.globalAlpha = 1;
 				} else {
-					draw.card(deck[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66), (game.select[0] === IN_MAP || game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY));
+					draw.card(deck[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66), inOutsideDeck());
 				};
 				if (x >= 5) {
 					x = -1;
@@ -1353,14 +1362,22 @@ const graphics = {
 				};
 			};
 			if (selected) {
-				draw.card(deck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66), (game.select[0] === IN_MAP || game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY));
+				if ((game.select[0] === REFINER || game.select[0] === CONFIRM_REFINE) && deck[selected[0] + (selected[1] * 6)].level > 0) {
+					ctx.globalAlpha = 0.75;
+					draw.card(deck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66), inOutsideDeck());
+					ctx.globalAlpha = 1;
+				} else {
+					draw.card(deck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66), inOutsideDeck());
+				};
 			};
-			graphics.target();
-			selected = game.cardSelect;
-			if (game.deckPos >= 98 * selected[1]) {
-				game.deckPos -= Math.min(10, Math.abs(game.deckPos - (98 * selected[1])));
-			} else if (game.deckPos <= (98 * (selected[1] - 1)) + 11) {
-				game.deckPos += Math.min(10, Math.abs(game.deckPos - ((98 * (selected[1] - 1)) + 11)));
+			if (game.select[0] !== CONFIRM_REFINE) {
+				graphics.target();
+				selected = game.cardSelect;
+				if (game.deckPos >= 98 * selected[1]) {
+					game.deckPos -= Math.min(10, Math.abs(game.deckPos - (98 * selected[1])));
+				} else if (game.deckPos <= (98 * (selected[1] - 1)) + 11) {
+					game.deckPos += Math.min(10, Math.abs(game.deckPos - ((98 * (selected[1] - 1)) + 11)));
+				};
 			};
 		};
 		draw.rect("#0004", 0, 0, 400, 13);
@@ -1369,6 +1386,7 @@ const graphics = {
 		else if (game.select[0] === VOID) draw.lore(200 - 2, 1, "Void", {"color": "#fff", "text-align": CENTER});
 		else if (game.select[0] === IN_MAP) draw.lore(200 - 2, 1, "Cards", {"color": "#fff", "text-align": CENTER});
 		else if (game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY) draw.lore(200 - 2, 1, "Purifier: Pick a Card to Destroy", {"color": "#fff", "text-align": CENTER});
+		else if (game.select[0] === REFINER || game.select[0] === CONFIRM_REFINE) draw.lore(200 - 2, 1, "Refiner: Pick a Card to Improve", {"color": "#fff", "text-align": CENTER});
 		draw.rect("#fff", 1, 12, 398, 1);
 	},
 	/**
@@ -1382,13 +1400,12 @@ const graphics = {
 		let temp = -1;
 		for (let index = 0; index < game.hand.length; index++) {
 			if (!cardAnim[index]) cardAnim[index] = 0;
-			let card = game.hand[index];
 			if ((game.select[0] === HAND && game.select[1] == index) || (index == game.prevCard && global.options[OPTION.STICKY_CARDS])) {
 				temp = index;
 			} else {
 				if (cardAnim[index] > 0) cardAnim[index] -= 6 + Math.random();
 				if (cardAnim[index] < 0) cardAnim[index] = 0;
-				draw.card(card, index, 146 - Math.floor(cardAnim[index]));
+				draw.card(game.hand[index], index, 146 - Math.floor(cardAnim[index]));
 			};
 		};
 		if (temp != -1) {
@@ -1416,15 +1433,14 @@ const graphics = {
 		else if (game.select[1] == game.hand.length) draw.image(select.round, 380, 54);
 		let temp = -1;
 		for (let index = 0; index < game.hand.length; index++) {
-			let card = game.hand[index];
 			if (index == game.select[1]) {
 				temp = index;
 			} else if (index == game.enemyAtt[0]) {
 				ctx.globalAlpha = 0.75;
-				draw.card(card, index, 14);
+				draw.card(game.hand[index], index, 14);
 				ctx.globalAlpha = 1;
 			} else {
-				draw.card(card, index, 14);
+				draw.card(game.hand[index], index, 14);
 			};
 		};
 		if (temp != -1) {
@@ -1537,7 +1553,7 @@ const graphics = {
 			graphics.cardInfo("deck", game[game.select[0] === VOID ? "void" : "discard"][game.cardSelect[0] + (game.cardSelect[1] * 6)]);
 		} else if (game.select[0] === CARD_REWARDS && game.select[1] > -1 && game.select[1] < get.cardRewardChoices()) {
 			graphics.cardInfo("reward", new Card(game.room[5][game.select[1]]));
-		} else if ((game.select[0] === IN_MAP && game.select[1]) || game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY) {
+		} else if (inOutsideDeck()) {
 			graphics.cardInfo("deck", game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)]);
 		};
 		if ((game.select[0] === HAND || (game.select[0] != ATTACK_ENEMY && game.select[0] != LOOKAT_ENEMY && !hidden() && global.options[OPTION.STICKY_CARDS])) && game.hand.length && game.prevCard < game.hand.length) {

@@ -33,6 +33,7 @@ const player = {
 	red_energy: new Image,
 	back: new Image,
 	error: new Image,
+	refine: new Image,
 	outline: {
 		attack: new Image,
 		curse: new Image,
@@ -234,6 +235,7 @@ card.green_energy.src = "images/cards/green_energy.png";
 card.red_energy.src = "images/cards/red_energy.png";
 card.back.src = "images/cards/back.png";
 card.error.src = "images/cards/error.png";
+card.refine.src = "images/cards/refine.png";
 
 // cards
 for (const folder in card) {

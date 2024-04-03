@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const HAND = 300, LOOKAT_YOU = 301, LOOKAT_ENEMY = 302, ATTACK_ENEMY = 303, LOOKER = 304, HELP = 305, END = 306, CONFIRM_END = 307, DECK = 308, DISCARD = 309, MAP = 310, IN_MAP = 311, POPUPS = 312, REWARDS = 313, CARD_REWARDS = 314, ARTIFACTS = 315, VOID = 316, CONFIRM_EXIT = 317, OPTIONS = 318, GAME_OVER = 319, GAME_FIN = 320, GAME_WON = 321, CONFIRM_RESTART = 322, WELCOME = 323, ARTIFACT_REWARDS = 324, CONFIRM_FRAGMENT_UPGRADE = 325, PURIFIER = 326, CONFIRM_PURIFY = 327, CONFIRM_EVENT = 328;
+const HAND = 300, LOOKAT_YOU = 301, LOOKAT_ENEMY = 302, ATTACK_ENEMY = 303, LOOKER = 304, HELP = 305, END = 306, CONFIRM_END = 307, DECK = 308, DISCARD = 309, MAP = 310, IN_MAP = 311, POPUPS = 312, REWARDS = 313, CARD_REWARDS = 314, ARTIFACTS = 315, VOID = 316, CONFIRM_EXIT = 317, OPTIONS = 318, GAME_OVER = 319, GAME_FIN = 320, GAME_WON = 321, CONFIRM_RESTART = 322, WELCOME = 323, ARTIFACT_REWARDS = 324, CONFIRM_FRAGMENT_UPGRADE = 325, PURIFIER = 326, CONFIRM_PURIFY = 327, CONFIRM_EVENT = 328, REFINER = 329, CONFIRM_REFINE = 330;
 
 const MENU = {TITLE: 400, DIFFICULTY_CHANGE: 401};
 
@@ -315,7 +315,7 @@ function selection() {
 			actionTimer = 1;
 		};
 		return;
-	} else if (game.select[0] === CONFIRM_FRAGMENT_UPGRADE || game.select[0] === CONFIRM_PURIFY) {
+	} else if (game.select[0] === CONFIRM_FRAGMENT_UPGRADE || game.select[0] === CONFIRM_PURIFY || game.select[0] === CONFIRM_REFINE) {
 		if (action === LEFT && game.select[1] > 0) {
 			game.select[1]--;
 			actionTimer = 1;
@@ -558,34 +558,101 @@ function selection() {
 	};
 	// deck selection
 	if (((game.select[0] === DECK || game.select[0] === VOID || game.select[0] === DISCARD || (game.select[0] === IN_MAP && game.mapSelect == (paths[game.location] || []).length)) && game.select[1]) || game.select[0] === PURIFIER) {
-		let coor = game.cardSelect, len = game.deckLocal.length;
+		let len = game.deckLocal.length;
 		if (game.select[0] === VOID) len = game.void.length;
 		else if (game.select[0] === DISCARD) len = game.discard.length;
 		else if (game.select[0] === IN_MAP || game.select[0] === PURIFIER) len = game.deck.length;
 		if (action === LEFT) {
-			if (coor[0] > 0) {
+			if (game.cardSelect[0] > 0) {
 				game.cardSelect[0]--;
-			} else if (coor[1] > 0) {
+			} else if (game.cardSelect[1] > 0) {
 				game.cardSelect[0] = 5;
 				game.cardSelect[1]--;
 			};
 			actionTimer = 1;
 			return;
-		} else if (action === RIGHT && (coor[0] < (len - 1) % 6 || coor[1] < Math.floor(len / 6))) {
-			if (coor[0] < 5) {
+		} else if (action === RIGHT) {
+			if (game.cardSelect[0] < 5 && (game.cardSelect[0] < (len - 1) % 6 || game.cardSelect[1] < Math.floor(len / 6))) {
 				game.cardSelect[0]++;
-			} else if (coor[0] + (coor[1] * 6) < len - 1) {
+			} else if (game.cardSelect[0] + (game.cardSelect[1] * 6) < len - 1) {
 				game.cardSelect[0] = 0;
 				game.cardSelect[1]++;
 			};
 			actionTimer = 1;
 			return;
-		} else if (action === UP && coor[1] > 0) {
-			game.cardSelect[1]--;
+		} else if (action === UP) {
+			if (game.cardSelect[1] > 0) {
+				game.cardSelect[1]--;
+			};
 			actionTimer = 1;
 			return;
-		} else if (action === DOWN && coor[1] < Math.floor(len / 6) && (coor[0] < len % 6 || coor[1] < Math.floor(len / 6) - 1)) {
-			game.cardSelect[1]++;
+		} else if (action === DOWN) {
+			if (game.cardSelect[1] < Math.floor(len / 6) && (game.cardSelect[0] < len % 6 || game.cardSelect[1] < Math.floor(len / 6) - 1)) {
+				game.cardSelect[1]++;
+			};
+			actionTimer = 1;
+			return;
+		};
+	};
+	// deck selection from refiner
+	if (game.select[0] === REFINER) {
+		let len = game.deck.length;
+		if (action === LEFT) {
+			do {
+				if (game.cardSelect[0] > 0) {
+					game.cardSelect[0]--;
+				} else if (game.cardSelect[1] > 0) {
+					game.cardSelect[0] = 5;
+					game.cardSelect[1]--;
+				} else {
+					break;
+				};
+			} while (game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)].level > 0);
+			actionTimer = 1;
+			return;
+		} else if (action === RIGHT) {
+			do {
+				if (game.cardSelect[0] < 5 && (game.cardSelect[0] < (len - 1) % 6 || game.cardSelect[1] < Math.floor(len / 6))) {
+					game.cardSelect[0]++;
+				} else if (game.cardSelect[0] + (game.cardSelect[1] * 6) < len - 1) {
+					game.cardSelect[0] = 0;
+					game.cardSelect[1]++;
+				} else {
+					break;
+				};
+			} while (game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)].level > 0);
+			actionTimer = 1;
+			return;
+		} else if (action === UP) {
+			if (game.cardSelect[1] > 0) {
+				game.cardSelect[1]--;
+			};
+			while (game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)].level > 0) {
+				if (game.cardSelect[0] > 0) {
+					game.cardSelect[0]--;
+				} else if (game.cardSelect[1] > 0) {
+					game.cardSelect[0] = 5;
+					game.cardSelect[1]--;
+				} else {
+					break;
+				};
+			};
+			actionTimer = 1;
+			return;
+		} else if (action === DOWN) {
+			if (game.cardSelect[1] < Math.floor(len / 6) && (game.cardSelect[0] < len % 6 || game.cardSelect[1] < Math.floor(len / 6) - 1)) {
+				game.cardSelect[1]++;
+			};
+			while (game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)].level > 0) {
+				if (game.cardSelect[0] < 5 && (game.cardSelect[0] < (len - 1) % 6 || game.cardSelect[1] < Math.floor(len / 6))) {
+					game.cardSelect[0]++;
+				} else if (game.cardSelect[0] + (game.cardSelect[1] * 6) < len - 1) {
+					game.cardSelect[0] = 0;
+					game.cardSelect[1]++;
+				} else {
+					break;
+				};
+			};
 			actionTimer = 1;
 			return;
 		};
@@ -928,6 +995,21 @@ function performAction() {
 		};
 		actionTimer = 2;
 		return;
+	} else if (game.select[0] === CONFIRM_REFINE) {
+		if (game.select[1] == 1) {
+			game.select = [REFINER, 0];
+		} else {
+			if (game.select[1] == 0) game.deck[game.cardSelect[0] + game.cardSelect[1] * 6].level = 1;
+			for (let index = 0; index < game.rewards.length; index++) {
+				if (game.rewards[index] == "1 refiner") {
+					if (game.select[1] == 0) game.rewards[index] += " - claimed";
+					game.select = [REWARDS, index];
+					break;
+				};
+			};
+		};
+		actionTimer = 2;
+		return;
 	};
 	// rewards
 	if (game.select[0] === REWARDS) {
@@ -946,6 +1028,8 @@ function performAction() {
 				game.rewards[game.select[1]] += " - claimed";
 			} else if (arr[1] == "purifier") {
 				game.select = [PURIFIER, 0];
+			} else if (arr[1] == "refiner") {
+				game.select = [REFINER, 0];
 			} else if (item == "finish") {
 				let bool = false;
 				for (let index = 0; index < game.rewards.length; index++) {
@@ -1073,6 +1157,16 @@ function performAction() {
 		actionTimer = 2;
 		return;
 	};
+	// activate refiner
+	if (game.select[0] === REFINER) {
+		if (game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)].level == 0) {
+			game.select = [CONFIRM_REFINE, 1];
+		} else {
+			game.select = [REWARDS, game.rewards.indexOf("1 refiner")];
+		};
+		actionTimer = 2;
+		return;
+	};
 	// activate / deactivate extras
 	if (game.select[0] === DECK || game.select[0] === VOID || game.select[0] === DISCARD) {
 		if (game.select[1] == 0) game.select[1] = 1;
@@ -1168,6 +1262,7 @@ function endBattle() {
 				game.rewards.push("1 artifact");
 			};
 		};
+		if (game.room[0] === ROOM.PRIME) game.rewards.push("1 refiner");
 		game.rewards.push("finish");
 	};
 };
@@ -1307,7 +1402,7 @@ function updateVisuals() {
 		if (game.select[0] === SELECT_HAND) graphics.handSelect();
 		else graphics.hand();
 	};
-	if (game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY) {
+	if (game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY || game.select[0] === REFINER || game.select[0] === CONFIRM_REFINE) {
 		graphics.rewards(false);
 		graphics.deck(game.deck);
 	};
@@ -1338,7 +1433,7 @@ function updateVisuals() {
 	if (game.select[0] === IN_MAP && game.select[1]) {
 		graphics.deck(game.deck);
 	};
-	if (!hidden()) {
+	if (!hidden() && !inDeck()) {
 		graphics.target();
 	};
 	if (game.select[0] === CONFIRM_END) {
@@ -1395,8 +1490,8 @@ function updateVisuals() {
 		let x = 99, y = 83;
 		draw.rect("#0008");
 		draw.box(x + 1, y + 1, 200, 26);
-		let card = game.deck[game.cardSelect[0] + game.cardSelect[1] * 6];
-		draw.lore(x + 2, y + 2, "Are you sure you want to destroy the card " + getCardAttr("name", card.id, card.level) + "?\nIf you have multiple, this will only destroy one copy of the card.", {"text-small": true});
+		let cardObj = game.deck[game.cardSelect[0] + game.cardSelect[1] * 6];
+		draw.lore(x + 2, y + 2, "Are you sure you want to destroy the card " + getCardAttr("name", cardObj.id, cardObj.level) + "?\nIf you have multiple, this will only destroy one copy of the card.", {"text-small": true});
 		if (game.select[1] == 0) draw.rect("#fff", x + 1, y + 13, 23, 14);
 		else if (game.select[1] == 1) draw.rect("#fff", x + 23, y + 13, 17, 14);
 		else draw.rect("#fff", x + 39, y + 13, 29, 14);
@@ -1406,6 +1501,24 @@ function updateVisuals() {
 		draw.lore(x + 4, y + 16, "YES");
 		draw.lore(x + 26, y + 16, "NO");
 		draw.lore(x + 42, y + 16, "BACK");
+	} else if (game.select[0] === CONFIRM_REFINE) {
+		let x = 99, y = 20;
+		draw.rect("#0008");
+		draw.box(x + 1, y + 1, 200, 26);
+		let cardObj = game.deck[game.cardSelect[0] + game.cardSelect[1] * 6];
+		draw.lore(x + 2, y + 2, "Are you sure you want to improve the card " + getCardAttr("name", cardObj.id, cardObj.level) + "?\nIf you have multiple, this will only improve one copy of the card.", {"text-small": true});
+		if (game.select[1] == 0) draw.rect("#fff", x + 1, y + 13, 23, 14);
+		else if (game.select[1] == 1) draw.rect("#fff", x + 23, y + 13, 17, 14);
+		else draw.rect("#fff", x + 39, y + 13, 29, 14);
+		draw.box(x + 3, y + 15, 19, 10);
+		draw.box(x + 25, y + 15, 13, 10);
+		draw.box(x + 41, y + 15, 25, 10);
+		draw.lore(x + 4, y + 16, "YES");
+		draw.lore(x + 26, y + 16, "NO");
+		draw.lore(x + 42, y + 16, "BACK");
+		draw.card(cardObj, -1, 51, true, 100, true);
+		draw.card(new Card(cardObj.id, 1), -1, 51, true, 234, true);
+		draw.image(card.refine, (200 - card.refine.width / 2), 95);
 	};
 	graphics.popups();
 	if (game.select[0] === GAME_OVER) {

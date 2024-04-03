@@ -46,6 +46,20 @@ function hidden() {
 	return !!((game.select[0] === LOOKER || game.select[0] === HELP || game.select[0] === OPTIONS || game.select[0] === DECK || game.select[0] === VOID || game.select[0] === DISCARD) && game.select[1]) || game.select[0] === IN_MAP || game.select[0] === CONFIRM_RESTART;
 };
 
+/**
+ * Returns a boolean indicating whether a deck outside battle is being viewed.
+ */
+function inOutsideDeck() {
+	return ((game.select[0] === IN_MAP && game.select[1]) || game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY || game.select[0] === REFINER || game.select[0] === CONFIRM_REFINE);
+};
+
+/**
+ * Returns a boolean indicating whether a deck is being viewed.
+ */
+function inDeck() {
+	return ((game.select[0] === DECK || game.select[0] === VOID || game.select[0] === DISCARD) && game.select[1]) || inOutsideDeck();
+};
+
 const get = {
 	/**
 	 * Gets the current area number based on the floor.

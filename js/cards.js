@@ -20,7 +20,7 @@ const SELECT_HAND = 1200;
 const cards = {
 	0: {
 		name: "error",
-		desc: "Unplayable.",
+		desc: ["This card is\nclearly an error.\nUnplayable.", "Wow! An improved\nerror! Amazing! It\ndefinitely still\nisn't unplayable,\nright? That would\nbe ridiculous."],
 		rarity: -1,
 		cost: 0,
 	},
@@ -353,24 +353,19 @@ function classifyCard(object = {}) {
  */
 Array.prototype.cardSort = function() {
 	return this.sort((a, b) => {
-		if (Math.floor(a.id / 1000) < Math.floor(b.id / 1000)) {
-			return -1;
-		};
-		if (Math.floor(a.id / 1000) > Math.floor(b.id / 1000)) {
-			return 1;
-		};
-		if (cards[a.id].rarity > cards[b.id].rarity) {
-			return -1;
-		};
-		if (cards[a.id].rarity < cards[b.id].rarity) {
-			return 1;
-		};
-		if (cards[a.id].name < cards[b.id].name) {
-			return -1;
-		};
-		if (cards[a.id].name > cards[b.id].name) {
-			return 1;
-		};
+		// sort by type
+		if (Math.floor(a.id / 1000) < Math.floor(b.id / 1000)) return -1;
+		if (Math.floor(a.id / 1000) > Math.floor(b.id / 1000)) return 1;
+		// sort by rarity
+		if (cards[a.id].rarity > cards[b.id].rarity) return -1;
+		if (cards[a.id].rarity < cards[b.id].rarity) return 1;
+		// sort by name
+		if (cards[a.id].name < cards[b.id].name) return -1;
+		if (cards[a.id].name > cards[b.id].name) return 1;
+		// sort by level
+		if (a.level > b.level) return -1;
+		if (a.level < b.level) return 1;
+		// end sort
 		return 0;
 	});
 };
