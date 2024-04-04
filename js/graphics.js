@@ -159,7 +159,7 @@ const draw = {
 			ctx.restore();
 		};
 		ctx.filter = "none";
-		draw.image(background.clock_node, x + 26, y + 26);
+		draw.image(I.background.clock_node, x + 26, y + 26);
 	},
 	/**
 	 * Draws a character on the canvas.
@@ -301,10 +301,10 @@ const draw = {
 	 * @param {number} height - the height of the selector.
 	 */
 	selector(x, y, width, height) {
-		draw.image(select.selector[0], x - 2, y - 2);
-		draw.image(select.selector[1], x + width - 6, y - 2);
-		draw.image(select.selector[2], x - 2, y + height - 7);
-		draw.image(select.selector[3], x + width - 6, y + height - 7);
+		draw.image(I.select.selector[0], x - 2, y - 2);
+		draw.image(I.select.selector[1], x + width - 6, y - 2);
+		draw.image(I.select.selector[2], x - 2, y + height - 7);
+		draw.image(I.select.selector[3], x + width - 6, y + height - 7);
 	},
 	/**
 	 * Draws an intent on the canvas.
@@ -315,7 +315,7 @@ const draw = {
 	 */
 	intent(x, y, effect, type) {
 		if (type === BUFF) {
-			draw.image(intent.buff, x, y);
+			draw.image(I.intent.buff, x, y);
 			return;
 		};
 		let stage = 0;
@@ -330,10 +330,10 @@ const draw = {
 		else if (effect >= 10) stage = 2;
 		else if (effect >= 5) stage = 1;
 		if (type === ATTACK) {
-			draw.image(intent.attack[stage], x, y);
+			draw.image(I.intent.attack[stage], x, y);
 			draw.lore(x + 30 - 16, y + 12, effect, {"color": "#fff", "text-align": CENTER});
 		} else if (type === DEFEND) {
-			draw.image(intent.defend[stage], x, y);
+			draw.image(I.intent.defend[stage], x, y);
 			draw.lore(x + 30 - 16, y + 11, effect, {"color": "#fff", "text-align": CENTER});
 		};
 	},
@@ -376,8 +376,8 @@ const draw = {
 		if ((health < 10 && maxHealth >= 10) || (health < 100 && maxHealth >= 100) || (health < 1000 && maxHealth >= 1000)) {
 			health = "0" + health;
 		};
-		draw.imageSector(bar.health_full, 0, 0, cutoff + 1, 12, x, y + 65);
-		draw.imageSector(bar.health_empty, cutoff + 1, 0, 64 - (cutoff + 1), 12, x + (cutoff + 1), y + 65);
+		draw.imageSector(I.bar.health_full, 0, 0, cutoff + 1, 12, x, y + 65);
+		draw.imageSector(I.bar.health_empty, cutoff + 1, 0, 64 - (cutoff + 1), 12, x + (cutoff + 1), y + 65);
 		draw.lore(x + 31, y + 67, health, {"text-align": LEFT});
 		draw.lore(x + 34, y + 67, maxHealth);
 		if (!shield || !maxShield) return;
@@ -388,8 +388,8 @@ const draw = {
 		if ((shield < 10 && maxShield >= 10) || (shield < 100 && maxShield >= 100) || (shield < 1000 && maxShield >= 1000)) {
 			shield = "0" + shield;
 		};
-		draw.imageSector(bar.shield_full, 0, 0, cutoff + 1, 12, x, y + 76);
-		draw.imageSector(bar.shield_empty, cutoff + 1, 0, 64 - (cutoff + 1), 12, x + (cutoff + 1), y + 76);
+		draw.imageSector(I.bar.shield_full, 0, 0, cutoff + 1, 12, x, y + 76);
+		draw.imageSector(I.bar.shield_empty, cutoff + 1, 0, 64 - (cutoff + 1), 12, x + (cutoff + 1), y + 76);
 		draw.lore(x + 31, y + 78, shield, {"text-align": LEFT});
 		draw.lore(x + 34, y + 78, maxShield);
 	},
@@ -405,31 +405,31 @@ const draw = {
 	card(cardObj, index, y, selected = false, overrideX = NaN, outside = false) {
 		// setup
 		if (!(cardObj instanceof Object)) cardObj = new Card(cardObj);
-		let x = handPos[index], img = card.error;
+		let x = handPos[index], img = I.card.error;
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
 		const rarity = +cards[cardObj.id].rarity;
-		if (card[rarities[rarity]] && rarity >= 0) img = card[rarities[rarity]][cards[cardObj.id].name];
+		if (I.card[rarities[rarity]] && rarity >= 0) img = I.card[rarities[rarity]][cardObj.id];
 		// card back
-		if (cardObj.id !== 0) draw.image(card.back, x + 2, y + 2);
+		if (cardObj.id !== 0) draw.image(I.card.back, x + 2, y + 2);
 		// card outline
 		const type = types[Math.floor(cardObj.id / 1000)];
-		if (card.outline[type]) draw.image(card.outline[type], x + 3, y + 3);
+		if (I.card.outline[type]) draw.image(I.card.outline[type], x + 3, y + 3);
 		// card selector
 		if (selected) {
 			if (cards[cardObj.id].keywords.includes("unplayable")) {
-				if (rarity == 2) draw.image(select.card_rare_unplayable, x - 3, y - 3);
-				else draw.image(select.card_unplayable, x + 1, y + 1);
+				if (rarity == 2) draw.image(I.select.card_rare_unplayable, x - 3, y - 3);
+				else draw.image(I.select.card_unplayable, x + 1, y + 1);
 			} else {
-				if (rarity == 2) draw.image(select.card_rare, x - 3, y - 3);
-				else draw.image(select.card_normal, x - 1, y - 1);
+				if (rarity == 2) draw.image(I.select.card_rare, x - 3, y - 3);
+				else draw.image(I.select.card, x - 1, y - 1);
 			};
 		};
 		// card image
-		if (img == card.error) draw.image(card.error, x + 2, y + 2);
+		if (img == I.card.error) draw.image(I.card.error, x + 2, y + 2);
 		else draw.image(img, x + 7, y + 7);
 		// card title
 		const name = getCardAttr("name", cardObj.id, cardObj.level);
-		if (name.length >= 11) draw.lore(x + 33, y + 44, name, {"text-align": CENTER, "text-small": true});
+		if (cards[cardObj.id].name.length >= 10) draw.lore(x + 33, y + 44, name, {"text-align": CENTER, "text-small": true});
 		else draw.lore(x + 32, y + 42, name, {"text-align": CENTER});
 		// card description
 		let desc = getCardAttr("desc", cardObj.id, cardObj.level), exDamage = get.extraDamage(), mulDamage = get.dealDamageMult(), valueIsLess = false;
@@ -467,18 +467,18 @@ const draw = {
 		draw.lore(x + 6, y + 55, desc, {"highlight-color": (valueIsLess ? "#f00" : "#000"), "text-small": true});
 		draw.lore(x + 33, y + 89.5, rarities[rarity] + "|" + type, {"text-align": CENTER, "text-small": true});
 		if (rarity == 2) {
-			draw.image(card.rarity.rare, x - 2, y - 2);
+			draw.image(I.card.rarity.rare, x - 2, y - 2);
 		};
 		if (!cards[cardObj.id].keywords.includes("unplayable")) {
 			let originalCost = getCardAttr("cost", cardObj.id, cardObj.level);
 			if (outside) {
-				draw.image(card.energy, x, y);
+				draw.image(I.card.energy, x, y);
 				draw.lore(x + 4, y + 2, originalCost);
 			} else {
 				let cost = getCardCost(cardObj);
-				if (cost < originalCost) draw.image(card.green_energy, x, y);
-				else if (cost > originalCost) draw.image(card.red_energy, x, y);
-				else draw.image(card.energy, x, y);
+				if (cost < originalCost) draw.image(I.card.green_energy, x, y);
+				else if (cost > originalCost) draw.image(I.card.red_energy, x, y);
+				else draw.image(I.card.energy, x, y);
 				draw.lore(x + 4, y + 2, cost);
 			};
 		};
@@ -688,13 +688,13 @@ const graphics = {
 					};
 				};
 			};
-			draw.image(background.hallway, 0, 42);
+			draw.image(I.background.hallway, 0, 42);
 			if (!backAnim[29]) backAnim[29] = 0;
 			for (let col = 0; col < 12; col++) {
-				draw.imageSector(background.panel, Math.floor(backAnim[29]) * 35, 0, 35, 42, col * 34 - 6, 0);
+				draw.imageSector(I.background.panel, Math.floor(backAnim[29]) * 35, 0, 35, 42, col * 34 - 6, 0);
 				for (let index = 0; index < 6; index++) {
 					if (backAnim[col][9][index] > 0) backAnim[col][9][index]--;
-					else draw.imageSector(background.panel_cover, index * 35, 0, 35, 42, col * 34 - 6, 0);
+					else draw.imageSector(I.background.panel_cover, index * 35, 0, 35, 42, col * 34 - 6, 0);
 				};
 			};
 			backAnim[29]++;
@@ -702,7 +702,7 @@ const graphics = {
 			for (let col = 0; col < 14; col++) {
 				for (let index = 0; index < 9; index++) {
 					if (backAnim[col][index][0] > 0) {
-						draw.imageSector(background.tiles, backAnim[col][index][1] * 15, 0, 15, 8, col * 34 - index * 9 + 9, index * 18 + 44);
+						draw.imageSector(I.background.tiles, backAnim[col][index][1] * 15, 0, 15, 8, col * 34 - index * 9 + 9, index * 18 + 44);
 						backAnim[col][index][0]--;
 					};
 				};
@@ -710,7 +710,7 @@ const graphics = {
 			for (let col = 0; col < 15; col++) {
 				for (let index = 0; index < 9; index++) {
 					if (backAnim[col + 14][index][0] > 0) {
-						draw.imageSector(background.tiles, backAnim[col][index][1] * 15, 8, 15, 8, col * 34 - index * 9 - 12, index * 18 + 53);
+						draw.imageSector(I.background.tiles, backAnim[col][index][1] * 15, 8, 15, 8, col * 34 - index * 9 - 12, index * 18 + 53);
 						backAnim[col + 14][index][0]--;
 					};
 				};
@@ -718,17 +718,17 @@ const graphics = {
 			draw.rect("#0003");
 		} else {
 			if (transition < 100) {
-				draw.image(background.cave);
+				draw.image(I.background.cave);
 				draw.rect("#10106080");
-				draw.image(background.temple);
-				draw.image(background.floating_arch, 136, 35 - Math.abs(Math.round(backAnim[0]) - 2));
-				draw.image(background.debris, 151, 93 - Math.abs(Math.round(backAnim[1]) - 2));
+				draw.image(I.background.temple);
+				draw.image(I.background.floating_arch, 136, 35 - Math.abs(Math.round(backAnim[0]) - 2));
+				draw.image(I.background.debris, 151, 93 - Math.abs(Math.round(backAnim[1]) - 2));
 			};
 			if (game.artifacts.includes(0) && game.floor == 10) {
 				if (transition < 100) {
 					ctx.globalAlpha = transition / 100;
 				};
-				draw.image(background.tunnel_of_time, 0 - backAnim[3]);
+				draw.image(I.background.tunnel_of_time, 0 - backAnim[3]);
 				if (!game.enemies[0]?.eff?.countdown) backAnim[3]++;
 				else backAnim[3]--;
 				if (backAnim[3] >= 16) backAnim[3] -= 16;
@@ -739,7 +739,7 @@ const graphics = {
 				let now = new Date(), time = [now.getHours(), now.getMinutes()], y = 64 - Math.abs(Math.round(backAnim[2]) - 2);
 				time[0] += (time[1] / 60);
 				if (time[0] >= 12) time[0] = time[0] - 12;
-				draw.image(background.clock_face, 170, y);
+				draw.image(I.background.clock_face, 170, y);
 				draw.clock(170, y, time[0], time[1]);
 			};
 			for (let index = 0; index < 3; index++) {
@@ -763,16 +763,16 @@ const graphics = {
 			};
 			for (let index = 0; index < extraAnim.length; index++) {
 				if (extraAnim[index][2] < 8) {
-					draw.imageSector(background.column_debri, (extraAnim[index][2] % 8) * 16, 0, 16, 8, Math.floor(400 - extraAnim[index][1]), Math.floor(extraAnim[index][0]));
+					draw.imageSector(I.background.column_debri, (extraAnim[index][2] % 8) * 16, 0, 16, 8, Math.floor(400 - extraAnim[index][1]), Math.floor(extraAnim[index][0]));
 				} else if (extraAnim[index][2] < 16) {
 					ctx.scale(-1, 1);
-					draw.imageSector(background.column_debri, (extraAnim[index][2] % 8) * 16, 0, 16, 8, Math.floor(extraAnim[index][1] - 400), Math.floor(extraAnim[index][0]), -16, 8);
+					draw.imageSector(I.background.column_debri, (extraAnim[index][2] % 8) * 16, 0, 16, 8, Math.floor(extraAnim[index][1] - 400), Math.floor(extraAnim[index][0]), -16, 8);
 					ctx.scale(-1, 1);
 				} else if (extraAnim[index][2] % 2 == 0) {
-					draw.image(background.debris, Math.floor(400 - extraAnim[index][1]), Math.floor(extraAnim[index][0] + 1));
+					draw.image(I.background.debris, Math.floor(400 - extraAnim[index][1]), Math.floor(extraAnim[index][0] + 1));
 				} else {
 					ctx.scale(-1, 1);
-					draw.image(background.debris, Math.floor(extraAnim[index][1] - 400), Math.floor(extraAnim[index][0] + 1), -6, 6);
+					draw.image(I.background.debris, Math.floor(extraAnim[index][1] - 400), Math.floor(extraAnim[index][0] + 1), -6, 6);
 					ctx.scale(-1, 1);
 				};
 				const rand = Math.random();
@@ -802,46 +802,44 @@ const graphics = {
 		};
 		// looker
 		if (game.select[0] === LOOKER && game.select[1] === 1) {
-			draw.imageSector(extra.looker, 15, 0, 16, 16, 343, 3);
-			draw.image(select.round, 342, 2);
+			draw.imageSector(I.extra.looker, 16, 0, 16, 16, 343, 3);
+			draw.image(I.select.round, 342, 2);
 			return;
 		};
 		// extra covers
 		if (get.area() == 1) {
 			let topLeftX = [(("" + game.floor).length + ("" + game.gold).length - 2) * 6 - 100, (game.artifacts.length - 1) * 18 - 160];
-			if (topLeftX[0] > topLeftX[1]) draw.image(extra.top_left, topLeftX[0], 0);
+			if (topLeftX[0] > topLeftX[1]) draw.image(I.cover.top_left, topLeftX[0], 0);
 			else draw.rect("#000", topLeftX[1] + 199, 0, 1, 12);
-			draw.image(extra.top_left_big, topLeftX[1], 0);
-			if (topLeftX[0] >= topLeftX[1] + 12) draw.image(extra.corner, topLeftX[1] + 199, 12);
-			draw.image(extra.top_right, 339, 0);
-			draw.image(extra.bottom_left, 0, 159);
-			draw.image(extra.bottom_right, 377, game.void.length ? 159 : 178);
+			draw.image(I.cover.top_left_big, topLeftX[1], 0);
+			if (topLeftX[0] >= topLeftX[1] + 12) draw.image(I.cover.corner, topLeftX[1] + 199, 12);
+			draw.image(I.cover.top_right, 339, 0);
+			draw.image(I.cover.bottom_left, 0, 159);
+			draw.image(I.cover.bottom_right, 377, game.void.length ? 159 : 178);
 		};
 		// extras
-		draw.imageSector(extra.looker, 0, 0, 16, 16, 343, 3);
-		draw.image(extra.help, 362, 3);
-		draw.image(extra.options, 380, 2);
-		draw.image(extra.end, 3, 163);
-		draw.image(extra.deck, 4, 182);
-		if (game.void.length) draw.image(extra.void, 381, 163);
-		draw.image(extra.discard, 382, 182);
-		draw.image(extra.map, 2, 13);
+		draw.imageSector(I.extra.looker, 0, 0, 16, 16, 343, 3);
+		draw.image(I.extra.help, 362, 3);
+		draw.image(I.extra.options, 380, 2);
+		draw.image(I.extra.end, 3, 163);
+		draw.image(I.extra.deck, 4, 182);
+		if (game.void.length) draw.image(I.extra.void, 381, 163);
+		draw.image(I.extra.discard, 382, 182);
+		draw.image(I.extra.map, 2, 13);
 		// artifacts
 		for (let index = 0; index < game.artifacts.length; index++) {
-			const name = ("" + artifacts[game.artifacts[index]].name).replace(/\s/g, "_");
-			if (!name) continue;
-			draw.image(artifact[name], 20 + (index * 18), 13);
-			if (game.select[0] === ARTIFACTS && game.select[1] === index) draw.image(select[name], 19 + (index * 18), 12);
+			draw.image(I.artifact[game.artifacts[index]], 20 + (index * 18), 13);
+			if (game.select[0] === ARTIFACTS && game.select[1] === index) draw.image(I.artifact.select[game.artifacts[index]], 19 + (index * 18), 12);
 		};
 		// selected
-		if (game.select[0] === LOOKER) draw.image(select.round, 342, 2);
-		else if (game.select[0] === HELP) draw.image(select.round, 361, 2);
-		else if (game.select[0] === OPTIONS) draw.image(get.area() == 1 ? select.options : select.options_yellow, 380, 2);
-		else if (game.select[0] === END) draw.image(select.round, 2, 162);
-		else if (game.select[0] === DECK) draw.image(select.deck, 3, 181);
-		else if (game.select[0] === VOID) draw.image(select.round, 380, 162);
-		else if (game.select[0] === DISCARD) draw.image(select.discard, 381, 181);
-		else if (game.select[0] === MAP) draw.image(select.map, 1, 12);
+		if (game.select[0] === LOOKER) draw.image(I.select.round, 342, 2);
+		else if (game.select[0] === HELP) draw.image(I.select.round, 361, 2);
+		else if (game.select[0] === OPTIONS) draw.image(get.area() == 1 ? I.select.options : I.select.options_yellow, 380, 2);
+		else if (game.select[0] === END) draw.image(I.select.round, 2, 162);
+		else if (game.select[0] === DECK) draw.image(I.select.deck, 3, 181);
+		else if (game.select[0] === VOID) draw.image(I.select.round, 380, 162);
+		else if (game.select[0] === DISCARD) draw.image(I.select.discard, 381, 181);
+		else if (game.select[0] === MAP) draw.image(I.select.map, 1, 12);
 		// info
 		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": (get.area() == 1 ? "#000" : "#f44")});
 		// intents
@@ -869,7 +867,7 @@ const graphics = {
 		let x = 15, y = 30;
 		// aura blades
 		for (let index = 0; index < game.eff.aura_blades && index < 4; index++) {
-			draw.image(aura_blade, x + auraBladePos[index][0], y + auraBladePos[index][1] + 4 - Math.abs(Math.round(auraBladeAnim[index]) - 4));
+			draw.image(I.aura_blade, x + auraBladePos[index][0], y + auraBladePos[index][1] + 4 - Math.abs(Math.round(auraBladeAnim[index]) - 4));
 			auraBladeAnim[index] += (Math.random() + 0.5) * 0.05;
 			if (auraBladeAnim[index] >= 8) auraBladeAnim[index] -= 8;
 		};
@@ -877,11 +875,13 @@ const graphics = {
 		for (const key in game.eff) {
 			if (Object.hasOwnProperty.call(game.eff, key)) {
 				if (game.eff[key]) {
-					let img = icon[key.endsWith("s") && !key.endsWith("ss") ? key.slice(0, -1) : key];
+					let img = I.icon[key.endsWith("s") && !key.endsWith("ss") ? key.slice(0, -1) : key];
 					if (game.shield) {
+						if (img == I.icon.weakness) draw.image(I.icon.weakness_back, x + 22, y + 103);
 						draw.image(img, x + 23, y + 104);
 						draw.lore(x + 40, y + 112, game.eff[key], {"color": "#fff", "text-align": LEFT});
 					} else {
+						if (img == I.icon.weakness) draw.image(I.icon.weakness_back, x + 22, y + 92);
 						draw.image(img, x + 23, y + 93);
 						draw.lore(x + 40, y + 101, game.eff[key], {"color": "#fff", "text-align": LEFT});
 					};
@@ -891,7 +891,7 @@ const graphics = {
 		};
 		x = 15;
 		// animations
-		draw.imageSector(player[playerAnim[1]], Math.floor(playerAnim[0]) * 120, 0, 120, player[playerAnim[1]].height, x, y, 120);
+		draw.imageSector(I.player[playerAnim[1]], Math.floor(playerAnim[0]) * 120, 0, 120, I.player[playerAnim[1]].height, x, y, 120);
 		if (playerAnim[1] == "idle") {
 			playerAnim[0] += 0.25;
 			if (playerAnim[0] >= 10) playerAnim[0] = 0;
@@ -920,8 +920,8 @@ const graphics = {
 		if (energy < 10 && get.maxEnergy() >= 10) {
 			energy = "0" + energy;
 		};
-		draw.imageSector(bar.energy_full, 0, 0, cutoff + 1, 32, x, y + 16);
-		draw.imageSector(bar.energy_empty, cutoff + 1, 0, 32 - (cutoff + 1), 32, x + (cutoff + 1), y + 16);
+		draw.imageSector(I.bar.energy_full, 0, 0, cutoff + 1, 32, x, y + 16);
+		draw.imageSector(I.bar.energy_empty, cutoff + 1, 0, 32 - (cutoff + 1), 32, x + (cutoff + 1), y + 16);
 		draw.lore(x + 15, y + 28, energy, {"text-align": LEFT});
 		draw.lore(x + 18, y + 28, get.maxEnergy());
 	},
@@ -930,7 +930,7 @@ const graphics = {
 	 */
 	effect() {
 		if (effAnim[1] == "war cry") {
-			draw.imageSector(war_cry, Math.floor(effAnim[0]) * 188, 0, 188, 188, -22, -18, 188, 188);
+			draw.imageSector(I.war_cry, Math.floor(effAnim[0]) * 188, 0, 188, 188, -22, -18, 188, 188);
 			effAnim[0]++;
 			if (effAnim[0] >= 35) effAnim = [0, "none"];
 		};
@@ -947,9 +947,9 @@ const graphics = {
 			for (const key in selected.eff) {
 				if (Object.hasOwnProperty.call(selected.eff, key)) {
 					let img = new Image();
-					if (icon[key]) img = icon[key];
-					else if (key == "reinforces") img = icon.reinforce;
-					else if (key == "rewinds") img = icon.rewind;
+					if (I.icon[key]) img = I.icon[key];
+					else if (key == "reinforces") img = I.icon.reinforce;
+					else if (key == "rewinds") img = I.icon.rewind;
 					if (selected.eff[key]) {
 						if (selected.shield) {
 							draw.image(img, x, y + 89);
@@ -968,18 +968,18 @@ const graphics = {
 			let selected = game.enemies[index], pos = enemyPos[index];
 			if (pos && isEnemyVisible(index)) {
 				if (selected.type === SLIME.BIG) {
-					if (selected.shield > 0) draw.imageSector(enemy.slime.big_defend, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
-					else draw.imageSector(enemy.slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
+					if (selected.shield > 0) draw.imageSector(I.enemy.slime.big_defend, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
+					else draw.imageSector(I.enemy.slime.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
 				} else if (selected.type === SLIME.SMALL) {
-					if (selected.shield > 0) draw.imageSector(enemy.slime.small_defend, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
-					else draw.imageSector(enemy.slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
+					if (selected.shield > 0) draw.imageSector(I.enemy.slime.small_defend, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
+					else draw.imageSector(I.enemy.slime.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
 				} else if (selected.type === SLIME.PRIME) {
 					if (primeAnim == -1) {
-						if (selected.shield > 0) draw.imageSector(enemy.slime.prime_defend, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
-						else draw.imageSector(enemy.slime.prime, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+						if (selected.shield > 0) draw.imageSector(I.enemy.slime.prime_defend, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+						else draw.imageSector(I.enemy.slime.prime, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 					} else {
-						if (selected.shield > 0) draw.imageSector(enemy.slime.to_prime_defend, Math.floor(primeAnim) * 64, 0, 64, 64, pos[0], pos[1] + 1);
-						else draw.imageSector(enemy.slime.to_prime, Math.floor(primeAnim) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+						if (selected.shield > 0) draw.imageSector(I.enemy.slime.to_prime_defend, Math.floor(primeAnim) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+						else draw.imageSector(I.enemy.slime.to_prime, Math.floor(primeAnim) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 						primeAnim += (Math.random() + 0.5) * 0.1;
 						if (primeAnim >= 12) {
 							primeAnim = -1;
@@ -988,12 +988,12 @@ const graphics = {
 					};
 				} else if (selected.type === FRAGMENT) {
 					if (primeAnim == -1) {
-						draw.imageSector(enemy.fragment.idle, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
+						draw.imageSector(I.enemy.fragment.idle, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
 						if (index !== game.enemyNum || selected.intent !== ATTACK) {
 							draw.clock(pos[0] + 2, pos[1] + 4, -1, 2 - Math.abs(Math.floor(enemyAnim[index]) - 2));
 						};
 					} else if (primeAnim >= 18) {
-						draw.imageSector(enemy.fragment.open, Math.floor(primeAnim - 18) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+						draw.imageSector(I.enemy.fragment.open, Math.floor(primeAnim - 18) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 						draw.clock(pos[0] + 2, pos[1] + 5, 6, 0, (primeAnim - 18) * 5);
 						primeAnim += 0.5;
 						if (primeAnim >= 25) {
@@ -1002,43 +1002,43 @@ const graphics = {
 						};
 					} else {
 						let x = pos[0] + ((18 - primeAnim) * 8);
-						draw.imageSector(enemy.fragment.roll, Math.floor(primeAnim % 4) * 64, 0, 64, 64, x, pos[1] + 1);
+						draw.imageSector(I.enemy.fragment.roll, Math.floor(primeAnim % 4) * 64, 0, 64, 64, x, pos[1] + 1);
 						draw.clock(x + 2, pos[1] + 5, (4 - Math.floor((primeAnim - 2) % 4)) * 3, (4 - Math.floor(primeAnim % 4)) * 15);
 						primeAnim++;
 					};
 				} else if (selected.type === SENTRY.BIG) {
 					if (selected.shield > 0) {
-						draw.imageSector(enemy.sentry.big_defend, Math.floor(enemyAnim[index] + 7) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+						draw.imageSector(I.enemy.sentry.big_defend, Math.floor(enemyAnim[index] + 7) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 					} else if (selected.transition && selected.transition[1] === TRANSITION.SHIELD) {
-						draw.imageSector(enemy.sentry.big_defend, Math.floor(7 - selected.transition[0]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+						draw.imageSector(I.enemy.sentry.big_defend, Math.floor(7 - selected.transition[0]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 						selected.transition[0]++;
 						if (selected.transition[0] >= 7) delete selected.transition;
 					} else {
-						draw.imageSector(enemy.sentry.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+						draw.imageSector(I.enemy.sentry.big, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 					};
 				} else if (selected.type === SENTRY.SMALL) {
 					if (selected.shield > 0) {
-						draw.imageSector(enemy.sentry.small_defend, Math.floor(enemyAnim[index] + 5) * 64, 0, 64, 64, pos[0], pos[1]);
+						draw.imageSector(I.enemy.sentry.small_defend, Math.floor(enemyAnim[index] + 5) * 64, 0, 64, 64, pos[0], pos[1]);
 					} else if (selected.transition && selected.transition[1] === TRANSITION.SHIELD) {
-						draw.imageSector(enemy.sentry.small_defend, Math.floor(5 - selected.transition[0]) * 64, 0, 64, 64, pos[0], pos[1]);
+						draw.imageSector(I.enemy.sentry.small_defend, Math.floor(5 - selected.transition[0]) * 64, 0, 64, 64, pos[0], pos[1]);
 						selected.transition[0]++;
 						if (selected.transition[0] >= 5) delete selected.transition;
 					} else {
-						draw.imageSector(enemy.sentry.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
+						draw.imageSector(I.enemy.sentry.small, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
 					};
 				} else if (selected.type === SENTRY.PRIME) {
 					if (selected.shield > 0) {
-						draw.imageSector(enemy.sentry.prime_defend, Math.floor(enemyAnim[index] + 9) * 64, 0, 64, 64, pos[0], pos[1]);
+						draw.imageSector(I.enemy.sentry.prime_defend, Math.floor(enemyAnim[index] + 9) * 64, 0, 64, 64, pos[0], pos[1]);
 						primeAnim = -1;
 					} else if (selected.transition && selected.transition[1] === TRANSITION.SHIELD) {
-						draw.imageSector(enemy.sentry.prime_defend, Math.floor(9 - selected.transition[0]) * 64, 0, 64, 64, pos[0], pos[1]);
+						draw.imageSector(I.enemy.sentry.prime_defend, Math.floor(9 - selected.transition[0]) * 64, 0, 64, 64, pos[0], pos[1]);
 						selected.transition[0]++;
 						if (selected.transition[0] >= 9) delete selected.transition;
 						primeAnim = -1;
 					} else if (primeAnim == -1) {
-						draw.imageSector(enemy.sentry.prime, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
+						draw.imageSector(I.enemy.sentry.prime, Math.floor(enemyAnim[index]) * 64, 0, 64, 64, pos[0], pos[1]);
 					} else {
-						draw.imageSector(enemy.sentry.to_prime, Math.floor(primeAnim) * 64, 0, 64, 64, pos[0], pos[1]);
+						draw.imageSector(I.enemy.sentry.to_prime, Math.floor(primeAnim) * 64, 0, 64, 64, pos[0], pos[1]);
 						primeAnim += (Math.random() + 0.5) * 0.1;
 						if (primeAnim >= 9) {
 							primeAnim = -1;
@@ -1066,11 +1066,11 @@ const graphics = {
 						tempAnim = [0, STARTING];
 						game.enemyStage = ENDING;
 					} else if (game.enemyStage === MIDDLE) {
-						draw.imageSector(enemy.slime.big_attack, 4 * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
+						draw.imageSector(I.enemy.slime.big_attack, 4 * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
 						tempAnim[1] = ENDING;
 						game.enemyStage = PENDING;
 					} else {
-						draw.imageSector(enemy.slime.big_attack, (tempAnim[0] % 4) * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
+						draw.imageSector(I.enemy.slime.big_attack, (tempAnim[0] % 4) * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
 						tempAnim[0]++;
 						game.enemyStage = PENDING;
 						if (tempAnim[0] >= 11) {
@@ -1083,8 +1083,8 @@ const graphics = {
 						let phase = ((tempAnim[0] - 9) / 10),
 							posX = Math.round(((pos[0] - 68) - 64) * phase),
 							posY = Math.round(((pos[1] - (50 + 10))) * phase);
-						draw.imageSector(enemy.slime.small_attack, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
-					} else draw.imageSector(enemy.slime.small_attack, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
+						draw.imageSector(I.enemy.slime.small_attack, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
+					} else draw.imageSector(I.enemy.slime.small_attack, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
 					if (tempAnim[1] === STARTING) tempAnim[0]++;
 					else if (tempAnim[1] === ENDING) tempAnim[0]--;
 					if (tempAnim[0] >= 20) {
@@ -1101,8 +1101,8 @@ const graphics = {
 				} else if (type === SLIME.PRIME) {
 					if (tempAnim[0] >= 4) {
 						let phase = ((tempAnim[0] - 4) / 10), posX = Math.round(((pos[0] - 68) - 40) * phase);
-						draw.imageSector(enemy.slime.prime_attack, 4 * 36, 0, 36, 18, pos[0] - 32 - posX, 80, 36, 18);
-					} else draw.imageSector(enemy.slime.prime_attack, Math.floor(tempAnim[0]) * 36, 0, 36, 18, pos[0] - 32, 80, 36, 18);
+						draw.imageSector(I.enemy.slime.prime_attack, 4 * 36, 0, 36, 18, pos[0] - 32 - posX, 80, 36, 18);
+					} else draw.imageSector(I.enemy.slime.prime_attack, Math.floor(tempAnim[0]) * 36, 0, 36, 18, pos[0] - 32, 80, 36, 18);
 					tempAnim[0]++;
 					if (game.enemyStage === MIDDLE) {
 						tempAnim = [0, STARTING];
@@ -1114,7 +1114,7 @@ const graphics = {
 						game.enemyStage = PENDING;
 					};
 				} else if (type === FRAGMENT && primeAnim == -1) {
-					draw.imageSector(enemy.fragment.attack, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
+					draw.imageSector(I.enemy.fragment.attack, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
 					draw.clock(pos[0] + 2, pos[1] + 4, -1, (tempAnim[0] >= 3 ? 0 : Math.floor(tempAnim[0] + 1) * 15));
 					if (tempAnim[0] >= 4 && tempAnim[0] < 6) draw.rect("#f00", 0, pos[1] + 4, pos[0], 60);
 					tempAnim[0]++;
@@ -1127,7 +1127,7 @@ const graphics = {
 						game.enemyStage = PENDING;
 					};
 				} else if (type === SENTRY.BIG) {
-					draw.imageSector(enemy.sentry.big_attack, Math.floor(tempAnim[0]) * 88, 0, 88, 70, pos[0] - 12, pos[1] - 1, 88, 70);
+					draw.imageSector(I.enemy.sentry.big_attack, Math.floor(tempAnim[0]) * 88, 0, 88, 70, pos[0] - 12, pos[1] - 1, 88, 70);
 					if (tempAnim[0] >= 4) {
 						const start = [pos[0] + 17, pos[1] + 16];
 						const end = (game.shield > 0 ? [92, 90] : [72, 85]);
@@ -1148,7 +1148,7 @@ const graphics = {
 						game.enemyStage = PENDING;
 					};
 				} else if (type === SENTRY.SMALL) {
-					draw.imageSector(enemy.sentry.small_attack, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
+					draw.imageSector(I.enemy.sentry.small_attack, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
 					if (tempAnim[0] >= 11) {
 						const start = [pos[0] + 14, pos[1] + 30];
 						const end = (game.shield > 0 ? [92, 90] : [72, 85]);
@@ -1169,7 +1169,7 @@ const graphics = {
 						game.enemyStage = PENDING;
 					};
 				} else if (type === SENTRY.PRIME && primeAnim == -1) {
-					draw.imageSector(enemy.sentry.prime_attack, Math.floor(tempAnim[0]) * 64, 0, 64, 86, pos[0], pos[1] - 22);
+					draw.imageSector(I.enemy.sentry.prime_attack, Math.floor(tempAnim[0]) * 64, 0, 64, 86, pos[0], pos[1] - 22);
 					if (tempAnim[0] >= 12) {
 						let start = [pos[0] + 12, pos[1] + 29];
 						const end = (game.shield > 0 ? [92, 90] : [72, 85]);
@@ -1194,7 +1194,7 @@ const graphics = {
 				};
 			} else if (intent === DEFEND) {
 				if (type === SLIME.BIG) {
-					draw.imageSector(enemy.slime.big_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, tempAnim[0] * 2 + 5, 64, pos[0], pos[1]);
+					draw.imageSector(I.enemy.slime.big_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, tempAnim[0] * 2 + 5, 64, pos[0], pos[1]);
 					tempAnim[0]++;
 					if (game.enemyStage === MIDDLE) {
 						tempAnim = [0, STARTING];
@@ -1206,7 +1206,7 @@ const graphics = {
 						game.enemyStage = PENDING;
 					};
 				} else if (type === SLIME.SMALL) {
-					draw.imageSector(enemy.slime.small_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, tempAnim[0] + 20, 64, pos[0], pos[1]);
+					draw.imageSector(I.enemy.slime.small_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, tempAnim[0] + 20, 64, pos[0], pos[1]);
 					tempAnim[0]++;
 					if (game.enemyStage === MIDDLE) {
 						tempAnim = [0, STARTING];
@@ -1218,7 +1218,7 @@ const graphics = {
 						game.enemyStage = PENDING;
 					};
 				} else if (type === SLIME.PRIME) {
-					draw.imageSector(enemy.slime.prime_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, tempAnim[0] * 3, 64, pos[0], pos[1] + 1);
+					draw.imageSector(I.enemy.slime.prime_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, tempAnim[0] * 3, 64, pos[0], pos[1] + 1);
 					tempAnim[0]++;
 					if (game.enemyStage === MIDDLE) {
 						tempAnim = [0, STARTING];
@@ -1230,7 +1230,7 @@ const graphics = {
 						game.enemyStage = PENDING;
 					};
 				} else if (type === SENTRY.BIG) {
-					draw.imageSector(enemy.sentry.big_defend, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+					draw.imageSector(I.enemy.sentry.big_defend, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 					tempAnim[0]++;
 					if (game.enemyStage === MIDDLE) {
 						tempAnim = [0, STARTING];
@@ -1242,7 +1242,7 @@ const graphics = {
 						game.enemyStage = PENDING;
 					};
 				} else if (type === SENTRY.SMALL) {
-					draw.imageSector(enemy.sentry.small_defend, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
+					draw.imageSector(I.enemy.sentry.small_defend, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
 					tempAnim[0]++;
 					if (game.enemyStage === MIDDLE) {
 						tempAnim = [0, STARTING];
@@ -1254,7 +1254,7 @@ const graphics = {
 						game.enemyStage = PENDING;
 					};
 				} else if (type === SENTRY.PRIME && primeAnim == -1) {
-					draw.imageSector(enemy.sentry.prime_defend, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
+					draw.imageSector(I.enemy.sentry.prime_defend, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
 					tempAnim[0]++;
 					if (game.enemyStage === MIDDLE) {
 						tempAnim = [0, STARTING];
@@ -1279,8 +1279,8 @@ const graphics = {
 	 */
 	info() {
 		draw.rect("#000c");
-		draw.image(extra.help, 362, 3);
-		draw.image(select.round, 361, 2);
+		draw.image(I.extra.help, 362, 3);
+		draw.image(I.select.round, 361, 2);
 		const limit = (str) => {
 			let lim = (draw.lore(1, 23, str, {"color": "none"}) + 23) - 200;
 			if (lim < 0) lim = 0;
@@ -1303,7 +1303,7 @@ const graphics = {
 		draw.lore(1, 12 - infPos, 'Source can be found at "https://github.com/Yrahcaz7/Dungeon-of-Souls"', {"color": "#f44", "text-small": true});
 		if (infLimit > 0) {
 			draw.lore(360, 32, "Scrollable", {"color": "#fff", "text-align": LEFT});
-			draw.image(arrows, 367, 22);
+			draw.image(I.arrows, 367, 22);
 		};
 	},
 	/**
@@ -1333,8 +1333,8 @@ const graphics = {
 		draw.lore(200 - 2, 1, "Options", {"color": "#fff", "text-align": CENTER});
 		draw.rect("#fff", 1, 12, 378, 1);
 		draw.lore(200 - 2, 15, text.trim().replace(/_/g, " "), {"color": "#fff", "text-align": CENTER});
-		draw.image(extra.options, 380, 2);
-		if (game.select[1] == 1 && focused) draw.image(get.area() == 1 ? select.options : select.options_yellow, 380, 2);
+		draw.image(I.extra.options, 380, 2);
+		if (game.select[1] == 1 && focused) draw.image(get.area() == 1 ? I.select.options : I.select.options_yellow, 380, 2);
 	},
 	/**
 	 * Draws a deck on the canvas.
@@ -1428,10 +1428,10 @@ const graphics = {
 	 */
 	handSelect() {
 		draw.rect("#000c");
-		draw.image(extra.end, 3, 55);
-		draw.image(extra.end, 381, 55);
-		if (game.select[1] == -1) draw.image(select.round, 2, 54);
-		else if (game.select[1] == game.hand.length) draw.image(select.round, 380, 54);
+		draw.image(I.extra.end, 3, 55);
+		draw.image(I.extra.end, 381, 55);
+		if (game.select[1] == -1) draw.image(I.select.round, 2, 54);
+		else if (game.select[1] == game.hand.length) draw.image(I.select.round, 380, 54);
 		let temp = -1;
 		for (let index = 0; index < game.hand.length; index++) {
 			if (index == game.select[1]) {
@@ -1582,11 +1582,11 @@ const graphics = {
 			let x = (popups[index][1].length * 6) + 13;
 			if (popups[index][3]) x = (Math.max(popups[index][1].length, popups[index][3].length) * 3) + 13;
 			x = 400 - x;
-			draw.image(popup.back, x, 150 - (index * 21));
+			draw.image(I.popup.back, x, 150 - (index * 21));
 			draw.lore(x + 13, 150 - (index * 21) + 8, popups[index][3] ? popups[index][1] + "\n" + popups[index][3] : popups[index][1], {"text-small": !!popups[index][3]});
-			if (popup[popups[index][0]]) draw.image(popup[popups[index][0]], x + 2, 150 - (index * 21) + 2);
+			if (I.popup[popups[index][0]]) draw.image(I.popup[popups[index][0]], x + 2, 150 - (index * 21) + 2);
 			if (game.select[0] === POPUPS && game.select[1] == index) {
-				draw.image(select.popup, x - 1, 150 - (index * 21) - 1);
+				draw.image(I.select.popup, x - 1, 150 - (index * 21) - 1);
 			};
 			ctx.globalAlpha = 1;
 		};
@@ -1605,11 +1605,11 @@ const graphics = {
 		else draw.lore(200 - 2, 21, "Rewards!", {"text-align": CENTER});
 		for (let index = 0; index < game.rewards.length; index++) {
 			let item = game.rewards[index];
-			draw.image(rewards.item, 151, 32 + (index * 19));
-			if (game.select[1] == index && focused) draw.image(select.item_border, 150, 31 + (index * 19));
-			if (item.endsWith(" - claimed")) draw.image(select.item_green, 151, 32 + (index * 19));
-			else if (game.select[1] == index && focused) draw.image(select.item, 151, 32 + (index * 19));
-			if (item == "finish") draw.image(rewards.back, 151, 32 + (index * 19));
+			draw.image(I.reward.item, 151, 32 + (index * 19));
+			if (game.select[1] == index && focused) draw.image(I.select.item_border, 150, 31 + (index * 19));
+			if (item.endsWith(" - claimed")) draw.image(I.select.item_green, 151, 32 + (index * 19));
+			else if (game.select[1] == index && focused) draw.image(I.select.item, 151, 32 + (index * 19));
+			if (item == "finish") draw.image(I.reward.back, 151, 32 + (index * 19));
 			draw.lore(171, 36 + (index * 19), item.replace(" - claimed", ""));
 		};
 	},
@@ -1645,9 +1645,8 @@ const graphics = {
 		draw.box(x, y, width, height);
 		draw.lore(200 - 2, y + 1, "Pick an artifact:", {"text-align": CENTER});
 		for (let index = 0; index < 3; index++) {
-			const name = ("" + artifacts[game.room[6][index]].name).replace(/\s/g, "_");
-			draw.image(artifact[name], 160 + (index * 32), 90);
-			if (game.select[1] === index) draw.image(select[name], 159 + (index * 32), 89);
+			draw.image(I.artifact[game.room[6][index]], 160 + (index * 32), 90);
+			if (game.select[1] === index) draw.image(I.artifact.select[game.room[6][index]], 159 + (index * 32), 89);
 		};
 		if ((game.select[1] === -1 || game.select[1] === 3) && focused) draw.rect("#fff", x, y + height - 14, width, 14);
 		draw.box(x + 2, y + height - 12, width - 4, 10);
@@ -1662,32 +1661,32 @@ const graphics = {
 		// draw map
 		if (render) {
 			draw.rect("#000");
-			draw.image(map.top, 3, 12);
-			draw.image(map.row, 16, 20, map.row.width, 164);
-			draw.image(map.bottom, 16, 184);
+			draw.image(I.map.top, 3, 12);
+			draw.image(I.map.row, 16, 20, I.map.row.width, 164);
+			draw.image(I.map.bottom, 16, 184);
 			if (game.state === STATE.EVENT_FIN) {
 				if (game.floor % 10 == 9) {
-					draw.image(map.select, 18 + (9 * 32), 12);
-					draw.image(map.select, 12 + (10 * 32), 12);
+					draw.image(I.map.select, 18 + (9 * 32), 12);
+					draw.image(I.map.select, 12 + (10 * 32), 12);
 				} else if (game.location == "-1") {
-					draw.image(map.select_first, 13, 12);
+					draw.image(I.map.select_first, 13, 12);
 				} else {
-					draw.image(map.select, 13 + ((+game.location.split(", ")[0] + 1) * 32), 12);
+					draw.image(I.map.select, 13 + ((+game.location.split(", ")[0] + 1) * 32), 12);
 				};
 			} else if (game.location != "-1") {
 				if (game.floor % 10 == 0) {
-					draw.image(map.select, 18 + (9 * 32), 12);
-					draw.image(map.select, 12 + (10 * 32), 12);
+					draw.image(I.map.select, 18 + (9 * 32), 12);
+					draw.image(I.map.select, 12 + (10 * 32), 12);
 				} else if (game.location.split(", ")[0] == "0") {
-					draw.image(map.select_first, 13, 12);
+					draw.image(I.map.select_first, 13, 12);
 				} else {
-					draw.image(map.select, 13 + (+game.location.split(", ")[0] * 32), 12);
+					draw.image(I.map.select, 13 + (+game.location.split(", ")[0] * 32), 12);
 				};
 			};
-			draw.image(extra.deck, 22, 16);
-			if (game.select[0] === IN_MAP && game.mapSelect == (paths[game.location] || []).length) draw.image(select.deck, 21, 15);
-			draw.image(extra.end, 22, 179);
-			if (game.select[0] === IN_MAP && game.mapSelect == -1) draw.image(select.round, 21, 178);
+			draw.image(I.extra.deck, 22, 16);
+			if (game.select[0] === IN_MAP && game.mapSelect == (paths[game.location] || []).length) draw.image(I.select.deck, 21, 15);
+			draw.image(I.extra.end, 22, 179);
+			if (game.select[0] === IN_MAP && game.mapSelect == -1) draw.image(I.select.round, 21, 178);
 			draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
 			draw.lore(399, 1, "seed: " + game.seed, {"color": "#fff", "text-align": LEFT});
 		};
@@ -1696,8 +1695,8 @@ const graphics = {
 			for (let x = 0; x < game.map.length; x++) {
 				for (let y = 0; y < game.map[x].length; y++) {
 					if (typeof game.map[x][y] != "number") continue;
-					draw.image(map.scribble_back, 25 + (x * 32) + 8 - 4, 18 + (y * 32) + 8 - 3 - 2.5, 80 / 2, 80 / 2);
-					draw.imageSector(map.scribbles, game.map[x][y] * 64, 0, 64, 70, 25 + (x * 32) + 8, 18 + (y * 32) + 8 - 3, 64 / 2, 70 / 2);
+					draw.image(I.map.scribble_back, 25 + (x * 32) + 8 - 4, 18 + (y * 32) + 8 - 3 - 2.5, 80 / 2, 80 / 2);
+					draw.imageSector(I.map.scribbles, game.map[x][y] * 64, 0, 64, 70, 25 + (x * 32) + 8, 18 + (y * 32) + 8 - 3, 64 / 2, 70 / 2);
 				};
 			};
 		};
@@ -1788,35 +1787,35 @@ const graphics = {
 					let drawX = 25 + (x * 32) + game.map[x][y][1];
 					let drawY = 18 + (y * 32) + game.map[x][y][2];
 					if (game.map[x][y][0] === ROOM.BATTLE) {
-						draw.image(map.battle, drawX, drawY);
-						if (x == coordSel[0] && y == coordSel[1]) draw.image(select.battle, drawX - 1, drawY - 1);
-						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.battle_blue, drawX - 1, drawY - 1);
+						draw.image(I.map.node.battle, drawX, drawY);
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.battle, drawX - 1, drawY - 1);
+						if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select.battle_blue, drawX - 1, drawY - 1);
 					} else if (game.map[x][y][0] === ROOM.PRIME) {
-						draw.image(map.death_zone, drawX, drawY);
-						if (x == coordSel[0] && y == coordSel[1]) draw.image(select.death_zone, drawX - 1, drawY - 1);
-						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.death_zone_blue, drawX - 1, drawY - 1);
+						draw.image(I.map.node.death_zone, drawX, drawY);
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.death_zone, drawX - 1, drawY - 1);
+						if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select.death_zone_blue, drawX - 1, drawY - 1);
 					} else if (game.map[x][y][0] === ROOM.TREASURE) {
 						if (game.map[x][y][3]) {
-							draw.image(map.treasure_open, drawX, drawY);
-							if (x == coordOn[0] && y == coordOn[1]) draw.image(select.treasure_open_blue, drawX - 1, drawY - 1);
+							draw.image(I.map.node.treasure_open, drawX, drawY);
+							if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select.treasure_open_blue, drawX - 1, drawY - 1);
 						} else {
-							draw.image(map.treasure, drawX, drawY);
-							if (x == coordSel[0] && y == coordSel[1]) draw.image(select.treasure, drawX - 1, drawY - 1);
-							if (x == coordOn[0] && y == coordOn[1]) draw.image(select.treasure_blue, drawX - 1, drawY - 1);
+							draw.image(I.map.node.treasure, drawX, drawY);
+							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.treasure, drawX - 1, drawY - 1);
+							if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select.treasure_blue, drawX - 1, drawY - 1);
 						};
 					} else if (game.map[x][y][0] === ROOM.ORB) {
-						draw.image(map.orb, drawX, drawY);
-						if (x == coordSel[0] && y == coordSel[1]) draw.image(select.orb, drawX - 1, drawY - 1);
-						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.orb_blue, drawX - 1, drawY - 1);
+						draw.image(I.map.node.orb, drawX, drawY);
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.orb, drawX - 1, drawY - 1);
+						if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select.orb_blue, drawX - 1, drawY - 1);
 					} else if (game.map[x][y][0] === ROOM.BOSS) {
 						drawX += 10;
-						draw.image(map.boss, drawX, 90);
-						if (x == coordSel[0] && y == coordSel[1]) draw.image(select.boss, drawX - 1, 90 - 1);
-						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.boss_blue, drawX - 1, 90 - 1);
+						draw.image(I.map.node.boss, drawX, 90);
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.boss, drawX - 1, 90 - 1);
+						if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select.boss_blue, drawX - 1, 90 - 1);
 					} else if (game.map[x][y][0] === ROOM.EVENT) {
-						draw.image(map.event, drawX, drawY);
-						if (x == coordSel[0] && y == coordSel[1]) draw.image(select.orb, drawX - 1, drawY - 1);
-						if (x == coordOn[0] && y == coordOn[1]) draw.image(select.orb_blue, drawX - 1, drawY - 1);
+						draw.image(I.map.node.event, drawX, drawY);
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.event, drawX - 1, drawY - 1);
+						if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select.event_blue, drawX - 1, drawY - 1);
 					};
 				};
 			};
@@ -1869,7 +1868,7 @@ const startAnim = {
 	 * @param {string} name - the name of the player animation.
 	 */
 	player(name) {
-		if (!player[name] || playerAnim[1] == "death") return;
+		if (!I.player[name] || playerAnim[1] == "death") return;
 		if (game.eff.aura_blades && (name == "attack" || name == "attack_2")) name += "_aura";
 		if (game.eff.reinforces && (name == "shield" || name == "crouch_shield")) name += "_reinforced";
 		playerAnim = [0, name];

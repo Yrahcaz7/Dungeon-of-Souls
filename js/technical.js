@@ -104,7 +104,6 @@ window.onload = async function() {
 	} else {
 		graphics.map(true);
 		changeMusic();
-		updateVisuals();
 		loaded = true;
 	};
 };
@@ -112,11 +111,10 @@ window.onload = async function() {
 var canvas, scale, ctx, action = -1, lastAction = -1;
 
 /**
- * Sets up the canvas. Returns true if successful.
+ * Sets up the canvas.
  */
 function canvasData() {
 	let canv = document.getElementById("canvas");
-	if (!canv) return false;
 	scale = canv.width / 400;
 	canv.height = canv.width / 2;
 	canvas = canv;
@@ -125,7 +123,6 @@ function canvasData() {
 	ctx.webkitImageSmoothingEnabled = false;
 	ctx.msImageSmoothingEnabled = false;
 	ctx.imageSmoothingEnabled = false;
-	return true;
 };
 
 /**
@@ -158,6 +155,7 @@ window.onresize = () => {
 };
 
 document.addEventListener("keydown", event => {
+	if (!loaded) return;
 	const key = event.key, prevAction = action;
 	if ((key == "E" || key == "e") && game.turn === TURN.PLAYER && game.select[0] !== CONFIRM_END) endTurnConfirm();
 	else if (key == "1" && !event.repeat && actionTimer == -1) {

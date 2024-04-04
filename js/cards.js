@@ -370,55 +370,22 @@ Array.prototype.cardSort = function() {
 	});
 };
 
-const cardNames = {};
-
-/**
- * Constructs the `cardNames` array.
- */
-function constructNames() {
-	const entries = Object.entries(cards);
-	for (let index = 0; index < entries.length; index++) {
-		cardNames[entries[index][1].name] = +entries[index][0];
-	};
-};
-
-const common = Object.keys(card.common), rare = Object.keys(card.rare);
+const common = Object.keys(I.card.common).map(val => +val), rare = Object.keys(I.card.rare).map(val => +val);
 
 /**
  * Returns a random card's id.
  * @param {string[]} notInclude - the ids to not include.
  */
 function randomCard(notInclude = []) {
-	let bool = true;
-	if (Object.keys(cardNames).length === 0) constructNames();
-	if (notInclude.length) {
-		for (const key in cards) {
-			if (Object.hasOwnProperty.call(cards, key)) {
-				if (cards[key].rarity > 0 && !notInclude.includes(+key)) {
-					bool = false;
-				};
-			};
-		};
-	};
-	if (bool) {
-		let result = 0;
+	let result = 0;
+	while (!result || notInclude.includes(result)) {
 		if (chance(7/10)) {
-			result = cardNames[common[randomInt(0, Object.keys(card.common).length - 1)]];
+			result = common[randomInt(0, Object.keys(I.card.common).length - 1)];
 		} else {
-			result = cardNames[rare[randomInt(0, Object.keys(card.rare).length - 1)]];
+			result = rare[randomInt(0, Object.keys(I.card.rare).length - 1)];
 		};
-		return result;
-	} else {
-		let result = 0;
-		while (!result || notInclude.includes(result)) {
-			if (chance(7/10)) {
-				result = cardNames[common[randomInt(0, Object.keys(card.common).length - 1)]];
-			} else {
-				result = cardNames[rare[randomInt(0, Object.keys(card.rare).length - 1)]];
-			};
-		};
-		return result;
 	};
+	return result;
 };
 
 /**
@@ -427,6 +394,7 @@ function randomCard(notInclude = []) {
  */
 function randomCardSet(length = 0) {
 	if (length <= 0) return [];
+	if (length > 10) length = 10;
 	let result = [];
 	for (let index = 0; index < length; index++) {
 		result.push(randomCard(result));

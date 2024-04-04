@@ -180,12 +180,15 @@ function fixSave() {
 			};
 		};
 	};
+	// save the fixed save
+	save();
 };
 
 /**
  * Loads the save. Creates a new save if there is no save to load.
  */
 function load() {
+	// load current run
 	let get = localStorage.getItem(ID + "/0");
 	if (get && atob(get) && JSON.parse(atob(get))) {
 		let obj = JSON.parse(atob(get));
@@ -211,6 +214,7 @@ function load() {
 	} else {
 		console.log("no local save found. creating new save...");
 	};
+	// load global stuff
 	get = localStorage.getItem(ID + "/master");
 	if (get && atob(get) && JSON.parse(atob(get))) {
 		get = JSON.parse(atob(get));
@@ -221,8 +225,24 @@ function load() {
 	} else {
 		console.log("no global save found. creating new save...");
 	};
+	// load images
+	for (const id in cards) {
+		if (Object.hasOwnProperty.call(cards, id) && id) {
+			I.card[rarities[cards[id].rarity]][id] = new Image;
+		};
+	};
+	for (const id in artifacts) {
+		if (Object.hasOwnProperty.call(artifacts, id)) {
+			I.artifact[id] = new Image;
+		};
+	};
+	for (const folder in I) {
+		if (Object.hasOwnProperty.call(I, folder)) {
+			loadImage(I, folder, "images/");
+		};
+	};
+	// fix old save
 	fixSave();
-	save();
 };
 
 window.onbeforeunload = () => {

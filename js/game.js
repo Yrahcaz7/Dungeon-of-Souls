@@ -1361,19 +1361,19 @@ function updateVisuals() {
 	graphics.backgrounds();
 	if (menuLocation !== -1) {
 		graphics.middleLayer();
-		draw.image(title, (400 - title.width) / 2, 0);
+		draw.image(I.title, (400 - I.title.width) / 2, 0);
 		if (global.highScore > 0) draw.lore(1, 1, "HIGH SCORE: " + global.highScore + " points", {"color": "#fff", "text-small": true});
 		if (game.artifacts.includes(0) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": CENTER});
 		else if (get.area() == 1) draw.lore(200 - 2, 53, "Act 2: The Color of the Soul", {"color": "#fff", "text-align": CENTER});
 		else draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": CENTER});
 		if (get.area() == 0 && new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "#fff", "text-align": CENTER});
 		if (game.difficulty === undefined) game.difficulty = 0;
-		draw.imageSector(difficulty, 0, game.difficulty * 16, 64, 16, 168, 146);
+		draw.imageSector(I.difficulty, 0, game.difficulty * 16, 64, 16, 168, 146);
 		if (game.artifacts.includes(0)) {
 			if (game.floor == 10 && transition < 100) {
 				ctx.globalAlpha = transition / 100;
 			};
-			draw.imageSector(difficulty, 0, 2 * 16, 64, 16, 168, 146);
+			draw.imageSector(I.difficulty, 0, 2 * 16, 64, 16, 168, 146);
 			ctx.globalAlpha = 1;
 		};
 		if (game.select[0] === WELCOME) {
@@ -1523,7 +1523,7 @@ function updateVisuals() {
 		draw.lore(x + 42, y + 16, "BACK");
 		draw.card(cardObj, -1, 51, true, 100, true);
 		draw.card(new Card(cardObj.id, 1), -1, 51, true, 234, true);
-		draw.image(card.refine, (200 - card.refine.width / 2), 95);
+		draw.image(I.card.refine, (200 - I.card.refine.width / 2), 95);
 	};
 	graphics.popups();
 	if (game.select[0] === GAME_OVER) {
@@ -1586,7 +1586,7 @@ function updateVisuals() {
 			game.select[1]++;
 		};
 		draw.rect("#000");
-		draw.image(victorious, 168, 42 + Math.round(Math.abs(winAnim - 4) - 2), victorious.width * 2, victorious.height * 2);
+		draw.image(I.victorious, 168, 42 + Math.round(Math.abs(winAnim - 4) - 2), I.victorious.width * 2, I.victorious.height * 2);
 		winAnim += Math.random() * 0.05 + 0.05;
 		if (winAnim >= 8) winAnim -= 8;
 		draw.rect("#0004");
@@ -1645,37 +1645,29 @@ function updateVisuals() {
 };
 
 const gameloop = setInterval(() => {
-	// check for bugs
-	if (!canvas || !ctx) {
-		canvasData();
-		if (!canvas || !ctx) {
-			console.error("Canvas not loaded properly. Please reload page if problem persists.");
-			return;
+	if (!loaded) return;
+	// gameplay
+	if (menuLocation === -1) manageGameplay();
+	// selection
+	selection();
+	// visuals
+	if (screenShake > 0) {
+		if (global.options[OPTION.SCREEN_SHAKE]) {
+			clearCanvas();
+			ctx.save();
+			ctx.translate((Math.random() - 0.5) * Math.min(screenShake, 10), (Math.random() - 0.5) * Math.min(screenShake, 10));
+			screenShake--;
+		} else {
+			screenShake = 0;
 		};
 	};
-	// normal things
-	if (loaded) {
-		// gameplay
-		if (menuLocation === -1) manageGameplay();
-		// selection
-		selection();
-		// visuals
-		if (screenShake > 0) {
-			if (global.options[OPTION.SCREEN_SHAKE]) {
-				clearCanvas();
-				ctx.save();
-				ctx.translate((Math.random() - 0.5) * Math.min(screenShake, 10), (Math.random() - 0.5) * Math.min(screenShake, 10));
-				screenShake--;
-			} else {
-				screenShake = 0;
-			};
-		};
-		updateVisuals();
-		ctx.restore();
-		// save
-		save();
-	};
-}, 100), musicloop = setInterval(() => {
+	updateVisuals();
+	ctx.restore();
+	// save
+	save();
+}, 100);
+
+const musicloop = setInterval(() => {
 	if (global.options[OPTION.MUSIC] && document.getElementById("music")?.src) {
 		let time = document.getElementById("music").currentTime;
 		if (time === 0 && menuLocation === -1) {

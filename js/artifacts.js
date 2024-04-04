@@ -122,11 +122,11 @@ function randomArtifact(notInclude = []) {
 		};
 	};
 	if (bool) {
-		return randomInt(2, Object.keys(artifact).length - 1);
+		return randomInt(2, Object.keys(I.artifact).length - 1);
 	};
 	let result;
 	while (!result || notInclude.includes(result)) {
-		result = randomInt(2, Object.keys(artifact).length - 1);
+		result = randomInt(2, Object.keys(I.artifact).length - 1);
 	};
 	return result;
 };
@@ -137,6 +137,7 @@ function randomArtifact(notInclude = []) {
  */
 function randomArtifactSet(length = 0) {
 	if (length <= 0) return [];
+	if (length > 5) length = 5;
 	let result = [];
 	for (let index = 0; index < length; index++) {
 		result.push(randomArtifact(result));
