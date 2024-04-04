@@ -83,7 +83,7 @@ const artifacts = {
 	9: {
 		name: "bottled fire",
 		rarity: 1,
-		desc: "If an enemy takes damage\nfrom a non-additional\nburn effect, it triggers\nan additional time.",
+		desc: "If an enemy takes damage\nfrom a burn effect, it\ntriggers an additional\ntime. This effect cannot\ntrigger itself.",
 	},
 };
 

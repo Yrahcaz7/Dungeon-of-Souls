@@ -307,35 +307,28 @@ const draw = {
 		draw.image(I.select.selector[3], x + width - 6, y + height - 7);
 	},
 	/**
-	 * Draws an intent on the canvas.
-	 * @param {number} x - the x-coordinate to draw the intent at.
-	 * @param {number} y - the y-coordinate to draw the intent at.
-	 * @param {number} effect - how powerful the intent is.
-	 * @param {ATTACK | DEFEND} type - the type of intent. Can be `ATTACK` or `DEFEND`.
+	 * Draws an intent of an enemy on the canvas.
+	 * @param {number} index - the index of the enemy.
 	 */
-	intent(x, y, effect, type) {
-		if (type === BUFF) {
+	intent(index) {
+		if (game.enemies[index].eff.shroud) return;
+		if (index === game.enemyNum) return;
+		let x = enemyPos[index][0] + 16;
+		let y = getEnemyIntentPos(index, true);
+		if (game.enemies[index].intent === BUFF) {
 			draw.image(I.intent.buff, x, y);
-			return;
+		} else if (game.enemies[index].intent === ATTACK) {
+			let power = game.enemies[index].getTotalAttackPower();
+			power = Math.ceil(power * get.takeDamageMult(index));
+			draw.image(I.intent.attack[Math.min(Math.floor(power / 5), 10)], x, y);
+			draw.lore(x + 30 - 16, y + 12, power, {"color": "#fff", "text-align": CENTER});
+		} else if (game.enemies[index].intent === DEFEND) {
+			let power = game.enemies[index].getTotalDefendPower();
+			draw.image(I.intent.defend[Math.min(Math.floor(power / 5), 10)], x, y);
+			draw.lore(x + 30 - 16, y + 11, power, {"color": "#fff", "text-align": CENTER});
 		};
-		let stage = 0;
-		if (effect >= 125) stage = 10;
-		else if (effect >= 100) stage = 9;
-		else if (effect >= 75) stage = 8;
-		else if (effect >= 55) stage = 7;
-		else if (effect >= 40) stage = 6;
-		else if (effect >= 30) stage = 5;
-		else if (effect >= 20) stage = 4;
-		else if (effect >= 15) stage = 3;
-		else if (effect >= 10) stage = 2;
-		else if (effect >= 5) stage = 1;
-		if (type === ATTACK) {
-			draw.image(I.intent.attack[stage], x, y);
-			draw.lore(x + 30 - 16, y + 12, effect, {"color": "#fff", "text-align": CENTER});
-		} else if (type === DEFEND) {
-			draw.image(I.intent.defend[stage], x, y);
-			draw.lore(x + 30 - 16, y + 11, effect, {"color": "#fff", "text-align": CENTER});
-		};
+		intentAnim[index] += (Math.random() + 0.5) * 0.15;
+		if (intentAnim[index] >= 4) intentAnim[index] -= 4;
 	},
 	/**
 	 * Draws a box on the canvas.
@@ -843,21 +836,10 @@ const graphics = {
 		// info
 		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": (get.area() == 1 ? "#000" : "#f44")});
 		// intents
-		if (hidden()) return;
-		for (let index = 0; index < game.enemies.length; index++) {
-			if (game.enemies[index].eff.shroud) return;
-			if (intentAnim[index] >= 4) intentAnim[index] = 0;
-			if (index !== game.enemyNum) {
-				let power = 0;
-				if (game.enemies[index].intent === ATTACK) {
-					power = game.enemies[index].getTotalAttackPower();
-					power = Math.ceil(power * get.takeDamageMult(index));
-				} else if (game.enemies[index].intent === DEFEND) {
-					power = game.enemies[index].getTotalDefendPower();
-				};
-				draw.intent(enemyPos[index][0] + 16, getEnemyIntentPos(index, true), power, game.enemies[index].intent);
+		if (!hidden() && !(game.select[0] === LOOKER || game.select[0] === HELP || game.select[0] === OPTIONS)) {
+			for (let index = 0; index < game.enemies.length; index++) {
+				draw.intent(index);
 			};
-			intentAnim[index] += (Math.random() + 0.5) * 0.15;
 		};
 	},
 	/**
@@ -1045,6 +1027,9 @@ const graphics = {
 							enemyAnim[index] = 0;
 						};
 					};
+				};
+				if (game.select[0] === LOOKER || game.select[0] === HELP || game.select[0] === OPTIONS) {
+					draw.intent(index);
 				};
 			};
 		};
