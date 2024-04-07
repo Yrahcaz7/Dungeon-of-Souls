@@ -11,7 +11,7 @@ function startEventBattle(type, num = 1) {
 		if (num > 6) num = 6;
 		let enemy = [SLIME.SMALL, SENTRY.SMALL][get.area()];
 		for (let index = 0; index < num; index++) {
-			game.enemies.push(new Enemy(enemy, 1 - (index * 2 + num) / 10));
+			game.enemies.push(new Enemy(enemy, 1 - (index + num) / 5));
 		};
 	} else if (type === AMBUSH) {
 		let enemy = [SLIME.BIG, SENTRY.BIG][get.area()];

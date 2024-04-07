@@ -284,6 +284,7 @@ function load() {
 	for (const id in cards) {
 		if (Object.hasOwnProperty.call(cards, id) && cards[id].rarity >= 0) {
 			I.card[RARITY[cards[id].rarity]][id] = new Image;
+			cardIDs[cards[id].rarity].push(+id);
 		};
 	};
 	for (const id in artifacts) {

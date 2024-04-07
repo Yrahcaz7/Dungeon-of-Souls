@@ -19,14 +19,14 @@ const FIRSTBATTLE = 0, TREASURE = 1, PRIME = 2, ORB = 3, BOSS = 4, EVENT = 5;
 
 const ROOM = {BATTLE: 100, TREASURE: 101, PRIME: 102, ORB: 103, BOSS: 104, EVENT: 105};
 
-let mapProg = 0, mapTotal = 50, death_zones = 0, rowFalses = 0, rowNodes = 0, eventShift = 0;
+let mapProg = 0, mapTotal = 100, death_zones = 0, rowFalses = 0, rowNodes = 0, eventShift = 0;
 
 /**
- * Gets a weaker small slime in the map syntax.
+ * Gets a weaker small enemy in the map syntax.
  * @param {number} row - the row the enemy will be contained in.
  */
-function weakerSmallSlime(row) {
-	return SLIME.SMALL + ", " + (Math.round((0.5 + (row * 0.05)) * 100) / 100);
+function weakerSmallEnemy(row) {
+	return [SLIME.SMALL, SENTRY.SMALL][get.area(row - 1)] + ", " + (Math.round((0.5 + (row * 0.05)) * 100) / 100);
 };
 
 /**
@@ -46,7 +46,7 @@ async function updateMapProg() {
 	else draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\n" + (mapProg / mapTotal * 100).toFixed(0) + "%", {"color": "#fff", "text-align": CENTER});
 	mapProg++;
 	if (mapProg > mapTotal) mapProg = 0;
-	await new Promise(r => setTimeout(r, 0));
+	await new Promise(r => setTimeout(r));
 };
 
 /**
@@ -56,17 +56,18 @@ async function updateMapProg() {
  * @param {FIRSTBATTLE | TREASURE | PRIME | ORB | BOSS} attribute - the attribute of the map piece, if any.
  */
 async function mapPiece(row, num, attribute = -1) {
-	if (attribute === FIRSTBATTLE) return [ROOM.BATTLE, 0, 0, [SLIME.SMALL], goldReward(row), randomCardSet(5)];
+	let area = get.area(row - 1);
+	if (attribute === FIRSTBATTLE) return [ROOM.BATTLE, 0, 0, [[SLIME.SMALL, SENTRY.SMALL][area]], goldReward(row), randomCardSet(5)];
 	if (attribute === TREASURE) return [ROOM.TREASURE, randomInt(-5, 5), randomInt(-5, 5), false, goldReward(row) * 2, randomCardSet(5)];
-	if (attribute === PRIME) return [ROOM.PRIME, randomInt(-5, 5), randomInt(-5, 5), [weakerSmallSlime(row), SLIME.PRIME, weakerSmallSlime(row)], goldReward(row) * 2, randomCardSet(5), randomArtifactSet(3)];
+	if (attribute === PRIME) return [ROOM.PRIME, randomInt(-5, 5), randomInt(-5, 5), [weakerSmallEnemy(row), [SLIME.PRIME, SENTRY.PRIME][area], weakerSmallEnemy(row)], goldReward(row) * 2, randomCardSet(5), randomArtifactSet(3)];
 	if (attribute === EVENT) {
-		let index = randomInt(0, EVENTS.any.length + EVENTS[get.area(row - 1)].length - 1);
+		let index = randomInt(0, EVENTS.any.length + EVENTS[area].length - 1);
 		if (index >= EVENTS.any.length) index += 100 - EVENTS.any.length;
 		return [ROOM.EVENT, randomInt(-5, 5), randomInt(-5, 5), index, goldReward(row), randomCardSet(5)];
 	};
 	await updateMapProg();
 	if (attribute === ORB) return [ROOM.ORB, randomInt(-5, 5), randomInt(-5, 5)];
-	if (attribute === BOSS) return [ROOM.BOSS, 0, 0, [FRAGMENT], goldReward(row) * 4, randomCardSet(5), randomArtifactSet(3)];
+	if (attribute === BOSS) return [ROOM.BOSS, 0, 0, [[FRAGMENT, ACT2BOSS][area]], goldReward(row) * 4, randomCardSet(5), randomArtifactSet(3)];
 	let type = chance(3/5) ? ROOM.BATTLE : false;
 	if (rowFalses >= 3 || (row === 0 && rowFalses >= 2) || (num == 2 && rowFalses == 2)) type = ROOM.BATTLE;
 	if (type) rowNodes++;
@@ -74,8 +75,8 @@ async function mapPiece(row, num, attribute = -1) {
 	if (!type || rowNodes == 6) return false;
 	let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
 	if (type === ROOM.BATTLE) {
-		if (row >= 5) result.push(chance(1/3) ? [SLIME.BIG] : (chance(2/3) ? [SLIME.BIG, weakerSmallSlime(row)] : [SLIME.SMALL, SLIME.SMALL]));
-		else result.push(chance() ? [SLIME.BIG] : [SLIME.SMALL, weakerSmallSlime(row)]);
+		if (row >= 5) result.push(chance(1/3) ? [[SLIME.BIG, SENTRY.BIG][area]] : (chance(2/3) ? [[SLIME.BIG, SENTRY.BIG][area], weakerSmallEnemy(row)] : [[SLIME.SMALL, SENTRY.SMALL][area], [SLIME.SMALL, SENTRY.SMALL][area]]));
+		else result.push(chance() ? [[SLIME.BIG, SENTRY.BIG][area]] : [[SLIME.SMALL, SENTRY.SMALL][area], weakerSmallEnemy(row)]);
 		result.push(goldReward(row), randomCardSet(5));
 	};
 	return result;
@@ -116,8 +117,8 @@ function pathHasTypes(coords, types = [], front = false) {
 async function mapRow(row) {
 	rowFalses = 0;
 	rowNodes = 0;
-	if (row === 0) return [false, await mapPiece(0, 0), await mapPiece(0, 1), await mapPiece(0, 2), await mapPiece(0, 3), false];
-	if (row === 8) {
+	if (row % 10 == 0) return [false, await mapPiece(0, 0), await mapPiece(0, 1), await mapPiece(0, 2), await mapPiece(0, 3), false];
+	if (row % 10 == 8) {
 		if (chance()) {
 			if (chance()) return [await mapPiece(8, 0, ORB), false, await mapPiece(8, 1, ORB), false, false, await mapPiece(8, 2, ORB)];
 			else return [await mapPiece(8, 0, ORB), false, await mapPiece(8, 1, ORB), false, await mapPiece(8, 2, ORB), false];
@@ -126,14 +127,14 @@ async function mapRow(row) {
 			else return [false, await mapPiece(8, 0, ORB), false, await mapPiece(8, 1, ORB), false, await mapPiece(8, 2, ORB)];
 		};
 	};
-	if (row === 9) return [false, false, await mapPiece(9, 0, BOSS), false, false, false];
+	if (row % 10 == 9) return [false, false, await mapPiece(9, 0, BOSS), false, false, false];
 	let arr = [await mapPiece(row, 0), await mapPiece(row, 1), await mapPiece(row, 2), await mapPiece(row, 3), await mapPiece(row, 4), await mapPiece(row, 5)];
-	if (row > 0) {
+	if (row % 10 > 0) {
 		game.map.push(arr);
 		graphics.map(true);
 		game.map.pop();
 		pathEntries = Object.entries(paths);
-		if (row > 1) {
+		if (row % 10 > 1) {
 			let available = [0, 1, 2, 3, 4, 5];
 			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 			while (true) {
@@ -147,7 +148,7 @@ async function mapRow(row) {
 				};
 			};
 		};
-		if (row >= 3 && death_zones < 2) {
+		if (row % 10 >= 3 && death_zones < 2) {
 			let available = [0, 1, 2, 3, 4, 5];
 			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 			while (true) {
@@ -208,24 +209,22 @@ function addScribbles() {
 };
 
 /**
- * Generates a map and saves it.
+ * Generates an area of the map.
+ * @param {number} num - the area number.
  */
-async function generateMap() {
-	await updateMapProg();
-	game.firstRoom = await mapPiece(0, 0, FIRSTBATTLE);
-	game.map = [];
+async function generateArea(num) {
 	death_zones = 0;
 	eventShift = randomInt(0, 1);
 	for (let index = 0; index < 10; index++) {
-		game.map.push(await mapRow(index));
+		game.map.push(await mapRow(index + num * 10));
 	};
 	pathEntries = Object.entries(paths);
-	let row = 3;
+	let row = 3 + num * 10;
 	while (death_zones === 0) {
 		let available = [0, 1, 2, 3, 4, 5];
 		let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 		while (true) {
-			if (game.map[row][rand] && (game.map[row][rand][0] === ROOM.TREASURE || (row == 2 && game.map[row][rand][0] === ROOM.BATTLE)) && !pathHasTypes(row + ", " + rand, [ROOM.TREASURE, ROOM.PRIME], true)) {
+			if (game.map[row][rand] && (game.map[row][rand][0] === ROOM.TREASURE || (row % 10 == 2 && game.map[row][rand][0] === ROOM.BATTLE)) && !pathHasTypes(row + ", " + rand, [ROOM.TREASURE, ROOM.PRIME], true)) {
 				game.map[row][rand] = await mapPiece(row, rand, PRIME);
 				death_zones++;
 				break;
@@ -235,10 +234,21 @@ async function generateMap() {
 				break;
 			};
 		};
-		if (row >= 7) row = 2;
-		else if (row == 2) break;
+		if (row % 10 >= 7) row = 2 + num * 10;
+		else if (row % 10 == 2) break;
 		else row++;
 	};
+};
+
+/**
+ * Generates a map and saves it.
+ */
+async function generateMap() {
+	await updateMapProg();
+	game.firstRoom = await mapPiece(0, 0, FIRSTBATTLE);
+	game.map = [];
+	await generateArea(0);
+	await generateArea(1);
 	addScribbles();
 	graphics.map(true);
 	changeMusic();

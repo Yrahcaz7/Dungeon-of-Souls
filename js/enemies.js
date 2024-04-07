@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const SLIME = {BIG: 600, SMALL: 601, PRIME: 602}, FRAGMENT = 603, SENTRY = {BIG: 604, SMALL: 605, PRIME: 606};
+const SLIME = {BIG: 600, SMALL: 601, PRIME: 602}, FRAGMENT = 603, SENTRY = {BIG: 604, SMALL: 605, PRIME: 606}, ACT2BOSS = 607;
 
 const ENEMY_NAMES = {
 	[SLIME.BIG]: "big slime",

@@ -374,20 +374,17 @@ Array.prototype.cardSort = function() {
 	});
 };
 
-const common = Object.keys(I.card.common).map(val => +val), rare = Object.keys(I.card.rare).map(val => +val);
+const cardIDs = [[], [], []];
 
 /**
  * Returns a random card's id.
- * @param {string[]} notInclude - the ids to not include.
+ * @param {number[]} notInclude - the ids to not include.
  */
 function randomCard(notInclude = []) {
 	let result = 0;
 	while (!result || notInclude.includes(result)) {
-		if (chance(7/10)) {
-			result = common[randomInt(0, Object.keys(I.card.common).length - 1)];
-		} else {
-			result = rare[randomInt(0, Object.keys(I.card.rare).length - 1)];
-		};
+		let rarity = (chance(3/10) ? 2 : 1);
+		result = cardIDs[rarity][randomInt(0, cardIDs[rarity].length - 1)];
 	};
 	return result;
 };
