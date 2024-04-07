@@ -72,13 +72,7 @@ let global = {
 	hand: [],
 	discard: [],
 	void: [],
-	eff: {
-		aura_blades: 0,
-		burn: 0,
-		reinforces: 0,
-		resilience: 0,
-		weakness: 0,
-	},
+	eff: {},
 	room: [],
 	firstRoom: [],
 	map: [],
@@ -169,6 +163,7 @@ function fadeMusic() {
  * Enters the battle.
  */
 function enterBattle() {
+	game.eff = {};
 	game.state = STATE.BATTLE;
 	game.deckLocal = shuffle(game.deck.slice());
 	startTurn();
@@ -180,23 +175,24 @@ function enterBattle() {
 function startTurn() {
 	// end of enemy turn effects
 	for (let index = 0; index < game.enemies.length; index++) {
-		if (game.enemies[index].eff.burn) {
+		if (game.enemies[index].eff[EFFECT.BURN]) {
 			let prevHealth = game.enemies[index].health;
-			dealDamage(game.enemies[index].eff.burn, 0, index, false);
-			game.enemies[index].eff.burn--;
-			if (game.artifacts.includes(9) && game.enemies[index].eff.burn && game.enemies[index].health < prevHealth) {
-				dealDamage(game.enemies[index].eff.burn, 0, index, false);
-				game.enemies[index].eff.burn--;
+			dealDamage(game.enemies[index].eff[EFFECT.BURN], 0, index, false);
+			game.enemies[index].eff[EFFECT.BURN]--;
+			if (game.artifacts.includes(9) && game.enemies[index].eff[EFFECT.BURN] && game.enemies[index].health < prevHealth) {
+				dealDamage(game.enemies[index].eff[EFFECT.BURN], 0, index, false);
+				game.enemies[index].eff[EFFECT.BURN]--;
 			};
 		};
-		if (game.enemies[index].eff.weakness) game.enemies[index].eff.weakness--;
+		if (game.enemies[index].eff[EFFECT.WEAKNESS]) game.enemies[index].eff[EFFECT.WEAKNESS]--;
+		if (game.enemies[index].eff[ENEMY_EFF.SHROUD]) game.enemies[index].eff[ENEMY_EFF.SHROUD]--;
 	};
 	// start of your turn effects
 	drawCards(get.handSize());
 	game.turn = TURN.PLAYER;
-	if (game.eff.reinforces) game.eff.reinforces--;
+	if (game.eff[EFFECT.REINFORCE]) game.eff[EFFECT.REINFORCE]--;
 	else game.shield = 0;
-	if (game.eff.resilience) game.eff.resilience--;
+	if (game.eff[EFFECT.RESILIENCE]) game.eff[EFFECT.RESILIENCE]--;
 	game.energy = get.maxEnergy();
 	game.select = [HAND, 0];
 	if (playerAnim[1] != "idle" && playerAnim[1] != "hit") startAnim.player("idle");
@@ -210,11 +206,11 @@ function endTurn() {
 	if (game.hand.length) discardHand();
 	cardAnim = [];
 	notif = [-1, 0, "", 0];
-	if (game.eff.burn) {
-		takeDamage(game.eff.burn, false);
-		game.eff.burn--;
+	if (game.eff[EFFECT.BURN]) {
+		takeDamage(game.eff[EFFECT.BURN], false);
+		game.eff[EFFECT.BURN]--;
 	};
-	if (game.eff.weakness) game.eff.weakness--;
+	if (game.eff[EFFECT.WEAKNESS]) game.eff[EFFECT.WEAKNESS]--;
 	// activate artifacts
 	activateArtifacts(END_OF_TURN);
 	// start of enemy turn effects
@@ -223,9 +219,9 @@ function endTurn() {
 	for (let index = 0; index < game.enemies.length; index++) {
 		// effects
 		let prevShield = game.enemies[index].shield;
-		if (game.enemies[index].eff.reinforces) game.enemies[index].eff.reinforces--;
+		if (game.enemies[index].eff[EFFECT.REINFORCE]) game.enemies[index].eff[EFFECT.REINFORCE]--;
 		else game.enemies[index].shield = 0;
-		if (game.enemies[index].eff.resilience) game.enemies[index].eff.resilience--;
+		if (game.enemies[index].eff[EFFECT.RESILIENCE]) game.enemies[index].eff[EFFECT.RESILIENCE]--;
 		// transitions
 		startEnemyTransition(index, prevShield);
 	};
@@ -238,7 +234,7 @@ function endTurnConfirm() {
 	let confirm = false;
 	for (let index = 0; index < game.hand.length; index++) {
 		const id = game.hand[index].id;
-		if (getCardCost(game.hand[index]) <= game.energy && !cards[id].keywords.includes("unplayable") && (!cards[id].can || cards[id].can(game.hand[index].level))) {
+		if (getCardCost(game.hand[index]) <= game.energy && !cards[id].keywords.includes(CARD_EFF.UNPLAYABLE) && (!cards[id].can || cards[id].can(game.hand[index].level))) {
 			confirm = true;
 			break;
 		};
@@ -884,7 +880,7 @@ function performAction() {
 		// play card
 		if (game.select[0] === HAND) {
 			let selected = game.hand[game.select[1]], id = selected.id;
-			if (cards[id].keywords.includes("unplayable")) {
+			if (cards[id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
 				if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
 				else notif = [game.select[1], 0, "unplayable", 0];
 				actionTimer = 1;
@@ -911,8 +907,8 @@ function performAction() {
 				} else if (cards[id].damage || cards[id].attack) { // effects of attack cards
 					if (cards[id].target === false) {
 						game.energy -= getCardCost(selected);
-						delete selected.charge;
-						delete selected.retention;
+						delete selected[CARD_EFF.COST_REDUCTION];
+						delete selected[CARD_EFF.RETENTION];
 						game.enemyAtt[2] = game.hand[game.select[1]];
 						activateAttackEffects(id);
 						game.enemyAtt[3] = true;

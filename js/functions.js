@@ -116,9 +116,9 @@ const get = {
 	extraDamage(attacking = false) {
 		let extra = 0;
 		if (game.attackEffects.includes(AURA_BLADE)) {
-			extra += 5 + (game.eff.aura_blades + 1);
-		} else if (game.eff.aura_blades && !attacking) {
-			extra += 5 + game.eff.aura_blades;
+			extra += 5 + (game.eff[EFFECT.AURA_BLADE] + 1);
+		} else if (game.eff[EFFECT.AURA_BLADE] && !attacking) {
+			extra += 5 + game.eff[EFFECT.AURA_BLADE];
 		};
 		if (game.artifacts.includes(3)) extra += 2;
 		return extra;
@@ -129,8 +129,8 @@ const get = {
 	 */
 	dealDamageMult(enemy = game.enemyAtt[1]) {
 		let mult = 1;
-		if (game.eff.weakness) mult -= 0.25;
-		if (game.enemies[enemy]?.eff.resilience) mult -= 0.25;
+		if (game.eff[EFFECT.WEAKNESS]) mult -= 0.25;
+		if (game.enemies[enemy]?.eff[EFFECT.RESILIENCE]) mult -= 0.25;
 		return mult;
 	},
 	/**
@@ -139,8 +139,8 @@ const get = {
 	 */
 	takeDamageMult(enemy = game.enemyNum) {
 		let mult = 1;
-		if (game.enemies[enemy]?.eff.weakness) mult -= 0.25;
-		if (game.eff.resilience) mult -= 0.25;
+		if (game.enemies[enemy]?.eff[EFFECT.WEAKNESS]) mult -= 0.25;
+		if (game.eff[EFFECT.RESILIENCE]) mult -= 0.25;
 		return mult;
 	},
 	/**
@@ -259,12 +259,11 @@ function discardCard(cardObj, used = false) {
  */
 function discardHand() {
 	for (let index = 0; index < game.hand.length; ) {
-		if (game.hand[index].retention >= 1) {
-			game.hand[index].retention--;
+		if (game.hand[index][CARD_EFF.RETENTION]) {
+			game.hand[index][CARD_EFF.RETENTION]--;
 			index++;
 		} else {
-			discardCard(game.hand[index]);
-			game.hand.splice(index, 1);
+			discardCard(game.hand.splice(index, 1)[0]);
 		};
 	};
 };
@@ -274,11 +273,9 @@ function discardHand() {
  * @param {Card} cardObj - the card object.
  */
 function getCardCost(cardObj) {
-	if (cardObj.charge > 0) return Math.max(getCardAttr("cost", cardObj.id, cardObj.level) - cardObj.charge, 0);
+	if (cardObj[CARD_EFF.COST_REDUCTION]) return Math.max(getCardAttr("cost", cardObj.id, cardObj.level) - cardObj[CARD_EFF.COST_REDUCTION], 0);
 	return +getCardAttr("cost", cardObj.id, cardObj.level);
 };
-
-const AURA_BLADE = 200;
 
 /**
  * Starts a transition animation of an enemy.
@@ -349,6 +346,18 @@ function gainShield(amount = 0, exMod = 1) {
 };
 
 /**
+ * Has the player gain an effect.
+ * @param {number} type - the type of effect to gain.
+ * @param {number} amt - the amount of the effect to gain.
+ */
+function gainEff(type, amt) {
+	if (game.eff[type]) game.eff[type] += amt;
+	else game.eff[type] = amt;
+};
+
+const AURA_BLADE = 200;
+
+/**
  * Activates the attack effects of a card.
  * @param {number} id - the id of the card.
  */
@@ -358,8 +367,8 @@ function activateAttackEffects(id) {
 	// start player anim
 	startAnim.player(cards[id].anim);
 	// trigger aura blades
-	if (game.eff.aura_blades) {
-		game.eff.aura_blades--;
+	if (game.eff[EFFECT.AURA_BLADE]) {
+		game.eff[EFFECT.AURA_BLADE]--;
 		game.attackEffects.push(AURA_BLADE);
 	};
 };

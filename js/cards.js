@@ -42,8 +42,8 @@ const cards = {
 		attack(level = 0) {
 			let burn = (level >= 1 ? 3 : 2);
 			for (let index = 0; index < game.enemies.length; index++) {
-				if (game.enemies[index].eff.burn) game.enemies[index].eff.burn += burn;
-				else game.enemies[index].eff.burn = burn;
+				if (game.enemies[index].eff[EFFECT.BURN]) game.enemies[index].eff[EFFECT.BURN] += burn;
+				else game.enemies[index].eff[EFFECT.BURN] = burn;
 			};
 		},
 	},
@@ -68,11 +68,13 @@ const cards = {
 		cost: [2, 1],
 		attackEffects: false,
 		attack(level = 0) {
-			dealDamage(game.eff.aura_blades * 6, 0.5);
-			for (let index = 0; index < game.enemies.length; index++) {
-				if (index != game.enemyAtt[1]) dealDamage(game.eff.aura_blades, 0.5, index);
+			if (game.eff[EFFECT.AURA_BLADE]) {
+				dealDamage(game.eff[EFFECT.AURA_BLADE] * 6, 0.5);
+				for (let index = 0; index < game.enemies.length; index++) {
+					if (index != game.enemyAtt[1]) dealDamage(game.eff[EFFECT.AURA_BLADE], 0.5, index);
+				};
+				game.eff[EFFECT.AURA_BLADE] = 0;
 			};
-			game.eff.aura_blades = 0;
 		},
 	},
 	1004: {
@@ -118,10 +120,10 @@ const cards = {
 		effect(level = 0) {
 			if (level >= 1) {
 				gainShield(4);
-				game.eff.reinforces += 2;
+				gainEff(EFFECT.REINFORCE, 2);
 			} else {
 				gainShield(2);
-				game.eff.reinforces++;
+				gainEff(EFFECT.REINFORCE, 1);
 			};
 		},
 	},
@@ -130,7 +132,7 @@ const cards = {
 		desc: "Gain 3 reinforces.",
 		rarity: 2,
 		cost: [2, 1],
-		effect(level = 0) {game.eff.reinforces += 3},
+		effect(level = 0) {gainEff(EFFECT.REINFORCE, 3)},
 	},
 	2003: {
 		name: "cower",
@@ -140,10 +142,10 @@ const cards = {
 		effect(level = 0) {
 			if (level >= 1) {
 				gainShield(10);
-				game.eff.weakness++;
+				gainEff(EFFECT.WEAKNESS, 1);
 			} else {
 				gainShield(9);
-				game.eff.weakness += 2;
+				gainEff(EFFECT.WEAKNESS, 2);
 			};
 		},
 	},
@@ -152,10 +154,7 @@ const cards = {
 		desc: ["Gain 2 resilience.", "Gain 3 resilience."],
 		rarity: 2,
 		cost: 1,
-		effect(level = 0) {
-			if (level >= 1) game.eff.resilience += 3;
-			else game.eff.resilience += 2;
-		},
+		effect(level = 0) {gainEff(EFFECT.RESILIENCE, (level >= 1 ? 3 : 2))},
 	},
 	2005: {
 		name: "the eternal gold",
@@ -164,14 +163,13 @@ const cards = {
 		cost: 2,
 		effect(level = 0) {
 			if (level >= 1) {
-				gainShield(15);
-				game.eff.reinforces++;
 				game.gold -= 30;
+				gainShield(15);
 			} else {
-				gainShield(10);
-				game.eff.reinforces++;
 				game.gold -= 45;
+				gainShield(10);
 			};
+			gainEff(EFFECT.REINFORCE, 1);
 		},
 		can(level = 0) {
 			if (level >= 1) return game.gold >= 30;
@@ -216,10 +214,10 @@ const cards = {
 		cost: 0,
 		effect(level = 0) {
 			let burn = (level >= 1 ? 2 : 1);
-			game.eff.burn += burn;
+			gainEff(EFFECT.BURN, burn);
 			for (let index = 0; index < game.enemies.length; index++) {
-				if (game.enemies[index].eff.burn) game.enemies[index].eff.burn += burn;
-				else game.enemies[index].eff.burn = burn;
+				if (game.enemies[index].eff[EFFECT.BURN]) game.enemies[index].eff[EFFECT.BURN] += burn;
+				else game.enemies[index].eff[EFFECT.BURN] = burn;
 			};
 		},
 	},
@@ -230,10 +228,10 @@ const cards = {
 		cost: [1, 0],
 		select: [SELECT_HAND, -1],
 		effect(level = 0) {
-			if (game.hand[game.select[1]].retention) game.hand[game.select[1]].retention++;
-			else game.hand[game.select[1]].retention = 1;
-			if (game.hand[game.select[1]].charge) game.hand[game.select[1]].charge++;
-			else game.hand[game.select[1]].charge = 1;
+			if (game.hand[game.select[1]][CARD_EFF.RETENTION]) game.hand[game.select[1]][CARD_EFF.RETENTION]++;
+			else game.hand[game.select[1]][CARD_EFF.RETENTION] = 1;
+			if (game.hand[game.select[1]][CARD_EFF.COST_REDUCTION]) game.hand[game.select[1]][CARD_EFF.COST_REDUCTION]++;
+			else game.hand[game.select[1]][CARD_EFF.COST_REDUCTION] = 1;
 		},
 		can(level = 0) {return game.hand.length > 1},
 		cannotMessage: "no valid target",
@@ -243,14 +241,14 @@ const cards = {
 		desc: "Gain 1 aura blade.",
 		rarity: 1,
 		cost: [1, 0],
-		effect(level = 0) {game.eff.aura_blades++},
+		effect(level = 0) {gainEff(EFFECT.AURA_BLADE, 1)},
 	},
 	4001: {
 		name: "aura blaze",
 		desc: "Gain 4 aura blades.\nOne use.",
 		rarity: 2,
 		cost: [3, 2],
-		effect(level = 0) {game.eff.aura_blades += 4},
+		effect(level = 0) {gainEff(EFFECT.AURA_BLADE, 4)},
 	},
 };
 
@@ -273,14 +271,19 @@ function getCardAttr(attr, id, level = 0) {
 	return cards[id][attr];
 };
 
-const rarities = {
-	[-1]: "error",
-	[0]: "starter",
-	[1]: "common",
-	[2]: "rare",
-};
+const RARITY = ["starter", "common", "rare"];
 
-const types = ["error", "attack", "defense", "skill", "magic"];
+const CARD_TYPE = ["error", "attack", "defense", "skill", "magic"];
+
+const EFFECT = {AURA_BLADE: 1700, BURN: 1701, REINFORCE: 1702, RESILIENCE: 1703, WEAKNESS: 1704};
+
+const CARD_EFF = {ONE_USE: 1800, UNIFORM: 1801, UNPLAYABLE: 1802, COST_REDUCTION: 1803, RETENTION: 1804};
+
+const CARD_EFF_DESC = 1899;
+
+const ENEMY_EFF = {COUNTDOWN: 1900, REWIND: 1901, SHROUD: 1902};
+
+const KEYWORD = {[EFFECT.AURA_BLADE]: "aura blade", [EFFECT.BURN]: "burn", [EFFECT.REINFORCE]: "reinforce", [EFFECT.RESILIENCE]: "resilience", [EFFECT.WEAKNESS]: "weakness", [CARD_EFF.ONE_USE]: "one use", [CARD_EFF.RETENTION]: "retention", [CARD_EFF.UNIFORM]: "uniform", [CARD_EFF.UNPLAYABLE]: "unplayable", [ENEMY_EFF.COUNTDOWN]: "countdown", [ENEMY_EFF.REWIND]: "rewind", [ENEMY_EFF.SHROUD]: "shroud"};
 
 /**
  * Loads a card and returns its description.
@@ -294,17 +297,18 @@ function loadCard(ref, desc) {
 	desc = desc.replace(/(one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
 	// list keywords
 	if (!ref.keywords) ref.keywords = [];
-	if (!ref.keywords.includes("aura blade") && /aura\sblade/i.test(desc)) ref.keywords.push("aura blade");
-	if (!ref.keywords.includes("burn") && /burn/i.test(desc)) ref.keywords.push("burn");
-	if (!ref.keywords.includes("one use") && /one\suse/i.test(desc)) ref.keywords.push("one use");
-	if (!ref.keywords.includes("reinforce") && /reinforce/i.test(desc)) ref.keywords.push("reinforce");
-	if (!ref.keywords.includes("resilience") && /resilience/i.test(desc)) ref.keywords.push("resilience");
-	if (!ref.keywords.includes("retention") && /retention/i.test(desc)) ref.keywords.push("retention");
-	if (!ref.keywords.includes("uniform") && /uniform/i.test(desc)) ref.keywords.push("uniform");
-	if (!ref.keywords.includes("unplayable") && /unplayable/i.test(desc)) ref.keywords.push("unplayable");
-	if (!ref.keywords.includes("weakness") && /weakness/i.test(desc)) ref.keywords.push("weakness");
+	for (const eff in EFFECT) {
+		if (Object.hasOwnProperty.call(EFFECT, eff)) {
+			if (!ref.keywords.includes(EFFECT[eff]) && new RegExp(KEYWORD[EFFECT[eff]].replace(" ", "\\s"), "i").test(desc)) ref.keywords.push(EFFECT[eff]);
+		};
+	};
+	for (const eff in CARD_EFF) {
+		if (Object.hasOwnProperty.call(CARD_EFF, eff) && CARD_EFF[eff] !== CARD_EFF.COST_REDUCTION) {
+			if (!ref.keywords.includes(CARD_EFF[eff]) && new RegExp(KEYWORD[CARD_EFF[eff]].replace(" ", "\\s"), "i").test(desc)) ref.keywords.push(CARD_EFF[eff]);
+		};
+	};
 	// extra info
-	if (!ref.keywords.includes("card effect") && /apply/i.test(desc) && /card/i.test(desc)) ref.keywords.push("card effect");
+	if (!ref.keywords.includes(CARD_EFF_DESC) && /apply/i.test(desc) && /card/i.test(desc)) ref.keywords.push(CARD_EFF_DESC);
 	// return desc
 	return desc;
 };

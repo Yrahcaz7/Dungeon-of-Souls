@@ -16,26 +16,28 @@
  */
 
 const infoText = {
-	// effects
-	"aura blade": "If something has X aura\nblades, every time it\nattacks, it deals 5 + X\nextra damage, then X is\nreduced by 1.",
-	burn: "If something has X burn,\nat the end of its turn,\nit takes X damage, then\nX is reduced by 1.",
-	countdown: "If an enemy has X\ncountdown, at the end of\nits turn, its intent is\nset to what it was on\nthe Xth turn, and then\nX is reduced by 1.",
-	"one use": "When a one use card is\nplayed, it is sent to\nthe void. Cards in the\nvoid stay there until\nthe end of the battle.",
-	reinforce: "If something has X\nreinforces, at the start\nof its turn, its shield\nis kept, then X is\nreduced by 1.",
-	resilience: "If something has X\nresilience, it takes 25%\nless combat damage,\nrounded down. At the\nstart of its turn, X is\nreduced by 1.",
-	retention: "A card with X retention\nwill not be discarded\nat the end of your turn.\nInstead, X will be\nreduced by 1.",
-	rewind: "If something has X\nrewinds, it is X times\n20 percent stronger. If\nsomething that has\nrewinds and 0 countdown\nreaches 0 health, it\ngains 1 rewind, all\nentities heal fully, and\nthe countdown begins.",
-	shroud: "If something has X\nshroud, its intent is\nnot visible. At the end\nof its turn, X is\nreduced by 1.",
-	uniform: "Extra damage and extra\nshield have half the\neffect on uniform cards,\nrounded down.",
-	unplayable: "An unplayable card has\nno energy cost and\ncannot be played.",
-	weakness: "If something has X\nweakness, its attack is\nreduced by 25%, rounded\ndown. At the end of its\nturn, X is reduced by 1.",
+	// general effects
+	[EFFECT.AURA_BLADE]: "If something has X aura\nblades, every time it\nattacks, it deals 5 + X\nextra damage, then X is\nreduced by 1.",
+	[EFFECT.BURN]: "If something has X burn,\nat the end of its turn,\nit takes X damage, then\nX is reduced by 1.",
+	[EFFECT.REINFORCE]: "If something has X\nreinforces, at the start\nof its turn, its shield\nis kept, then X is\nreduced by 1.",
+	[EFFECT.RESILIENCE]: "If something has X\nresilience, it takes 25%\nless combat damage,\nrounded down. At the\nstart of its turn, X is\nreduced by 1.",
+	[EFFECT.WEAKNESS]: "If something has X\nweakness, its attack is\nreduced by 25%, rounded\ndown. At the end of its\nturn, X is reduced by 1.",
+	// card effects
+	[CARD_EFF.ONE_USE]: "When a one use card is\nplayed, it is sent to\nthe void. Cards in the\nvoid stay there until\nthe end of the battle.",
+	[CARD_EFF.RETENTION]: "A card with X retention\nwill not be discarded\nat the end of your turn.\nInstead, X will be\nreduced by 1.",
+	[CARD_EFF.UNIFORM]: "Extra damage and extra\nshield have half the\neffect on uniform cards,\nrounded down.",
+	[CARD_EFF.UNPLAYABLE]: "An unplayable card has\nno energy cost and\ncannot be played.",
+	[CARD_EFF_DESC]: "After a card leaves\nyour hand, it loses all\nof its applied effects.",
+	// enemy effects
+	[ENEMY_EFF.COUNTDOWN]: "If an enemy has X\ncountdown, at the end of\nits turn, its intent is\nset to what it was on\nthe Xth turn, and then\nX is reduced by 1.",
+	[ENEMY_EFF.REWIND]: "If something has X\nrewinds, it is X times\n20 percent stronger. If\nsomething that has\nrewinds and 0 countdown\nreaches 0 health, it\ngains 1 rewind, all\nentities heal fully, and\nthe countdown begins.",
+	[ENEMY_EFF.SHROUD]: "If something has X\nshroud, its intent is\nnot visible. At the end\nof its turn, X is\nreduced by 1.",
 	// intents
 	[ATTACK]: "This enemy intends to attack\nyou on its next turn.",
 	[DEFEND]: "This enemy intends to defend\nitself on its next turn.",
 	[BUFF]: "This enemy intends to buff\nitself on its next turn.",
 	// other
 	"the map": "You can choose where\nto go next each time\nyou clear a floor.",
-	"card effect": "After a card leaves\nyour hand, it loses all\nof its applied effects.",
 };
 
 for (const key in infoText) {
@@ -213,9 +215,15 @@ function updateData() {
 			handPos.push(198 + (index - (game.hand.length / 2)) * 64 - (index - ((game.hand.length - 1) / 2)) * margin[game.hand.length - 1]);
 		};
 	};
-	// info
+	// info scroll
 	if (infPos < 0) infPos = 0;
 	if (infPos > infLimit) infPos = infLimit;
+	// effect removal
+	for (const eff in game.eff) {
+		if (Object.hasOwnProperty.call(game.eff, eff)) {
+			if (!game.eff[eff]) delete game.eff[eff];
+		};
+	};
 	// fixes
 	if (game.health < 0) game.health = 0;
 	else if (game.health > get.maxHealth()) game.health = get.maxHealth();
@@ -229,9 +237,9 @@ function updateData() {
 	let healAll = false;
 	for (let index = 0; index < game.enemies.length; index++) {
 		if (game.enemies[index].health <= 0) {
-			if (game.enemies[index].eff.rewinds > 0 && !game.enemies[index].eff.countdown) {
-				game.enemies[index].eff.rewinds++;
-				game.enemies[index].eff.countdown = Math.max(game.enemies[index].intentHistory.length - 1, 0);
+			if (game.enemies[index].eff[ENEMY_EFF.REWIND] && !game.enemies[index].eff[ENEMY_EFF.COUNTDOWN]) {
+				game.enemies[index].eff[ENEMY_EFF.REWIND]++;
+				game.enemies[index].eff[ENEMY_EFF.COUNTDOWN] = Math.max(game.enemies[index].intentHistory.length - 1, 0);
 				game.enemies[index].intentHistory.splice(game.enemies[index].intentHistory.length - 1);
 				healAll = true;
 			} else {

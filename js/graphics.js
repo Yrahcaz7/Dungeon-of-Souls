@@ -311,7 +311,7 @@ const draw = {
 	 * @param {number} index - the index of the enemy.
 	 */
 	intent(index) {
-		if (game.enemies[index].eff.shroud) return;
+		if (game.enemies[index].eff[ENEMY_EFF.SHROUD]) return;
 		if (index === game.enemyNum) return;
 		let x = enemyPos[index][0] + 16;
 		let y = getEnemyIntentPos(index, true);
@@ -401,15 +401,15 @@ const draw = {
 		let x = handPos[index], img = I.card.error;
 		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
 		const rarity = +cards[cardObj.id].rarity;
-		if (I.card[rarities[rarity]] && rarity >= 0) img = I.card[rarities[rarity]][cardObj.id];
+		if (rarity >= 0 && I.card[RARITY[rarity]]) img = I.card[RARITY[rarity]][cardObj.id];
 		// card back
 		if (cardObj.id !== 0) draw.image(I.card.back, x + 2, y + 2);
 		// card outline
-		const type = types[Math.floor(cardObj.id / 1000)];
+		const type = CARD_TYPE[Math.floor(cardObj.id / 1000)];
 		if (I.card.outline[type]) draw.image(I.card.outline[type], x + 3, y + 3);
 		// card selector
 		if (selected) {
-			if (cards[cardObj.id].keywords.includes("unplayable")) {
+			if (cards[cardObj.id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
 				if (rarity == 2) draw.image(I.select.card_rare_unplayable, x - 3, y - 3);
 				else draw.image(I.select.card_unplayable, x + 1, y + 1);
 			} else {
@@ -458,11 +458,9 @@ const draw = {
 		};
 		// draw text and image
 		draw.lore(x + 6, y + 55, desc, {"highlight-color": (valueIsLess ? "#f00" : "#000"), "text-small": true});
-		draw.lore(x + 33, y + 89.5, rarities[rarity] + "|" + type, {"text-align": CENTER, "text-small": true});
-		if (rarity == 2) {
-			draw.image(I.card.rarity.rare, x - 2, y - 2);
-		};
-		if (!cards[cardObj.id].keywords.includes("unplayable")) {
+		draw.lore(x + 33, y + 89.5, (RARITY[rarity] || "error") + "|" + type, {"text-align": CENTER, "text-small": true});
+		if (rarity == 2) draw.image(I.card.rarity.rare, x - 2, y - 2);
+		if (!cards[cardObj.id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
 			let originalCost = getCardAttr("cost", cardObj.id, cardObj.level);
 			if (outside) {
 				draw.image(I.card.energy, x, y);
@@ -520,7 +518,7 @@ const draw = {
 const info = {
 	/**
 	 * Draws an infobox for a card in the player's hand.
-	 * @param {string} type - the infobox contains `infoText[type]`.
+	 * @param {string | number} type - the infobox contains `infoText[type]`.
 	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
@@ -528,16 +526,16 @@ const info = {
 		let x = handPos[game.prevCard] + 69 + xPlus, y = 147 - Math.floor(cardAnim[game.prevCard]) + yPlus;
 		if (x + 24 * 3 + 2 > 400) {
 			const ref = cards[game.hand[game.prevCard].id];
-			if (ref.keywords.includes("unplayable") && ref.rarity <= 1) x -= 143;
+			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
 			else x -= 145;
-			if (!infoText[type]) x += (24 - type.replace(/<.+?>/g, "").length) * 3;
+			if (!infoText[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
 		};
 		if (infoText[type]) return draw.textBox(x, y, 24, infoText[type], {"text-small": true});
-		else return draw.textBox(x, y, type.replace(/<.+?>/g, "").length, type, {"text-small": true});
+		else return draw.textBox(x, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
 	/**
 	 * Draws an infobox for a card in a special hand select.
-	 * @param {string} type - the infobox contains `infoText[type]`.
+	 * @param {string | number} type - the infobox contains `infoText[type]`.
 	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
@@ -545,16 +543,16 @@ const info = {
 		let x = handPos[game.select[1]] + 69 + xPlus, y = 15 + yPlus;
 		if (x + 24 * 3 + 2 > 400) {
 			const ref = cards[game.hand[game.select[1]].id];
-			if (ref.keywords.includes("unplayable") && ref.rarity <= 1) x -= 143;
+			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
 			else x -= 145;
-			if (!infoText[type]) x += (24 - type.replace(/<.+?>/g, "").length) * 3;
+			if (!infoText[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
 		};
 		if (infoText[type]) return draw.textBox(x, y, 24, infoText[type], {"text-small": true});
-		else return draw.textBox(x, y, type.replace(/<.+?>/g, "").length, type, {"text-small": true});
+		else return draw.textBox(x, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
 	/**
 	 * Draws an infobox for a card reward choice.
-	 * @param {string} type - the infobox contains `infoText[type]`.
+	 * @param {string | number} type - the infobox contains `infoText[type]`.
 	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
@@ -562,16 +560,16 @@ const info = {
 		let x = handPos[game.select[1]] + xPlus;
 		if (game.select[1] == get.cardRewardChoices() - 1 && get.cardRewardChoices() >= 4) {
 			const ref = cards[game.room[5][game.select[1]]];
-			if (ref.keywords.includes("unplayable") && ref.rarity <= 1) x -= 143;
+			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
 			else x -= 145;
-			if (!infoText[type]) x += (24 - type.replace(/<.+?>/g, "").length) * 3;
+			if (!infoText[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
 		};
 		if (infoText[type]) return draw.textBox(x + 69, 51 + yPlus, 24, infoText[type], {"text-small": true});
-		else return draw.textBox(x + 69, 51 + yPlus, type.replace(/<.+?>/g, "").length, type, {"text-small": true});
+		else return draw.textBox(x + 69, 51 + yPlus, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
 	/**
 	 * Draws an infobox for a card in a deck.
-	 * @param {string} type - the infobox contains `infoText[type]`.
+	 * @param {string | number} type - the infobox contains `infoText[type]`.
 	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
@@ -580,43 +578,41 @@ const info = {
 		if (game.cardSelect[0] >= 4) {
 			const loc = (inOutsideDeck() ? "deck" : (game.select[0] === DECK ? "deckLocal" : (game.select[0] === VOID ? "void" : "discard")));
 			const ref = cards[game[loc][game.cardSelect[0] + (game.cardSelect[1] * 6)].id];
-			if (ref.keywords.includes("unplayable") && ref.rarity <= 1) x -= 143;
+			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
 			else x -= 145;
-			if (!infoText[type]) x += (24 - type.replace(/<.+?>/g, "").length) * 3;
+			if (!infoText[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
 		};
 		if (infoText[type]) return draw.textBox(x + 71, y, 24, infoText[type], {"text-small": true});
-		else return draw.textBox(x + 71, y, type.replace(/<.+?>/g, "").length, type, {"text-small": true});
+		else return draw.textBox(x + 71, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
 	/**
 	 * Draws an infobox for the player.
-	 * @param {string} type - the infobox contains `infoText[type]`.
+	 * @param {number} type - the infobox contains `infoText[type]`.
 	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	player(type, xPlus = 0, yPlus = 0) {
-		if (typeof type != "string") return 0;
-		const ending = (type.endsWith("s") || type == "burn" || type == "countdown" || type == "resilience" || type == "shroud") ? "" : "s";
-		const eff = game.eff[type.replace(/\s/g, "_") + ending];
-		let y = 71 + yPlus, desc = "You have " + eff + " " + type + (eff >= 2 ? ending : "") + ".", move = 0;
+		const eff = game.eff[type];
+		let y = 71 + yPlus, move = 0;
+		let desc = "You have " + eff + " " + KEYWORD[type] + ((type === EFFECT.AURA_BLADE || type === EFFECT.REINFORCE) && eff >= 2 ? "s" : "") + ".";
 		move += draw.textBox(85 + xPlus, y + move, desc.length, desc, {"text-small": true});
 		move += draw.textBox(85 + xPlus, y + move, 24, infoText[type], {"text-small": true});
 		return move;
 	},
 	/**
 	 * Draws an infobox for the selected enemy.
-	 * @param {string} type - the infobox contains `infoText[type]`.
+	 * @param {number} type - the infobox contains `infoText[type]`.
 	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	enemy(type, xPlus = 0, yPlus = 0) {
-		if (typeof type != "string") return 0;
 		const pos = enemyPos[game.select[1]];
-		const ending = (type.endsWith("s") || type == "burn" || type == "countdown" || type == "resilience" || type == "shroud") ? "" : "s";
-		const eff = game.enemies[game.select[1]].eff[type.replace(/\s/g, "_") + ending];
-		let y = pos[1] + yPlus, desc = "This has " + eff + " " + type + (eff >= 2 ? ending : "") + ".", move = 0;
+		const eff = game.enemies[game.select[1]].eff[type];
+		let y = pos[1] + yPlus, move = 0;
+		let desc = "This has " + eff + " " + KEYWORD[type] + ((type === EFFECT.AURA_BLADE || type === EFFECT.REINFORCE) && eff >= 2 ? "s" : "") + ".";
 		move += draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, y + move, desc.length, desc, {"text-small": true});
 		move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, infoText[type], {"text-small": true});
-		if (type == "countdown") move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, "The next intent will be\nto " + INTENT[game.enemies[game.select[1]].intentHistory[eff - 1]] + ".", {"text-small": true});
+		if (type === ENEMY_EFF.COUNTDOWN) move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, "The next intent will be\nto " + INTENT[game.enemies[game.select[1]].intentHistory[eff - 1]] + ".", {"text-small": true});
 		return move;
 	},
 	/**
@@ -633,7 +629,7 @@ const info = {
 	},
 	/**
 	 * Draws an infobox for an artifact.
-	 * @param {string} type - the infobox contains `infoText[type]`.
+	 * @param {string | number} type - the type of the artifact.
 	 * @param {number} xOveride - overrides the x-coordinate of the infobox.
 	 * @param {number} yOveride - overrides the y-coordinate of the infobox.
 	 */
@@ -722,7 +718,7 @@ const graphics = {
 					ctx.globalAlpha = transition / 100;
 				};
 				draw.image(I.background.tunnel_of_time, 0 - backAnim[3]);
-				if (!game.enemies[0]?.eff?.countdown) backAnim[3]++;
+				if (!game.enemies[0]?.eff[ENEMY_EFF.COUNTDOWN]) backAnim[3]++;
 				else backAnim[3]--;
 				if (backAnim[3] >= 16) backAnim[3] -= 16;
 				else if (backAnim[3] < 0) backAnim[3] += 16;
@@ -771,7 +767,7 @@ const graphics = {
 				const rand = Math.random();
 				if (rand < 0.05) extraAnim[index][0]++;
 				else if (rand < 0.1) extraAnim[index][0]--;
-				if (!game.enemies[0]?.eff?.countdown) extraAnim[index][1] += (Math.random() - 0.5) + 2;
+				if (!game.enemies[0]?.eff[ENEMY_EFF.COUNTDOWN]) extraAnim[index][1] += (Math.random() - 0.5) + 2;
 				else extraAnim[index][1] -= (Math.random() - 0.5) + 2;
 				if (extraAnim[index][1] >= 450) {
 					extraAnim[index] = [Math.random() * 180 + 6, 0 - Math.random() * 10, Math.floor(Math.random() * 20 + index) % 20];
@@ -848,27 +844,25 @@ const graphics = {
 	player() {
 		let x = 15, y = 30;
 		// aura blades
-		for (let index = 0; index < game.eff.aura_blades && index < 4; index++) {
+		for (let index = 0; index < game.eff[EFFECT.AURA_BLADE] && index < 4; index++) {
 			draw.image(I.aura_blade, x + auraBladePos[index][0], y + auraBladePos[index][1] + 4 - Math.abs(Math.round(auraBladeAnim[index]) - 4));
 			auraBladeAnim[index] += (Math.random() + 0.5) * 0.05;
 			if (auraBladeAnim[index] >= 8) auraBladeAnim[index] -= 8;
 		};
 		// icons
 		for (const key in game.eff) {
-			if (Object.hasOwnProperty.call(game.eff, key)) {
-				if (game.eff[key]) {
-					let img = I.icon[key.endsWith("s") && !key.endsWith("ss") ? key.slice(0, -1) : key];
-					if (game.shield) {
-						if (img == I.icon.weakness) draw.image(I.icon.weakness_back, x + 22, y + 103);
-						draw.image(img, x + 23, y + 104);
-						draw.lore(x + 40, y + 112, game.eff[key], {"color": "#fff", "text-align": LEFT});
-					} else {
-						if (img == I.icon.weakness) draw.image(I.icon.weakness_back, x + 22, y + 92);
-						draw.image(img, x + 23, y + 93);
-						draw.lore(x + 40, y + 101, game.eff[key], {"color": "#fff", "text-align": LEFT});
-					};
-					x += 17;
+			if (Object.hasOwnProperty.call(game.eff, key) && game.eff[key]) {
+				let img = I.icon[key];
+				if (game.shield) {
+					if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x + 22, y + 103);
+					draw.image(img, x + 23, y + 104);
+					draw.lore(x + 40, y + 112, game.eff[key], {"color": "#fff", "text-align": LEFT});
+				} else {
+					if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x + 22, y + 92);
+					draw.image(img, x + 23, y + 93);
+					draw.lore(x + 40, y + 101, game.eff[key], {"color": "#fff", "text-align": LEFT});
 				};
+				x += 17;
 			};
 		};
 		x = 15;
@@ -927,21 +921,18 @@ const graphics = {
 			draw.bars(pos[0], pos[1], selected.health, selected.maxHealth, selected.shield, selected.maxShield);
 			let x = +pos[0], y = +pos[1];
 			for (const key in selected.eff) {
-				if (Object.hasOwnProperty.call(selected.eff, key)) {
-					let img = new Image();
-					if (I.icon[key]) img = I.icon[key];
-					else if (key == "reinforces") img = I.icon.reinforce;
-					else if (key == "rewinds") img = I.icon.rewind;
-					if (selected.eff[key]) {
-						if (selected.shield) {
-							draw.image(img, x, y + 89);
-							draw.lore(x + 17, y + 97, selected.eff[key], {"color": "#fff", "text-align": LEFT});
-						} else {
-							draw.image(img, x, y + 78);
-							draw.lore(x + 17, y + 86, selected.eff[key], {"color": "#fff", "text-align": LEFT});
-						};
-						x += 17;
+				if (Object.hasOwnProperty.call(selected.eff, key) && selected.eff[key]) {
+					let img = I.icon[key];
+					if (selected.shield) {
+						if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x - 1, y + 88);
+						draw.image(img, x, y + 89);
+						draw.lore(x + 17, y + 97, selected.eff[key], {"color": "#fff", "text-align": LEFT});
+					} else {
+						if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x - 1, y + 77);
+						draw.image(img, x, y + 78);
+						draw.lore(x + 17, y + 86, selected.eff[key], {"color": "#fff", "text-align": LEFT});
 					};
+					x += 17;
 				};
 			};
 		};
@@ -1027,9 +1018,6 @@ const graphics = {
 							enemyAnim[index] = 0;
 						};
 					};
-				};
-				if (game.select[0] === LOOKER || game.select[0] === HELP || game.select[0] === OPTIONS) {
-					draw.intent(index);
 				};
 			};
 		};
@@ -1258,6 +1246,12 @@ const graphics = {
 			enemyAnim[index] += (Math.random() + 0.5) * 0.1;
 			if (enemyAnim[index] >= 4) enemyAnim[index] -= 4;
 		};
+		// draw intents
+		if (game.select[0] === LOOKER || game.select[0] === HELP || game.select[0] === OPTIONS) {
+			for (let index = 0; index < game.enemies.length; index++) {
+				draw.intent(index);
+			};
+		};
 	},
 	/**
 	 * Draws the current info page on the canvas.
@@ -1443,8 +1437,8 @@ const graphics = {
 	 */
 	cardInfo(type, cardObj) {
 		let x = 0, y = 0;
-		if (cardObj.retention >= 1) {
-			y += info[type]("This has " + cardObj.retention + " <#666>retention</#666>.", x, y);
+		if (cardObj[CARD_EFF.RETENTION]) {
+			y += info[type]("This has " + cardObj[CARD_EFF.RETENTION] + " <#666>retention</#666>.", x, y);
 		};
 		const keywords = cards[cardObj.id]?.keywords;
 		if (keywords instanceof Array) {
@@ -1484,7 +1478,7 @@ const graphics = {
 				let left = game.select[1] === 0 && game.enemies.length > 1;
 				draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
 				draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "#fff", "text-align": CENTER, "text-small": true});
-				if (game.select[1] !== game.enemyNum && !game.enemies[game.select[1]].eff.shroud) {
+				if (game.select[1] !== game.enemyNum && !game.enemies[game.select[1]].eff[ENEMY_EFF.SHROUD]) {
 					info.intent();
 				};
 				const exAtt = enemy.getExtraAttackPower();
@@ -1493,16 +1487,13 @@ const graphics = {
 				else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-small": true});
 				let x = coords[0] - 5.5, y = coords[1] - 1;
 				for (const key in game.enemies[game.select[1]].eff) {
-					if (Object.hasOwnProperty.call(game.enemies[game.select[1]].eff, key)) {
-						if (game.enemies[game.select[1]].eff[key]) {
-							let type = key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " ");
-							let height = Math.ceil(((infoText[type]).match(/\n/g) || []).length * 5.5 + 22);
-							if (y + height >= 200 - pos[1]) {
-								y = coords[1] - 1;
-								x -= 77;
-							};
-							y += info.enemy(type, x, (left ? y + 12 : y));
+					if (Object.hasOwnProperty.call(game.enemies[game.select[1]].eff, key) && game.enemies[game.select[1]].eff[key]) {
+						let height = Math.ceil((infoText[key].match(/\n/g) || []).length * 5.5 + 22);
+						if (y + height >= 200 - pos[1]) {
+							y = coords[1] - 1;
+							x -= 77;
 						};
+						y += info.enemy(+key, x, (left ? y + 12 : y));
 					};
 				};
 			};
@@ -1517,16 +1508,13 @@ const graphics = {
 			};
 			let x = coords[0] + coords[2] - 80, y = 0;
 			for (const key in game.eff) {
-				if (Object.hasOwnProperty.call(game.eff, key)) {
-					if (game.eff[key]) {
-						let type = key.endsWith("s") && !key.endsWith("ss") ? key.replace(/_/g, " ").slice(0, -1) : key.replace(/_/g, " ");
-						let height = Math.ceil(((infoText[type]).match(/\n/g) || []).length * 5.5 + 22);
-						if (y + height >= 200 - coords[1]) {
-							y = 0;
-							x += 77;
-						};
-						y += info.player(type, x, y);
+				if (Object.hasOwnProperty.call(game.eff, key) && game.eff[key]) {
+					let height = Math.ceil((infoText[key].match(/\n/g) || []).length * 5.5 + 22);
+					if (y + height >= 200 - coords[1]) {
+						y = 0;
+						x += 77;
 					};
+					y += info.player(+key, x, y);
 				};
 			};
 		} else if (game.select[0] === ARTIFACTS) {
@@ -1854,8 +1842,8 @@ const startAnim = {
 	 */
 	player(name) {
 		if (!I.player[name] || playerAnim[1] == "death") return;
-		if (game.eff.aura_blades && (name == "attack" || name == "attack_2")) name += "_aura";
-		if (game.eff.reinforces && (name == "shield" || name == "crouch_shield")) name += "_reinforced";
+		if (game.eff[EFFECT.AURA_BLADE] && (name == "attack" || name == "attack_2")) name += "_aura";
+		if (game.eff[EFFECT.REINFORCE] && (name == "shield" || name == "crouch_shield")) name += "_reinforced";
 		playerAnim = [0, name];
 	},
 	/**

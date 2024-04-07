@@ -67,7 +67,7 @@ class Enemy {
 		this.attackPower = Math.max(Math.round(power * 2.5), 1);
 		this.defendPower = Math.max(Math.round(power * 3), 1);
 		this.eff = {};
-		if (type === FRAGMENT && game.artifacts.includes(0)) this.eff.rewinds = 1;
+		if (type === FRAGMENT && game.artifacts.includes(0)) this.eff[ENEMY_EFF.REWIND] = 1;
 		this.intent = this.getIntent(true);
 		this.intentHistory = [this.intent];
 	};
@@ -76,7 +76,7 @@ class Enemy {
 	 */
 	getExtraAttackPower() {
 		let power = 0;
-		if (this.eff.rewinds) power += this.attackPower * this.eff.rewinds * 0.2;
+		if (this.eff[ENEMY_EFF.REWIND]) power += this.attackPower * this.eff[ENEMY_EFF.REWIND] * 0.2;
 		return Math.floor(power);
 	};
 	/**
@@ -84,7 +84,7 @@ class Enemy {
 	 */
 	getExtraDefendPower() {
 		let power = 0;
-		if (this.eff.rewinds) power += this.defendPower * this.eff.rewinds * 0.2;
+		if (this.eff[ENEMY_EFF.REWIND]) power += this.defendPower * this.eff[ENEMY_EFF.REWIND] * 0.2;
 		return Math.floor(power);
 	};
 	/**
@@ -105,7 +105,7 @@ class Enemy {
 	startAction() {
 		if (this.intent === ATTACK) {
 			if (game.shield && !/shield/.test(playerAnim[1])) {
-				if (game.eff.weakness) startAnim.player("crouch_shield");
+				if (game.eff[EFFECT.WEAKNESS]) startAnim.player("crouch_shield");
 				else startAnim.player("shield");
 			};
 			startAnim.enemy();
@@ -134,8 +134,8 @@ class Enemy {
 			};
 		} else if (this.intent === BUFF) {
 			if (this.type === FRAGMENT) {
-				if (this.eff.resilience) this.eff.resilience += 3;
-				else this.eff.resilience = 3;
+				if (this.eff[EFFECT.RESILIENCE]) this.eff[EFFECT.RESILIENCE] += 3;
+				else this.eff[EFFECT.RESILIENCE] = 3;
 			};
 			this.finishAction();
 		};
@@ -148,11 +148,11 @@ class Enemy {
 		if (game.shield == 0 && playerAnim[1] != "idle" && playerAnim[1] != "hit") {
 			startAnim.player("idle");
 		};
-		if (this.eff.countdown > 0) {
-			this.intent = this.intentHistory[this.eff.countdown - 1];
+		if (this.eff[ENEMY_EFF.COUNTDOWN]) {
+			this.intent = this.intentHistory[this.eff[ENEMY_EFF.COUNTDOWN] - 1];
 			this.intentHistory.push(this.intent);
-			this.eff.countdown--;
-			if (!this.eff.countdown) this.eff.rewinds++;
+			this.eff[ENEMY_EFF.COUNTDOWN]--;
+			if (!this.eff[ENEMY_EFF.COUNTDOWN]) this.eff[ENEMY_EFF.REWIND]++;
 		} else {
 			this.intent = this.getIntent();
 			this.intentHistory.push(this.intent);
@@ -185,7 +185,7 @@ class Enemy {
 			if (chance(3/5)) {
 				return ATTACK;
 			} else {
-				if (this.health <= this.maxHealth / 4 || this.eff.resilience > 1) return DEFEND;
+				if (this.health <= this.maxHealth / 4 || this.eff[EFFECT.RESILIENCE] > 1) return DEFEND;
 				return chance(2/3) ? BUFF : DEFEND;
 			};
 		};

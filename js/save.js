@@ -180,6 +180,61 @@ function fixSave() {
 			};
 		};
 	};
+	// fix player effects
+	if (game.eff.aura_blades !== undefined) {
+		game.eff[EFFECT.AURA_BLADE] = game.eff.aura_blades;
+		delete game.eff.aura_blades;
+	};
+	if (game.eff.burn !== undefined) {
+		game.eff[EFFECT.BURN] = game.eff.burn;
+		delete game.eff.burn;
+	};
+	if (game.eff.reinforces !== undefined) {
+		game.eff[EFFECT.REINFORCE] = game.eff.reinforces;
+		delete game.eff.reinforces;
+	};
+	if (game.eff.resilience !== undefined) {
+		game.eff[EFFECT.RESILIENCE] = game.eff.resilience;
+		delete game.eff.resilience;
+	};
+	if (game.eff.weakness !== undefined) {
+		game.eff[EFFECT.WEAKNESS] = game.eff.weakness;
+		delete game.eff.weakness;
+	};
+	// fix card effects
+	for (let index = 0; index < game.hand.length; index++) {
+		if (game.hand[index].retention !== undefined) {
+			game.hand[index][CARD_EFF.RETENTION] = game.hand[index].retention;
+			delete game.hand[index].retention;
+		};
+		if (game.hand[index].charge !== undefined) {
+			game.hand[index][CARD_EFF.COST_REDUCTION] = game.hand[index].charge;
+			delete game.hand[index].charge;
+		};
+	};
+	// fix enemy effects
+	for (let index = 0; index < game.enemies.length; index++) {
+		if (game.enemies[index].eff.burn !== undefined) {
+			game.enemies[index].eff[EFFECT.BURN] = game.enemies[index].eff.burn;
+			delete game.enemies[index].eff.burn;
+		};
+		if (game.enemies[index].eff.resilience !== undefined) {
+			game.enemies[index].eff[EFFECT.RESILIENCE] = game.enemies[index].eff.resilience;
+			delete game.enemies[index].eff.resilience;
+		};
+		if (game.enemies[index].eff.countdown !== undefined) {
+			game.enemies[index].eff[ENEMY_EFF.COUNTDOWN] = game.enemies[index].eff.countdown;
+			delete game.enemies[index].eff.countdown;
+		};
+		if (game.enemies[index].eff.rewinds !== undefined) {
+			game.enemies[index].eff[ENEMY_EFF.REWIND] = game.enemies[index].eff.rewinds;
+			delete game.enemies[index].eff.rewinds;
+		};
+		if (game.enemies[index].eff.shroud !== undefined) {
+			game.enemies[index].eff[ENEMY_EFF.SHROUD] = game.enemies[index].eff.shroud;
+			delete game.enemies[index].eff.shroud;
+		};
+	};
 	// save the fixed save
 	save();
 };
@@ -227,13 +282,23 @@ function load() {
 	};
 	// load images
 	for (const id in cards) {
-		if (Object.hasOwnProperty.call(cards, id) && id) {
-			I.card[rarities[cards[id].rarity]][id] = new Image;
+		if (Object.hasOwnProperty.call(cards, id) && cards[id].rarity >= 0) {
+			I.card[RARITY[cards[id].rarity]][id] = new Image;
 		};
 	};
 	for (const id in artifacts) {
 		if (Object.hasOwnProperty.call(artifacts, id)) {
 			I.artifact[id] = new Image;
+		};
+	};
+	for (const eff in EFFECT) {
+		if (Object.hasOwnProperty.call(EFFECT, eff)) {
+			I.icon[EFFECT[eff]] = new Image;
+		};
+	};
+	for (const eff in ENEMY_EFF) {
+		if (Object.hasOwnProperty.call(ENEMY_EFF, eff)) {
+			I.icon[ENEMY_EFF[eff]] = new Image;
 		};
 	};
 	for (const folder in I) {

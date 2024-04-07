@@ -133,15 +133,7 @@ const I = {
 		bottom_right: new Image,
 		corner: new Image,
 	}, icon: {
-		aura_blade: new Image,
-		burn: new Image,
-		countdown: new Image,
-		reinforce: new Image,
-		resilience: new Image,
-		rewind: new Image,
-		shroud: new Image,
-		weakness: new Image,
-		weakness_back: new Image,
+		"1704_back": new Image,
 	}, artifact: {
 		select: {},
 	}, intent: {
