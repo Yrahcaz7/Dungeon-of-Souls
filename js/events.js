@@ -122,6 +122,7 @@ const EVENTS = {
 			mapPopup();
 		}],
 	}],
+	1: [],
 };
 
 /**

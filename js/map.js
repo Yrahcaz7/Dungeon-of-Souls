@@ -94,6 +94,9 @@ function pathHasTypes(coords, types = [], front = false) {
 	let locations = [coords];
 	for (let a = 0; a < locations.length; a++) {
 		const loc = locations[a].split(", ");
+		if (game.map[loc[0]] && game.map[loc[0]][loc[1]][0] === ROOM.BOSS) {
+			continue;
+		};
 		if (a > 0 && game.map[loc[0]] && types.includes(game.map[loc[0]][loc[1]][0])) {
 			return true;
 		};
@@ -163,7 +166,7 @@ async function mapRow(row) {
 				};
 			};
 		};
-		if (row % 2 == eventShift && row < 7) {
+		if (row % 2 == eventShift && row % 10 < 7) {
 			let available = [0, 1, 2, 3, 4, 5];
 			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 			while (true) {

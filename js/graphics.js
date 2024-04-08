@@ -1641,19 +1641,19 @@ const graphics = {
 				if (game.floor % 10 == 9) {
 					draw.image(I.map.select, 18 + (9 * 32), 12);
 					draw.image(I.map.select, 12 + (10 * 32), 12);
-				} else if (game.location == "-1") {
+				} else if (game.floor % 10 === 0) {
 					draw.image(I.map.select_first, 13, 12);
 				} else {
-					draw.image(I.map.select, 13 + ((+game.location.split(", ")[0] + 1) * 32), 12);
+					draw.image(I.map.select, 13 + (game.floor % 10 * 32), 12);
 				};
-			} else if (game.location != "-1") {
+			} else if (game.floor > 0) {
 				if (game.floor % 10 == 0) {
 					draw.image(I.map.select, 18 + (9 * 32), 12);
 					draw.image(I.map.select, 12 + (10 * 32), 12);
-				} else if (game.location.split(", ")[0] == "0") {
+				} else if (game.floor % 10 == 1) {
 					draw.image(I.map.select_first, 13, 12);
 				} else {
-					draw.image(I.map.select, 13 + (+game.location.split(", ")[0] * 32), 12);
+					draw.image(I.map.select, 13 + ((game.floor % 10 - 1) * 32), 12);
 				};
 			};
 			draw.image(I.extra.deck, 22, 16);
@@ -1664,27 +1664,28 @@ const graphics = {
 			draw.lore(399, 1, "seed: " + game.seed, {"color": "#fff", "text-align": LEFT});
 		};
 		// draw scribbles
+		let area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0));
 		if (render) {
-			for (let x = 0; x < game.map.length; x++) {
+			for (let x = area * 10; x < (area + 1) * 10; x++) {
 				for (let y = 0; y < game.map[x].length; y++) {
 					if (typeof game.map[x][y] != "number") continue;
-					draw.image(I.map.scribble_back, 25 + (x * 32) + 8 - 4, 18 + (y * 32) + 8 - 3 - 2.5, 80 / 2, 80 / 2);
-					draw.imageSector(I.map.scribbles, game.map[x][y] * 64, 0, 64, 70, 25 + (x * 32) + 8, 18 + (y * 32) + 8 - 3, 64 / 2, 70 / 2);
+					draw.image(I.map.scribble_back, 25 + ((x - area * 10) * 32) + 8 - 4, 18 + (y * 32) + 8 - 3 - 2.5, 80 / 2, 80 / 2);
+					draw.imageSector(I.map.scribbles, game.map[x][y] * 64, 0, 64, 70, 25 + ((x - area * 10) * 32) + 8, 18 + (y * 32) + 8 - 3, 64 / 2, 70 / 2);
 				};
 			};
 		};
 		// calculate nodes
 		let store = [];
-		for (let x = 0; x < game.map.length; x++) {
+		for (let x = area * 10; x < (area + 1) * 10; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
 				if (typeof game.map[x][y] != "object") continue;
-				let drawX = 25 + (x * 32) + game.map[x][y][1];
+				let drawX = 25 + ((x - area * 10) * 32) + game.map[x][y][1];
 				let drawY = 18 + (y * 32) + game.map[x][y][2];
 				if (game.map[x][y][0] === ROOM.BOSS) {
-					drawX = 25 + 10 + 8 + (x * 32);
+					drawX = 25 + 10 + 8 + ((x - area * 10) * 32);
 					drawY = 90 + 8;
 				};
-				if (x === 0 && render) {
+				if (x % 10 == 0 && render) {
 					if (game.traveled[x] === y) draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#842", 3);
 					else draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#b84", 3);
 				};
@@ -1694,15 +1695,15 @@ const graphics = {
 						connectNode = [nodeX - x, nodeY];
 						store.push([x, y, nodeX, nodeY]);
 						if (game.map[nodeX][nodeY][0] === ROOM.BOSS) {
-							posX = 25 + 10 + 8 + (nodeX * 32);
+							posX = 25 + 10 + 8 + ((nodeX - area * 10) * 32);
 							posY = 90 + 8;
 						} else {
-							posX = 25 + (nodeX * 32) + game.map[nodeX][nodeY][1];
+							posX = 25 + ((nodeX - area * 10) * 32) + game.map[nodeX][nodeY][1];
 							posY = 18 + (nodeY * 32) + game.map[nodeX][nodeY][2];
 						};
 					};
 					for (num = 0; num < 7; num++) {
-						if (branch && x != game.map.length - 1) {
+						if (branch && x % 10 != 9) {
 							if (typeof game.map[x + 1][y - num] == "object") {
 								calcNode(x + 1, y - num);
 								break;
@@ -1710,7 +1711,7 @@ const graphics = {
 								calcNode(x + 1, y + num);
 								break;
 							};
-						} else if (x !== 0) {
+						} else if (x % 10 != 0) {
 							if (typeof game.map[x - 1][y - num] == "object") {
 								calcNode(x - 1, y - num);
 								break;
@@ -1729,7 +1730,7 @@ const graphics = {
 		// draw traveled path
 		if (render) {
 			let drawX, drawY;
-			for (let index = 0; index < game.traveled.length && index < game.map.length; index++) {
+			for (let index = area * 10; index < game.traveled.length && index < (area + 1) * 10; index++) {
 				let y = game.traveled[index];
 				if (game.map[index][y]) {
 					if (drawX && drawY) {
@@ -1754,10 +1755,10 @@ const graphics = {
 			const str = paths[game.location] ? paths[game.location][game.mapSelect] : undefined;
 			const coordSel = str ? str.split(", ") : [];
 			const coordOn = game.location.split(", ");
-			for (let x = 0; x < game.map.length; x++) {
+			for (let x = area * 10; x < (area + 1) * 10; x++) {
 				for (let y = 0; y < game.map[x].length; y++) {
 					if (typeof game.map[x][y] != "object") continue;
-					let drawX = 25 + (x * 32) + game.map[x][y][1];
+					let drawX = 25 + ((x - area * 10) * 32) + game.map[x][y][1];
 					let drawY = 18 + (y * 32) + game.map[x][y][2];
 					if (game.map[x][y][0] === ROOM.BATTLE) {
 						draw.image(I.map.node.battle, drawX, drawY);
