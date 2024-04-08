@@ -593,7 +593,7 @@ const info = {
 	 */
 	player(type, xPlus = 0, yPlus = 0) {
 		const eff = game.eff[type];
-		let y = 71 + yPlus, move = 0;
+		let y = 68 + yPlus, move = 0;
 		let desc = "You have " + eff + " " + KEYWORD[type] + ((type === EFFECT.AURA_BLADE || type === EFFECT.REINFORCE) && eff >= 2 ? "s" : "") + ".";
 		move += draw.textBox(85 + xPlus, y + move, desc.length, desc, {"text-small": true});
 		move += draw.textBox(85 + xPlus, y + move, 24, infoText[type], {"text-small": true});
@@ -842,7 +842,7 @@ const graphics = {
 	 * Draws the player on the canvas.
 	 */
 	player() {
-		let x = 15, y = 30;
+		let x = 15, y = 27;
 		// aura blades
 		for (let index = 0; index < game.eff[EFFECT.AURA_BLADE] && index < 4; index++) {
 			draw.image(I.aura_blade, x + auraBladePos[index][0], y + auraBladePos[index][1] + 4 - Math.abs(Math.round(auraBladeAnim[index]) - 4));
@@ -1054,8 +1054,8 @@ const graphics = {
 				} else if (type === SLIME.SMALL) {
 					if (tempAnim[0] >= 10) {
 						let phase = ((tempAnim[0] - 9) / 10),
-							posX = Math.round(((pos[0] - 68) - 64) * phase),
-							posY = Math.round(((pos[1] - (50 + 10))) * phase);
+							posX = Math.round(((pos[0] - (game.shield > 0 ? 81 : 62)) - 64) * phase),
+							posY = Math.round(((pos[1] - (game.shield > 0 ? 61 : 57))) * phase);
 						draw.imageSector(I.enemy.slime.small_attack, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
 					} else draw.imageSector(I.enemy.slime.small_attack, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
 					if (tempAnim[1] === STARTING) tempAnim[0]++;
@@ -1103,7 +1103,7 @@ const graphics = {
 					draw.imageSector(I.enemy.sentry.big_attack, Math.floor(tempAnim[0]) * 88, 0, 88, 70, pos[0] - 12, pos[1] - 1, 88, 70);
 					if (tempAnim[0] >= 4) {
 						const start = [pos[0] + 17, pos[1] + 16];
-						const end = (game.shield > 0 ? [92, 90] : [72, 85]);
+						const end = (game.shield > 0 ? [92, 87] : [72, 82]);
 						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
 					};
 					if (tempAnim[1] === STARTING) tempAnim[0]++;
@@ -1124,7 +1124,7 @@ const graphics = {
 					draw.imageSector(I.enemy.sentry.small_attack, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
 					if (tempAnim[0] >= 11) {
 						const start = [pos[0] + 14, pos[1] + 30];
-						const end = (game.shield > 0 ? [92, 90] : [72, 85]);
+						const end = (game.shield > 0 ? [92, 87] : [72, 82]);
 						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
 					};
 					if (tempAnim[1] === STARTING) tempAnim[0]++;
@@ -1145,7 +1145,7 @@ const graphics = {
 					draw.imageSector(I.enemy.sentry.prime_attack, Math.floor(tempAnim[0]) * 64, 0, 64, 86, pos[0], pos[1] - 22);
 					if (tempAnim[0] >= 12) {
 						let start = [pos[0] + 12, pos[1] + 29];
-						const end = (game.shield > 0 ? [92, 90] : [72, 85]);
+						const end = (game.shield > 0 ? [92, 87] : [72, 82]);
 						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
 						start[1] += 7;
 						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
@@ -1281,7 +1281,7 @@ const graphics = {
 		};
 		draw.lore(1, 12 - infPos, 'Source can be found at "https://github.com/Yrahcaz7/Dungeon-of-Souls"', {"color": "#f44", "text-small": true});
 		if (infLimit > 0) {
-			draw.lore(360, 32, "Scrollable", {"color": "#fff", "text-align": LEFT});
+			draw.lore(366, 26, "Scrollable", {"color": "#fff", "text-align": LEFT});
 			draw.image(I.arrows, 367, 22);
 		};
 	},
@@ -1498,13 +1498,11 @@ const graphics = {
 				};
 			};
 		} else if (game.select[0] === LOOKAT_YOU) {
-			let coords = [59, 72, 22, 39];
-			if (playerAnim[1] == "shield" || playerAnim[1] == "shield_reinforced") coords = [58, 72, 23, 39];
-			else if (playerAnim[1] == "crouch_shield" || playerAnim[1] == "crouch_shield_reinforced") coords = [58, 72, 22, 39];
+			let coords = [58, 69, 24, 39];
 			draw.selector(coords[0], coords[1], coords[2], coords[3]);
 			if (game.character === CHARACTER.KNIGHT) {
-				if (global.charStage[CHARACTER.KNIGHT] === 0) draw.lore(coords[0] + (coords[2] / 2) - 1, 64.5, "the forgotten one", {"color": "#fff", "text-align": CENTER, "text-small": true});
-				else if (global.charStage[CHARACTER.KNIGHT] === 1) draw.lore(coords[0] + (coords[2] / 2) - 1, 64.5, "the true knight", {"color": "#fff", "text-align": CENTER, "text-small": true});
+				if (global.charStage[CHARACTER.KNIGHT] === 0) draw.lore(coords[0] + (coords[2] / 2) - 1, 61.5, "the forgotten one", {"color": "#fff", "text-align": CENTER, "text-small": true});
+				else if (global.charStage[CHARACTER.KNIGHT] === 1) draw.lore(coords[0] + (coords[2] / 2) - 1, 61.5, "the true knight", {"color": "#fff", "text-align": CENTER, "text-small": true});
 			};
 			let x = coords[0] + coords[2] - 80, y = 0;
 			for (const key in game.eff) {

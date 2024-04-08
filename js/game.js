@@ -163,7 +163,6 @@ function fadeMusic() {
  * Enters the battle.
  */
 function enterBattle() {
-	game.eff = {};
 	game.state = STATE.BATTLE;
 	game.deckLocal = shuffle(game.deck.slice());
 	startTurn();
@@ -303,7 +302,7 @@ function endBattle() {
 				game.rewards.push("1 artifact");
 			};
 		};
-		if (game.room[0] === ROOM.PRIME) game.rewards.push("1 refiner");
+		if (game.room[0] === ROOM.BOSS) game.rewards.push("1 refiner");
 		game.rewards.push("finish");
 	};
 };
@@ -313,16 +312,11 @@ function endBattle() {
  */
 function loadRoom() {
 	if (game.state === STATE.ENTER) {
-		// clear effects
-		for (const effect in game.eff) {
-			if (Object.hasOwnProperty.call(game.eff, effect)) {
-				game.eff[effect] = 0;
-			};
-		};
 		// reset things
 		game.rewards = [];
 		game.energy = get.maxEnergy();
 		game.shield = 0;
+		game.eff = {};
 		game.hand = [];
 		game.deckLocal = [];
 		game.discard = [];
@@ -359,7 +353,9 @@ function loadRoom() {
 			game.traveled.push(+place[1]);
 			game.select = [REWARDS, 0];
 			game.state = STATE.EVENT_FIN;
-			game.rewards = [Math.floor(get.maxHealth() * 0.5) + " health", "1 purifier", "finish"];
+			game.rewards = [Math.floor(get.maxHealth() * 0.5) + " health", "1 purifier"];
+			if (get.area() >= 1) game.rewards.push("1 refiner");
+			game.rewards.push("finish");
 		} else if (type === ROOM.EVENT) {
 			game.traveled.push(+place[1]);
 			game.select = [CONFIRM_EVENT, -1];
