@@ -1626,8 +1626,9 @@ const graphics = {
 	/**
 	 * Calculates the map paths, then draws the map on the canvas.
 	 * @param {boolean} onlyCalc - whether to only calculate the map paths. Defaults to `false`.
+	 * @param {number} area - the area of the map being calculated and drawn.
 	 */
-	map(onlyCalc = false) {
+	map(onlyCalc = false, area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0))) {
 		let render = !onlyCalc;
 		// draw map
 		if (render) {
@@ -1662,7 +1663,6 @@ const graphics = {
 			draw.lore(399, 1, "seed: " + game.seed, {"color": "#fff", "text-align": LEFT});
 		};
 		// draw scribbles
-		let area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0));
 		if (render) {
 			for (let x = area * 10; x < (area + 1) * 10; x++) {
 				for (let y = 0; y < game.map[x].length; y++) {
@@ -1674,7 +1674,7 @@ const graphics = {
 		};
 		// calculate nodes
 		let store = [];
-		for (let x = area * 10; x < (area + 1) * 10; x++) {
+		for (let x = area * 10; x < (area + 1) * 10 && x < game.map.length; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
 				if (typeof game.map[x][y] != "object") continue;
 				let drawX = 25 + ((x - area * 10) * 32) + game.map[x][y][1];
@@ -1683,40 +1683,44 @@ const graphics = {
 					drawX = 25 + 10 + 8 + ((x - area * 10) * 32);
 					drawY = 90 + 8;
 				};
-				if (x % 10 == 0 && render) {
+				if (render && x % 10 == 0) {
 					if (game.traveled[x] === y) draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#842", 3);
 					else draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#b84", 3);
 				};
-				for (let branch = 0; branch < 2; branch++) {
-					let posX, posY, connectNode = [];
-					const calcNode = (nodeX, nodeY) => {
-						connectNode = [nodeX - x, nodeY];
-						store.push([x, y, nodeX, nodeY]);
-						if (game.map[nodeX][nodeY][0] === ROOM.BOSS) {
-							posX = 25 + 10 + 8 + ((nodeX - area * 10) * 32);
-							posY = 90 + 8;
-						} else {
-							posX = 25 + ((nodeX - area * 10) * 32) + game.map[nodeX][nodeY][1];
-							posY = 18 + (nodeY * 32) + game.map[nodeX][nodeY][2];
+				let posX, posY, connectNode = [];
+				const calcNode = (nodeX, nodeY) => {
+					connectNode = [nodeX - x, nodeY];
+					store.push([x, y, nodeX, nodeY]);
+					if (game.map[nodeX][nodeY][0] === ROOM.BOSS) {
+						posX = 25 + 10 + 8 + ((nodeX - area * 10) * 32);
+						posY = 90 + 8;
+					} else {
+						posX = 25 + ((nodeX - area * 10) * 32) + game.map[nodeX][nodeY][1];
+						posY = 18 + (nodeY * 32) + game.map[nodeX][nodeY][2];
+					};
+				};
+				if (x % 10 != 9 && game.map[x + 1]) {
+					for (num = 0; num < 7; num++) {
+						if (typeof game.map[x + 1][y - num] == "object") {
+							calcNode(x + 1, y - num);
+							break;
+						} else if (typeof game.map[x + 1][y + num] == "object") {
+							calcNode(x + 1, y + num);
+							break;
 						};
 					};
+					if (render && !(game.traveled[x] === y && game.traveled[x + connectNode[0]] === connectNode[1])) {
+						draw.curvedLine(drawX + 8, drawY + 8, (drawX + posX) / 2 + 8, (x % 2 == 0 ? drawY : posY) + 8, posX + 8, posY + 8, "#b84", 3);
+					};
+				};
+				if (x % 10 != 0) {
 					for (num = 0; num < 7; num++) {
-						if (branch && x % 10 != 9) {
-							if (typeof game.map[x + 1][y - num] == "object") {
-								calcNode(x + 1, y - num);
-								break;
-							} else if (typeof game.map[x + 1][y + num] == "object") {
-								calcNode(x + 1, y + num);
-								break;
-							};
-						} else if (x % 10 != 0) {
-							if (typeof game.map[x - 1][y - num] == "object") {
-								calcNode(x - 1, y - num);
-								break;
-							} else if (typeof game.map[x - 1][y + num] == "object") {
-								calcNode(x - 1, y + num);
-								break;
-							};
+						if (typeof game.map[x - 1][y - num] == "object") {
+							calcNode(x - 1, y - num);
+							break;
+						} else if (typeof game.map[x - 1][y + num] == "object") {
+							calcNode(x - 1, y + num);
+							break;
 						};
 					};
 					if (render && !(game.traveled[x] === y && game.traveled[x + connectNode[0]] === connectNode[1])) {
@@ -1728,22 +1732,22 @@ const graphics = {
 		// draw traveled path
 		if (render) {
 			let drawX, drawY;
-			for (let index = area * 10; index < game.traveled.length && index < (area + 1) * 10; index++) {
-				let y = game.traveled[index];
-				if (game.map[index][y]) {
+			for (let x = area * 10; x < game.traveled.length && x < (area + 1) * 10; x++) {
+				let y = game.traveled[x];
+				if (game.map[x][y]) {
 					if (drawX && drawY) {
-						let posX = 25 + (index * 32) + game.map[index][y][1];
-						let posY = 18 + (y * 32) + game.map[index][y][2];
-						if (game.map[index][y][0] === ROOM.BOSS) {
-							posX = 25 + 10 + 8 + (index * 32);
+						let posX = 25 + ((x - area * 10) * 32) + game.map[x][y][1];
+						let posY = 18 + (y * 32) + game.map[x][y][2];
+						if (game.map[x][y][0] === ROOM.BOSS) {
+							posX = 25 + 10 + 8 + ((x - area * 10) * 32);
 							posY = 90 + 8;
 						};
-						draw.curvedLine(drawX + 8, drawY + 8, (drawX + posX) / 2 + 8, (index % 2 == 1 ? drawY : posY) + 8, posX + 8, posY + 8, "#842", 3);
+						draw.curvedLine(drawX + 8, drawY + 8, (drawX + posX) / 2 + 8, (x % 2 == 1 ? drawY : posY) + 8, posX + 8, posY + 8, "#842", 3);
 						drawX = posX;
 						drawY = posY;
 					} else {
-						drawX = 25 + (index * 32) + game.map[index][y][1];
-						drawY = 18 + (y * 32) + game.map[index][y][2];
+						drawX = 25 + ((x - area * 10) * 32) + game.map[x][y][1];
+						drawY = 18 + (y * 32) + game.map[x][y][2];
 					};
 				};
 			};
@@ -1803,8 +1807,11 @@ const graphics = {
 				if (!(paths["" + store[num][2] + ", " + store[num][3]].includes("" + store[num][0] + ", " + store[num][1]))) paths["" + store[num][2] + ", " + store[num][3]].push("" + store[num][0] + ", " + store[num][1]);
 			};
 			if (store[num][0] === 0) {
-				if (!(paths["-1"])) paths["-1"] = [];
-				if (!(paths["-1"].includes("" + store[num][0] + ", " + store[num][1]))) paths["-1"].push("" + store[num][0] + ", " + store[num][1]);
+				if (!paths["-1"]) paths["-1"] = [];
+				if (!paths["-1"].includes("" + store[num][0] + ", " + store[num][1])) paths["-1"].push("" + store[num][0] + ", " + store[num][1]);
+			} else if (store[num][0] === 10) {
+				if (!paths["9, 2"]) paths["9, 2"] = [];
+				if (!paths["9, 2"].includes("" + store[num][0] + ", " + store[num][1])) paths["9, 2"].push("" + store[num][0] + ", " + store[num][1]);
 			};
 		};
 		// sort paths

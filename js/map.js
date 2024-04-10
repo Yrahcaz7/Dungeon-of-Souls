@@ -56,7 +56,7 @@ async function updateMapProg() {
  * @param {FIRSTBATTLE | TREASURE | PRIME | ORB | BOSS} attribute - the attribute of the map piece, if any.
  */
 async function mapPiece(row, num, attribute = -1) {
-	let area = get.area(row - 1);
+	let area = get.area(row + 1);
 	if (attribute === FIRSTBATTLE) return [ROOM.BATTLE, 0, 0, [[SLIME.SMALL, SENTRY.SMALL][area]], goldReward(row), randomCardSet(5)];
 	if (attribute === TREASURE) return [ROOM.TREASURE, randomInt(-5, 5), randomInt(-5, 5), false, goldReward(row) * 2, randomCardSet(5)];
 	if (attribute === PRIME) return [ROOM.PRIME, randomInt(-5, 5), randomInt(-5, 5), [weakerSmallEnemy(row), [SLIME.PRIME, SENTRY.PRIME][area], weakerSmallEnemy(row)], goldReward(row) * 2, randomCardSet(5), randomArtifactSet(3)];
@@ -69,13 +69,13 @@ async function mapPiece(row, num, attribute = -1) {
 	if (attribute === ORB) return [ROOM.ORB, randomInt(-5, 5), randomInt(-5, 5)];
 	if (attribute === BOSS) return [ROOM.BOSS, 0, 0, [[FRAGMENT, ACT2BOSS][area]], goldReward(row) * 4, randomCardSet(5), randomArtifactSet(3)];
 	let type = chance(3/5) ? ROOM.BATTLE : false;
-	if (rowFalses >= 3 || (row === 0 && rowFalses >= 2) || (num == 2 && rowFalses == 2)) type = ROOM.BATTLE;
+	if (rowFalses >= 3 || (row % 10 == 0 && rowFalses >= 2) || (num == 2 && rowFalses == 2)) type = ROOM.BATTLE;
 	if (type) rowNodes++;
 	else rowFalses++;
 	if (!type || rowNodes == 6) return false;
 	let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
 	if (type === ROOM.BATTLE) {
-		if (row >= 5) result.push(chance(1/3) ? [[SLIME.BIG, SENTRY.BIG][area]] : (chance(2/3) ? [[SLIME.BIG, SENTRY.BIG][area], weakerSmallEnemy(row)] : [[SLIME.SMALL, SENTRY.SMALL][area], [SLIME.SMALL, SENTRY.SMALL][area]]));
+		if (row % 10 >= 5) result.push(chance(1/3) ? [[SLIME.BIG, SENTRY.BIG][area]] : (chance(2/3) ? [[SLIME.BIG, SENTRY.BIG][area], weakerSmallEnemy(row)] : [[SLIME.SMALL, SENTRY.SMALL][area], [SLIME.SMALL, SENTRY.SMALL][area]]));
 		else result.push(chance() ? [[SLIME.BIG, SENTRY.BIG][area]] : [[SLIME.SMALL, SENTRY.SMALL][area], weakerSmallEnemy(row)]);
 		result.push(goldReward(row), randomCardSet(5));
 	};
@@ -134,7 +134,7 @@ async function mapRow(row) {
 	let arr = [await mapPiece(row, 0), await mapPiece(row, 1), await mapPiece(row, 2), await mapPiece(row, 3), await mapPiece(row, 4), await mapPiece(row, 5)];
 	if (row % 10 > 0) {
 		game.map.push(arr);
-		graphics.map(true);
+		graphics.map(true, get.area(row + 1));
 		game.map.pop();
 		pathEntries = Object.entries(paths);
 		if (row % 10 > 1) {

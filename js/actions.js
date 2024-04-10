@@ -94,7 +94,7 @@ function selection() {
 	};
 	// map
 	if (game.select[0] === IN_MAP && game.state === STATE.EVENT_FIN && paths[game.location]) {
-		if ((action === UP || action === RIGHT)) {
+		if (action === UP) {
 			if (game.mapSelect == -1) {
 				game.mapSelect = paths[game.location].length - 1;
 				actionTimer = 1;
@@ -108,7 +108,7 @@ function selection() {
 				actionTimer = 1;
 				return;
 			};
-		} else if ((action === LEFT || action === DOWN) && game.mapSelect != -1 && (game.mapSelect != paths[game.location].length || game.select[1] == 0)) {
+		} else if (action === DOWN && game.mapSelect != -1 && (game.mapSelect != paths[game.location].length || game.select[1] == 0)) {
 			if (game.mapSelect < paths[game.location].length - 1) {
 				game.mapSelect = game.mapSelect + 1;
 			} else if (game.mapSelect == paths[game.location].length) {
@@ -121,9 +121,9 @@ function selection() {
 		};
 	} else if (game.select[0] === IN_MAP) {
 		const len = (paths[game.location] || []).length;
-		if (action === UP || action === RIGHT) {
+		if (action === UP) {
 			if (game.mapSelect == -1) game.mapSelect = len;
-		} else if ((action === LEFT || action === DOWN) && (game.mapSelect != len || game.select[1] == 0)) {
+		} else if (action === DOWN && (game.mapSelect != len || game.select[1] == 0)) {
 			if (game.mapSelect == len) game.mapSelect = -1;
 		};
 	};
