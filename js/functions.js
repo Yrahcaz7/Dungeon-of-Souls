@@ -116,7 +116,7 @@ const get = {
 	extraDamage(attacking = false) {
 		let extra = 0;
 		if (game.attackEffects.includes(AURA_BLADE)) {
-			extra += 5 + (game.eff[EFFECT.AURA_BLADE] + 1);
+			extra += 5 + ((game.eff[EFFECT.AURA_BLADE] || 0) + 1);
 		} else if (game.eff[EFFECT.AURA_BLADE] && !attacking) {
 			extra += 5 + game.eff[EFFECT.AURA_BLADE];
 		};
