@@ -427,7 +427,7 @@ const draw = {
 		// card description
 		let desc = getCardAttr("desc", cardObj.id, cardObj.level), exDamage = get.extraDamage(), mulDamage = get.dealDamageMult(), valueIsLess = false;
 		if (cards[cardObj.id].attackEffects !== false && !outside) {
-			if (cards[cardObj.id].keywords.includes("uniform")) exDamage = Math.floor(exDamage * 0.5);
+			if (cards[cardObj.id].keywords.includes(CARD_EFF.UNIFORM)) exDamage = Math.floor(exDamage * 0.5);
 			if (game.select[0] === ATTACK_ENEMY) mulDamage = get.dealDamageMult(game.select[1]);
 			if (exDamage || mulDamage !== 1) {
 				desc = desc.replace(/(deal\s)(\d+)(\s<#f44>damage<\/#f44>)/gi, (substring, pre, number, post) => {

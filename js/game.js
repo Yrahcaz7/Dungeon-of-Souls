@@ -251,7 +251,7 @@ function playerTurn() {
 	if (game.enemyAtt[3] && playerAnim[1] == "idle") {
 		const attCard = cards[game.enemyAtt[2].id];
 		if (attCard.target !== false && attCard.damage) {
-			if (cards[game.enemyAtt[2].id].keywords.includes("uniform")) dealDamage(getCardAttr("damage", game.enemyAtt[2].id, game.enemyAtt[2].level), 0.5);
+			if (cards[game.enemyAtt[2].id].keywords.includes(CARD_EFF.UNIFORM)) dealDamage(getCardAttr("damage", game.enemyAtt[2].id, game.enemyAtt[2].level), 0.5);
 			else dealDamage(getCardAttr("damage", game.enemyAtt[2].id, game.enemyAtt[2].level));
 		};
 		if (typeof attCard.attack == "function") attCard.attack(game.enemyAtt[2].level);
