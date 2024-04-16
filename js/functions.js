@@ -250,7 +250,7 @@ function drawCards(num) {
  * @param {boolean} used - whether the card was used. Defaults to `false`.
  */
 function discardCard(cardObj, used = false) {
-	if (used && cards[cardObj.id].keywords.includes("one use")) game.void.push(new Card(cardObj.id, cardObj.level));
+	if (used && cards[cardObj.id].keywords.includes(CARD_EFF.ONE_USE)) game.void.push(new Card(cardObj.id, cardObj.level));
 	else game.discard.push(new Card(cardObj.id, cardObj.level));
 };
 
