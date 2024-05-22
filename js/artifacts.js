@@ -122,11 +122,11 @@ function randomArtifact(notInclude = []) {
 		};
 	};
 	if (bool) {
-		return randomInt(2, Object.keys(I.artifact).length - 1);
+		return randomInt(2, Object.keys(I.artifact).length - 2);
 	};
 	let result;
 	while (!result || notInclude.includes(result)) {
-		result = randomInt(2, Object.keys(I.artifact).length - 1);
+		result = randomInt(2, Object.keys(I.artifact).length - 2);
 	};
 	return result;
 };
