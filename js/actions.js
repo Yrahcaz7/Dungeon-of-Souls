@@ -25,7 +25,7 @@ function selection() {
 	if (!actionTimer || actionTimer < -1) actionTimer = -1;
 	// menus
 	if (menuLocation === MENU.TITLE) {
-		if (!game.artifacts.includes(0)) {
+		if (!game.artifacts.includes(202)) {
 			if ((action === LEFT && game.difficulty === 1) || (action === RIGHT && game.difficulty === 0)) {
 				menuLocation = MENU.DIFFICULTY_CHANGE;
 				menuSelect = 1;
@@ -152,7 +152,7 @@ function selection() {
 	};
 	// select / deselect player and more extras
 	if (action === UP && game.select[0] === LOOKAT_YOU) {
-		game.select = [MAP, 0];
+		game.select = [ARTIFACTS, 0];
 		actionTimer = 1;
 		return;
 	} else if (action === UP && game.select[0] === VOID && !game.select[1]) {
@@ -411,10 +411,9 @@ function selection() {
 		};
 	};
 	// deselect extras
-	if ((game.select[0] === LOOKER || game.select[0] === HELP || game.select[0] === OPTIONS || game.select[0] === MAP) && !game.select[1]) {
+	if ((game.select[0] === LOOKER || game.select[0] === HELP || game.select[0] === OPTIONS) && !game.select[1]) {
 		if (action === LEFT && game.select[0] === LOOKER) {
-			if (game.artifacts.length) game.select = [ARTIFACTS, game.artifacts.length - 1];
-			else game.select = [MAP, 0];
+			game.select = [ARTIFACTS, game.artifacts.length - 1];
 			actionTimer = 1;
 			return;
 		} else if (action === LEFT && game.select[0] === HELP) {
@@ -429,19 +428,12 @@ function selection() {
 			game.select = [HELP, 0];
 			actionTimer = 1;
 			return;
-		} else if (action === RIGHT && game.select[0] === MAP) {
-			if (game.artifacts.length) game.select = [ARTIFACTS, 0];
-			else game.select = [LOOKER, 0];
-			actionTimer = 1;
-			return;
 		} else if (action === RIGHT && game.select[0] === HELP) {
 			game.select = [OPTIONS, 0];
 			actionTimer = 1;
 			return;
 		} else if (action === DOWN) {
-			if (game.select[0] === MAP) {
-				game.select = [LOOKAT_YOU, 0];
-			} else if (hasPopups()) {
+			if (hasPopups()) {
 				game.select = [POPUPS, popups.length - 1];
 				while (game.select[1] >= 0 && !popups[game.select[1]].length) {
 					game.select[1]--;
@@ -459,8 +451,7 @@ function selection() {
 	// artifacts
 	if (game.select[0] === ARTIFACTS) {
 		if (action === LEFT) {
-			if (game.select[1] === 0) game.select = [MAP, 0];
-			else game.select[1]--;
+			if (game.select[1] > 0) game.select[1]--;
 			actionTimer = 1;
 			return;
 		} else if (action === RIGHT) {
@@ -695,7 +686,7 @@ function performAction() {
 		return;
 	} else if (game.select[0] === CONFIRM_EXIT) {
 		if (!game.select[1]) {
-			game.select = [MAP, 0];
+			game.select = [ARTIFACTS, 0];
 			mapPopup();
 		} else {
 			game.select = [REWARDS, game.rewards.length - 1];
@@ -715,7 +706,7 @@ function performAction() {
 		} else {
 			game.location = paths[game.location][game.mapSelect];
 			let coor = game.location.split(", ");
-			if (game.select[1] == 0) game.artifacts.push(0);
+			if (game.select[1] == 0) game.artifacts.push(202);
 			game.room = game.map[coor[0]][coor[1]];
 			game.select = [-1, 0];
 			game.mapSelect = -1;
@@ -785,7 +776,7 @@ function performAction() {
 				if (bool) {
 					game.select = [CONFIRM_EXIT, 1];
 				} else {
-					game.select = [MAP, 0];
+					game.select = [ARTIFACTS, 0];
 					mapPopup();
 				};
 			};
@@ -917,12 +908,12 @@ function performAction() {
 		else game.select[1] = 0;
 		actionTimer = 2;
 		return;
-	} else if (game.select[0] === MAP) {
+	} else if (game.select[0] === ARTIFACTS && game.select[1] == 0) {
 		game.select = [IN_MAP, 0];
 		actionTimer = 2;
 		return;
 	} else if (game.select[0] === IN_MAP && game.mapSelect == -1) {
-		game.select = [MAP, 0];
+		game.select = [ARTIFACTS, 0];
 		actionTimer = 2;
 		return;
 	} else if (game.select[0] === IN_MAP && game.mapSelect == (paths[game.location] || []).length) {

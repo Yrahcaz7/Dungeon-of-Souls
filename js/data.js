@@ -36,8 +36,6 @@ const infoText = {
 	[ATTACK]: "This enemy intends to attack\nyou on its next turn.",
 	[DEFEND]: "This enemy intends to defend\nitself on its next turn.",
 	[BUFF]: "This enemy intends to buff\nitself on its next turn.",
-	// other
-	"the map": "You can choose where\nto go next each time\nyou clear a floor.",
 };
 
 for (const key in infoText) {
@@ -87,7 +85,7 @@ gameplay = ""
 	+ "<b>Enemy Intents<s>"
 	+ "Take note of what's floating above the enemies' heads. That is their intent.\n"
 	+ "An enemy's intent shows what it intends to do on its next turn.\n"
-	+ "<#f00>Red</#f00> with spikes or stars is <#f44>attack</#f44>, <#00f>blue</#00f> and shield shape means <#58f>defense</#58f> (gain <#58f>shield</#58f>).\n"
+	+ "<#f44>Red</#f44> with spikes or stars is <#f44>attack</#f44>, <#58f>blue</#58f> and shield shape means <#58f>defense</#58f> (gain <#58f>shield</#58f>).\n"
 	+ "There are others later, but you can look at the tooltips to see what they are.\n"
 	+ "Use the enemies' predictability to strategize what cards you play.\n"
 	+ "<b>Building a Deck<s>"
@@ -121,7 +119,7 @@ changelog = ""
 	+ " - there is two new artifacts\n"
 	+ " - improved game performance\n"
 	+ " - improved some visuals\n"
-	+ " - some balancing changes\n"
+	+ " - various balancing changes\n"
 	+ "<b>Version 1.3 - Deception<s>"
 	+ " - added THE SECRET ACT!\n"
 	+ " - added special events (4 so far)\n"

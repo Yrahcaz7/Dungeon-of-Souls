@@ -77,12 +77,11 @@ function fixSelect(item) {
 	else if (item == "confirm_end") return CONFIRM_END;
 	else if (item == "deck") return DECK;
 	else if (item == "discard") return DISCARD;
-	else if (item == "map") return MAP;
 	else if (item == "in_map") return IN_MAP;
 	else if (item == "popups") return POPUPS;
 	else if (item == "rewards") return REWARDS;
 	else if (item == "card_rewards") return CARD_REWARDS;
-	else if (item == "artifacts") return ARTIFACTS;
+	else if (item == "artifacts" || item == "map" || item === MAP) return ARTIFACTS;
 	else if (item == "void") return VOID;
 	else if (item == "confirm_exit") return CONFIRM_EXIT;
 	else if (item == "options") return OPTIONS;
@@ -94,9 +93,9 @@ function fixSelect(item) {
 };
 
 /**
- * Fixes the save if it is old.
+ * Fixes a pre-v2.0 save.
  */
-function fixSave() {
+function fixOldSave() {
 	// fix enemy attack
 	if (game.activeCard !== undefined || game.enemyAttSel !== undefined || game.enemyAttFin !== undefined) {
 		game.enemyAtt = [game.activeCard, game.enemyAttSel, game.enemyAtt, game.enemyAttFin];
@@ -126,8 +125,8 @@ function fixSave() {
 		delete game.attackEffect;
 	};
 	// fix selector
-	if (typeof game.select[0] == "string") game.select[0] = fixSelect(game.select[0]);
-	if (typeof game.select[2] == "string") game.select[2][0] = fixSelect(game.select[2][0]);
+	if (typeof game.select[0] == "string" || game.select[0] === MAP || game.select[0] == GAME_WON) game.select[0] = fixSelect(game.select[0]);
+	if (game.select[2] && (typeof game.select[2][0] == "string" || game.select[2][0] === MAP || game.select[2][0] == GAME_WON)) game.select[2][0] = fixSelect(game.select[2][0]);
 	// fix enemy stage
 	if (game.enemyStage == "pending") game.enemyStage = PENDING;
 	else if (game.enemyStage == "middle") game.enemyStage = MIDDLE;
@@ -144,10 +143,11 @@ function fixSave() {
 	else if (game.turn == "none") game.turn = -1;
 	// fix artifacts
 	for (let index = 0; index < game.artifacts.length; index++) {
-		if (game.artifacts[index] == "iron will") {
-			game.artifacts[index] = 1;
-		};
+		if (game.artifacts[index] == 0) game.artifacts[index] = 202;
+		else if (game.artifacts[index] == 1 || game.artifacts[index] == "iron will") game.artifacts[index] = 201;
+		else if (game.artifacts[index] >= 2 && game.artifacts[index] <= 9) game.artifacts[index] += 98;
 	};
+	if (!game.artifacts.includes(200)) game.artifacts = [200].concat(game.artifacts);
 	// delete unused vars
 	delete game.cardRewardChoices;
 	delete game.saveNum;
@@ -235,14 +235,21 @@ function fixSave() {
 			delete game.enemies[index].eff.shroud;
 		};
 	};
-	// save the fixed save
-	save();
+};
+
+/**
+ * Fixes the save if it is old.
+ * @param {number} version - The version the save is from.
+ */
+function fixSave(version) {
+	// nothing here yet
 };
 
 /**
  * Loads the save. Creates a new save if there is no save to load.
  */
 function load() {
+	let oldVersion = 0, newGlobal = false;
 	// load current run
 	let get = localStorage.getItem(ID + "/0");
 	if (get && atob(get) && JSON.parse(atob(get))) {
@@ -272,13 +279,16 @@ function load() {
 	// load global stuff
 	get = localStorage.getItem(ID + "/master");
 	if (get && atob(get) && JSON.parse(atob(get))) {
-		get = JSON.parse(atob(get));
+		let obj = JSON.parse(atob(get));
+		if (obj.version) oldVersion = obj.version;
+		obj.version = global.version;
 		const defaultOptions = global.options;
-		Object.assign(global, get);
+		Object.assign(global, obj);
 		global.options = defaultOptions;
-		Object.assign(global.options, get.options);
+		Object.assign(global.options, obj.options);
 	} else {
 		console.log("no global save found. creating new save...");
+		newGlobal = true;
 	};
 	// load images
 	for (const id in cards) {
@@ -290,6 +300,7 @@ function load() {
 	for (const id in artifacts) {
 		if (Object.hasOwnProperty.call(artifacts, id)) {
 			I.artifact[id] = new Image;
+			if (id >= 100 && id < 200) artifactIDs.push(+id);
 		};
 	};
 	for (const eff in EFFECT) {
@@ -308,7 +319,9 @@ function load() {
 		};
 	};
 	// fix old save
-	fixSave();
+	if (!oldVersion) fixOldSave();
+	if (oldVersion || newGlobal) fixSave(oldVersion);
+	save();
 };
 
 window.onbeforeunload = () => {

@@ -43,6 +43,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
+	version: 2,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -65,7 +66,7 @@ let global = {
 	enemyStage: -1,
 	enemyAtt: [-1, 0, new Card(), false],
 	attackEffects: [],
-	artifacts: [1],
+	artifacts: [200, 201],
 	deck: [new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000), new Card(2001), new Card(4000)],
 	deckLocal: [],
 	deckPos: 0,
@@ -77,7 +78,7 @@ let global = {
 	firstRoom: [],
 	map: [],
 	traveled: [],
-	seed: "" + (Math.round(new Date().getTime() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase().randomize(),
+	seed: "" + (Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase().randomize(),
 }, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = MENU.TITLE, menuSelect = 0, enemyPos = [], handPos = [], paths = {}, winAnim = 0;
 
 /**
@@ -179,7 +180,7 @@ function startTurn() {
 			let prevHealth = game.enemies[index].health;
 			dealDamage(game.enemies[index].eff[EFFECT.BURN], 0, index, false);
 			game.enemies[index].eff[EFFECT.BURN]--;
-			if (game.artifacts.includes(9) && game.enemies[index].eff[EFFECT.BURN] && game.enemies[index].health < prevHealth) {
+			if (game.artifacts.includes(107) && game.enemies[index].eff[EFFECT.BURN] && game.enemies[index].health < prevHealth) {
 				dealDamage(game.enemies[index].eff[EFFECT.BURN], 0, index, false);
 				game.enemies[index].eff[EFFECT.BURN]--;
 			};
@@ -396,13 +397,13 @@ function updateVisuals() {
 		graphics.middleLayer();
 		draw.image(I.title, (400 - I.title.width) / 2, 0);
 		if (global.highScore > 0) draw.lore(1, 1, "HIGH SCORE: " + global.highScore + " points", {"color": "#fff", "text-small": true});
-		if (game.artifacts.includes(0) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": CENTER});
+		if (game.artifacts.includes(202) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": CENTER});
 		else if (get.area() == 1) draw.lore(200 - 2, 53, "Act 2: The Color of the Soul", {"color": "#fff", "text-align": CENTER});
 		else draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": CENTER});
 		if (get.area() == 0 && new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "#fff", "text-align": CENTER});
 		if (game.difficulty === undefined) game.difficulty = 0;
 		draw.imageSector(I.difficulty, 0, game.difficulty * 16, 64, 16, 168, 146);
-		if (game.artifacts.includes(0)) {
+		if (game.artifacts.includes(202)) {
 			if (game.floor == 10 && transition < 100) {
 				ctx.globalAlpha = transition / 100;
 			};
@@ -426,7 +427,7 @@ function updateVisuals() {
 			draw.lore(x + 4, y + 16, "YES");
 			draw.lore(x + 26, y + 16, "NO");
 		};
-		if (game.artifacts.includes(0) && game.floor == 10 && transition < 100) transition++;
+		if (game.artifacts.includes(202) && game.floor == 10 && transition < 100) transition++;
 		return;
 	};
 	if (!hidden()) {
@@ -565,7 +566,7 @@ function updateVisuals() {
 		draw.rect("#000");
 		const factors = get.scoreFactors();
 		let text = "GAME OVER\n\nDIFFICULTY: ";
-		if (game.artifacts.includes(0)) text += "<#fcf050>DETERMINATION</#fcf050>";
+		if (game.artifacts.includes(202)) text += "<#fcf050>DETERMINATION</#fcf050>";
 		else if (game.difficulty) text += "HARD";
 		else text += "EASY";
 		text += "\n\nTOP FLOOR: " + game.floor;
@@ -578,7 +579,7 @@ function updateVisuals() {
 			text += factors[index][0] + ":\n";
 		};
 		if (game.difficulty) {
-			if (game.artifacts.includes(0) && game.kills[FRAGMENT]) text += "\nbase score:\n\n<#fcf050>DETERMINATION</#fcf050> bonus:\n\ntotal score:";
+			if (game.artifacts.includes(202) && game.kills[FRAGMENT]) text += "\nbase score:\n\n<#fcf050>DETERMINATION</#fcf050> bonus:\n\ntotal score:";
 			else text += "\nbase score:\n\n<#0f0>hard difficulty bonus:</#0f0>\n\ntotal score:";
 		} else {
 			text += "\ntotal score:";
@@ -597,7 +598,7 @@ function updateVisuals() {
 		};
 		if (game.difficulty) {
 			text += "\n" + totalScore + " points";
-			if (game.artifacts.includes(0) && game.kills[FRAGMENT]) {
+			if (game.artifacts.includes(202) && game.kills[FRAGMENT]) {
 				totalScore *= 3;
 				text += "\n\n<#fcf050>3x multiplier</#fcf050>";
 			} else {
@@ -625,7 +626,7 @@ function updateVisuals() {
 		draw.rect("#0004");
 		const factors = get.scoreFactors();
 		let text = "YOU BEAT THE GAME ";
-		if (game.artifacts.includes(0)) text += "<#fcf050>WITH DETERMINATION</#fcf050>";
+		if (game.artifacts.includes(202)) text += "<#fcf050>WITH DETERMINATION</#fcf050>";
 		else if (game.difficulty) text += "ON <#f00>HARD MODE!</#f00>";
 		else text += "ON EASY MODE!";
 		text += "\n\nThank you for playing!\n\nMore content is coming soon!";
@@ -638,7 +639,7 @@ function updateVisuals() {
 			text += factors[index][0] + ":\n";
 		};
 		if (game.difficulty) {
-			if (game.artifacts.includes(0)) text += "\nbase score:\n\n<#fcf050>DETERMINATION</#fcf050> bonus:\n\ntotal score:";
+			if (game.artifacts.includes(202)) text += "\nbase score:\n\n<#fcf050>DETERMINATION</#fcf050> bonus:\n\ntotal score:";
 			else text += "\nbase score:\n\n<#f00>hard difficulty bonus:</#f00>\n\ntotal score:";
 		} else {
 			text += "\ntotal score:";
@@ -657,7 +658,7 @@ function updateVisuals() {
 		};
 		if (game.difficulty) {
 			text += "\n" + totalScore + " points";
-			if (game.artifacts.includes(0)) {
+			if (game.artifacts.includes(202)) {
 				totalScore *= 3;
 				text += "\n\n<#fcf050>3x multiplier</#fcf050>";
 			} else {
@@ -674,7 +675,7 @@ function updateVisuals() {
 		};
 		ctx.globalAlpha = 1;
 	};
-	if (game.artifacts.includes(0) && game.floor == 10 && transition < 100) transition++;
+	if (game.artifacts.includes(202) && game.floor == 10 && transition < 100) transition++;
 };
 
 const gameloop = setInterval(() => {

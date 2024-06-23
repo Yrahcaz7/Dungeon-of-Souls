@@ -609,7 +609,7 @@ const info = {
 		const pos = enemyPos[game.select[1]];
 		const eff = game.enemies[game.select[1]].eff[type];
 		let y = pos[1] + yPlus, move = 0;
-		let desc = "This has " + eff + " " + KEYWORD[type] + ((type === EFFECT.AURA_BLADE || type === EFFECT.REINFORCE) && eff >= 2 ? "s" : "") + ".";
+		let desc = "This has " + eff + " " + KEYWORD[type] + ((type === EFFECT.AURA_BLADE || type === EFFECT.REINFORCE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "") + ".";
 		move += draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, y + move, desc.length, desc, {"text-small": true});
 		move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, infoText[type], {"text-small": true});
 		if (type === ENEMY_EFF.COUNTDOWN) move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, "The next intent will be\nto " + INTENT[game.enemies[game.select[1]].intentHistory[eff - 1]] + ".", {"text-small": true});
@@ -634,21 +634,15 @@ const info = {
 	 * @param {number} yOveride - overrides the y-coordinate of the infobox.
 	 */
 	artifact(type, xOveride = NaN, yOveride = NaN) {
-		if (type == "the map") {
-			let x = (xOveride === xOveride ? xOveride : 21), y = (yOveride === yOveride ? yOveride : 13);
-			draw.textBox(x, y, 12, "The Map", {"text-align": CENTER});
-			draw.textBox(x, y + 13, 24, infoText["the map"], {"text-small": true});
+		let x = (xOveride === xOveride ? xOveride : 21 + (game.select[1] * 18)), y = (yOveride === yOveride ? yOveride : 13);
+		const obj = artifacts[type];
+		if (!obj) return;
+		if (obj.name.length <= 12) {
+			draw.textBox(x, y, 12, obj.name.title(), {"text-align": CENTER});
+			draw.textBox(x, y + 13, 24, obj.desc, {"text-small": true});
 		} else {
-			let x = (xOveride === xOveride ? xOveride : 39 + (game.select[1] * 18)), y = (yOveride === yOveride ? yOveride : 13);
-			const obj = artifacts[type];
-			if (!obj) return;
-			if (obj.name.length <= 12) {
-				draw.textBox(x, y, 12, obj.name.title(), {"text-align": CENTER});
-				draw.textBox(x, y + 13, 24, obj.desc, {"text-small": true});
-			} else {
-				draw.textBox(x, y, obj.name.length, obj.name.title());
-				draw.textBox(x, y + 13, obj.name.length * 2, obj.desc, {"text-small": true});
-			};
+			draw.textBox(x, y, obj.name.length, obj.name.title());
+			draw.textBox(x, y + 13, obj.name.length * 2, obj.desc, {"text-small": true});
 		};
 	},
 };
@@ -713,7 +707,7 @@ const graphics = {
 				draw.image(I.background.floating_arch, 136, 35 - Math.abs(Math.round(backAnim[0]) - 2));
 				draw.image(I.background.debris, 151, 93 - Math.abs(Math.round(backAnim[1]) - 2));
 			};
-			if (game.artifacts.includes(0) && game.floor == 10) {
+			if (game.artifacts.includes(202) && game.floor == 10) {
 				if (transition < 100) {
 					ctx.globalAlpha = transition / 100;
 				};
@@ -741,7 +735,7 @@ const graphics = {
 	 * Draws the middle layer on the canvas.
 	 */
 	middleLayer() {
-		if (game.artifacts.includes(0) && game.floor == 10) {
+		if (game.artifacts.includes(202) && game.floor == 10) {
 			if (extraAnim.length == 0) {
 				for (let index = 0; index < 9; index++) {
 					extraAnim[index] = [Math.random() * 180 + 6, index * 50 - Math.random() * 10, Math.floor(Math.random() * 20 + index) % 20];
@@ -797,9 +791,9 @@ const graphics = {
 		};
 		// extra covers
 		if (get.area() == 1) {
-			let topLeftX = [(("" + game.floor).length + ("" + game.gold).length - 2) * 6 - 100, (game.artifacts.length - 1) * 18 - 160];
+			let topLeftX = [(("" + game.floor).length + ("" + game.gold).length - 2) * 6 - 200, (game.artifacts.length - 2) * 18 - 260];
 			if (topLeftX[0] > topLeftX[1]) draw.image(I.cover.top_left, topLeftX[0], 0);
-			else draw.rect("#000", topLeftX[1] + 199, 0, 1, 12);
+			else draw.rect("#000", topLeftX[1] + 299, 0, 1, 12);
 			draw.image(I.cover.top_left_big, topLeftX[1], 0);
 			if (topLeftX[0] >= topLeftX[1] + 12) draw.image(I.cover.corner, topLeftX[1] + 199, 12);
 			draw.image(I.cover.top_right, 339, 0);
@@ -814,11 +808,10 @@ const graphics = {
 		draw.image(I.extra.deck, 4, 182);
 		if (game.void.length) draw.image(I.extra.void, 381, 163);
 		draw.image(I.extra.discard, 382, 182);
-		draw.image(I.extra.map, 2, 13);
 		// artifacts
 		for (let index = 0; index < game.artifacts.length; index++) {
-			draw.image(I.artifact[game.artifacts[index]], 20 + (index * 18), 13);
-			if (game.select[0] === ARTIFACTS && game.select[1] === index) draw.image(I.artifact.select[game.artifacts[index]], 19 + (index * 18), 12);
+			draw.image(I.artifact[game.artifacts[index]], 2 + (index * 18), 13);
+			if (game.select[0] === ARTIFACTS && game.select[1] === index) draw.image(I.artifact.select[game.artifacts[index]], 1 + (index * 18), 12);
 		};
 		// selected
 		if (game.select[0] === LOOKER) draw.image(I.select.round, 342, 2);
@@ -828,7 +821,6 @@ const graphics = {
 		else if (game.select[0] === DECK) draw.image(I.select.deck, 3, 181);
 		else if (game.select[0] === VOID) draw.image(I.select.round, 380, 162);
 		else if (game.select[0] === DISCARD) draw.image(I.select.discard, 381, 181);
-		else if (game.select[0] === MAP) draw.image(I.select.map, 1, 12);
 		// info
 		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": (get.area() == 1 ? "#000" : "#f44")});
 		// intents
@@ -966,7 +958,7 @@ const graphics = {
 							draw.clock(pos[0] + 2, pos[1] + 4, -1, 2 - Math.abs(Math.floor(enemyAnim[index]) - 2));
 						};
 					} else if (primeAnim >= 18) {
-						draw.imageSector(I.enemy.fragment.open, Math.floor(primeAnim - 18) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+						draw.imageSector(I.enemy.fragment.open, Math.floor(primeAnim - 18) * 64, 0, 64, 64, pos[0], pos[1]);
 						draw.clock(pos[0] + 2, pos[1] + 5, 6, 0, (primeAnim - 18) * 5);
 						primeAnim += 0.5;
 						if (primeAnim >= 25) {
@@ -975,7 +967,7 @@ const graphics = {
 						};
 					} else {
 						let x = pos[0] + ((18 - primeAnim) * 8);
-						draw.imageSector(I.enemy.fragment.roll, Math.floor(primeAnim % 4) * 64, 0, 64, 64, x, pos[1] + 1);
+						draw.imageSector(I.enemy.fragment.roll, Math.floor(primeAnim % 4) * 64, 0, 64, 64, x, pos[1]);
 						draw.clock(x + 2, pos[1] + 5, (4 - Math.floor((primeAnim - 2) % 4)) * 3, (4 - Math.floor(primeAnim % 4)) * 15);
 						primeAnim++;
 					};
@@ -1451,9 +1443,7 @@ const graphics = {
 	 * Draws the selector and the info it targets on the canvas.
 	 */
 	target() {
-		if (game.select[0] === MAP) {
-			info.artifact("the map");
-		} else if (game.select[0] === ATTACK_ENEMY || game.select[0] === LOOKAT_ENEMY) {
+		if (game.select[0] === ATTACK_ENEMY || game.select[0] === LOOKAT_ENEMY) {
 			const enemy = game.enemies[game.select[1]];
 			const type = enemy.type;
 			const pos = enemyPos[game.select[1]];

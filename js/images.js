@@ -110,7 +110,6 @@ const I = {
 		card_rare_unplayable: new Image,
 		deck: new Image,
 		discard: new Image,
-		map: new Image,
 		popup: new Image,
 		item: new Image,
 		item_green: new Image,
@@ -124,7 +123,6 @@ const I = {
 		deck: new Image,
 		discard: new Image,
 		void: new Image,
-		map: new Image,
 	}, cover: {
 		top_left: new Image,
 		top_left_big: new Image,

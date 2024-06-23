@@ -56,7 +56,7 @@ class Enemy {
 		power += (game.difficulty * 0.75) + 2;
 		power += (game.floor * 0.05) * (2 ** game.difficulty);
 		power += get.area() * 0.2;
-		if (game.artifacts.includes(0)) power += 0.5;
+		if (game.artifacts.includes(202)) power += 0.5;
 		this.type = +type;
 		if (type === FRAGMENT) this.maxHealth = (power * 10) * 1.05;
 		else this.maxHealth = (power * 10) * ((random() / 10) + 0.95);
@@ -67,7 +67,7 @@ class Enemy {
 		this.attackPower = Math.max(Math.round(power * 2.5), 1);
 		this.defendPower = Math.max(Math.round(power * 3), 1);
 		this.eff = {};
-		if (type === FRAGMENT && game.artifacts.includes(0)) this.eff[ENEMY_EFF.REWIND] = 1;
+		if (type === FRAGMENT && game.artifacts.includes(202)) this.eff[ENEMY_EFF.REWIND] = 1;
 		this.intent = this.getIntent(true);
 		this.intentHistory = [this.intent];
 	};

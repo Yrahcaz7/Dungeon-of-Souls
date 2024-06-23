@@ -44,7 +44,7 @@ const EVENTS = {
 		11: [() => {startEventBattle(CROWD, 1)}],
 		20: [() => {takeDamage(4)}, "You successfully got past the enemies!\nHowever, you took 4 damage while doing so.", ["get a move on", 21]],
 		21: [() => {
-			game.select = [MAP, 0];
+			game.select = [ARTIFACTS, 0];
 			game.state = STATE.EVENT_FIN;
 			mapPopup();
 		}],
@@ -68,7 +68,7 @@ const EVENTS = {
 		300: [() => {}, "You climb down into the chasm unexpectedly easily.\nHowever, going back up will be harder.\nWhat will you do?", ["look around", 400], ["climb up", 500]],
 		400: [() => {}, "You find a platform with two giant cups on it.\nThe left cup is filled with purple ooze.\nThe right cup is filled with glowing water.\nClearly one is all you can drink.\nYou would vomit if you had both.", ["look closer at left cup", 410], ["look closer at right cup", 420], ["forget this, climb back up", 500]],
 		410: [() => {}, "There is an engraving on the cup.\nIt says: ENVIGORATING BUT DANGEROUS.\nCONSUME AT YOUR OWN RISK.", ["drink from the left cup", 411], ["look closer at right cup", 420], ["forget this, climb back up", 500]],
-		411: [() => {if (!game.artifacts.includes(5)) game.artifacts.push(5)}, "A foul energy courses through your veins.\nYou can now wield Corrosion.", ["get out of this chasm already", 500]],
+		411: [() => {if (!game.artifacts.includes(103)) game.artifacts.push(103)}, "A foul energy courses through your veins.\nYou can now wield Corrosion.", ["get out of this chasm already", 500]],
 		420: [() => {}, "There is an engraving on the cup.\nIt says: PURIFIES THE SOUL REMARKABLY.\nONLY FOR THE WORTHY.", ["drink from the right cup", 421], ["look closer at left cup", 410], ["forget this, climb back up", 500]],
 		421: [() => {}, "A powerful energy surges within you...", ["utilize this energy", 422]],
 		422: [() => {
@@ -78,21 +78,21 @@ const EVENTS = {
 		}, ""],
 		500: [() => {}, "After some time, you manage to climb out.\nYou set off again towards your destination.", ["get a move on", 501]],
 		501: [() => {
-			game.select = [MAP, 0];
+			game.select = [ARTIFACTS, 0];
 			game.state = STATE.EVENT_FIN;
 			mapPopup();
 		}],
 	}, {
 		0: [() => {}, "You find a very ominous altar.\nIt is pitch black except some dried blood stains.\nThere is some engraved text on the base.\nWhat do you do?", ["read the text", 100], ["push it over", 200], ["ignore it", 300]],
-		100: [() => {}, "The engraved text reads:\nOFFER YOUR BLOOD, AND YOU SHALL BE BLESSED\nDENY HOLINESS AND EMBRACE THE DARKNESS\nWill you offer your blood?", ["offer 8 health", 110], ["offer 25 health", () => game.artifacts.includes(3) ? 130 : 120], ["cancel", 0]],
+		100: [() => {}, "The engraved text reads:\nOFFER YOUR BLOOD, AND YOU SHALL BE BLESSED\nDENY HOLINESS AND EMBRACE THE DARKNESS\nWill you offer your blood?", ["offer 8 health", 110], ["offer 25 health", () => game.artifacts.includes(101) ? 130 : 120], ["cancel", 0]],
 		110: [() => {takeDamage(8, false)}, "You cut yourself and bleed onto the altar.\nYou see an enemy in the distance flee.", ["get a move on", 111]],
 		111: [() => {
-			game.select = [MAP, 0];
+			game.select = [ARTIFACTS, 0];
 			game.state = STATE.EVENT_FIN;
 			mapPopup();
 		}],
 		120: [() => {takeDamage(25, false)}, "You brutally stab yourself and bleed onto the altar.\nSeemingly in response, a compartment in the altar opens.\nInside is a brilliant red gem.\nJust holding it makes you feel stronger.", ["take the gem", 121]],
-		121: [() => {game.artifacts.push(3)}, "You pocket the gem.\nYou then stumble around lightheadedly for a bit.\nMaybe you should be a bit more careful with your blood.", ["get a move on", 111]],
+		121: [() => {game.artifacts.push(101)}, "You pocket the gem.\nYou then stumble around lightheadedly for a bit.\nMaybe you should be a bit more careful with your blood.", ["get a move on", 111]],
 		130: [() => {game.health += 5}, "You brutally stab yourself and bleed onto the altar.\nYour Gem of Rage glows ever brighter...\nSuddenly, your blood starts to trickle back into your wound.\nThe blood stains become liquid again and enter as well.\nYou heal 5 health, but you feel rather queasy...", ["get a move on", 111]],
 		200: [() => {}, "You have a bad feeling about this...", ["do it anyway", 201], ["cancel", 0]],
 		201: [() => {}, "You topple the altar, and a dark cloud spreads...\nYou feel sluggish, and you can't see ahead of you.", ["run out of the cloud", 202]],
@@ -134,7 +134,7 @@ const EVENTS = {
 		220: [() => {}, "You decide to be wary and avoid the enemy.", ["creep further", 221]],
 		221: [() => {}, "You sucessfully got past the enemy!", ["get a move on", 222]],
 		222: [() => {
-			game.select = [MAP, 0];
+			game.select = [ARTIFACTS, 0];
 			game.state = STATE.EVENT_FIN;
 			mapPopup();
 		}],

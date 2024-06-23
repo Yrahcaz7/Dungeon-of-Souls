@@ -19,60 +19,44 @@ const END_OF_BATTLE = 900, ON_PICKUP = 901, END_OF_TURN = 902, CARD_PLAY = 903;
 
 const artifacts = {
 	0: {
-		name: "determination",
-		desc: "As you confront your\ngreatest challenge yet,\nyou are filled with\na familiar feeling...",
-		rarity: 0,
+		name: "error",
+		desc: "This artifact is clearly\nan error. It does\nabsolutely nothing.",
 	},
-	1: {
-		name: "iron will",
-		desc: "You heal 2 health each\ntime you clear a floor.",
-		rarity: 0,
-		[END_OF_BATTLE]() {
-			game.health += 2;
-		},
-	},
-	2: {
+	100: {
 		name: "supershield",
-		rarity: 1,
 		desc: "All cards that give\nshield give 2 extra.",
 	},
-	3: {
+	101: {
 		name: "gem of rage",
-		rarity: 1,
 		desc: "All cards that deal\ndamage deal 2 extra.",
 	},
-	4: {
+	102: {
 		name: "candy",
-		rarity: 1,
 		desc: "You have 15 less max\nhealth, but you heal by\n3 each time you clear a\nfloor.",
 		[END_OF_BATTLE]() {
 			game.health += 3;
 		},
 	},
-	5: {
+	103: {
 		name: "corrosion",
-		rarity: 1,
 		desc: "You have 1 more max\nenergy, but you take\n4 damage after each of\nyour turns.",
 		[END_OF_TURN]() {
 			takeDamage(4, false);
 		},
 	},
-	6: {
+	104: {
 		name: "card charm",
-		rarity: 1,
 		desc: "You get 1 extra card\nreward choice, but your\nhand size is 1 smaller.",
 	},
-	7: {
+	105: {
 		name: "nutritious meal",
-		rarity: 1,
 		desc: "You have 15 more max health.\nOn pickup, heal 10 health.",
 		[ON_PICKUP]() {
 			game.health += 10;
 		},
 	},
-	8: {
+	106: {
 		name: "magic book",
-		rarity: 1,
 		desc: "You draw a card each\ntime you play a magic\ntype card.",
 		[CARD_PLAY](cardObj) {
 			if (Math.floor(cardObj.id / 1000) == 4) {
@@ -80,10 +64,24 @@ const artifacts = {
 			};
 		},
 	},
-	9: {
+	107: {
 		name: "bottled fire",
-		rarity: 1,
 		desc: "If an enemy takes damage\nfrom a burn effect, it\ntriggers an additional\ntime. This effect cannot\ntrigger itself.",
+	},
+	200: {
+		name: "the map",
+		desc: "You can choose where\nto go next each time\nyou clear a floor.",
+	},
+	201: {
+		name: "iron will",
+		desc: "You heal 2 health each\ntime you clear a floor.",
+		[END_OF_BATTLE]() {
+			game.health += 2;
+		},
+	},
+	202: {
+		name: "determination",
+		desc: "As you confront your\ngreatest challenge yet,\nyou are filled with\na familiar feeling...",
 	},
 };
 
@@ -106,27 +104,26 @@ function activateArtifacts(type, ...params) {
 	};
 };
 
+const artifactIDs = [];
+
 /**
  * Returns a random artifact's id.
  * @param {number[]} notInclude - the ids to not include.
  */
 function randomArtifact(notInclude = []) {
-	let bool = true;
 	if (notInclude.length) {
-		for (const key in artifacts) {
-			if (Object.hasOwnProperty.call(artifacts, key)) {
-				if (artifacts[key].rarity > 0 && !notInclude.includes(+key)) {
-					bool = false;
-				};
+		let bool = true;
+		for (let index = 0; index < artifactIDs.length; index++) {
+			if (!notInclude.includes(artifactIDs[index])) {
+				bool = false;
+				break;
 			};
 		};
-	};
-	if (bool) {
-		return randomInt(2, Object.keys(I.artifact).length - 2);
+		if (bool) return 0;
 	};
 	let result;
 	while (!result || notInclude.includes(result)) {
-		result = randomInt(2, Object.keys(I.artifact).length - 2);
+		result = artifactIDs[randomInt(0, artifactIDs.length - 1)];
 	};
 	return result;
 };

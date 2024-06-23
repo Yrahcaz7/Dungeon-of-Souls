@@ -74,7 +74,7 @@ const get = {
 	 */
 	handSize() {
 		let size = 5;
-		if (game.artifacts.includes(6)) size--;
+		if (game.artifacts.includes(104)) size--;
 		return size;
 	},
 	/**
@@ -82,7 +82,7 @@ const get = {
 	 */
 	cardRewardChoices() {
 		let choices = 3;
-		if (game.artifacts.includes(6)) choices++;
+		if (game.artifacts.includes(104)) choices++;
 		return choices;
 	},
 	/**
@@ -90,8 +90,8 @@ const get = {
 	 */
 	maxHealth() {
 		let max = 60;
-		if (game.artifacts.includes(4)) max -= 15;
-		if (game.artifacts.includes(7)) max += 15;
+		if (game.artifacts.includes(102)) max -= 15;
+		if (game.artifacts.includes(105)) max += 15;
 		return max;
 	},
 	/**
@@ -106,7 +106,7 @@ const get = {
 	 */
 	maxEnergy() {
 		let max = 3;
-		if (game.artifacts.includes(5)) max++;
+		if (game.artifacts.includes(103)) max++;
 		return max;
 	},
 	/**
@@ -120,7 +120,7 @@ const get = {
 		} else if (game.eff[EFFECT.AURA_BLADE] && !attacking) {
 			extra += 5 + game.eff[EFFECT.AURA_BLADE];
 		};
-		if (game.artifacts.includes(3)) extra += 2;
+		if (game.artifacts.includes(101)) extra += 2;
 		return extra;
 	},
 	/**
@@ -148,7 +148,7 @@ const get = {
 	 */
 	extraShield() {
 		let extra = 0;
-		if (game.artifacts.includes(2)) extra += 2;
+		if (game.artifacts.includes(100)) extra += 2;
 		return extra;
 	},
 	/**
@@ -180,7 +180,7 @@ const get = {
 		score += Math.floor(game.gold / 5);
 		if (game.health > 0) score += game.health * 5;
 		if (game.difficulty) {
-			if (game.artifacts.includes(0) && game.kills[FRAGMENT]) score *= 3;
+			if (game.artifacts.includes(202) && game.kills[FRAGMENT]) score *= 3;
 			else score *= 2;
 		};
 		return score;
