@@ -220,8 +220,10 @@ async function generateArea(num) {
  * Returns a boolean indicating whether the map has a node at the respective coordinates.
  * @param {number} x - the x-coordinate to check for a node at.
  * @param {number} y - the y-coordinate to check for a node at.
+ * @param {boolean} loose - if true, considers anything a node.
  */
-function mapHasNode(x, y) {
+function mapHasNode(x, y, loose = false) {
+	if (loose) return typeof game.map[x][y] != "boolean" || (typeof game.map[x][y - 1] == "object" && game.map[x][y - 1][0] === ROOM.BOSS);
 	return typeof game.map[x][y] == "object" || (typeof game.map[x][y - 1] == "object" && game.map[x][y - 1][0] === ROOM.BOSS);
 };
 
@@ -233,10 +235,10 @@ function addScribbles() {
 	for (let x = 0; x < game.map.length - 1; x++) {
 		const offset = (x % 10 == 0 ? 1 : 0);
 		for (let y = offset; y < game.map[x].length - (offset + 1); y++) {
-			if (typeof game.map[x][y] != "boolean"
-				|| typeof game.map[x + 1][y] != "boolean"
-				|| typeof game.map[x][y + 1] != "boolean"
-				|| typeof game.map[x + 1][y + 1] != "boolean"
+			if (mapHasNode(x, y, true)
+				|| mapHasNode(x + 1, y, true)
+				|| mapHasNode(x, y + 1, true)
+				|| mapHasNode(x + 1, y + 1, true)
 				|| (!mapHasNode(x, y - 1) && !mapHasNode(x, y - 2) && mapHasNode(x + 1, y - 1))
 				|| (!mapHasNode(x + 1, y - 1) && !mapHasNode(x + 1, y - 2) && mapHasNode(x, y - 1))
 				|| (!mapHasNode(x, y + 2) && !mapHasNode(x, y + 3) && mapHasNode(x + 1, y + 2))
