@@ -1626,7 +1626,7 @@ const graphics = {
 	/**
 	 * Calculates the map paths, then draws the map on the canvas.
 	 * @param {boolean} onlyCalc - whether to only calculate the map paths. Defaults to `false`.
-	 * @param {number} area - the area of the map being calculated and drawn.
+	 * @param {number} area - overrides the area of the map being calculated and drawn.
 	 */
 	map(onlyCalc = false, area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0))) {
 		let render = !onlyCalc;

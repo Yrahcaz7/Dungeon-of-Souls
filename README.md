@@ -48,8 +48,10 @@ Note: go to the '?' (top-right of the screen) in-game for more details.
 
 ## Credits
 
-Inspired by ***Slay the Spire*** and ***Die in the Dungeon***.
+Inspired by *Slay the Spire* and *Die in the Dungeon*.
 
 Most player sprites are taken from or based off of the ones found [**here**](https://aamatniekss.itch.io/fantasy-knight-free-pixelart-animated-character) (made by Nauris Amatnieks).
 
-All other art (and music) is entirely my original work.
+The Act 2 background music, *Future Dungeon*, was made in collaboration with Brian Fitzhenry, Jr.
+
+All other art and music is entirely my original work.

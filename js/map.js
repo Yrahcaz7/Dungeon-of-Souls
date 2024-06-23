@@ -120,17 +120,17 @@ function pathHasTypes(coords, types = [], front = false) {
 async function mapRow(row) {
 	rowFalses = 0;
 	rowNodes = 0;
-	if (row % 10 == 0) return [false, await mapPiece(0, 0), await mapPiece(0, 1), await mapPiece(0, 2), await mapPiece(0, 3), false];
+	if (row % 10 == 0) return [false, await mapPiece(row, 0), await mapPiece(row, 1), await mapPiece(row, 2), await mapPiece(row, 3), false];
 	if (row % 10 == 8) {
 		if (chance()) {
-			if (chance()) return [await mapPiece(8, 0, ORB), false, await mapPiece(8, 1, ORB), false, false, await mapPiece(8, 2, ORB)];
-			else return [await mapPiece(8, 0, ORB), false, await mapPiece(8, 1, ORB), false, await mapPiece(8, 2, ORB), false];
+			if (chance()) return [await mapPiece(row, 0, ORB), false, await mapPiece(row, 1, ORB), false, false, await mapPiece(row, 2, ORB)];
+			else return [await mapPiece(row, 0, ORB), false, await mapPiece(row, 1, ORB), false, await mapPiece(row, 2, ORB), false];
 		} else {
-			if (chance()) return [await mapPiece(8, 0, ORB), false, false, await mapPiece(8, 1, ORB), false, await mapPiece(8, 2, ORB)];
-			else return [false, await mapPiece(8, 0, ORB), false, await mapPiece(8, 1, ORB), false, await mapPiece(8, 2, ORB)];
+			if (chance()) return [await mapPiece(row, 0, ORB), false, false, await mapPiece(row, 1, ORB), false, await mapPiece(row, 2, ORB)];
+			else return [false, await mapPiece(row, 0, ORB), false, await mapPiece(row, 1, ORB), false, await mapPiece(row, 2, ORB)];
 		};
 	};
-	if (row % 10 == 9) return [false, false, await mapPiece(9, 0, BOSS), false, false, false];
+	if (row % 10 == 9) return [false, false, await mapPiece(row, 0, BOSS), false, false, false];
 	let arr = [await mapPiece(row, 0), await mapPiece(row, 1), await mapPiece(row, 2), await mapPiece(row, 3), await mapPiece(row, 4), await mapPiece(row, 5)];
 	if (row % 10 > 0) {
 		game.map.push(arr);
@@ -185,33 +185,6 @@ async function mapRow(row) {
 };
 
 /**
- * Adds scribbles to the map.
- */
-function addScribbles() {
-	let available = [0, 1, 2, 3];
-	for (let x = 0; x < game.map.length - 1; x++) {
-		const offset = (x == 0 ? 1 : 0);
-		for (let y = offset; y < game.map[x].length - (offset + 1); y++) {
-			if (typeof game.map[x][y] != "boolean" ||
-				typeof game.map[x + 1][y] != "boolean" ||
-				typeof game.map[x][y + 1] != "boolean" ||
-				typeof game.map[x + 1][y + 1] != "boolean" ||
-				(typeof game.map[x][y - 1] != "object" && typeof game.map[x][y - 2] != "object" && typeof game.map[x + 1][y - 1] == "object") ||
-				(typeof game.map[x + 1][y - 1] != "object" && typeof game.map[x + 1][y - 2] != "object" && typeof game.map[x][y - 1] == "object") ||
-				(typeof game.map[x][y + 2] != "object" && typeof game.map[x][y + 3] != "object" && typeof game.map[x + 1][y + 2] == "object") ||
-				(typeof game.map[x + 1][y + 2] != "object" && typeof game.map[x + 1][y + 3] != "object" && typeof game.map[x][y + 2] == "object") ||
-				(game.map[x - 1] && typeof game.map[x - 1][y] == "number") ||
-				typeof game.map[x][y - 1] == "number" ||
-				typeof game.map[x][y + 1] == "number" ||
-				typeof game.map[x + 1][y] == "number"
-			) continue;
-			game.map[x][y] = available.splice(randomInt(0, available.length - 1), 1)[0];
-			if (available.length == 0) available = [0, 1, 2, 3];
-		};
-	};
-};
-
-/**
  * Generates an area of the map.
  * @param {number} num - the area number.
  */
@@ -240,6 +213,42 @@ async function generateArea(num) {
 		if (row % 10 >= 7) row = 2 + num * 10;
 		else if (row % 10 == 2) break;
 		else row++;
+	};
+};
+
+/**
+ * Returns a boolean indicating whether the map has a node at the respective coordinates.
+ * @param {number} x - the x-coordinate to check for a node at.
+ * @param {number} y - the y-coordinate to check for a node at.
+ */
+function mapHasNode(x, y) {
+	return typeof game.map[x][y] == "object" || (typeof game.map[x][y - 1] == "object" && game.map[x][y - 1][0] === ROOM.BOSS);
+};
+
+/**
+ * Adds scribbles to the map.
+ */
+function addScribbles() {
+	let available = [0, 1, 2, 3];
+	for (let x = 0; x < game.map.length - 1; x++) {
+		const offset = (x % 10 == 0 ? 1 : 0);
+		for (let y = offset; y < game.map[x].length - (offset + 1); y++) {
+			if (typeof game.map[x][y] != "boolean"
+				|| typeof game.map[x + 1][y] != "boolean"
+				|| typeof game.map[x][y + 1] != "boolean"
+				|| typeof game.map[x + 1][y + 1] != "boolean"
+				|| (!mapHasNode(x, y - 1) && !mapHasNode(x, y - 2) && mapHasNode(x + 1, y - 1))
+				|| (!mapHasNode(x + 1, y - 1) && !mapHasNode(x + 1, y - 2) && mapHasNode(x, y - 1))
+				|| (!mapHasNode(x, y + 2) && !mapHasNode(x, y + 3) && mapHasNode(x + 1, y + 2))
+				|| (!mapHasNode(x + 1, y + 2) && !mapHasNode(x + 1, y + 3) && mapHasNode(x, y + 2))
+				|| (game.map[x - 1] && typeof game.map[x - 1][y] == "number")
+				|| typeof game.map[x][y - 1] == "number"
+				|| typeof game.map[x][y + 1] == "number"
+				|| typeof game.map[x + 1][y] == "number"
+			) continue;
+			game.map[x][y] = available.splice(randomInt(0, available.length - 1), 1)[0];
+			if (available.length == 0) available = [0, 1, 2, 3];
+		};
 	};
 };
 
