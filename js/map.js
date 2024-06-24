@@ -231,7 +231,7 @@ function mapHasNode(x, y, loose = false) {
  * Adds scribbles to the map.
  */
 function addScribbles() {
-	let available = [0, 1, 2, 3];
+	let available = [0, 1, 2, 3, 4];
 	for (let x = 0; x < game.map.length - 1; x++) {
 		const offset = (x % 10 == 0 ? 1 : 0);
 		for (let y = offset; y < game.map[x].length - (offset + 1); y++) {
@@ -249,7 +249,7 @@ function addScribbles() {
 				|| typeof game.map[x + 1][y] == "number"
 			) continue;
 			game.map[x][y] = available.splice(randomInt(0, available.length - 1), 1)[0];
-			if (available.length == 0) available = [0, 1, 2, 3];
+			if (available.length == 0) available = [0, 1, 2, 3, 4];
 		};
 	};
 };

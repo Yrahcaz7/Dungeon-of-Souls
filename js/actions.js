@@ -15,7 +15,9 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-let actionTimer = -1;
+const PIXEL_SIZES = [1, 2, 0.5], MUSIC_TRACKS = ["default", "Ruins of Caelum", "The Final Ruins", "Future Dungeon"];
+
+let actionTimer = -1, secret = false;
 
 /**
  * Handles selection actions UP, LEFT, RIGHT, and DOWN.
@@ -949,6 +951,10 @@ function performAction() {
 			let index = PIXEL_SIZES.indexOf(global.options[OPTION.PIXEL_PERFECT_SIZE]) + 1;
 			if (index >= PIXEL_SIZES.length) index = 0;
 			global.options[OPTION.PIXEL_PERFECT_SIZE] = PIXEL_SIZES[index];
+		} else if (option === OPTION.MUSIC_TRACK) {
+			let index = MUSIC_TRACKS.indexOf(global.options[OPTION.MUSIC_TRACK]) + 1;
+			if (index >= MUSIC_TRACKS.length) index = 0;
+			global.options[OPTION.MUSIC_TRACK] = MUSIC_TRACKS[index];
 		} else if (option) {
 			global.options[option] = !global.options[option];
 		} else {
@@ -962,6 +968,25 @@ function performAction() {
 			if (global.options[OPTION.PIXEL_PERFECT_SCREEN]) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PIXEL_PERFECT_SIZE]) + "px";
 			else document.getElementById("canvas").style = "";
 			fixCanvas();
+		} else if (option === OPTION.MUSIC_TRACK) {
+			fadeMusic();
+		};
+		if (global.options[OPTION.MUSIC_TRACK]) {} else if (secret) {
+			if (global.options[OPTION.MUSIC] === false
+				&& global.options[OPTION.SCREEN_SHAKE] === true
+				&& global.options[OPTION.STICKY_CARDS] === true
+				&& global.options[OPTION.PIXEL_PERFECT_SCREEN] === false
+				&& global.options[OPTION.PIXEL_PERFECT_SIZE] == 1
+				&& global.options[OPTION.ALLOW_FAST_MOVEMENT] === true
+			) global.options[OPTION.MUSIC_TRACK] = "default";
+		} else {
+			if (global.options[OPTION.MUSIC] === true
+				&& global.options[OPTION.SCREEN_SHAKE] === false
+				&& global.options[OPTION.STICKY_CARDS] === true
+				&& global.options[OPTION.PIXEL_PERFECT_SCREEN] === true
+				&& global.options[OPTION.PIXEL_PERFECT_SIZE] == 2
+				&& global.options[OPTION.ALLOW_FAST_MOVEMENT] === false
+			) secret = true;
 		};
 		actionTimer = 2;
 		return;

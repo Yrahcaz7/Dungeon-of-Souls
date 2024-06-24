@@ -25,11 +25,9 @@ const TURN = {PLAYER: 1100, ENEMY: 1101};
 
 const CHARACTER = {KNIGHT: 1400};
 
-const OPTION = {MUSIC: 1600, SCREEN_SHAKE: 1601, STICKY_CARDS: 1602, PIXEL_PERFECT_SCREEN: 1603, PIXEL_PERFECT_SIZE: 1604, ALLOW_FAST_MOVEMENT: 1605};
+const OPTION = {MUSIC: 1600, SCREEN_SHAKE: 1601, STICKY_CARDS: 1602, PIXEL_PERFECT_SCREEN: 1603, PIXEL_PERFECT_SIZE: 1604, ALLOW_FAST_MOVEMENT: 1605, MUSIC_TRACK: 1699};
 
-const OPTION_NAMES = {[OPTION.MUSIC]: "Music", [OPTION.SCREEN_SHAKE]: "Screen shake", [OPTION.STICKY_CARDS]: "Sticky cards", [OPTION.PIXEL_PERFECT_SCREEN]: "Pixel perfect screen", [OPTION.PIXEL_PERFECT_SIZE]: "Pixel perfect size", [OPTION.ALLOW_FAST_MOVEMENT]: "Allow fast movement"};
-
-const PIXEL_SIZES = [1, 2, 0.5];
+const OPTION_NAMES = {[OPTION.MUSIC]: "Music", [OPTION.SCREEN_SHAKE]: "Screen shake", [OPTION.STICKY_CARDS]: "Sticky cards", [OPTION.PIXEL_PERFECT_SCREEN]: "Pixel perfect screen", [OPTION.PIXEL_PERFECT_SIZE]: "Pixel perfect size", [OPTION.ALLOW_FAST_MOVEMENT]: "Allow fast movement", [OPTION.MUSIC_TRACK]: "Music Track"};
 
 let global = {
 	options: {
@@ -78,7 +76,7 @@ let global = {
 	firstRoom: [],
 	map: [],
 	traveled: [],
-	seed: "" + (Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase().randomize(),
+	seed: randomize((Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase()),
 }, popups = [], notif = [-1, 0, "", 0], menuLocation = MENU.TITLE, menuSelect = 0, winAnim = 0;
 
 /**
@@ -137,7 +135,10 @@ function mapPopup() {
  * Changes the music track to the appropriate one.
  */
 function changeMusic() {
-	if (get.area() == 1) document.getElementById("music").src = "music/Future_Dungeon.wav";
+	if (global.options[OPTION.MUSIC_TRACK] == "Future Dungeon") document.getElementById("music").src = "music/Future_Dungeon.wav";
+	else if (global.options[OPTION.MUSIC_TRACK] == "The Final Ruins") document.getElementById("music").src = "music/The_Final_Ruins.wav";
+	else if (global.options[OPTION.MUSIC_TRACK] == "Ruins of Caelum") document.getElementById("music").src = "music/Ruins_of_Caelum.wav";
+	else if (get.area() == 1) document.getElementById("music").src = "music/Future_Dungeon.wav";
 	else if (game.floor == 10) document.getElementById("music").src = "music/The_Final_Ruins.wav";
 	else document.getElementById("music").src = "music/Ruins_of_Caelum.wav";
 	musicPopup();

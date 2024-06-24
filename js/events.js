@@ -37,6 +37,9 @@ function startEventBattle(type, num = 1) {
 	enterBattle();
 };
 
+/**
+ * Finishes an event with no battle or rewards.
+ */
 function finishEvent() {
 	activateArtifacts(FLOOR_CLEAR);
 	game.select = [ARTIFACTS, 0];

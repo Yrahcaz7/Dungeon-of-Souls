@@ -640,10 +640,10 @@ const info = {
 		const obj = artifacts[type];
 		if (!obj) return;
 		if (obj.name.length <= 12) {
-			draw.textBox(x, y, 12, obj.name.title(), {"text-align": CENTER});
+			draw.textBox(x, y, 12, title(obj.name), {"text-align": CENTER});
 			draw.textBox(x, y + 13, 24, obj.desc, {"text-small": true});
 		} else {
-			draw.textBox(x, y, obj.name.length, obj.name.title());
+			draw.textBox(x, y, obj.name.length, title(obj.name));
 			draw.textBox(x, y + 13, obj.name.length * 2, obj.desc, {"text-small": true});
 		};
 	},

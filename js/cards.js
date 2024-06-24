@@ -260,7 +260,7 @@ const cards = {
  */
 function getCardAttr(attr, id, level = 0) {
 	if (!cards[id] || cards[id][attr] === null) return;
-	if (attr == "name") return cards[id].name.title() + "+".repeat(level);
+	if (attr == "name") return title(cards[id].name) + "+".repeat(level);
 	if (typeof cards[id][attr] == "object") {
 		if (attr == "select") {
 			if (typeof cards[id][attr][level] == "object") return cards[id][attr][level];

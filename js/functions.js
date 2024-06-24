@@ -16,22 +16,24 @@
  */
 
 /**
- * Returns the string formatted in title case.
+ * Returns a string formatted in title case.
+ * @param {string} str - the string.
  */
-String.prototype.title = function() {
+function title(str) {
 	let result = "";
-	for (let num = 0; num < this.length; num++) {
-		if (num === 0 || (/\s/.test(this.charAt(num - 1)) && !/^(a|an|and|at|but|by|for|in|nor|of|on|or|so|the|to|up|yet)(?!\w)/.test(this.substring(num)))) result += this.charAt(num).toUpperCase();
-		else result += this.charAt(num);
+	for (let num = 0; num < str.length; num++) {
+		if (num === 0 || (/\s/.test(str.charAt(num - 1)) && !/^(a|an|and|at|but|by|for|in|nor|of|on|or|so|the|to|up|yet)(?!\w)/.test(str.substring(num)))) result += str.charAt(num).toUpperCase();
+		else result += str.charAt(num);
 	};
 	return result;
 };
 
 /**
- * Returns the string with each character's position randomized.
+ * Returns a string with each character's position randomized.
+ * @param {string} str - the string.
  */
-String.prototype.randomize = function() {
-	let arr = this.split("");
+function randomize(str) {
+	let arr = str.split("");
 	for (let index = arr.length - 1; index > 0; index--) {
 		let rand = Math.floor(Math.random() * (index + 1));
 		[arr[index], arr[rand]] = [arr[rand], arr[index]];
