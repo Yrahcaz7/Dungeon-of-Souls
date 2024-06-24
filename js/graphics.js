@@ -19,7 +19,9 @@ const UP = 501, LEFT = 502, CENTER = 503, RIGHT = 504, DOWN = 505;
 
 const PENDING = 800, STARTING = 801, MIDDLE = 802, ENDING = 803;
 
-let backAnim = [0, 1.5, 3, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], intentAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], tempAnim = [0, STARTING], effAnim = [0, "none"], playerAnim = [0, "idle"], extraAnim = [], primeAnim = 0, transition = 0, screenShake = 0, auraBladePos = [[65, 10], [80, 25], [42, 0], [28, 35]], auraBladeAnim = [0, 3, 6, 1], popups = [], infPos = 0, infLimit = 0;
+let auraBladePos = [[65, 10], [80, 25], [42, 0], [28, 35]], enemyPos = [], handPos = [], paths = {};
+
+let backAnim = [0, 1.5, 3, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], intentAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], tempAnim = [0, STARTING], effAnim = [0, "none"], playerAnim = [0, "idle"], extraAnim = [], primeAnim = 0, transition = 0, screenShake = 0, auraBladeAnim = [0, 3, 6, 1], infPos = 0, infLimit = 0;
 
 const draw = {
 	/**

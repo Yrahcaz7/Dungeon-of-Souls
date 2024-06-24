@@ -79,7 +79,7 @@ let global = {
 	map: [],
 	traveled: [],
 	seed: "" + (Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase().randomize(),
-}, actionTimer = -1, notif = [-1, 0, "", 0], menuLocation = MENU.TITLE, menuSelect = 0, enemyPos = [], handPos = [], paths = {}, winAnim = 0;
+}, popups = [], notif = [-1, 0, "", 0], menuLocation = MENU.TITLE, menuSelect = 0, winAnim = 0;
 
 /**
  * Checks if there is any active popups.
@@ -289,7 +289,7 @@ function endBattle() {
 		game.state = STATE.EVENT_FIN;
 		game.turn = -1;
 		// activate artifacts
-		activateArtifacts(END_OF_BATTLE);
+		activateArtifacts(FLOOR_CLEAR);
 		// set rewards
 		game.rewards = [];
 		if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
@@ -351,6 +351,7 @@ function loadRoom() {
 			if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
 			if (get.cardRewardChoices() > 0) game.rewards.push("1 card");
 			game.rewards.push("finish");
+			activateArtifacts(FLOOR_CLEAR);
 		} else if (type === ROOM.ORB) {
 			game.traveled.push(+place[1]);
 			game.select = [REWARDS, 0];
@@ -358,6 +359,7 @@ function loadRoom() {
 			game.rewards = [Math.floor(get.maxHealth() * 0.5) + " health", "1 purifier"];
 			if (get.area() >= 1) game.rewards.push("1 refiner");
 			game.rewards.push("finish");
+			activateArtifacts(FLOOR_CLEAR);
 		} else if (type === ROOM.EVENT) {
 			game.traveled.push(+place[1]);
 			game.select = [CONFIRM_EVENT, -1];

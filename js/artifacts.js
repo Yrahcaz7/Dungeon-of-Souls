@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const END_OF_BATTLE = 900, ON_PICKUP = 901, END_OF_TURN = 902, CARD_PLAY = 903;
+const FLOOR_CLEAR = 900, ON_PICKUP = 901, END_OF_TURN = 902, CARD_PLAY = 903;
 
 const artifacts = {
 	0: {
@@ -33,7 +33,7 @@ const artifacts = {
 	102: {
 		name: "candy",
 		desc: "You have 15 less max\nhealth, but you heal by\n3 each time you clear a\nfloor.",
-		[END_OF_BATTLE]() {
+		[FLOOR_CLEAR]() {
 			game.health += 3;
 		},
 	},
@@ -75,7 +75,7 @@ const artifacts = {
 	201: {
 		name: "iron will",
 		desc: "You heal 2 health each\ntime you clear a floor.",
-		[END_OF_BATTLE]() {
+		[FLOOR_CLEAR]() {
 			game.health += 2;
 		},
 	},
@@ -95,7 +95,7 @@ for (const key in artifacts) {
 
 /**
  * Activates all artifact effects of a type.
- * @param {END_OF_BATTLE | END_OF_TURN | CARD_PLAY} type - the type of effect.
+ * @param {FLOOR_CLEAR | END_OF_TURN | CARD_PLAY} type - the type of effect.
  */
 function activateArtifacts(type, ...params) {
 	for (let index = 0; index < game.artifacts.length; index++) {
