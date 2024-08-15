@@ -93,156 +93,15 @@ function fixSelect(item) {
 };
 
 /**
- * Fixes a pre-v2.0 save.
+ * Fixes the save according to its version number.
+ * @param {number} version - The version the save is from.
  */
-function fixOldSave() {
-	// fix enemy attack
-	if (game.activeCard !== undefined || game.enemyAttSel !== undefined || game.enemyAttFin !== undefined) {
-		game.enemyAtt = [game.activeCard, game.enemyAttSel, game.enemyAtt, game.enemyAttFin];
-		delete game.activeCard;
-		delete game.enemyAttSel;
-		delete game.enemyAttFin;
-	};
-	// fix enemies
-	for (let index = 0; index < game.enemies.length; index++) {
-		if (typeof game.enemies[index].type == "string") game.enemies[index].type = fixEnemyType(game.enemies[index].type);
-		if (typeof game.enemies[index].intent == "string") game.enemies[index].intent = fixEnemyIntent(game.enemies[index].intent);
-		for (let pos = 0; pos < game.enemies[index].intentHistory.length; pos++) {
-			if (typeof game.enemies[index].intentHistory[pos] == "string") game.enemies[index].intentHistory[pos] = fixEnemyIntent(game.enemies[index].intentHistory[pos]);
-		};
-	};
-	// fix rooms
-	for (let row = 0; row < game.map.length; row++) {
-		for (let col = 0; col < game.map[row].length; col++) {
-			if (typeof game.map[row][col] == "object") fixRoom(game.map[row][col]);
-		};
-	};
-	if (game.firstRoom) fixRoom(game.firstRoom);
-	if (game.room) fixRoom(game.room);
-	// fix attack effect
-	if (game.attackEffect) {
-		if (game.attackEffect == "aura blade") game.attackEffects = [AURA_BLADE];
-		delete game.attackEffect;
-	};
-	// fix selector
-	if (typeof game.select[0] == "string" || game.select[0] === MAP || game.select[0] == GAME_WON) game.select[0] = fixSelect(game.select[0]);
-	if (game.select[2] && (typeof game.select[2][0] == "string" || game.select[2][0] === MAP || game.select[2][0] == GAME_WON)) game.select[2][0] = fixSelect(game.select[2][0]);
-	// fix enemy stage
-	if (game.enemyStage == "pending") game.enemyStage = PENDING;
-	else if (game.enemyStage == "middle") game.enemyStage = MIDDLE;
-	else if (game.enemyStage == "end" || game.enemyStage === END) game.enemyStage = ENDING;
-	else if (game.enemyStage == "none") game.enemyStage = -1;
-	// fix state
-	if (game.state == "enter") game.state = STATE.ENTER;
-	else if (game.state == "battle") game.state = STATE.BATTLE;
-	else if (game.state == "event_fin") game.state = STATE.EVENT_FIN;
-	else if (game.state == "game_over" || game.state == "game_won" || game.state == "game_fin") game.state = STATE.GAME_END;
-	// fix turn
-	if (game.turn == "player") game.turn = TURN.PLAYER;
-	else if (game.turn == "enemy") game.turn = TURN.ENEMY;
-	else if (game.turn == "none") game.turn = -1;
-	// fix artifacts
-	for (let index = 0; index < game.artifacts.length; index++) {
-		if (game.artifacts[index] == 0) game.artifacts[index] = 202;
-		else if (game.artifacts[index] == 1 || game.artifacts[index] == "iron will") game.artifacts[index] = 201;
-		else if (game.artifacts[index] >= 2 && game.artifacts[index] <= 9) game.artifacts[index] += 98;
-	};
-	if (!game.artifacts.includes(200)) game.artifacts = [200].concat(game.artifacts);
-	// delete unused vars
-	delete game.cardRewardChoices;
-	delete game.saveNum;
-	// fix PENDING enemy stage
+function fixSave(version) {
+	// fix PENDING enemy stage (version: all versions)
 	if (game.enemyStage === PENDING) {
 		if (game.enemies[game.enemyNum].done) game.enemyStage = ENDING;
 		else game.enemyStage = STARTING;
 	};
-	// fix difficulty
-	if (global.difficulty !== undefined) {
-		game.difficulty = global.difficulty;
-		delete global.difficulty;
-	};
-	// fix character
-	if (game.character == "knight") {
-		game.character = CHARACTER.KNIGHT;
-	};
-	// fix charStage stage
-	if (global.charStage.knight !== undefined) {
-		global.charStage[CHARACTER.KNIGHT] = global.charStage.knight;
-		delete global.charStage.knight;
-	};
-	// fix options
-	let options = {music: OPTION.MUSIC, screen_shake: OPTION.SCREEN_SHAKE, sticky_cards: OPTION.STICKY_CARDS, pixel_perfect_screen: OPTION.PIXEL_PERFECT_SCREEN, pixel_perfect_size: OPTION.PIXEL_PERFECT_SIZE, allow_fast_movement: OPTION.ALLOW_FAST_MOVEMENT};
-	for (const option in options) {
-		if (Object.hasOwnProperty.call(options, option)) {
-			if (global.options[option] !== undefined) {
-				global.options[options[option]] = global.options[option];
-				delete global.options[option];
-			};
-		};
-	};
-	// fix player effects
-	if (game.eff.aura_blades !== undefined) {
-		game.eff[EFFECT.AURA_BLADE] = game.eff.aura_blades;
-		delete game.eff.aura_blades;
-	};
-	if (game.eff.burn !== undefined) {
-		game.eff[EFFECT.BURN] = game.eff.burn;
-		delete game.eff.burn;
-	};
-	if (game.eff.reinforces !== undefined) {
-		game.eff[EFFECT.REINFORCE] = game.eff.reinforces;
-		delete game.eff.reinforces;
-	};
-	if (game.eff.resilience !== undefined) {
-		game.eff[EFFECT.RESILIENCE] = game.eff.resilience;
-		delete game.eff.resilience;
-	};
-	if (game.eff.weakness !== undefined) {
-		game.eff[EFFECT.WEAKNESS] = game.eff.weakness;
-		delete game.eff.weakness;
-	};
-	// fix card effects
-	for (let index = 0; index < game.hand.length; index++) {
-		if (game.hand[index].retention !== undefined) {
-			game.hand[index][CARD_EFF.RETENTION] = game.hand[index].retention;
-			delete game.hand[index].retention;
-		};
-		if (game.hand[index].charge !== undefined) {
-			game.hand[index][CARD_EFF.COST_REDUCTION] = game.hand[index].charge;
-			delete game.hand[index].charge;
-		};
-	};
-	// fix enemy effects
-	for (let index = 0; index < game.enemies.length; index++) {
-		if (game.enemies[index].eff.burn !== undefined) {
-			game.enemies[index].eff[EFFECT.BURN] = game.enemies[index].eff.burn;
-			delete game.enemies[index].eff.burn;
-		};
-		if (game.enemies[index].eff.resilience !== undefined) {
-			game.enemies[index].eff[EFFECT.RESILIENCE] = game.enemies[index].eff.resilience;
-			delete game.enemies[index].eff.resilience;
-		};
-		if (game.enemies[index].eff.countdown !== undefined) {
-			game.enemies[index].eff[ENEMY_EFF.COUNTDOWN] = game.enemies[index].eff.countdown;
-			delete game.enemies[index].eff.countdown;
-		};
-		if (game.enemies[index].eff.rewinds !== undefined) {
-			game.enemies[index].eff[ENEMY_EFF.REWIND] = game.enemies[index].eff.rewinds;
-			delete game.enemies[index].eff.rewinds;
-		};
-		if (game.enemies[index].eff.shroud !== undefined) {
-			game.enemies[index].eff[ENEMY_EFF.SHROUD] = game.enemies[index].eff.shroud;
-			delete game.enemies[index].eff.shroud;
-		};
-	};
-};
-
-/**
- * Fixes the save if it is old.
- * @param {number} version - The version the save is from.
- */
-function fixSave(version) {
-	// nothing here yet
 };
 
 /**
@@ -250,45 +109,52 @@ function fixSave(version) {
  */
 function load() {
 	let oldVersion = 0, newGlobal = false;
-	// load current run
-	let get = localStorage.getItem(ID + "/0");
-	if (get && atob(get) && JSON.parse(atob(get))) {
-		let obj = JSON.parse(atob(get));
-		for (let index = 0; index < obj.enemies?.length; index++) {
-			obj.enemies[index] = classifyEnemy(obj.enemies[index]);
-		};
-		for (let index = 0; index < obj.deck?.length; index++) {
-			obj.deck[index] = classifyCard(obj.deck[index]);
-		};
-		for (let index = 0; index < obj.deckLocal?.length; index++) {
-			obj.deckLocal[index] = classifyCard(obj.deckLocal[index]);
-		};
-		for (let index = 0; index < obj.hand?.length; index++) {
-			obj.hand[index] = classifyCard(obj.hand[index]);
-		};
-		for (let index = 0; index < obj.discard?.length; index++) {
-			obj.discard[index] = classifyCard(obj.discard[index]);
-		};
-		for (let index = 0; index < obj.void?.length; index++) {
-			obj.void[index] = classifyCard(obj.void[index]);
-		};
-		Object.assign(game, obj);
-	} else {
-		console.log("no local save found. creating new save...");
-	};
 	// load global stuff
-	get = localStorage.getItem(ID + "/master");
+	let get = localStorage.getItem(ID + "/master");
 	if (get && atob(get) && JSON.parse(atob(get))) {
 		let obj = JSON.parse(atob(get));
-		if (obj.version) oldVersion = obj.version;
-		obj.version = global.version;
-		const defaultOptions = global.options;
-		Object.assign(global, obj);
-		global.options = defaultOptions;
-		Object.assign(global.options, obj.options);
+		if (obj.version) {
+			oldVersion = obj.version;
+			obj.version = global.version;
+			const defaultOptions = global.options;
+			Object.assign(global, obj);
+			global.options = defaultOptions;
+			Object.assign(global.options, obj.options);
+		} else {
+			console.log("global save has no version number. creating new save...");
+			newGlobal = true;
+		};
 	} else {
 		console.log("no global save found. creating new save...");
 		newGlobal = true;
+	};
+	// load current run
+	if (!newGlobal) {
+		get = localStorage.getItem(ID + "/0");
+		if (get && atob(get) && JSON.parse(atob(get))) {
+			let obj = JSON.parse(atob(get));
+			for (let index = 0; index < obj.enemies?.length; index++) {
+				obj.enemies[index] = classifyEnemy(obj.enemies[index]);
+			};
+			for (let index = 0; index < obj.deck?.length; index++) {
+				obj.deck[index] = classifyCard(obj.deck[index]);
+			};
+			for (let index = 0; index < obj.deckLocal?.length; index++) {
+				obj.deckLocal[index] = classifyCard(obj.deckLocal[index]);
+			};
+			for (let index = 0; index < obj.hand?.length; index++) {
+				obj.hand[index] = classifyCard(obj.hand[index]);
+			};
+			for (let index = 0; index < obj.discard?.length; index++) {
+				obj.discard[index] = classifyCard(obj.discard[index]);
+			};
+			for (let index = 0; index < obj.void?.length; index++) {
+				obj.void[index] = classifyCard(obj.void[index]);
+			};
+			Object.assign(game, obj);
+		} else {
+			console.log("no local save found. creating new save...");
+		};
 	};
 	// load images
 	for (const id in cards) {
@@ -319,10 +185,7 @@ function load() {
 		};
 	};
 	// fix old save
-	if (!oldVersion) fixOldSave();
-	if (oldVersion || newGlobal) fixSave(oldVersion);
-	// fix enemy stage
-	if (game.enemyStage === PENDING) game.enemyStage = STARTING;
+	if (oldVersion) fixSave(oldVersion);
 	// save fixed save
 	save();
 };

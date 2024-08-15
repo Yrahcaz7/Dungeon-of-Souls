@@ -17,11 +17,14 @@
 
 const infoText = {
 	// general effects
-	[EFFECT.AURA_BLADE]: "If something has X aura\nblades, every time it\nattacks, it deals 5 + X\nextra damage, then X is\nreduced by 1.",
+	[EFFECT.AURA_BLADE]: "If something has X aura\nblades, when it attacks,\nit deals 5 + X extra\ndamage, then X is\nreduced by 1.",
 	[EFFECT.BURN]: "If something has X burn,\nat the end of its turn,\nit takes X damage, then\nX is reduced by 1.",
 	[EFFECT.REINFORCE]: "If something has X\nreinforces, at the start\nof its turn, its shield\nis kept, then X is\nreduced by 1.",
 	[EFFECT.RESILIENCE]: "If something has X\nresilience, it takes 25%\nless combat damage,\nrounded down. At the\nstart of its turn, X is\nreduced by 1.",
 	[EFFECT.WEAKNESS]: "If something has X\nweakness, its attack is\nreduced by 25%, rounded\ndown. At the end of its\nturn, X is reduced by 1.",
+	[EFFECT.BLAZE]: "If something has X\nblaze, when it attacks,\nit inflicts 1 fire on\nthe target. At the end\nof its turn, X is\nreduced by 1.",
+	[EFFECT.ATKUP]: "If something has X ATK+,\nits attack is increased\nby 25%, rounded down. At\nthe end of its turn, X\nis reduced by 1.",
+	[EFFECT.DEFUP]: "If something has X DEF+,\nits defense is increased\nby 25%, rounded down. At\nthe end of its turn, X\nis reduced by 1.",
 	// card effects
 	[CARD_EFF.ONE_USE]: "When a one use card is\nplayed, it is sent to\nthe void. Cards in the\nvoid stay there until\nthe end of the battle.",
 	[CARD_EFF.RETENTION]: "A card with X retention\nwill not be discarded\nat the end of your turn.\nInstead, X will be\nreduced by 1.",
@@ -32,6 +35,9 @@ const infoText = {
 	[ENEMY_EFF.COUNTDOWN]: "If an enemy has X\ncountdown, at the end of\nits turn, its intent is\nset to what it was on\nthe Xth turn, and then\nX is reduced by 1.",
 	[ENEMY_EFF.REWIND]: "If something has X\nrewinds, it is X times\n20 percent stronger. If\nsomething that has\nrewinds and 0 countdown\nreaches 0 health, it\ngains 1 rewind, all\nentities heal fully, and\nthe countdown begins.",
 	[ENEMY_EFF.SHROUD]: "If something has X\nshroud, its intent is\nnot visible. At the end\nof its turn, X is\nreduced by 1.",
+	[ENEMY_EFF.PLAN_ATTACK]: "If something has plan\nattack: If you have\nenough shield to block\n100% of its attack, it\ngains 2 ATK+ and makes a\nnew plan. If it has\nshield and intends to\ndefend, it changes its\nintent to attack and\nmakes a new plan.",
+	[ENEMY_EFF.PLAN_SUMMON]: "If something has plan\nsummon: If you have\nenough shield to block\n100% of its attack or it\nhas shield and intends\nto defend, it changes\nits intent to summon and\nmakes a new plan.",
+	[ENEMY_EFF.PLAN_DEFEND]: "If something has plan\ndefend: If it has shield\nand intends to defend,\nit gains 2 DEF+ and\nmakes a new plan. If you\nhave enough shield to\nblock 100% of its\nattack, it changes its\nintent to defense and\nmakes a new plan.",
 	// intents
 	[ATTACK]: "This enemy intends to attack\nyou on its next turn.",
 	[DEFEND]: "This enemy intends to defend\nitself on its next turn.",
@@ -257,6 +263,44 @@ function updateData() {
 			game.enemies[index].health = game.enemies[index].maxHealth;
 		};
 		game.health = get.maxHealth();
+	};
+	// enemy plans
+	for (let index = 0; index < game.enemies.length; index++) {
+		let enemy = game.enemies[index];
+		if (enemy.eff[ENEMY_EFF.PLAN_ATTACK]) {
+			if (enemy.intent === ATTACK && game.shield >= Math.ceil(enemy.getTotalAttackPower() * get.takeDamageMult(index))) {
+				if (enemy.eff[EFFECT.ATKUP]) enemy.eff[EFFECT.ATKUP] += 2;
+				else enemy.eff[EFFECT.ATKUP] = 2;
+				enemy.eff[[ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 2)]] = enemy.eff[ENEMY_EFF.PLAN_ATTACK] - 1;
+				delete enemy.eff[ENEMY_EFF.PLAN_ATTACK];
+			} else if (enemy.intent === DEFEND && enemy.shield > 0) {
+				enemy.intent = ATTACK;
+				enemy.intentHistory.push(this.intent);
+				enemy.eff[[ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 2)]] = enemy.eff[ENEMY_EFF.PLAN_ATTACK] - 1;
+				delete enemy.eff[ENEMY_EFF.PLAN_ATTACK];
+			};
+		} else if (enemy.eff[ENEMY_EFF.PLAN_SUMMON]) {
+			if ((enemy.intent === DEFEND && enemy.shield > 0)
+				|| (enemy.intent === ATTACK && game.shield >= Math.ceil(enemy.getTotalAttackPower() * get.takeDamageMult(index)))
+			) {
+				enemy.intent = SUMMON;
+				enemy.intentHistory.push(SUMMON);
+				enemy.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 2)]] = enemy.eff[ENEMY_EFF.PLAN_SUMMON] - 1;
+				delete enemy.eff[ENEMY_EFF.PLAN_SUMMON];
+			};
+		} else if (enemy.eff[ENEMY_EFF.PLAN_DEFEND]) {
+			if (enemy.intent === DEFEND && enemy.shield > 0) {
+				if (enemy.eff[EFFECT.DEFUP]) enemy.eff[EFFECT.DEFUP] += 2;
+				else enemy.eff[EFFECT.DEFUP] = 2;
+				enemy.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON][Math.floor(random() * 2)]] = enemy.eff[ENEMY_EFF.PLAN_DEFEND] - 1;
+				delete enemy.eff[ENEMY_EFF.PLAN_DEFEND];
+			} else if (enemy.intent === ATTACK && game.shield >= Math.ceil(enemy.getTotalAttackPower() * get.takeDamageMult(index))) {
+				enemy.intent = DEFEND;
+				enemy.intentHistory.push(DEFEND);
+				enemy.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON][Math.floor(random() * 2)]] = enemy.eff[ENEMY_EFF.PLAN_DEFEND] - 1;
+				delete enemy.eff[ENEMY_EFF.PLAN_DEFEND];
+			};
+		};
 	};
 	// game over
 	if (game.health === 0 && playerAnim[1] != "death") {

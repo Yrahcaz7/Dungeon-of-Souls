@@ -132,16 +132,18 @@ const get = {
 	dealDamageMult(enemy = game.enemyAtt[1]) {
 		let mult = 1;
 		if (game.eff[EFFECT.WEAKNESS]) mult -= 0.25;
+		if (game.eff[EFFECT.ATKUP]) mult += 0.25;
 		if (game.enemies[enemy]?.eff[EFFECT.RESILIENCE]) mult -= 0.25;
 		return mult;
 	},
 	/**
 	 * Gets the current taking damage multiplier effect.
-	 * @param {number} enemy - the index of the enemy that is being damaged. Defaults to `game.enemyNum`.
+	 * @param {number} enemy - the index of the enemy that is attacking. Defaults to `game.enemyNum`.
 	 */
 	takeDamageMult(enemy = game.enemyNum) {
 		let mult = 1;
 		if (game.enemies[enemy]?.eff[EFFECT.WEAKNESS]) mult -= 0.25;
+		if (game.enemies[enemy]?.eff[EFFECT.ATKUP]) mult += 0.25;
 		if (game.eff[EFFECT.RESILIENCE]) mult -= 0.25;
 		return mult;
 	},
@@ -152,6 +154,23 @@ const get = {
 		let extra = 0;
 		if (game.artifacts.includes(100)) extra += 2;
 		return extra;
+	},
+	/**
+	 * Gets the current shield gaining multiplier effect for the player.
+	 */
+	playerShieldMult() {
+		let mult = 1;
+		if (game.eff[EFFECT.DEFUP]) mult += 0.25;
+		return mult;
+	},
+	/**
+	 * Gets the current shield gaining multiplier effect for an enemy.
+	 * @param {number} enemy - the index of the enemy that is gaining shield. Defaults to `game.enemyNum`.
+	 */
+	enemyShieldMult(enemy = game.enemyNum) {
+		let mult = 1;
+		if (game.enemies[enemy]?.eff[EFFECT.DEFUP]) mult += 0.25;
+		return mult;
 	},
 	/**
 	 * Gets the score factors.
@@ -312,6 +331,11 @@ function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true) 
 		game.enemies[index].shield = 0;
 		game.enemies[index].health -= amount;
 	};
+	// additional effects
+	if (attack && game.eff[EFFECT.BLAZE]) {
+		if (game.enemies[index].eff[EFFECT.BURN]) game.enemies[index].eff[EFFECT.BURN]++;
+		else game.enemies[index].eff[EFFECT.BURN] = 1;
+	};
 	// transitions
 	startEnemyTransition(index, prevShield);
 };
@@ -320,10 +344,12 @@ function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true) 
  * Makes the player take damage.
  * @param {number} amount - the amount of damage to take.
  * @param {boolean} attack - whether the damage is considered an attack. Defaults to `true`.
+ * @param {number} index - the index of the enemy. Defaults to `game.enemyNum`.
  */
-function takeDamage(amount, attack = true) {
+function takeDamage(amount, attack = true, index = game.enemyNum) {
+	if (isNaN(amount)) return;
 	// multiply damage
-	if (attack) amount = Math.ceil(amount * get.takeDamageMult());
+	if (attack) amount = Math.ceil(amount * get.takeDamageMult(index));
 	// take damage
 	if (amount < game.shield) {
 		game.shield -= amount;
@@ -332,6 +358,8 @@ function takeDamage(amount, attack = true) {
 		game.shield = 0;
 		game.health -= amount;
 	};
+	// additional effects
+	if (attack && game.enemies[index].eff[EFFECT.BLAZE]) gainEff(EFFECT.BURN, 1);
 };
 
 /**
@@ -339,12 +367,27 @@ function takeDamage(amount, attack = true) {
  * @param {number} amount - the amount of shield to gain.
  * @param {number} exMod - the extra shield modifier. Defaults to `1`.
  */
-function gainShield(amount = 0, exMod = 1) {
+function playerGainShield(amount = 0, exMod = 1) {
 	if (isNaN(amount)) return;
 	// increase shield
 	amount += Math.floor(get.extraShield() * exMod);
+	// multiply shield
+	amount = Math.ceil(amount * get.playerShieldMult());
 	// gain shield
 	game.shield += amount;
+};
+
+/**
+ * Has an enemy gain shield.
+ * @param {number} amount - the amount of shield to gain.
+ * @param {number} index - the index of the enemy. Defaults to `game.enemyNum`.
+ */
+function enemyGainShield(amount = 0, index = game.enemyNum) {
+	if (isNaN(amount)) return;
+	// multiply shield
+	amount = Math.ceil(amount * get.enemyShieldMult(index));
+	// gain shield
+	game.enemies[index].shield += amount;
 };
 
 /**

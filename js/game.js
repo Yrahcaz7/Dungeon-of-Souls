@@ -187,6 +187,9 @@ function startTurn() {
 			};
 		};
 		if (game.enemies[index].eff[EFFECT.WEAKNESS]) game.enemies[index].eff[EFFECT.WEAKNESS]--;
+		if (game.enemies[index].eff[EFFECT.BLAZE]) game.enemies[index].eff[EFFECT.BLAZE]--;
+		if (game.enemies[index].eff[EFFECT.ATKUP]) game.enemies[index].eff[EFFECT.ATKUP]--;
+		if (game.enemies[index].eff[EFFECT.DEFUP]) game.enemies[index].eff[EFFECT.DEFUP]--;
 		if (game.enemies[index].eff[ENEMY_EFF.SHROUD]) game.enemies[index].eff[ENEMY_EFF.SHROUD]--;
 	};
 	// start of your turn effects
@@ -213,6 +216,9 @@ function endTurn() {
 		game.eff[EFFECT.BURN]--;
 	};
 	if (game.eff[EFFECT.WEAKNESS]) game.eff[EFFECT.WEAKNESS]--;
+	if (game.eff[EFFECT.BLAZE]) game.eff[EFFECT.BLAZE]--;
+	if (game.eff[EFFECT.ATKUP]) game.eff[EFFECT.ATKUP]--;
+	if (game.eff[EFFECT.DEFUP]) game.eff[EFFECT.DEFUP]--;
 	// activate artifacts
 	activateArtifacts(END_OF_TURN);
 	// start of enemy turn effects

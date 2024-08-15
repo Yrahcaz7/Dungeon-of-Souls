@@ -108,8 +108,8 @@ const cards = {
 		rarity: 0,
 		cost: 1,
 		effect(level = 0) {
-			if (level >= 1) gainShield(8);
-			else gainShield(4);
+			if (level >= 1) playerGainShield(8);
+			else playerGainShield(4);
 		},
 	},
 	2001: {
@@ -119,10 +119,10 @@ const cards = {
 		cost: 1,
 		effect(level = 0) {
 			if (level >= 1) {
-				gainShield(4);
+				playerGainShield(4);
 				gainEff(EFFECT.REINFORCE, 2);
 			} else {
-				gainShield(2);
+				playerGainShield(2);
 				gainEff(EFFECT.REINFORCE, 1);
 			};
 		},
@@ -141,10 +141,10 @@ const cards = {
 		cost: 1,
 		effect(level = 0) {
 			if (level >= 1) {
-				gainShield(10);
+				playerGainShield(10);
 				gainEff(EFFECT.WEAKNESS, 1);
 			} else {
-				gainShield(9);
+				playerGainShield(9);
 				gainEff(EFFECT.WEAKNESS, 2);
 			};
 		},
@@ -164,10 +164,10 @@ const cards = {
 		effect(level = 0) {
 			if (level >= 1) {
 				game.gold -= 30;
-				gainShield(15);
+				playerGainShield(15);
 			} else {
 				game.gold -= 45;
-				gainShield(10);
+				playerGainShield(10);
 			};
 			gainEff(EFFECT.REINFORCE, 1);
 		},
@@ -275,15 +275,15 @@ const RARITY = ["starter", "common", "rare"];
 
 const CARD_TYPE = ["error", "attack", "defense", "skill", "magic"];
 
-const EFFECT = {AURA_BLADE: 1700, BURN: 1701, REINFORCE: 1702, RESILIENCE: 1703, WEAKNESS: 1704};
+const EFFECT = {AURA_BLADE: 1700, BURN: 1701, REINFORCE: 1702, RESILIENCE: 1703, WEAKNESS: 1704, BLAZE: 1705, ATKUP: 1706, DEFUP: 1707};
 
 const CARD_EFF = {ONE_USE: 1800, UNIFORM: 1801, UNPLAYABLE: 1802, COST_REDUCTION: 1803, RETENTION: 1804};
 
 const CARD_EFF_DESC = 1899;
 
-const ENEMY_EFF = {COUNTDOWN: 1900, REWIND: 1901, SHROUD: 1902};
+const ENEMY_EFF = {COUNTDOWN: 1900, REWIND: 1901, SHROUD: 1902, PLAN_ATTACK: 1903, PLAN_SUMMON: 1904, PLAN_DEFEND: 1905};
 
-const KEYWORD = {[EFFECT.AURA_BLADE]: "aura blade", [EFFECT.BURN]: "burn", [EFFECT.REINFORCE]: "reinforce", [EFFECT.RESILIENCE]: "resilience", [EFFECT.WEAKNESS]: "weakness", [CARD_EFF.ONE_USE]: "one use", [CARD_EFF.RETENTION]: "retention", [CARD_EFF.UNIFORM]: "uniform", [CARD_EFF.UNPLAYABLE]: "unplayable", [ENEMY_EFF.COUNTDOWN]: "countdown", [ENEMY_EFF.REWIND]: "rewind", [ENEMY_EFF.SHROUD]: "shroud"};
+const KEYWORD = {[EFFECT.AURA_BLADE]: "aura blade", [EFFECT.BURN]: "burn", [EFFECT.REINFORCE]: "reinforce", [EFFECT.RESILIENCE]: "resilience", [EFFECT.WEAKNESS]: "weakness", [EFFECT.BLAZE]: "blaze", [EFFECT.ATKUP]: "ATK+", [EFFECT.DEFUP]: "DEF+", [CARD_EFF.ONE_USE]: "one use", [CARD_EFF.RETENTION]: "retention", [CARD_EFF.UNIFORM]: "uniform", [CARD_EFF.UNPLAYABLE]: "unplayable", [ENEMY_EFF.COUNTDOWN]: "countdown", [ENEMY_EFF.REWIND]: "rewind", [ENEMY_EFF.SHROUD]: "shroud", [ENEMY_EFF.PLAN_ATTACK]: "plan attack", [ENEMY_EFF.PLAN_SUMMON]: "plan summon", [ENEMY_EFF.PLAN_DEFEND]: "plan defend"};
 
 /**
  * Loads a card and returns its description.

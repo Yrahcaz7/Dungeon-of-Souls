@@ -53,16 +53,16 @@ class Enemy {
 	 */
 	constructor(type, power = 1) {
 		if (type === SLIME.SMALL || type === SENTRY.SMALL) power--;
-		else if (type === SLIME.PRIME || type === SENTRY.BIG) power++;
-		else if (type === FRAGMENT || type === SENTRY.PRIME || type === SINGULARITY) power += 2;
+		else if (type === SLIME.PRIME || type === SENTRY.PRIME) power++;
+		else if (type === FRAGMENT || type === SINGULARITY) power += 2;
 		power += (game.difficulty * 0.75) + 2;
 		power += (game.floor * 0.05) * (2 ** game.difficulty);
-		power += get.area() * 0.2;
 		if (game.artifacts.includes(202)) power += 0.5;
 		this.type = +type;
 		if (type === SINGULARITY) this.maxHealth = (power * 10) * 1.25;
 		else if (type === FRAGMENT) this.maxHealth = (power * 10) * 1.05;
 		else this.maxHealth = (power * 10) * ((random() / 10) + 0.95);
+		this.maxHealth *= (get.area() / 10) + 1;
 		this.maxHealth = Math.max(Math.round(this.maxHealth), 1);
 		this.health = this.maxHealth;
 		this.maxShield = Math.max(Math.floor(this.maxHealth / 2), 1);
@@ -73,6 +73,8 @@ class Enemy {
 		if (type === FRAGMENT && game.artifacts.includes(202)) this.eff[ENEMY_EFF.REWIND] = 1;
 		this.intent = this.getIntent(true);
 		this.intentHistory = [this.intent];
+		if (type === SENTRY.BIG || type === SENTRY.SMALL || type === SENTRY.PRIME || type === SINGULARITY) this.eff[EFFECT.BLAZE] = 99;
+		if (type === SINGULARITY) this.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 3)]] = 99;
 	};
 	/**
 	 * Gets the enemy's extra attack power.
@@ -131,7 +133,7 @@ class Enemy {
 			takeDamage(this.getTotalAttackPower());
 			if (game.health < prevHealth) startAnim.player("hit");
 		} else if (this.intent === DEFEND) {
-			this.shield += this.getTotalDefendPower();
+			enemyGainShield(this.getTotalDefendPower());
 			if (this.type === FRAGMENT || this.type === SINGULARITY || (this.type === SLIME.PRIME && primeAnim != -1)) {
 				this.finishAction();
 			};
@@ -162,11 +164,21 @@ class Enemy {
 		} else {
 			this.intent = this.getIntent();
 			this.intentHistory.push(this.intent);
-			if (this.overrideIntent(ATTACK)) {
-				this.intent = DEFEND;
+			if (this.overrideIntent(ATTACK, SUMMON)) {
+				if (this.type === FRAGMENT) {
+					if (this.health <= this.maxHealth / 4 || this.eff[EFFECT.RESILIENCE] > 1) this.intent = DEFEND;
+					else this.intent = chance(2/3) ? BUFF : DEFEND;
+				} else {
+					this.intent = DEFEND;
+				};
 				this.intentHistory.push(this.intent);
 			} else if (this.overrideIntent(DEFEND, BUFF)) {
-				this.intent = ATTACK;
+				if (this.type === SINGULARITY) {
+					if (game.enemies.length > 2) this.intent = ATTACK;
+					else this.intent = chance(1/3) ? SUMMON : ATTACK;
+				} else {
+					this.intent = ATTACK;
+				};
 				this.intentHistory.push(this.intent);
 			};
 		};

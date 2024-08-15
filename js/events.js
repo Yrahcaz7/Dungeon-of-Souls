@@ -127,7 +127,7 @@ const EVENTS = {
 		}, "You greedily pocket all 20 gold coins.\nSuddenly, an enemy hits you from behind!\nYou took a staggering 10 damage!", ["Battle Start!", 111]],
 		200: [() => {}, "You decide not to waste time here.\nAs such, you start walking around the ruins.\nYou then see an enemy in the distance.", ["fight the enemy", 210], ["avoid the enemy", 220]],
 		210: [() => {
-			gainShield(10, 0);
+			playerGainShield(10, 0);
 			gainEff(EFFECT.REINFORCE, 1);
 		}, "You charge toward the enemy, shield at the ready.", ["Battle Start!", 111]],
 		220: [() => {}, "You decide to be wary and avoid the enemy.", ["creep further", 221]],
