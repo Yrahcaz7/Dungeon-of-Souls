@@ -36,6 +36,7 @@ const infoText = {
 	[ATTACK]: "This enemy intends to attack\nyou on its next turn.",
 	[DEFEND]: "This enemy intends to defend\nitself on its next turn.",
 	[BUFF]: "This enemy intends to buff\nitself on its next turn.",
+	[SUMMON]: "This enemy intends to summon\nminion(s) on its next turn.",
 };
 
 for (const key in infoText) {
@@ -114,12 +115,12 @@ gameplay = ""
 changelog = ""
 	+ "<b>Version 2.0 - Evolution<s>"
 	+ " - finally added ACT 2!\n"
+	+ " - added one new boss!\n"
 	+ " - added three new enemies!\n"
 	+ " - you can now refine your cards!\n"
 	+ " - there is two new artifacts\n"
-	+ " - improved game performance\n"
-	+ " - improved some visuals\n"
-	+ " - various balancing changes\n"
+	+ " - improved game performance and some visuals\n"
+	+ " - various balancing changes and bugfixes\n"
 	+ "<b>Version 1.3 - Deception<s>"
 	+ " - added THE SECRET ACT!\n"
 	+ " - added special events (4 so far)\n"
@@ -264,8 +265,8 @@ function updateData() {
 		game.state = STATE.GAME_END;
 		game.select = [GAME_OVER, 0];
 	};
-	// game won: change 18 to 20 once act 2 boss is added
-	if (game.floor == 18 && game.state === STATE.EVENT_FIN && game.select[0] === IN_MAP) {
+	// game won
+	if (game.floor == 20 && game.state === STATE.EVENT_FIN && game.select[0] === IN_MAP) {
 		game.turn = -1;
 		game.state = STATE.GAME_END;
 		game.select = [GAME_FIN, 0];

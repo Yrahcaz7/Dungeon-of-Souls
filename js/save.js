@@ -321,6 +321,9 @@ function load() {
 	// fix old save
 	if (!oldVersion) fixOldSave();
 	if (oldVersion || newGlobal) fixSave(oldVersion);
+	// fix enemy stage
+	if (game.enemyStage === PENDING) game.enemyStage = STARTING;
+	// save fixed save
 	save();
 };
 

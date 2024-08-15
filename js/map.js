@@ -26,7 +26,7 @@ let mapProg = 0, mapTotal = 100, death_zones = 0, rowFalses = 0, rowNodes = 0, e
  * @param {number} row - the row the enemy will be contained in.
  */
 function weakerSmallEnemy(row) {
-	return [SLIME.SMALL, SENTRY.SMALL][get.area(row - 1)] + ", " + (Math.round((0.5 + (row * 0.05)) * 100) / 100);
+	return [SLIME.SMALL, SENTRY.SMALL][get.area(row + 1)] + ", " + (Math.round((0.5 + (row * 0.05)) * 100) / 100);
 };
 
 /**
@@ -67,7 +67,7 @@ async function mapPiece(row, num, attribute = -1) {
 	};
 	await updateMapProg();
 	if (attribute === ORB) return [ROOM.ORB, randomInt(-5, 5), randomInt(-5, 5)];
-	if (attribute === BOSS) return [ROOM.BOSS, 0, 0, [[FRAGMENT, ACT2BOSS][area]], goldReward(row) * 4, randomCardSet(5), randomArtifactSet(3)];
+	if (attribute === BOSS) return [ROOM.BOSS, 0, 0, [[FRAGMENT, SINGULARITY][area]], goldReward(row) * 4, randomCardSet(5), randomArtifactSet(3)];
 	let type = chance(3/5) ? ROOM.BATTLE : false;
 	if (rowFalses >= 3 || (row % 10 == 0 && rowFalses >= 2) || (num == 2 && rowFalses == 2)) type = ROOM.BATTLE;
 	if (type) rowNodes++;

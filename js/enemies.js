@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const SLIME = {BIG: 600, SMALL: 601, PRIME: 602}, FRAGMENT = 603, SENTRY = {BIG: 604, SMALL: 605, PRIME: 606}, ACT2BOSS = 607;
+const SLIME = {BIG: 600, SMALL: 601, PRIME: 602}, FRAGMENT = 603, SENTRY = {BIG: 604, SMALL: 605, PRIME: 606}, SINGULARITY = 607;
 
 const ENEMY_NAMES = {
 	[SLIME.BIG]: "big slime",
@@ -25,6 +25,7 @@ const ENEMY_NAMES = {
 	[SENTRY.BIG]: "big sentry",
 	[SENTRY.SMALL]: "small sentry",
 	[SENTRY.PRIME]: "prime sentry",
+	[SINGULARITY]: "the singularity",
 };
 
 const ENEMY_WORTH = {
@@ -35,11 +36,12 @@ const ENEMY_WORTH = {
 	[SENTRY.BIG]: 150,
 	[SENTRY.SMALL]: 75,
 	[SENTRY.PRIME]: 750,
+	[SINGULARITY]: 2000,
 };
 
-const ATTACK = 700, DEFEND = 701, BUFF = 702;
+const ATTACK = 700, DEFEND = 701, BUFF = 702, SUMMON = 703;
 
-const INTENT = {[ATTACK]: "<#f44>attack</#f44> you", [DEFEND]: "<#58f>defend</#58f> itself", [BUFF]: "buff itself"};
+const INTENT = {[ATTACK]: "<#f44>attack</#f44> you", [DEFEND]: "<#58f>defend</#58f> itself", [BUFF]: "buff itself", [SUMMON]: "summon minion(s)"};
 
 const TRANSITION = {SHIELD: 1500};
 
@@ -52,13 +54,14 @@ class Enemy {
 	constructor(type, power = 1) {
 		if (type === SLIME.SMALL || type === SENTRY.SMALL) power--;
 		else if (type === SLIME.PRIME || type === SENTRY.BIG) power++;
-		else if (type === FRAGMENT || type === SENTRY.PRIME) power += 2;
+		else if (type === FRAGMENT || type === SENTRY.PRIME || type === SINGULARITY) power += 2;
 		power += (game.difficulty * 0.75) + 2;
 		power += (game.floor * 0.05) * (2 ** game.difficulty);
 		power += get.area() * 0.2;
 		if (game.artifacts.includes(202)) power += 0.5;
 		this.type = +type;
-		if (type === FRAGMENT) this.maxHealth = (power * 10) * 1.05;
+		if (type === SINGULARITY) this.maxHealth = (power * 10) * 1.25;
+		else if (type === FRAGMENT) this.maxHealth = (power * 10) * 1.05;
 		else this.maxHealth = (power * 10) * ((random() / 10) + 0.95);
 		this.maxHealth = Math.max(Math.round(this.maxHealth), 1);
 		this.health = this.maxHealth;
@@ -110,12 +113,12 @@ class Enemy {
 			};
 			startAnim.enemy();
 		} else if (this.intent === DEFEND) {
-			if (this.type === FRAGMENT || (this.type === SLIME.PRIME && primeAnim != -1)) {
+			if (this.type === FRAGMENT || this.type === SINGULARITY || (this.type === SLIME.PRIME && primeAnim != -1)) {
 				this.middleAction();
 			} else {
 				startAnim.enemy();
 			};
-		} else if (this.intent === BUFF) {
+		} else {
 			this.middleAction();
 		};
 	};
@@ -129,7 +132,7 @@ class Enemy {
 			if (game.health < prevHealth) startAnim.player("hit");
 		} else if (this.intent === DEFEND) {
 			this.shield += this.getTotalDefendPower();
-			if (this.type === FRAGMENT || (this.type === SLIME.PRIME && primeAnim != -1)) {
+			if (this.type === FRAGMENT || this.type === SINGULARITY || (this.type === SLIME.PRIME && primeAnim != -1)) {
 				this.finishAction();
 			};
 		} else if (this.intent === BUFF) {
@@ -137,6 +140,9 @@ class Enemy {
 				if (this.eff[EFFECT.RESILIENCE]) this.eff[EFFECT.RESILIENCE] += 3;
 				else this.eff[EFFECT.RESILIENCE] = 3;
 			};
+			this.finishAction();
+		} else if (this.intent === SUMMON) {
+			game.enemies.push(new Enemy([SLIME.SMALL, SENTRY.SMALL][get.area()], 0));
 			this.finishAction();
 		};
 		this.done = true;
@@ -180,6 +186,20 @@ class Enemy {
 	 * @param {boolean} first - whether this is the enemy's first intent. Defaults to `false`.
 	 */
 	getIntent(first = false) {
+		if (this.type === SINGULARITY) {
+			if (first) return SUMMON;
+			if (this.health <= this.maxHealth / 5) {
+				if (game.enemies.length > 2) return DEFEND;
+				return chance(1/3) ? SUMMON : DEFEND;
+			} else {
+				if (chance(3/5)) {
+					if (game.enemies.length > 2) return ATTACK;
+					return chance(1/3) ? SUMMON : ATTACK;
+				} else {
+					return DEFEND;
+				};
+			};
+		};
 		if (this.type === FRAGMENT) {
 			if (first) return BUFF;
 			if (chance(3/5)) {
@@ -268,6 +288,8 @@ function getEnemyIntentPos(index, moving = false) {
 		y -= 9;
 	} else if (type === SENTRY.PRIME) {
 		y -= 43;
+	} else if (type === SINGULARITY) {
+		y -= 40;
 	};
 	y = Math.max(y, -2);
 	if (moving) y += Math.abs(intentAnim[index] - 2);

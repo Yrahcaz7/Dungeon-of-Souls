@@ -21,7 +21,7 @@ const PENDING = 800, STARTING = 801, MIDDLE = 802, ENDING = 803;
 
 let auraBladePos = [[65, 10], [80, 25], [42, 0], [28, 35]], enemyPos = [], handPos = [], paths = {};
 
-let backAnim = [0, 1.5, 3, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], intentAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], tempAnim = [0, STARTING], effAnim = [0, "none"], playerAnim = [0, "idle"], extraAnim = [], primeAnim = 0, transition = 0, screenShake = 0, auraBladeAnim = [0, 3, 6, 1], infPos = 0, infLimit = 0;
+let backAnim = [0, 1.5, 3, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], enemyAnimSync = 0, intentAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], tempAnim = [0, STARTING], effAnim = [0, "none"], playerAnim = [0, "idle"], extraAnim = [], primeAnim = 0, transition = 0, screenShake = 0, auraBladeAnim = [0, 3, 6, 1], infPos = 0, infLimit = 0, randInt = -1;
 
 const draw = {
 	/**
@@ -317,7 +317,9 @@ const draw = {
 		if (index === game.enemyNum) return;
 		let x = enemyPos[index][0] + 16;
 		let y = getEnemyIntentPos(index, true);
-		if (game.enemies[index].intent === BUFF) {
+		if (game.enemies[index].intent === SUMMON) {
+			draw.image(I.intent.summon, x, y);
+		} else if (game.enemies[index].intent === BUFF) {
 			draw.image(I.intent.buff, x, y);
 		} else if (game.enemies[index].intent === ATTACK) {
 			let power = game.enemies[index].getTotalAttackPower();
@@ -748,10 +750,10 @@ const graphics = {
 			};
 			for (let index = 0; index < extraAnim.length; index++) {
 				if (extraAnim[index][2] < 8) {
-					draw.imageSector(I.background.column_debri, (extraAnim[index][2] % 8) * 16, 0, 16, 8, Math.floor(400 - extraAnim[index][1]), Math.floor(extraAnim[index][0]));
+					draw.imageSector(I.background.column_debris, (extraAnim[index][2] % 8) * 16, 0, 16, 8, Math.floor(400 - extraAnim[index][1]), Math.floor(extraAnim[index][0]));
 				} else if (extraAnim[index][2] < 16) {
 					ctx.scale(-1, 1);
-					draw.imageSector(I.background.column_debri, (extraAnim[index][2] % 8) * 16, 0, 16, 8, Math.floor(extraAnim[index][1] - 400), Math.floor(extraAnim[index][0]), -16, 8);
+					draw.imageSector(I.background.column_debris, (extraAnim[index][2] % 8) * 16, 0, 16, 8, Math.floor(extraAnim[index][1] - 400), Math.floor(extraAnim[index][0]), -16, 8);
 					ctx.scale(-1, 1);
 				} else if (extraAnim[index][2] % 2 == 0) {
 					draw.image(I.background.debris, Math.floor(400 - extraAnim[index][1]), Math.floor(extraAnim[index][0] + 1));
@@ -1012,12 +1014,18 @@ const graphics = {
 							enemyAnim[index] = 0;
 						};
 					};
+				} else if (selected.type === SINGULARITY) {
+					if (Math.floor(enemyAnim[index]) == 1) pos = [pos[0], pos[1] + 1];
+					else if (Math.floor(enemyAnim[index]) == 3) pos = [pos[0], pos[1] - 1];
+					if (selected.shield > 0) draw.image(I.enemy.singularity.defend, pos[0], pos[1]);
+					else draw.image(I.enemy.singularity.idle, pos[0], pos[1]);
+					draw.imageSector(I.enemy.singularity.orbs, Math.floor(enemyAnimSync % 24) * 64, 0, 64, 64, pos[0], pos[1]);
 				};
 			};
 		};
 		// action animations
 		if (game.enemies[game.enemyNum] && !game.enemies[game.enemyNum].transition) {
-			const pos = enemyPos[game.enemyNum];
+			let pos = enemyPos[game.enemyNum];
 			const type = game.enemies[game.enemyNum].type;
 			const intent = game.enemies[game.enemyNum].intent;
 			if (intent === ATTACK) {
@@ -1158,6 +1166,32 @@ const graphics = {
 					} else {
 						game.enemyStage = PENDING;
 					};
+				} else if (type === SINGULARITY) {
+					if (randInt < 0) randInt = Math.floor(Math.random() * 4);
+					let crouch = /crouch/.test(playerAnim[1]);
+					pos = (game.shield > 0 ? (crouch ? [133 + randInt * 17, 88] : [155 + randInt * 17, 79]) : [142 + randInt * 17, 70]);
+					let stagger = (game.shield > 0 ? (crouch ? false : true) : false);
+					draw.imageSector(I.enemy.singularity.attack, Math.floor(tempAnim[0]) * 68 + (randInt % 2 + (stagger ? 2 : 0)) * 17, 0, 17, 55, pos[0], pos[1]);
+					draw.imageSector(I.enemy.singularity.attack_overlay, Math.floor(tempAnim[0]) * 34 + (stagger ? 17 : 0), 0, 17, 55, pos[0], pos[1]);
+					if (tempAnim[0] >= 8) {
+						const start = [pos[0] + 7, pos[1] + 5];
+						const end = (game.shield > 0 ? (crouch ? [94, 95] : [92, 87]) : [72, 82]);
+						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 4);
+					};
+					if (tempAnim[1] === STARTING) tempAnim[0]++;
+					else if (tempAnim[1] === ENDING) tempAnim[0]--;
+					if (tempAnim[0] >= 9) {
+						tempAnim[0] = 8;
+						tempAnim[1] = ENDING;
+					} else if (tempAnim[0] == 7 && tempAnim[1] === ENDING) {
+						game.enemyStage = MIDDLE;
+					} else if (tempAnim[0] < 0) {
+						tempAnim = [0, STARTING];
+						game.enemyStage = ENDING;
+						randInt = -1;
+					} else {
+						game.enemyStage = PENDING;
+					};
 				};
 			} else if (intent === DEFEND) {
 				if (type === SLIME.BIG) {
@@ -1240,6 +1274,7 @@ const graphics = {
 			enemyAnim[index] += (Math.random() + 0.5) * 0.1;
 			if (enemyAnim[index] >= 4) enemyAnim[index] -= 4;
 		};
+		enemyAnimSync++;
 		// draw intents
 		if (game.select[0] === LOOKER || game.select[0] === HELP || game.select[0] === OPTIONS) {
 			for (let index = 0; index < game.enemies.length; index++) {
@@ -1465,6 +1500,8 @@ const graphics = {
 				coords = [4, 34, 56, 30];
 			} else if (type === SENTRY.PRIME) {
 				coords = [9, 0, 46, 64];
+			} else if (type === SINGULARITY) {
+				coords = [10, 3, 44, 61];
 			};
 			if (coords) {
 				let left = game.select[1] === 0 && game.enemies.length > 1;

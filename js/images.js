@@ -80,12 +80,19 @@ const I = {
 			prime_attack: new Image,
 			prime_defend: new Image,
 		},
+		singularity: {
+			idle: new Image,
+			orbs: new Image,
+			attack: new Image,
+			attack_overlay: new Image,
+			defend: new Image,
+		},
 	}, background: {
 		cave: new Image,
 		temple: new Image,
 		floating_arch: new Image,
 		debris: new Image,
-		column_debri: new Image,
+		column_debris: new Image,
 		clock_face: new Image,
 		clock_node: new Image,
 		tunnel_of_time: new Image,
@@ -138,6 +145,7 @@ const I = {
 		defend: new Number(11),
 		attack: new Number(11),
 		buff: new Image,
+		summon: new Image,
 	}, popup: {
 		back: new Image,
 		music: new Image,
