@@ -21,7 +21,7 @@ const ENEMY_NAMES = {
 	[SLIME.BIG]: "big slime",
 	[SLIME.SMALL]: "small slime",
 	[SLIME.PRIME]: "prime slime",
-	[FRAGMENT]: "fragment of time",
+	[FRAGMENT]: "the fragment of time",
 	[SENTRY.BIG]: "big sentry",
 	[SENTRY.SMALL]: "small sentry",
 	[SENTRY.PRIME]: "prime sentry",
@@ -255,7 +255,7 @@ class Enemy {
 function classifyEnemy(object = {}) {
 	let instance = new Enemy("", NaN);
 	for (const key in object) {
-		if (Object.hasOwnProperty.call(object, key)) {
+		if (object.hasOwnProperty(key)) {
 			instance[key] = object[key];
 		};
 	};

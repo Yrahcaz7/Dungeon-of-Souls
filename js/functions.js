@@ -178,9 +178,9 @@ const get = {
 	scoreFactors() {
 		let factors = [];
 		for (const key in game.kills) {
-			if (Object.hasOwnProperty.call(game.kills, key)) {
+			if (game.kills.hasOwnProperty(key)) {
 				const amt = game.kills[+key];
-				if (+key === FRAGMENT) factors.push(["killed the " + ENEMY_NAMES[+key], amt * ENEMY_WORTH[+key]]);
+				if (+key === FRAGMENT || +key === SINGULARITY) factors.push(["killed " + ENEMY_NAMES[+key], amt * ENEMY_WORTH[+key]]);
 				else factors.push(["killed " + amt + " " + ENEMY_NAMES[+key] + (amt > 1 ? "s" : ""), amt * ENEMY_WORTH[+key]]);
 			};
 		};
@@ -194,7 +194,7 @@ const get = {
 	totalScore() {
 		let score = 0;
 		for (const key in game.kills) {
-			if (Object.hasOwnProperty.call(game.kills, key)) {
+			if (game.kills.hasOwnProperty(key)) {
 				score += game.kills[+key] * ENEMY_WORTH[+key];
 			};
 		};

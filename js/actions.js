@@ -400,8 +400,8 @@ function selection() {
 		};
 	};
 	// scrolling
-	if (action === UP && game.select[0] === HELP && infPos > 0 && infLimit > 0) infPos -= 11;
-	else if (action === DOWN && game.select[0] === HELP && infPos < infLimit) infPos += 11;
+	if (action === UP && game.select[0] === HELP && infoPos > 0 && infoLimit > 0) infoPos -= 11;
+	else if (action === DOWN && game.select[0] === HELP && infoPos < infoLimit) infoPos += 11;
 	// select options
 	if (game.select[0] === OPTIONS) {
 		if (action === UP && game.select[1] > 1) {

@@ -17,8 +17,8 @@ Steps to reproduce the behavior, preferably in a numbered or bulleted list.
 If applicable, add screenshots to help explain your problem.
 
 **Context**
-List your OS (and device if it is mobile.)
-Provide your browser (and version number if it is not the most recent one.)
+List your OS (and device if it is mobile).
+Provide your browser (and version number if it is not the most recent one).
 
 **Additional Notes**
 Add any other things of importance here.

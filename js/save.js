@@ -158,29 +158,29 @@ function load() {
 	};
 	// load images
 	for (const id in cards) {
-		if (Object.hasOwnProperty.call(cards, id) && cards[id].rarity >= 0) {
+		if (cards.hasOwnProperty(id) && cards[id].rarity >= 0) {
 			I.card[RARITY[cards[id].rarity]][id] = new Image;
 			cardIDs[cards[id].rarity].push(+id);
 		};
 	};
 	for (const id in artifacts) {
-		if (Object.hasOwnProperty.call(artifacts, id)) {
+		if (artifacts.hasOwnProperty(id)) {
 			I.artifact[id] = new Image;
 			if (id >= 100 && id < 200) artifactIDs.push(+id);
 		};
 	};
 	for (const eff in EFFECT) {
-		if (Object.hasOwnProperty.call(EFFECT, eff)) {
+		if (EFFECT.hasOwnProperty(eff)) {
 			I.icon[EFFECT[eff]] = new Image;
 		};
 	};
 	for (const eff in ENEMY_EFF) {
-		if (Object.hasOwnProperty.call(ENEMY_EFF, eff)) {
+		if (ENEMY_EFF.hasOwnProperty(eff)) {
 			I.icon[ENEMY_EFF[eff]] = new Image;
 		};
 	};
 	for (const folder in I) {
-		if (Object.hasOwnProperty.call(I, folder)) {
+		if (I.hasOwnProperty(folder)) {
 			loadImage(I, folder, "images/");
 		};
 	};

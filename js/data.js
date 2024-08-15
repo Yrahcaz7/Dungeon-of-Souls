@@ -46,7 +46,7 @@ const infoText = {
 };
 
 for (const key in infoText) {
-	if (Object.hasOwnProperty.call(infoText, key)) {
+	if (infoText.hasOwnProperty(key)) {
 		infoText[key] = infoText[key].replace(/(health|heal|combat\sdamage|extra\sdamage|damage|attacks|attack)/gi, "<#f44>$1</#f44>");
 		infoText[key] = infoText[key].replace(/(extra\sshield|shield|defend|defense)/gi, "<#58f>$1</#58f>");
 		infoText[key] = infoText[key].replace(/(one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
@@ -222,11 +222,11 @@ function updateData() {
 		};
 	};
 	// info scroll
-	if (infPos < 0) infPos = 0;
-	if (infPos > infLimit) infPos = infLimit;
+	if (infoPos < 0) infoPos = 0;
+	if (infoPos > infoLimit) infoPos = infoLimit;
 	// effect removal
 	for (const eff in game.eff) {
-		if (Object.hasOwnProperty.call(game.eff, eff)) {
+		if (game.eff.hasOwnProperty(eff)) {
 			if (!game.eff[eff]) delete game.eff[eff];
 		};
 	};

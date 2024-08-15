@@ -23,7 +23,7 @@ let auraBladePos = [[65, 10], [80, 25], [42, 0], [28, 35]], enemyPos = [], handP
 
 let backAnim = [0, 1.5, 3, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], enemyAnimSync = 0, intentAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], tempAnim = [0, STARTING], effAnim = [0, "none"], playerAnim = [0, "idle"], extraAnim = [], primeAnim = 0, transition = 0, screenShake = 0, auraBladeAnim = [0, 3, 6, 1];
 
-let enemyAnimData = [], infPos = 0, infLimit = 0;
+let enemyAnimData = [], infoPos = 0, infoLimit = 0;
 
 const draw = {
 	/**
@@ -520,6 +520,37 @@ const draw = {
 		draw.lore(x + 1, y + 1, str, style);
 		return height + 4;
 	},
+	/**
+	 * Draw's an enemy's icons on the canvas.
+	 * @param {number} index - the index of the enemy.
+	 */
+	enemyIcons(index) {
+		let enemy = game.enemies[index], pos = enemyPos[index];
+		draw.bars(pos[0], pos[1], enemy.health, enemy.maxHealth, enemy.shield, enemy.maxShield);
+		let x = +pos[0], y = +pos[1];
+		for (const key in enemy.eff) {
+			if (enemy.eff.hasOwnProperty(key) && enemy.eff[key]) {
+				let img = I.icon[key];
+				if (enemy.shield) {
+					if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x - 1, y + 88);
+					draw.image(img, x, y + 89);
+					draw.lore(x + 17, y + 97, enemy.eff[key], {"color": "#fff", "text-align": LEFT});
+				} else {
+					if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x - 1, y + 77);
+					draw.image(img, x, y + 78);
+					draw.lore(x + 17, y + 86, enemy.eff[key], {"color": "#fff", "text-align": LEFT});
+				};
+				x += 17;
+				if (x >= pos[0] + (index == 0 && game.void.length && game.enemies.length > 2 ?
+					(Object.keys(enemy.eff).length > (game.enemies.length > 3 ? 4 : 6) ? 51 : 34)
+					: (game.enemies.length > 1 ? 68 : 102)
+				)) {
+					x = pos[0];
+					y += 17;
+				};
+			};
+		};
+	},
 };
 
 const info = {
@@ -836,6 +867,8 @@ const graphics = {
 				draw.intent(index);
 			};
 		};
+		// enemy icons
+		if (game.select[0] === ATTACK_ENEMY || game.select[0] === LOOKAT_ENEMY) draw.enemyIcons(game.select[1]);
 	},
 	/**
 	 * Draws the player on the canvas.
@@ -850,7 +883,7 @@ const graphics = {
 		};
 		// icons
 		for (const key in game.eff) {
-			if (Object.hasOwnProperty.call(game.eff, key) && game.eff[key]) {
+			if (game.eff.hasOwnProperty(key) && game.eff[key]) {
 				let img = I.icon[key];
 				if (game.shield) {
 					if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x + 22, y + 103);
@@ -916,24 +949,8 @@ const graphics = {
 	enemy() {
 		// icons
 		for (let index = 0; index < game.enemies.length; index++) {
-			let selected = game.enemies[index], pos = enemyPos[index];
-			draw.bars(pos[0], pos[1], selected.health, selected.maxHealth, selected.shield, selected.maxShield);
-			let x = +pos[0], y = +pos[1];
-			for (const key in selected.eff) {
-				if (Object.hasOwnProperty.call(selected.eff, key) && selected.eff[key]) {
-					let img = I.icon[key];
-					if (selected.shield) {
-						if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x - 1, y + 88);
-						draw.image(img, x, y + 89);
-						draw.lore(x + 17, y + 97, selected.eff[key], {"color": "#fff", "text-align": LEFT});
-					} else {
-						if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x - 1, y + 77);
-						draw.image(img, x, y + 78);
-						draw.lore(x + 17, y + 86, selected.eff[key], {"color": "#fff", "text-align": LEFT});
-					};
-					x += 17;
-				};
-			};
+			if ((game.select[0] === ATTACK_ENEMY || game.select[0] === LOOKAT_ENEMY) && index == game.select[1]) continue;
+			draw.enemyIcons(index);
 		};
 		// enemy drawing
 		for (let index = 0; index < game.enemies.length; index++) {
@@ -1293,24 +1310,24 @@ const graphics = {
 		const limit = (str) => {
 			let lim = (draw.lore(1, 23, str, {"color": "none"}) + 23) - 200;
 			if (lim < 0) lim = 0;
-			if (infPos > lim) infPos = lim;
+			if (infoPos > lim) infoPos = lim;
 			return lim;
 		};
 		if (game.select[1] == 3) {
-			infLimit = limit(changelog);
-			draw.lore(1, 1 - infPos, "Dungeon of Souls - Changelog", {"color": "#f44"});
-			draw.lore(1, 23 - infPos, changelog, {"color": "#fff"});
+			infoLimit = limit(changelog);
+			draw.lore(1, 1 - infoPos, "Dungeon of Souls - Changelog", {"color": "#f44"});
+			draw.lore(1, 23 - infoPos, changelog, {"color": "#fff"});
 		} else if (game.select[1] == 2) {
-			infLimit = limit(gameplay);
-			draw.lore(1, 1 - infPos, "Dungeon of Souls - How To Play", {"color": "#f44"});
-			draw.lore(1, 23 - infPos, gameplay, {"color": "#fff"});
+			infoLimit = limit(gameplay);
+			draw.lore(1, 1 - infoPos, "Dungeon of Souls - How To Play", {"color": "#f44"});
+			draw.lore(1, 23 - infoPos, gameplay, {"color": "#fff"});
 		} else {
-			infLimit = limit(overview);
-			draw.lore(1, 1 - infPos, "Dungeon of Souls - Overview", {"color": "#f44"});
-			draw.lore(1, 23 - infPos, overview, {"color": "#fff"});
+			infoLimit = limit(overview);
+			draw.lore(1, 1 - infoPos, "Dungeon of Souls - Overview", {"color": "#f44"});
+			draw.lore(1, 23 - infoPos, overview, {"color": "#fff"});
 		};
-		draw.lore(1, 12 - infPos, 'Source can be found at "https://github.com/Yrahcaz7/Dungeon-of-Souls"', {"color": "#f44", "text-small": true});
-		if (infLimit > 0) {
+		draw.lore(1, 12 - infoPos, 'Source can be found at "https://github.com/Yrahcaz7/Dungeon-of-Souls"', {"color": "#f44", "text-small": true});
+		if (infoLimit > 0) {
 			draw.lore(366, 26, "Scrollable", {"color": "#fff", "text-align": LEFT});
 			draw.image(I.arrows, 367, 22);
 		};
@@ -1505,6 +1522,10 @@ const graphics = {
 				coords = [8, 3, 48, 61];
 			};
 			if (coords) {
+				if (pos[1] + coords[1] < 31) {
+					coords[1] = 31 - pos[1];
+					coords[3] -= 31 - pos[1];
+				};
 				let left = game.select[1] === 0 && game.enemies.length > 1;
 				draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
 				draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "#fff", "text-align": CENTER, "text-small": true});
@@ -1517,7 +1538,7 @@ const graphics = {
 				else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-small": true});
 				let x = coords[0] - 5.5, y = coords[1] - 1;
 				for (const key in game.enemies[game.select[1]].eff) {
-					if (Object.hasOwnProperty.call(game.enemies[game.select[1]].eff, key) && game.enemies[game.select[1]].eff[key]) {
+					if (game.enemies[game.select[1]].eff.hasOwnProperty(key) && game.enemies[game.select[1]].eff[key]) {
 						let height = Math.ceil((infoText[key].match(/\n/g) || []).length * 5.5 + 22);
 						if (y + height >= 200 - pos[1]) {
 							y = coords[1] - 1;
@@ -1536,7 +1557,7 @@ const graphics = {
 			};
 			let x = coords[0] + coords[2] - 80, y = 0;
 			for (const key in game.eff) {
-				if (Object.hasOwnProperty.call(game.eff, key) && game.eff[key]) {
+				if (game.eff.hasOwnProperty(key) && game.eff[key]) {
 					let height = Math.ceil((infoText[key].match(/\n/g) || []).length * 5.5 + 22);
 					if (y + height >= 200 - coords[1]) {
 						y = 0;
@@ -1846,7 +1867,7 @@ const graphics = {
 		};
 		// sort paths
 		for (const item in paths) {
-			if (Object.hasOwnProperty.call(paths, item)) {
+			if (paths.hasOwnProperty(item)) {
 				paths[item].sort();
 			};
 		};

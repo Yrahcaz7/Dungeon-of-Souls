@@ -210,7 +210,7 @@ function loadImage(ref, name, path, select = false, blue = false) {
 	} else {
 		select = ref[name].select && !(ref[name].select instanceof Image);
 		for (const folder in ref[name]) {
-			if (Object.hasOwnProperty.call(ref[name], folder)) {
+			if (ref[name].hasOwnProperty(folder)) {
 				loadImage(ref[name], folder, path + name + "/", select, select && name == "node");
 			};
 		};

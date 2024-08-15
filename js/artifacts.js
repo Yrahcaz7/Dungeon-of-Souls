@@ -86,7 +86,7 @@ const artifacts = {
 };
 
 for (const key in artifacts) {
-	if (Object.hasOwnProperty.call(artifacts, key)) {
+	if (artifacts.hasOwnProperty(key)) {
 		artifacts[key].desc = artifacts[key].desc.replace(/(max\shealth|health|heal|damage|attack)/gi, "<#f44>$1</#f44>");
 		artifacts[key].desc = artifacts[key].desc.replace(/(shield|defense)/gi, "<#58f>$1</#58f>");
 		artifacts[key].desc = artifacts[key].desc.replace(/(magic)(\stype)/gi, "<#f0f>$1</#f0f>$2");

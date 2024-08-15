@@ -298,12 +298,12 @@ function loadCard(ref, desc) {
 	// list keywords
 	if (!ref.keywords) ref.keywords = [];
 	for (const eff in EFFECT) {
-		if (Object.hasOwnProperty.call(EFFECT, eff)) {
+		if (EFFECT.hasOwnProperty(eff)) {
 			if (!ref.keywords.includes(EFFECT[eff]) && new RegExp(KEYWORD[EFFECT[eff]].replace(" ", "\\s"), "i").test(desc)) ref.keywords.push(EFFECT[eff]);
 		};
 	};
 	for (const eff in CARD_EFF) {
-		if (Object.hasOwnProperty.call(CARD_EFF, eff) && CARD_EFF[eff] !== CARD_EFF.COST_REDUCTION) {
+		if (CARD_EFF.hasOwnProperty(eff) && CARD_EFF[eff] !== CARD_EFF.COST_REDUCTION) {
 			if (!ref.keywords.includes(CARD_EFF[eff]) && new RegExp(KEYWORD[CARD_EFF[eff]].replace(" ", "\\s"), "i").test(desc)) ref.keywords.push(CARD_EFF[eff]);
 		};
 	};
@@ -314,7 +314,7 @@ function loadCard(ref, desc) {
 };
 
 for (const key in cards) {
-	if (Object.hasOwnProperty.call(cards, key)) {
+	if (cards.hasOwnProperty(key)) {
 		if (cards[key].desc instanceof Array) {
 			for (let index = 0; index < cards[key].desc.length; index++) {
 				cards[key].desc[index] = loadCard(cards[key], cards[key].desc[index]);
@@ -345,7 +345,7 @@ class Card {
 function classifyCard(object = {}) {
 	let instance = new Card(0);
 	for (const key in object) {
-		if (Object.hasOwnProperty.call(object, key)) {
+		if (object.hasOwnProperty(key)) {
 			instance[key] = object[key];
 		};
 	};
