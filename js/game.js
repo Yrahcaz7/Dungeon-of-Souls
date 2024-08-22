@@ -167,7 +167,7 @@ function fadeMusic() {
  */
 function enterBattle() {
 	game.state = STATE.BATTLE;
-	game.deckLocal = shuffle(game.deck.slice());
+	game.deckLocal = shuffle(game.deck.slice().map(obj => classifyCard(obj)));
 	startTurn();
 };
 

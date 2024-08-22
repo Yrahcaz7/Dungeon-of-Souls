@@ -49,13 +49,13 @@ const cards = {
 	},
 	1002: {
 		name: "sweeping slash",
-		desc: ["Deal 3 damage to\nall enemies.\nUniform.", "Deal 6 damage to\nall enemies.\nUniform."],
+		desc: ["Deal 4 damage to\nall enemies.\nUniform.", "Deal 8 damage to\nall enemies.\nUniform."],
 		rarity: 1,
 		cost: 1,
 		anim: "attack_2",
 		target: false,
 		attack(level = 0) {
-			let damage = (level >= 1 ? 6 : 3);
+			let damage = (level >= 1 ? 8 : 4);
 			for (let index = 0; index < game.enemies.length; index++) {
 				dealDamage(damage, 0.5, index);
 			};
@@ -299,12 +299,12 @@ function loadCard(ref, desc) {
 	if (!ref.keywords) ref.keywords = [];
 	for (const eff in EFFECT) {
 		if (EFFECT.hasOwnProperty(eff)) {
-			if (!ref.keywords.includes(EFFECT[eff]) && new RegExp(KEYWORD[EFFECT[eff]].replace(" ", "\\s"), "i").test(desc)) ref.keywords.push(EFFECT[eff]);
+			if (!ref.keywords.includes(EFFECT[eff]) && new RegExp(KEYWORD[EFFECT[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) ref.keywords.push(EFFECT[eff]);
 		};
 	};
 	for (const eff in CARD_EFF) {
 		if (CARD_EFF.hasOwnProperty(eff) && CARD_EFF[eff] !== CARD_EFF.COST_REDUCTION) {
-			if (!ref.keywords.includes(CARD_EFF[eff]) && new RegExp(KEYWORD[CARD_EFF[eff]].replace(" ", "\\s"), "i").test(desc)) ref.keywords.push(CARD_EFF[eff]);
+			if (!ref.keywords.includes(CARD_EFF[eff]) && new RegExp(KEYWORD[CARD_EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) ref.keywords.push(CARD_EFF[eff]);
 		};
 	};
 	// extra info
