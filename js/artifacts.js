@@ -15,8 +15,6 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const FLOOR_CLEAR = 900, ON_PICKUP = 901, END_OF_TURN = 902, CARD_PLAY = 903;
-
 const artifacts = {
 	0: {
 		name: "error",

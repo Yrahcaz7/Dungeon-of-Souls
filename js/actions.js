@@ -20,7 +20,7 @@ const PIXEL_SIZES = [1, 2, 0.5], MUSIC_TRACKS = ["default", "Ruins of Caelum", "
 let actionTimer = -1, secret = false;
 
 /**
- * Handles selection actions UP, LEFT, RIGHT, and DOWN.
+ * Handles selection actions.
  */
 function selection() {
 	// action timer
@@ -30,18 +30,18 @@ function selection() {
 	// menus
 	if (menuLocation === MENU.TITLE) {
 		if (!game.artifacts.includes(202)) {
-			if ((action === LEFT && game.difficulty === 1) || (action === RIGHT && game.difficulty === 0)) {
-				menuLocation = MENU.DIFFICULTY_CHANGE;
+			if ((action === DIR.LEFT && game.difficulty === 1) || (action === DIR.RIGHT && game.difficulty === 0)) {
+				menuLocation = MENU.DIFFICULTY;
 				menuSelect = 1;
 				actionTimer = 2;
 			};
 		};
 		return;
-	} else if (menuLocation === MENU.DIFFICULTY_CHANGE) {
-		if (action === LEFT && menuSelect) {
+	} else if (menuLocation === MENU.DIFFICULTY) {
+		if (action === DIR.LEFT && menuSelect) {
 			menuSelect = 0;
 			actionTimer = 1;
-		} else if (action === RIGHT && !menuSelect) {
+		} else if (action === DIR.RIGHT && !menuSelect) {
 			menuSelect = 1;
 			actionTimer = 1;
 		};
@@ -49,19 +49,19 @@ function selection() {
 	};
 	// confirmation
 	if (game.select[0] === CONFIRM_END || game.select[0] === CONFIRM_EXIT || game.select[0] === CONFIRM_RESTART) {
-		if (action === LEFT && game.select[1]) {
+		if (action === DIR.LEFT && game.select[1]) {
 			game.select[1] = 0;
 			actionTimer = 1;
-		} else if (action === RIGHT && !game.select[1]) {
+		} else if (action === DIR.RIGHT && !game.select[1]) {
 			game.select[1] = 1;
 			actionTimer = 1;
 		};
 		return;
 	} else if (game.select[0] === CONFIRM_FRAGMENT_UPGRADE || game.select[0] === CONFIRM_PURIFY || game.select[0] === CONFIRM_REFINE) {
-		if (action === LEFT && game.select[1] > 0) {
+		if (action === DIR.LEFT && game.select[1] > 0) {
 			game.select[1]--;
 			actionTimer = 1;
-		} else if (action === RIGHT && game.select[1] < 2) {
+		} else if (action === DIR.RIGHT && game.select[1] < 2) {
 			game.select[1]++;
 			actionTimer = 1;
 		};
@@ -69,28 +69,28 @@ function selection() {
 	};
 	// rewards
 	if (game.select[0] === REWARDS) {
-		if ((action === RIGHT || action === DOWN) && game.select[1] < game.rewards.length - 1) {
+		if ((action === DIR.RIGHT || action === DIR.DOWN) && game.select[1] < game.rewards.length - 1) {
 			game.select[1]++;
 			actionTimer = 1;
-		} else if ((action === UP || action === LEFT) && game.select[1] > 0) {
+		} else if ((action === DIR.UP || action === DIR.LEFT) && game.select[1] > 0) {
 			game.select[1]--;
 			actionTimer = 1;
 		};
 		return;
 	} else if (game.select[0] === CARD_REWARDS) {
-		if (action === RIGHT && game.select[1] < get.cardRewardChoices()) {
+		if (action === DIR.RIGHT && game.select[1] < get.cardRewardChoices()) {
 			game.select[1]++;
 			actionTimer = 1;
-		} else if (action === LEFT && game.select[1] > -1) {
+		} else if (action === DIR.LEFT && game.select[1] > -1) {
 			game.select[1]--;
 			actionTimer = 1;
 		};
 		return;
 	} else if (game.select[0] === ARTIFACT_REWARDS) {
-		if (action === RIGHT && game.select[1] < 3) {
+		if (action === DIR.RIGHT && game.select[1] < 3) {
 			game.select[1]++;
 			actionTimer = 1;
-		} else if (action === LEFT && game.select[1] > -1) {
+		} else if (action === DIR.LEFT && game.select[1] > -1) {
 			game.select[1]--;
 			actionTimer = 1;
 		};
@@ -98,7 +98,7 @@ function selection() {
 	};
 	// map
 	if (game.select[0] === IN_MAP && game.state === STATE.EVENT_FIN && paths[game.location]) {
-		if (action === UP) {
+		if (action === DIR.UP) {
 			if (game.mapSelect == -1) {
 				game.mapSelect = paths[game.location].length - 1;
 				actionTimer = 1;
@@ -112,7 +112,7 @@ function selection() {
 				actionTimer = 1;
 				return;
 			};
-		} else if (action === DOWN && game.mapSelect != -1 && (game.mapSelect != paths[game.location].length || game.select[1] == 0)) {
+		} else if (action === DIR.DOWN && game.mapSelect != -1 && (game.mapSelect != paths[game.location].length || game.select[1] == 0)) {
 			if (game.mapSelect < paths[game.location].length - 1) {
 				game.mapSelect = game.mapSelect + 1;
 			} else if (game.mapSelect == paths[game.location].length) {
@@ -125,9 +125,9 @@ function selection() {
 		};
 	} else if (game.select[0] === IN_MAP) {
 		const len = (paths[game.location] || []).length;
-		if (action === UP) {
+		if (action === DIR.UP) {
 			if (game.mapSelect == -1) game.mapSelect = len;
-		} else if (action === DOWN && (game.mapSelect != len || game.select[1] == 0)) {
+		} else if (action === DIR.DOWN && (game.mapSelect != len || game.select[1] == 0)) {
 			if (game.mapSelect == len) game.mapSelect = -1;
 		};
 	};
@@ -138,28 +138,28 @@ function selection() {
 			game.select[1] = 0;
 			actionTimer = 1;
 			return;
-		} else if (action === UP && game.select[1] > 0) {
+		} else if (action === DIR.UP && game.select[1] > 0) {
 			game.select[1]--;
 			actionTimer = 1;
 			return;
-		} else if (action === DOWN && game.select[1] < event.length - 3) {
+		} else if (action === DIR.DOWN && game.select[1] < event.length - 3) {
 			game.select[1]++;
 			actionTimer = 1;
 			return;
 		};
 	};
 	// select extras
-	if (action === UP && game.select[0] === LOOKAT_ENEMY) {
+	if (action === DIR.UP && game.select[0] === LOOKAT_ENEMY) {
 		game.select = [LOOKER, 0];
 		actionTimer = 1;
 		return;
 	};
 	// select / deselect player and more extras
-	if (action === UP && game.select[0] === LOOKAT_YOU) {
+	if (action === DIR.UP && game.select[0] === LOOKAT_YOU) {
 		game.select = [ARTIFACTS, 0];
 		actionTimer = 1;
 		return;
-	} else if (action === UP && game.select[0] === VOID && !game.select[1]) {
+	} else if (action === DIR.UP && game.select[0] === VOID && !game.select[1]) {
 		if (hasPopups()) {
 			game.select = [POPUPS, 0];
 			while (game.select[1] < popups.length && !popups[game.select[1]].length) {
@@ -172,11 +172,11 @@ function selection() {
 		};
 		actionTimer = 1;
 		return;
-	} else if ((action === RIGHT || action === DOWN) && game.select[0] === VOID && !game.select[1]) {
+	} else if ((action === DIR.RIGHT || action === DIR.DOWN) && game.select[0] === VOID && !game.select[1]) {
 		game.select = [DISCARD, 0];
 		actionTimer = 1;
 		return;
-	} else if (action === UP && game.select[0] === DISCARD && !game.select[1]) {
+	} else if (action === DIR.UP && game.select[0] === DISCARD && !game.select[1]) {
 		if (game.void.length) {
 			game.select = [VOID, 0];
 		} else if (hasPopups()) {
@@ -191,7 +191,7 @@ function selection() {
 		};
 		actionTimer = 1;
 		return;
-	} else if (action === LEFT) {
+	} else if (action === DIR.LEFT) {
 		if (game.select[0] === HAND && !game.select[1]) {
 			game.select = [LOOKAT_YOU, 0];
 			actionTimer = 1;
@@ -210,7 +210,7 @@ function selection() {
 			actionTimer = 1;
 			return;
 		};
-	} else if (action === RIGHT) {
+	} else if (action === DIR.RIGHT) {
 		if (game.select[0] === LOOKAT_YOU) {
 			if (!game.enemies.length) {
 				if (game.void.length) game.select = [VOID, 0];
@@ -233,7 +233,7 @@ function selection() {
 			return;
 		};
 	};
-	if (action === UP || action === RIGHT) {
+	if (action === DIR.UP || action === DIR.RIGHT) {
 		if (game.select[0] === DECK && !game.select[1]) {
 			game.select = [END, 0];
 			actionTimer = 1;
@@ -243,7 +243,7 @@ function selection() {
 			actionTimer = 1;
 			return;
 		};
-	} else if (action === LEFT || action === DOWN) {
+	} else if (action === DIR.LEFT || action === DIR.DOWN) {
 		if (game.select[0] === END) {
 			game.select = [DECK, 0];
 			actionTimer = 1;
@@ -270,7 +270,7 @@ function selection() {
 				} else game.select = [HAND, game.prevCard];
 			};
 			return;
-		} else if (action === UP) {
+		} else if (action === DIR.UP) {
 			game.select[1]++;
 			while (game.select[1] < popups.length && !popups[game.select[1]].length) {
 				game.select[1]++;
@@ -280,7 +280,7 @@ function selection() {
 			};
 			actionTimer = 1;
 			return;
-		} else if (action === DOWN) {
+		} else if (action === DIR.DOWN) {
 			game.select[1]--;
 			while (game.select[1] >= 0 && !popups[game.select[1]].length) {
 				game.select[1]--;
@@ -291,7 +291,7 @@ function selection() {
 			};
 			actionTimer = 1;
 			return;
-		} else if (action === LEFT) {
+		} else if (action === DIR.LEFT) {
 			if (!game.hand.length) game.select = [LOOKAT_YOU, 0];
 			else game.select = [HAND, game.prevCard];
 			actionTimer = 1;
@@ -304,7 +304,7 @@ function selection() {
 		if (game.select[0] === VOID) len = game.void.length;
 		else if (game.select[0] === DISCARD) len = game.discard.length;
 		else if (game.select[0] === IN_MAP || game.select[0] === PURIFIER) len = game.deck.length;
-		if (action === LEFT) {
+		if (action === DIR.LEFT) {
 			if (game.cardSelect[0] > 0) {
 				game.cardSelect[0]--;
 			} else if (game.cardSelect[1] > 0) {
@@ -313,7 +313,7 @@ function selection() {
 			};
 			actionTimer = 1;
 			return;
-		} else if (action === RIGHT) {
+		} else if (action === DIR.RIGHT) {
 			if (game.cardSelect[0] < 5 && (game.cardSelect[0] < (len - 1) % 6 || game.cardSelect[1] < Math.floor(len / 6))) {
 				game.cardSelect[0]++;
 			} else if (game.cardSelect[0] + (game.cardSelect[1] * 6) < len - 1) {
@@ -322,13 +322,13 @@ function selection() {
 			};
 			actionTimer = 1;
 			return;
-		} else if (action === UP) {
+		} else if (action === DIR.UP) {
 			if (game.cardSelect[1] > 0) {
 				game.cardSelect[1]--;
 			};
 			actionTimer = 1;
 			return;
-		} else if (action === DOWN) {
+		} else if (action === DIR.DOWN) {
 			if (game.cardSelect[1] < Math.floor(len / 6) && (game.cardSelect[0] < len % 6 || game.cardSelect[1] < Math.floor(len / 6) - 1)) {
 				game.cardSelect[1]++;
 			};
@@ -339,7 +339,7 @@ function selection() {
 	// deck selection from refiner
 	if (game.select[0] === REFINER) {
 		let len = game.deck.length;
-		if (action === LEFT) {
+		if (action === DIR.LEFT) {
 			do {
 				if (game.cardSelect[0] > 0) {
 					game.cardSelect[0]--;
@@ -352,7 +352,7 @@ function selection() {
 			} while (game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)].level > 0);
 			actionTimer = 1;
 			return;
-		} else if (action === RIGHT) {
+		} else if (action === DIR.RIGHT) {
 			do {
 				if (game.cardSelect[0] < 5 && (game.cardSelect[0] < (len - 1) % 6 || game.cardSelect[1] < Math.floor(len / 6))) {
 					game.cardSelect[0]++;
@@ -365,7 +365,7 @@ function selection() {
 			} while (game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)].level > 0);
 			actionTimer = 1;
 			return;
-		} else if (action === UP) {
+		} else if (action === DIR.UP) {
 			if (game.cardSelect[1] > 0) {
 				game.cardSelect[1]--;
 			};
@@ -381,7 +381,7 @@ function selection() {
 			};
 			actionTimer = 1;
 			return;
-		} else if (action === DOWN) {
+		} else if (action === DIR.DOWN) {
 			if (game.cardSelect[1] < Math.floor(len / 6) && (game.cardSelect[0] < len % 6 || game.cardSelect[1] < Math.floor(len / 6) - 1)) {
 				game.cardSelect[1]++;
 			};
@@ -400,15 +400,15 @@ function selection() {
 		};
 	};
 	// scrolling
-	if (action === UP && game.select[0] === HELP && infoPos > 0 && infoLimit > 0) infoPos -= 11;
-	else if (action === DOWN && game.select[0] === HELP && infoPos < infoLimit) infoPos += 11;
+	if (action === DIR.UP && game.select[0] === HELP && infoPos > 0 && infoLimit > 0) infoPos -= 11;
+	else if (action === DIR.DOWN && game.select[0] === HELP && infoPos < infoLimit) infoPos += 11;
 	// select options
 	if (game.select[0] === OPTIONS) {
-		if (action === UP && game.select[1] > 1) {
+		if (action === DIR.UP && game.select[1] > 1) {
 			game.select[1]--;
 			actionTimer = 1;
 			return;
-		} else if (action === DOWN && game.select[1] > 0 && game.select[1] - 2 < Object.keys(global.options).length) {
+		} else if (action === DIR.DOWN && game.select[1] > 0 && game.select[1] - 2 < Object.keys(global.options).length) {
 			game.select[1]++;
 			actionTimer = 1;
 			return;
@@ -416,27 +416,27 @@ function selection() {
 	};
 	// deselect extras
 	if ((game.select[0] === LOOKER || game.select[0] === HELP || game.select[0] === OPTIONS) && !game.select[1]) {
-		if (action === LEFT && game.select[0] === LOOKER) {
+		if (action === DIR.LEFT && game.select[0] === LOOKER) {
 			game.select = [ARTIFACTS, game.artifacts.length - 1];
 			actionTimer = 1;
 			return;
-		} else if (action === LEFT && game.select[0] === HELP) {
+		} else if (action === DIR.LEFT && game.select[0] === HELP) {
 			game.select = [LOOKER, 0];
 			actionTimer = 1;
 			return;
-		} else if (action === LEFT && game.select[0] === OPTIONS) {
+		} else if (action === DIR.LEFT && game.select[0] === OPTIONS) {
 			game.select = [HELP, 0];
 			actionTimer = 1;
 			return;
-		} else if (action === RIGHT && game.select[0] === LOOKER) {
+		} else if (action === DIR.RIGHT && game.select[0] === LOOKER) {
 			game.select = [HELP, 0];
 			actionTimer = 1;
 			return;
-		} else if (action === RIGHT && game.select[0] === HELP) {
+		} else if (action === DIR.RIGHT && game.select[0] === HELP) {
 			game.select = [OPTIONS, 0];
 			actionTimer = 1;
 			return;
-		} else if (action === DOWN) {
+		} else if (action === DIR.DOWN) {
 			if (hasPopups()) {
 				game.select = [POPUPS, popups.length - 1];
 				while (game.select[1] >= 0 && !popups[game.select[1]].length) {
@@ -454,16 +454,16 @@ function selection() {
 	};
 	// artifacts
 	if (game.select[0] === ARTIFACTS) {
-		if (action === LEFT) {
+		if (action === DIR.LEFT) {
 			if (game.select[1] > 0) game.select[1]--;
 			actionTimer = 1;
 			return;
-		} else if (action === RIGHT) {
+		} else if (action === DIR.RIGHT) {
 			if (game.select[1] === game.artifacts.length - 1) game.select = [LOOKER, 0];
 			else game.select[1]++;
 			actionTimer = 1;
 			return;
-		} else if (action === DOWN) {
+		} else if (action === DIR.DOWN) {
 			game.select = [LOOKAT_YOU, 0];
 			actionTimer = 1;
 			return;
@@ -478,15 +478,15 @@ function selection() {
 		if (!game.hand) {
 			game.select = [END, 0];
 		} else {
-			if (action === LEFT) {
+			if (action === DIR.LEFT) {
 				game.select[1]--;
 				actionTimer = 1;
 				return;
-			} else if (action === RIGHT) {
+			} else if (action === DIR.RIGHT) {
 				game.select[1]++;
 				actionTimer = 1;
 				return;
-			} else if (action === UP) {
+			} else if (action === DIR.UP) {
 				let to = -1, distance = -1;
 				for (let index = 0; index < game.enemies.length; index++) {
 					if (enemyPos[index][1] > distance) {
@@ -510,12 +510,12 @@ function selection() {
 	};
 	// hand selection from effect
 	if (game.select[0] === SELECT_HAND) {
-		if (action === LEFT && game.select[1] >= 0) {
+		if (action === DIR.LEFT && game.select[1] >= 0) {
 			game.select[1]--;
 			if (game.select[1] == game.enemyAtt[0]) game.select[1]--;
 			actionTimer = 1;
 			return;
-		} else if (action === RIGHT && game.select[1] < game.hand.length) {
+		} else if (action === DIR.RIGHT && game.select[1] < game.hand.length) {
 			game.select[1]++;
 			if (game.select[1] == game.enemyAtt[0]) game.select[1]++;
 			actionTimer = 1;
@@ -524,18 +524,18 @@ function selection() {
 	};
 	// select enemy
 	if (game.select[0] === ATTACK_ENEMY || game.select[0] === LOOKAT_ENEMY) {
-		if (action === LEFT) {
+		if (action === DIR.LEFT) {
 			if (game.select[1] < game.enemies.length - 1) game.select[1]++;
 			else game.select = [LOOKAT_YOU, 0];
 			actionTimer = 1;
 			return;
-		} else if (action === RIGHT) {
+		} else if (action === DIR.RIGHT) {
 			if (game.select[1]) game.select[1]--;
 			else if (game.void.length) game.select = [VOID, 0];
 			else game.select = [DISCARD, 0];
 			actionTimer = 1;
 			return;
-		} else if (action === DOWN && game.select[0] === LOOKAT_ENEMY) {
+		} else if (action === DIR.DOWN && game.select[0] === LOOKAT_ENEMY) {
 			if (!game.hand[0]) {
 				if (game.void.length) game.select = [VOID, 0];
 				else game.select = [DISCARD, 0];
@@ -562,7 +562,7 @@ function performAction() {
 		menuLocation = -1;
 		actionTimer = 2;
 		return;
-	} else if (menuLocation === MENU.DIFFICULTY_CHANGE) {
+	} else if (menuLocation === MENU.DIFFICULTY) {
 		if (!menuSelect) {
 			if (game.difficulty === 0) game.difficulty++;
 			else game.difficulty--;

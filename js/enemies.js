@@ -15,36 +15,6 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const SLIME = {BIG: 600, SMALL: 601, PRIME: 602}, FRAGMENT = 603, SENTRY = {BIG: 604, SMALL: 605, PRIME: 606}, SINGULARITY = 607;
-
-const ENEMY_NAMES = {
-	[SLIME.BIG]: "big slime",
-	[SLIME.SMALL]: "small slime",
-	[SLIME.PRIME]: "prime slime",
-	[FRAGMENT]: "the fragment of time",
-	[SENTRY.BIG]: "big sentry",
-	[SENTRY.SMALL]: "small sentry",
-	[SENTRY.PRIME]: "prime sentry",
-	[SINGULARITY]: "the singularity",
-};
-
-const ENEMY_WORTH = {
-	[SLIME.BIG]: 100,
-	[SLIME.SMALL]: 50,
-	[SLIME.PRIME]: 500,
-	[FRAGMENT]: 1000,
-	[SENTRY.BIG]: 150,
-	[SENTRY.SMALL]: 75,
-	[SENTRY.PRIME]: 750,
-	[SINGULARITY]: 2000,
-};
-
-const ATTACK = 700, DEFEND = 701, BUFF = 702, SUMMON = 703;
-
-const INTENT = {[ATTACK]: "<#f44>attack</#f44> you", [DEFEND]: "<#58f>defend</#58f> itself", [BUFF]: "buff itself", [SUMMON]: "summon minion(s)"};
-
-const TRANSITION = {SHIELD: 1500};
-
 class Enemy {
 	/**
 	 * Returns a new enemy.

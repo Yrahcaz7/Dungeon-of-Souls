@@ -15,22 +15,20 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const CROWD = 1300, AMBUSH = 1301;
-
 /**
  * Starts a battle from an event.
- * @param {CROWD | AMBUSH} type - the type of battle.
+ * @param {number} type - the type of battle.
  * @param {number} num - the number of enemies of a crowd, or the power of an ambush.
  */
 function startEventBattle(type, num = 1) {
 	primeAnim = 0;
-	if (type === CROWD) {
+	if (type === BATTLE.CROWD) {
 		if (num > 6) num = 6;
 		let enemy = [SLIME.SMALL, SENTRY.SMALL][get.area()];
 		for (let index = 0; index < num; index++) {
 			game.enemies.push(new Enemy(enemy, 1 - (index + num) / 5));
 		};
-	} else if (type === AMBUSH) {
+	} else if (type === BATTLE.AMBUSH) {
 		let enemy = [SLIME.BIG, SENTRY.BIG][get.area()];
 		game.enemies = [new Enemy(enemy, num)];
 	};
@@ -51,13 +49,13 @@ const EVENTS = {
 	any: [{
 		0: [() => {}, "You see a crowd of enemies up ahead.\nNone of the enemies seem to have noticed you.\nHow will you get past them?", ["charge through", () => chance() ? 20 : 10], ["sneak past", () => chance(1/4) ? 40 : 30], ["fight them fairly", 50]],
 		10: [() => {takeDamage(8)}, "You tried to charge through as fast as you could,\nbut the enemies hit you for 8 damage!\nAlso, one enemy was particularly agile.\nYou will have to fight it off.", ["Battle Start!", 11]],
-		11: [() => {startEventBattle(CROWD, 1)}],
+		11: [() => {startEventBattle(BATTLE.CROWD, 1)}],
 		20: [() => {takeDamage(4)}, "You successfully got past the enemies!\nHowever, you took 4 damage while doing so.", ["get a move on", 21]],
 		21: [() => {finishEvent()}],
 		30: [() => {gainEff(EFFECT.WEAKNESS, 1)}, "You tried to sneak past as best as you could,\nbut the enemies still spotted you!\nYou have also have hard time getting up.\nYou were crawling around for a while...", ["Battle Start!", 31]],
 		31: [() => {
-			if (game.floor >= 5) startEventBattle(CROWD, randomInt(2, 3));
-			else startEventBattle(CROWD, 2);
+			if (game.floor >= 5) startEventBattle(BATTLE.CROWD, randomInt(2, 3));
+			else startEventBattle(BATTLE.CROWD, 2);
 		}],
 		40: [() => {}, "You successfully got past the enemies!\nYou must have been very lucky.\nStealth isn't your strong suit.", ["get a move on", 21]],
 		50: [() => {}, "You vaugely feel something long forgotten...\nYou want to fight these enemies fair and square.", ["Battle Start!", 31]],
@@ -65,7 +63,7 @@ const EVENTS = {
 		0: [() => {}, "You observe a chasm in the ground.\nIt is clearly blocking your way forward.\nWhat do you do?", ["navigate around the chasm", 100], ["jump across the chasm", 200], ["climb down the side", 300]],
 		100: [() => {gainEff(EFFECT.WEAKNESS, 10)}, "You begin navigating around the chasm.\nIt is very exhausting.\nYou see an enemy in the way.\nWill you fight or go back?", ["fight the enemy", 110], ["go back", 120]],
 		110: [() => {}, "You ready yourself and charge at the enemy.", ["Battle Start!", 111]],
-		111: [() => {startEventBattle(AMBUSH)}],
+		111: [() => {startEventBattle(BATTLE.AMBUSH)}],
 		120: [() => {}, "You are back at the front of the chasm. What will you do?", ["jump across the chasm", 200], ["climb down the side", 300]],
 		200: [() => {
 			takeDamage(5, false);
@@ -97,11 +95,11 @@ const EVENTS = {
 		201: [() => {}, "You topple the altar, and a dark cloud spreads...\nYou feel sluggish, and you can't see ahead of you.", ["run out of the cloud", 202]],
 		202: [() => {}, "Blindly running ahead, you smack into an enemy.", ["Battle Start!", 203]],
 		203: [() => {
-			startEventBattle(AMBUSH);
+			startEventBattle(BATTLE.AMBUSH);
 			game.enemies[0].eff[ENEMY_EFF.SHROUD] = 10;
 		}],
 		300: [() => {}, "You decide to ignore the altar and continue on.\nHowever, an enemy blocks your path.", ["Battle Start!", 301]],
-		301: [() => {startEventBattle(AMBUSH)}],
+		301: [() => {startEventBattle(BATTLE.AMBUSH)}],
 	}],
 	0: [{
 		0: [() => {}, "You approach some strange-looking ruins.\nYou see light coming from within.", ["enter the ruins", 100], ["walk around the ruins", 200]],
@@ -119,7 +117,7 @@ const EVENTS = {
 			return "The numbers on the block are " + time[0] + ":" + time[1] + ":" + time[2] + ".\nThe numbers seem to be changing over time...\nYou cannot understand how this works.";
 		}, ["leave the ruins", 110], ["investigate more", 120]],
 		110: [() => {}, "Not wanting to waste even more time,\nyou turn around to leave the ruins...\nAnd you see an enemy right next to you!", ["Battle Start!", 111]],
-		111: [() => {startEventBattle(AMBUSH, 1.1)}],
+		111: [() => {startEventBattle(BATTLE.AMBUSH, 1.1)}],
 		120: [() => {}, 'There seems to be something written on the ground...\nBut you can only make out the word "until".\nThe rest is completely unreadable.\nYou also see gold coins lying around.', ["leave the ruins", 110], ["pocket the coins", 121]],
 		121: [() => {
 			game.gold += 20;

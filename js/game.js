@@ -15,20 +15,6 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const HAND = 300, LOOKAT_YOU = 301, LOOKAT_ENEMY = 302, ATTACK_ENEMY = 303, LOOKER = 304, HELP = 305, END = 306, CONFIRM_END = 307, DECK = 308, DISCARD = 309, MAP = 310, IN_MAP = 311, POPUPS = 312, REWARDS = 313, CARD_REWARDS = 314, ARTIFACTS = 315, VOID = 316, CONFIRM_EXIT = 317, OPTIONS = 318, GAME_OVER = 319, GAME_FIN = 320, GAME_WON = 321, CONFIRM_RESTART = 322, WELCOME = 323, ARTIFACT_REWARDS = 324, CONFIRM_FRAGMENT_UPGRADE = 325, PURIFIER = 326, CONFIRM_PURIFY = 327, CONFIRM_EVENT = 328, REFINER = 329, CONFIRM_REFINE = 330;
-
-const MENU = {TITLE: 400, DIFFICULTY_CHANGE: 401};
-
-const STATE = {ENTER: 1000, BATTLE: 1001, EVENT_FIN: 1002, GAME_END: 1003, EVENT: 1004};
-
-const TURN = {PLAYER: 1100, ENEMY: 1101};
-
-const CHARACTER = {KNIGHT: 1400};
-
-const OPTION = {MUSIC: 1600, SCREEN_SHAKE: 1601, STICKY_CARDS: 1602, PIXEL_PERFECT_SCREEN: 1603, PIXEL_PERFECT_SIZE: 1604, ALLOW_FAST_MOVEMENT: 1605, MUSIC_TRACK: 1699};
-
-const OPTION_NAMES = {[OPTION.MUSIC]: "Music", [OPTION.SCREEN_SHAKE]: "Screen shake", [OPTION.STICKY_CARDS]: "Sticky cards", [OPTION.PIXEL_PERFECT_SCREEN]: "Pixel perfect screen", [OPTION.PIXEL_PERFECT_SIZE]: "Pixel perfect size", [OPTION.ALLOW_FAST_MOVEMENT]: "Allow fast movement", [OPTION.MUSIC_TRACK]: "Music Track"};
-
 let global = {
 	options: {
 		[OPTION.MUSIC]: true,
@@ -406,10 +392,10 @@ function updateVisuals() {
 		graphics.middleLayer();
 		draw.image(I.title, (400 - I.title.width) / 2, 0);
 		if (global.highScore > 0) draw.lore(1, 1, "HIGH SCORE: " + global.highScore + " points", {"color": "#fff", "text-small": true});
-		if (game.artifacts.includes(202) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": CENTER});
-		else if (get.area() == 1) draw.lore(200 - 2, 53, "Act 2: The Color of the Soul", {"color": "#fff", "text-align": CENTER});
-		else draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": CENTER});
-		if (get.area() == 0 && new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "#fff", "text-align": CENTER});
+		if (game.artifacts.includes(202) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": DIR.CENTER});
+		else if (get.area() == 1) draw.lore(200 - 2, 53, "Act 2: The Color of the Soul", {"color": "#fff", "text-align": DIR.CENTER});
+		else draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": DIR.CENTER});
+		if (get.area() == 0 && new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "#fff", "text-align": DIR.CENTER});
 		if (game.difficulty === undefined) game.difficulty = 0;
 		draw.imageSector(I.difficulty, 0, game.difficulty * 16, 64, 16, 168, 146);
 		if (game.artifacts.includes(202)) {
@@ -421,9 +407,9 @@ function updateVisuals() {
 		};
 		if (game.select[0] === WELCOME) {
 			draw.box(80, 83, 240, 34);
-			if (game.difficulty === 0) draw.lore(200 - 2, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": CENTER});
-			else draw.lore(200 - 2, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start a lot stronger from the beginning.\nAdditionally, the enemies get more powerful twice as fast as easy mode.\nOtherwise, this is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": CENTER});
-		} else if (menuLocation === MENU.DIFFICULTY_CHANGE) {
+			if (game.difficulty === 0) draw.lore(200 - 2, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
+			else draw.lore(200 - 2, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start a lot stronger from the beginning.\nAdditionally, the enemies get more powerful twice as fast as easy mode.\nOtherwise, this is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
+		} else if (menuLocation === MENU.DIFFICULTY) {
 			let x = 116, y = 83;
 			draw.rect("#0008");
 			draw.box(x + 1, y + 1, 166, 26);
@@ -581,8 +567,8 @@ function updateVisuals() {
 		text += "\n\nTOP FLOOR: " + game.floor;
 		let len = factors.length;
 		if (game.difficulty) len += 4;
-		draw.lore(200 - 2, 100 - (len + 17) * 2.75, text, {"color": "#f00", "text-align": CENTER});
-		draw.lore(200 - 2, 100 + (len + 15) * 2.75, "PRESS ENTER TO START A NEW RUN", {"color": "#f00", "text-align": CENTER});
+		draw.lore(200 - 2, 100 - (len + 17) * 2.75, text, {"color": "#f00", "text-align": DIR.CENTER});
+		draw.lore(200 - 2, 100 + (len + 15) * 2.75, "PRESS ENTER TO START A NEW RUN", {"color": "#f00", "text-align": DIR.CENTER});
 		text = "";
 		for (let index = 0; index < factors.length; index++) {
 			text += factors[index][0] + ":\n";
@@ -618,7 +604,7 @@ function updateVisuals() {
 		} else {
 			text += "\n" + totalScore + " points";
 		};
-		draw.lore(275, 100 - (len - 7) * 2.75, text, {"color": "#f00", "text-align": LEFT, "text-small": true});
+		draw.lore(275, 100 - (len - 7) * 2.75, text, {"color": "#f00", "text-align": DIR.LEFT, "text-small": true});
 		if (!global.highScore || totalScore > global.highScore) {
 			draw.lore(275, 100 + (len + 9) * 2.75, ": NEW HIGH SCORE!", {"color": "#f00", "text-small": true});
 		};
@@ -641,8 +627,8 @@ function updateVisuals() {
 		text += "\n\nThank you for playing!\n\nMore content is coming soon!";
 		let len = factors.length;
 		if (game.difficulty) len += 4;
-		draw.lore(200 - 2, 100 - (len + 17) * 2.75, text, {"color": "#0f0", "text-align": CENTER});
-		draw.lore(200 - 2, 100 + (len + 15) * 2.75, "PRESS ENTER TO START A NEW RUN", {"color": "#0f0", "text-align": CENTER});
+		draw.lore(200 - 2, 100 - (len + 17) * 2.75, text, {"color": "#0f0", "text-align": DIR.CENTER});
+		draw.lore(200 - 2, 100 + (len + 15) * 2.75, "PRESS ENTER TO START A NEW RUN", {"color": "#0f0", "text-align": DIR.CENTER});
 		text = "";
 		for (let index = 0; index < factors.length; index++) {
 			text += factors[index][0] + ":\n";
@@ -678,7 +664,7 @@ function updateVisuals() {
 		} else {
 			text += "\n" + totalScore + " points";
 		};
-		draw.lore(275, 100 - (len - 7) * 2.75, text, {"color": "#0f0", "text-align": LEFT, "text-small": true});
+		draw.lore(275, 100 - (len - 7) * 2.75, text, {"color": "#0f0", "text-align": DIR.LEFT, "text-small": true});
 		if (!global.highScore || totalScore > global.highScore) {
 			draw.lore(275, 100 + (len + 9) * 2.75, ": NEW HIGH SCORE!", {"color": "#0f0", "text-small": true});
 		};

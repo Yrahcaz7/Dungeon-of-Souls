@@ -15,8 +15,6 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const SELECT_HAND = 1200;
-
 const cards = {
 	0: {
 		name: "error",
@@ -275,16 +273,6 @@ const RARITY = ["starter", "common", "rare"];
 
 const CARD_TYPE = ["error", "attack", "defense", "skill", "magic"];
 
-const EFFECT = {AURA_BLADE: 1700, BURN: 1701, REINFORCE: 1702, RESILIENCE: 1703, WEAKNESS: 1704, BLAZE: 1705, ATKUP: 1706, DEFUP: 1707};
-
-const CARD_EFF = {ONE_USE: 1800, UNIFORM: 1801, UNPLAYABLE: 1802, COST_REDUCTION: 1803, RETENTION: 1804};
-
-const CARD_EFF_DESC = 1899;
-
-const ENEMY_EFF = {COUNTDOWN: 1900, REWIND: 1901, SHROUD: 1902, PLAN_ATTACK: 1903, PLAN_SUMMON: 1904, PLAN_DEFEND: 1905};
-
-const KEYWORD = {[EFFECT.AURA_BLADE]: "aura blade", [EFFECT.BURN]: "burn", [EFFECT.REINFORCE]: "reinforce", [EFFECT.RESILIENCE]: "resilience", [EFFECT.WEAKNESS]: "weakness", [EFFECT.BLAZE]: "blaze", [EFFECT.ATKUP]: "ATK+", [EFFECT.DEFUP]: "DEF+", [CARD_EFF.ONE_USE]: "one use", [CARD_EFF.RETENTION]: "retention", [CARD_EFF.UNIFORM]: "uniform", [CARD_EFF.UNPLAYABLE]: "unplayable", [ENEMY_EFF.COUNTDOWN]: "countdown", [ENEMY_EFF.REWIND]: "rewind", [ENEMY_EFF.SHROUD]: "shroud", [ENEMY_EFF.PLAN_ATTACK]: "plan attack", [ENEMY_EFF.PLAN_SUMMON]: "plan summon", [ENEMY_EFF.PLAN_DEFEND]: "plan defend"};
-
 /**
  * Loads a card and returns its description.
  * @param {object} ref - a reference to the card.
@@ -377,28 +365,21 @@ Array.prototype.cardSort = function() {
 const cardIDs = [[], [], []];
 
 /**
- * Returns a random card's id.
- * @param {number[]} notInclude - the ids to not include.
- */
-function randomCard(notInclude = []) {
-	let result = 0;
-	while (!result || notInclude.includes(result)) {
-		let rarity = (chance(3/10) ? 2 : 1);
-		result = cardIDs[rarity][randomInt(0, cardIDs[rarity].length - 1)];
-	};
-	return result;
-};
-
-/**
  * Returns a random card set.
  * @param {number} length - the length of the set. Defaults to `0`.
+ * @param {number} rareChance - the chance for a card in the set to be a rare. Defaults to `3/10`.
  */
-function randomCardSet(length = 0) {
+function randomCardSet(length = 0, rareChance = 3/10) {
 	if (length <= 0) return [];
 	if (length > 10) length = 10;
 	let result = [];
 	for (let index = 0; index < length; index++) {
-		result.push(randomCard(result));
+		let card = 0;
+		while (!card || result.includes(card)) {
+			let rarity = (chance(rareChance) ? 2 : 1);
+			card = cardIDs[rarity][randomInt(0, cardIDs[rarity].length - 1)];
+		};
+		result.push(card);
 	};
 	return result;
 };

@@ -117,7 +117,7 @@ const get = {
 	 */
 	extraDamage(attacking = false) {
 		let extra = 0;
-		if (game.attackEffects.includes(AURA_BLADE)) {
+		if (game.attackEffects.includes(ATT_EFF.AURA_BLADE)) {
 			extra += 5 + ((game.eff[EFFECT.AURA_BLADE] || 0) + 1);
 		} else if (game.eff[EFFECT.AURA_BLADE] && !attacking) {
 			extra += 5 + game.eff[EFFECT.AURA_BLADE];
@@ -180,8 +180,8 @@ const get = {
 		for (const key in game.kills) {
 			if (game.kills.hasOwnProperty(key)) {
 				const amt = game.kills[+key];
-				if (+key === FRAGMENT || +key === SINGULARITY) factors.push(["killed " + ENEMY_NAMES[+key], amt * ENEMY_WORTH[+key]]);
-				else factors.push(["killed " + amt + " " + ENEMY_NAMES[+key] + (amt > 1 ? "s" : ""), amt * ENEMY_WORTH[+key]]);
+				if (+key === FRAGMENT || +key === SINGULARITY) factors.push(["killed " + ENEMY_NAME[+key], amt * ENEMY_WORTH[+key]]);
+				else factors.push(["killed " + amt + " " + ENEMY_NAME[+key] + (amt > 1 ? "s" : ""), amt * ENEMY_WORTH[+key]]);
 			};
 		};
 		factors.push(["saved " + game.gold + " gold", Math.floor(game.gold / 5)]);
@@ -400,8 +400,6 @@ function gainEff(type, amt) {
 	else game.eff[type] = amt;
 };
 
-const AURA_BLADE = 200;
-
 /**
  * Activates the attack effects of a card.
  * @param {number} id - the id of the card.
@@ -414,6 +412,6 @@ function activateAttackEffects(id) {
 	// trigger aura blades
 	if (game.eff[EFFECT.AURA_BLADE]) {
 		game.eff[EFFECT.AURA_BLADE]--;
-		game.attackEffects.push(AURA_BLADE);
+		game.attackEffects.push(ATT_EFF.AURA_BLADE);
 	};
 };

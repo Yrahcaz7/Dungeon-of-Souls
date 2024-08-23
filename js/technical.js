@@ -191,10 +191,10 @@ document.addEventListener("keydown", event => {
 	} else if ((key == " " || key == "Enter") && !event.repeat && !(game.select[2] && menuLocation === -1) && actionTimer == -1) {
 		action = -1;
 		performAction();
-	} else if (key == "W" || key == "w" || key == "ArrowUp") action = UP;
-	else if (key == "A" || key == "a" || key == "ArrowLeft") action = LEFT;
-	else if (key == "S" || key == "s" || key == "ArrowDown") action = DOWN;
-	else if (key == "D" || key == "d" || key == "ArrowRight") action = RIGHT;
+	} else if (key == "W" || key == "w" || key == "ArrowUp") action = DIR.UP;
+	else if (key == "A" || key == "a" || key == "ArrowLeft") action = DIR.LEFT;
+	else if (key == "S" || key == "s" || key == "ArrowDown") action = DIR.DOWN;
+	else if (key == "D" || key == "d" || key == "ArrowRight") action = DIR.RIGHT;
 	else action = -1;
 	if (key == "Escape") fullscreen(true);
 	else if (key == "Tab") fullscreen();
