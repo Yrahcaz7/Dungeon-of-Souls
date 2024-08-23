@@ -184,8 +184,8 @@ const cards = {
 			startAnim.effect("war cry");
 			for (let index = 0; index < game.enemies.length; index++) {
 				if (game.enemies[index].type !== FRAGMENT) {
-					game.enemies[index].intent = DEFEND;
-					game.enemies[index].intentHistory[game.enemies[index].intentHistory.length - 1] = DEFEND;
+					game.enemies[index].intent = INTENT.DEFEND;
+					game.enemies[index].intentHistory[game.enemies[index].intentHistory.length - 1] = INTENT.DEFEND;
 				};
 			};
 			if (level >= 1) drawCards(1);
@@ -193,13 +193,13 @@ const cards = {
 	},
 	3001: {
 		name: "rage",
-		desc: ["Kill a non-boss\nenemy. Take damage\nequal to half its\nhealth, rounded up.", "Kill a non-boss\nenemy. Take damage\nequal to half its\nhealth, rounded up.\nDraw a card."],
+		desc: ["Kill a non-boss\nenemy. Take\nnon-combat damage\nequal to half its\nhealth, rounded up.", "Kill a non-boss\nenemy. Take\nnon-combat damage\nequal to half its\nhealth, rounded up.\nDraw a card."],
 		rarity: 1,
 		cost: 0,
 		attackEffects: false,
 		attack(level = 0) {
 			if (game.enemies[game.enemyAtt[1]].type !== FRAGMENT) {
-				takeDamage(Math.ceil(game.enemies[game.enemyAtt[1]].health / 2));
+				takeDamage(Math.ceil(game.enemies[game.enemyAtt[1]].health / 2), false);
 				game.enemies[game.enemyAtt[1]].health = 0;
 			};
 			if (level >= 1) drawCards(1);
@@ -287,16 +287,16 @@ function loadCard(ref, desc) {
 	if (!ref.keywords) ref.keywords = [];
 	for (const eff in EFFECT) {
 		if (EFFECT.hasOwnProperty(eff)) {
-			if (!ref.keywords.includes(EFFECT[eff]) && new RegExp(KEYWORD[EFFECT[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) ref.keywords.push(EFFECT[eff]);
+			if (!ref.keywords.includes(EFFECT[eff]) && new RegExp(EFFECT_NAME[EFFECT[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) ref.keywords.push(EFFECT[eff]);
 		};
 	};
 	for (const eff in CARD_EFF) {
-		if (CARD_EFF.hasOwnProperty(eff) && CARD_EFF[eff] !== CARD_EFF.COST_REDUCTION) {
-			if (!ref.keywords.includes(CARD_EFF[eff]) && new RegExp(KEYWORD[CARD_EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) ref.keywords.push(CARD_EFF[eff]);
+		if (CARD_EFF.hasOwnProperty(eff) && CARD_EFF[eff] !== CARD_EFF.COST_REDUCTION && CARD_EFF[eff] !== CARD_EFF.DESC) {
+			if (!ref.keywords.includes(CARD_EFF[eff]) && new RegExp(EFFECT_NAME[CARD_EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) ref.keywords.push(CARD_EFF[eff]);
 		};
 	};
 	// extra info
-	if (!ref.keywords.includes(CARD_EFF_DESC) && /apply/i.test(desc) && /card/i.test(desc)) ref.keywords.push(CARD_EFF_DESC);
+	if (!ref.keywords.includes(CARD_EFF.DESC) && /apply/i.test(desc) && /card/i.test(desc)) ref.keywords.push(CARD_EFF.DESC);
 	// return desc
 	return desc;
 };

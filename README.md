@@ -28,7 +28,7 @@ Press tab to enter full screen, and escape to exit it.
 
 There are also shortcut keys, like the E key, which ends your turn.
 
-Others are 1, 2, and 3; which view your deck, void, and discard, respectively.
+Others are 1; 2; and 3, which view your deck; discard; and void, respectively.
 
 ## How to play
 

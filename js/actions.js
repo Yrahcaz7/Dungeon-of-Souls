@@ -908,7 +908,8 @@ function performAction() {
 	};
 	// activate / deactivate extras
 	if (game.select[0] === DECK || game.select[0] === VOID || game.select[0] === DISCARD) {
-		if (game.select[1] == 0) game.select[1] = 1;
+		if (game.select[2]) game.select = game.select[2];
+		else if (game.select[1] == 0) game.select[1] = 1;
 		else game.select[1] = 0;
 		actionTimer = 2;
 		return;
@@ -947,10 +948,10 @@ function performAction() {
 	// options
 	if (game.select[0] === OPTIONS) {
 		const option = +Object.keys(global.options)[game.select[1] - 2];
-		if (option === OPTION.PIXEL_PERFECT_SIZE) {
-			let index = PIXEL_SIZES.indexOf(global.options[OPTION.PIXEL_PERFECT_SIZE]) + 1;
+		if (option === OPTION.PERFECT_SIZE) {
+			let index = PIXEL_SIZES.indexOf(global.options[OPTION.PERFECT_SIZE]) + 1;
 			if (index >= PIXEL_SIZES.length) index = 0;
-			global.options[OPTION.PIXEL_PERFECT_SIZE] = PIXEL_SIZES[index];
+			global.options[OPTION.PERFECT_SIZE] = PIXEL_SIZES[index];
 		} else if (option === OPTION.MUSIC_TRACK) {
 			let index = MUSIC_TRACKS.indexOf(global.options[OPTION.MUSIC_TRACK]) + 1;
 			if (index >= MUSIC_TRACKS.length) index = 0;
@@ -964,8 +965,8 @@ function performAction() {
 			if (global.options[OPTION.MUSIC]) document.getElementById("music").play();
 			else document.getElementById("music").pause();
 			musicPopup();
-		} else if (option === OPTION.PIXEL_PERFECT_SCREEN || option === OPTION.PIXEL_PERFECT_SIZE) {
-			if (global.options[OPTION.PIXEL_PERFECT_SCREEN]) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PIXEL_PERFECT_SIZE]) + "px";
+		} else if (option === OPTION.PERFECT_SCREEN || option === OPTION.PERFECT_SIZE) {
+			if (global.options[OPTION.PERFECT_SCREEN]) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
 			else document.getElementById("canvas").style = "";
 			fixCanvas();
 		} else if (option === OPTION.MUSIC_TRACK) {
@@ -975,17 +976,17 @@ function performAction() {
 			if (global.options[OPTION.MUSIC] === false
 				&& global.options[OPTION.SCREEN_SHAKE] === true
 				&& global.options[OPTION.STICKY_CARDS] === true
-				&& global.options[OPTION.PIXEL_PERFECT_SCREEN] === false
-				&& global.options[OPTION.PIXEL_PERFECT_SIZE] == 1
-				&& global.options[OPTION.ALLOW_FAST_MOVEMENT] === true
+				&& global.options[OPTION.PERFECT_SCREEN] === false
+				&& global.options[OPTION.PERFECT_SIZE] == 1
+				&& global.options[OPTION.FAST_MOVEMENT] === true
 			) global.options[OPTION.MUSIC_TRACK] = "default";
 		} else {
 			if (global.options[OPTION.MUSIC] === true
 				&& global.options[OPTION.SCREEN_SHAKE] === false
 				&& global.options[OPTION.STICKY_CARDS] === true
-				&& global.options[OPTION.PIXEL_PERFECT_SCREEN] === true
-				&& global.options[OPTION.PIXEL_PERFECT_SIZE] == 2
-				&& global.options[OPTION.ALLOW_FAST_MOVEMENT] === false
+				&& global.options[OPTION.PERFECT_SCREEN] === true
+				&& global.options[OPTION.PERFECT_SIZE] == 2
+				&& global.options[OPTION.FAST_MOVEMENT] === false
 			) secret = true;
 		};
 		actionTimer = 2;

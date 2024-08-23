@@ -94,7 +94,7 @@ window.onload = async function() {
 	canvasData();
 	// set things
 	if (game.select[0] == GAME_FIN) game.select[1] = 0;
-	if (global.options[OPTION.PIXEL_PERFECT_SCREEN]) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PIXEL_PERFECT_SIZE]) + "px";
+	if (global.options[OPTION.PERFECT_SCREEN]) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
 	else document.getElementById("canvas").style = "";
 	// fix things
 	fixCanvas();
@@ -136,7 +136,7 @@ function clearCanvas() {
  * Fixes the canvas in the html.
  */
 function fixCanvas() {
-	if (global.options[OPTION.PIXEL_PERFECT_SCREEN]) {
+	if (global.options[OPTION.PERFECT_SCREEN]) {
 		const width = +(document.getElementById("canvas").style.width.match(/\d+/) || [800])[0];
 		if (window.innerHeight <= width / 2) {
 			if (window.innerWidth <= width) document.getElementById("canvas").className = "onlyScroll";
@@ -168,17 +168,7 @@ document.addEventListener("keydown", event => {
 		};
 		action = -1;
 		actionTimer = 2;
-	} else if (key == "2" && !event.repeat && game.void.length && actionTimer == -1) {
-		if (game.select[0] === VOID && game.select[1]) {
-			if (game.select[2]) game.select = game.select[2];
-			else game.select = [VOID, 0];
-		} else {
-			if (game.select[2]) game.select = [VOID, 1, game.select[2]];
-			else game.select = [VOID, 1, game.select];
-		};
-		action = -1;
-		actionTimer = 2;
-	} else if (key == "3" && !event.repeat && actionTimer == -1) {
+	} else if (key == "2" && !event.repeat && actionTimer == -1) {
 		if (game.select[0] === DISCARD && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [DISCARD, 0];
@@ -188,7 +178,17 @@ document.addEventListener("keydown", event => {
 		};
 		action = -1;
 		actionTimer = 2;
-	} else if ((key == " " || key == "Enter") && !event.repeat && !(game.select[2] && menuLocation === -1) && actionTimer == -1) {
+	} else if (key == "3" && !event.repeat && game.void.length && actionTimer == -1) {
+		if (game.select[0] === VOID && game.select[1]) {
+			if (game.select[2]) game.select = game.select[2];
+			else game.select = [VOID, 0];
+		} else {
+			if (game.select[2]) game.select = [VOID, 1, game.select[2]];
+			else game.select = [VOID, 1, game.select];
+		};
+		action = -1;
+		actionTimer = 2;
+	} else if ((key == " " || key == "Enter") && !event.repeat && actionTimer == -1) {
 		action = -1;
 		performAction();
 	} else if (key == "W" || key == "w" || key == "ArrowUp") action = DIR.UP;
@@ -198,7 +198,7 @@ document.addEventListener("keydown", event => {
 	else action = -1;
 	if (key == "Escape") fullscreen(true);
 	else if (key == "Tab") fullscreen();
-	if (!event.repeat && prevAction === -1 && lastAction === action && global.options[OPTION.ALLOW_FAST_MOVEMENT] && loaded) {
+	if (!event.repeat && prevAction === -1 && lastAction === action && global.options[OPTION.FAST_MOVEMENT] && loaded) {
 		if (menuLocation === -1) manageGameplay();
 		selection();
 		updateVisuals();

@@ -15,44 +15,6 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const infoText = {
-	// general effects
-	[EFFECT.AURA_BLADE]: "If something has X aura\nblades, when it attacks,\nit deals 5 + X extra\ndamage, then X is\nreduced by 1.",
-	[EFFECT.BURN]: "If something has X burn,\nat the end of its turn,\nit takes X damage, then\nX is reduced by 1.",
-	[EFFECT.REINFORCE]: "If something has X\nreinforces, at the start\nof its turn, its shield\nis kept, then X is\nreduced by 1.",
-	[EFFECT.RESILIENCE]: "If something has X\nresilience, it takes 25%\nless combat damage,\nrounded down. At the\nstart of its turn, X is\nreduced by 1.",
-	[EFFECT.WEAKNESS]: "If something has X\nweakness, its attack is\nreduced by 25%, rounded\ndown. At the end of its\nturn, X is reduced by 1.",
-	[EFFECT.BLAZE]: "If something has X\nblaze, when it attacks,\nit inflicts 1 fire on\nthe target. At the end\nof its turn, X is\nreduced by 1.",
-	[EFFECT.ATKUP]: "If something has X ATK+,\nits attack is increased\nby 25%, rounded down. At\nthe end of its turn, X\nis reduced by 1.",
-	[EFFECT.DEFUP]: "If something has X DEF+,\nits defense is increased\nby 25%, rounded down. At\nthe end of its turn, X\nis reduced by 1.",
-	// card effects
-	[CARD_EFF.ONE_USE]: "When a one use card is\nplayed, it is sent to\nthe void. Cards in the\nvoid stay there until\nthe end of the battle.",
-	[CARD_EFF.RETENTION]: "A card with X retention\nwill not be discarded\nat the end of your turn.\nInstead, X will be\nreduced by 1.",
-	[CARD_EFF.UNIFORM]: "Extra damage and extra\nshield have half the\neffect on uniform cards,\nrounded down.",
-	[CARD_EFF.UNPLAYABLE]: "An unplayable card has\nno energy cost and\ncannot be played.",
-	[CARD_EFF_DESC]: "After a card leaves\nyour hand, it loses all\nof its applied effects.",
-	// enemy effects
-	[ENEMY_EFF.COUNTDOWN]: "If an enemy has X\ncountdown, at the end of\nits turn, its intent is\nset to what it was on\nthe Xth turn, and then\nX is reduced by 1.",
-	[ENEMY_EFF.REWIND]: "If something has X\nrewinds, it is X times\n20 percent stronger. If\nsomething that has\nrewinds and 0 countdown\nreaches 0 health, it\ngains 1 rewind, all\nentities heal fully, and\nthe countdown begins.",
-	[ENEMY_EFF.SHROUD]: "If something has X\nshroud, its intent is\nnot visible. At the end\nof its turn, X is\nreduced by 1.",
-	[ENEMY_EFF.PLAN_ATTACK]: "If something has plan\nattack: If you have\nenough shield to block\n100% of its attack, it\ngains 2 ATK+ and makes a\nnew plan. If it has\nshield and intends to\ndefend, it changes its\nintent to attack and\nmakes a new plan.",
-	[ENEMY_EFF.PLAN_SUMMON]: "If something has plan\nsummon: If you have\nenough shield to block\n100% of its attack or it\nhas shield and intends\nto defend, it changes\nits intent to summon and\nmakes a new plan.",
-	[ENEMY_EFF.PLAN_DEFEND]: "If something has plan\ndefend: If it has shield\nand intends to defend,\nit gains 2 DEF+ and\nmakes a new plan. If you\nhave enough shield to\nblock 100% of its\nattack, it changes its\nintent to defense and\nmakes a new plan.",
-	// intents
-	[ATTACK]: "This enemy intends to attack\nyou on its next turn.",
-	[DEFEND]: "This enemy intends to defend\nitself on its next turn.",
-	[BUFF]: "This enemy intends to buff\nitself on its next turn.",
-	[SUMMON]: "This enemy intends to summon\nminion(s) on its next turn.",
-};
-
-for (const key in infoText) {
-	if (infoText.hasOwnProperty(key)) {
-		infoText[key] = infoText[key].replace(/(health|heal|combat\sdamage|extra\sdamage|damage|attacks|attack)/gi, "<#f44>$1</#f44>");
-		infoText[key] = infoText[key].replace(/(extra\sshield|shield|defend|defense)/gi, "<#58f>$1</#58f>");
-		infoText[key] = infoText[key].replace(/(one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
-	};
-};
-
 const overview = ""
 	+ "<b>Storyline:<s>"
 	+ "You have been trapped in this dungeon as long as you can remember.\n"
@@ -65,7 +27,7 @@ const overview = ""
 	+ "Press enter or the space bar to perform an action.\n"
 	+ "Press tab to enter full screen, and escape to exit it.\n"
 	+ "There are also shortcut keys, like the E key, which ends your turn.\n"
-	+ "Others are 1, 2, and 3; which view your deck, void, and discard, respectively.\n"
+	+ "Others are 1; 2; and 3, which view your deck; discard; and void, respectively.\n"
 	+ "<b>How to Play:<s>"
 	+ "You have a deck of cards, which you draw the top 5 from each turn.\n"
 	+ "You can play the cards in your hand for the effect(s) they say.\n"
@@ -127,6 +89,7 @@ changelog = ""
 	+ " - there is two new artifacts\n"
 	+ " - improved game performance and some visuals\n"
 	+ " - various balancing changes and bugfixes\n"
+	+ " - even more things that I didn't list here\n"
 	+ "<b>Version 1.3 - Deception<s>"
 	+ " - added THE SECRET ACT!\n"
 	+ " - added special events (4 so far)\n"
@@ -141,13 +104,13 @@ changelog = ""
 	+ " - a new effect, resilience, which reduces damage taken\n"
 	+ " - the boss is now smarter and has a new move\n"
 	+ " - slimes now finally have defending animations!\n"
-	+ " - a lot of rebalancing\n"
+	+ " - rebalancing for cards, enemies, and artifacts\n"
 	+ " - even more things that I didn't list here\n"
 	+ "<b>Version 1.1 - Perception<s>"
 	+ " - added a new option: pixel perfect screen\n"
 	+ " - two new cards, and a new effect\n"
 	+ " - four new artifacts (obtained via death zone rewards)\n"
-	+ " - finally added a boss battle at the end\n"
+	+ " - finally added a boss battle at the end!\n"
 	+ " - travelled paths on the map now appear darker\n"
 	+ " - balancing (including the map generator)\n"
 	+ " - even more things that I didn't list here\n"
@@ -158,6 +121,7 @@ changelog = ""
 	+ " - added shortcut keys for various things\n"
 	+ " - three new cards and some card rebalancing\n"
 	+ " - polished up the map generator (and fixed seeds)\n"
+	+ " - many bugfixes and internal optimizations\n"
 	+ " - even more things that I didn't list here\n"
 	+ "<b>Version 0.3 - Formulation<s>"
 	+ " - enemies now die upon reaching 0 health\n"
@@ -268,35 +232,35 @@ function updateData() {
 	for (let index = 0; index < game.enemies.length; index++) {
 		let enemy = game.enemies[index];
 		if (enemy.eff[ENEMY_EFF.PLAN_ATTACK]) {
-			if (enemy.intent === ATTACK && game.shield >= Math.ceil(enemy.getTotalAttackPower() * get.takeDamageMult(index))) {
+			if (enemy.intent === INTENT.ATTACK && game.shield >= Math.ceil(enemy.getTotalAttackPower() * get.takeDamageMult(index))) {
 				if (enemy.eff[EFFECT.ATKUP]) enemy.eff[EFFECT.ATKUP] += 2;
 				else enemy.eff[EFFECT.ATKUP] = 2;
 				enemy.eff[[ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 2)]] = enemy.eff[ENEMY_EFF.PLAN_ATTACK] - 1;
 				delete enemy.eff[ENEMY_EFF.PLAN_ATTACK];
-			} else if (enemy.intent === DEFEND && enemy.shield > 0) {
-				enemy.intent = ATTACK;
+			} else if (enemy.intent === INTENT.DEFEND && enemy.shield > 0) {
+				enemy.intent = INTENT.ATTACK;
 				enemy.intentHistory.push(this.intent);
 				enemy.eff[[ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 2)]] = enemy.eff[ENEMY_EFF.PLAN_ATTACK] - 1;
 				delete enemy.eff[ENEMY_EFF.PLAN_ATTACK];
 			};
 		} else if (enemy.eff[ENEMY_EFF.PLAN_SUMMON]) {
-			if ((enemy.intent === DEFEND && enemy.shield > 0)
-				|| (enemy.intent === ATTACK && game.shield >= Math.ceil(enemy.getTotalAttackPower() * get.takeDamageMult(index)))
+			if ((enemy.intent === INTENT.DEFEND && enemy.shield > 0)
+				|| (enemy.intent === INTENT.ATTACK && game.shield >= Math.ceil(enemy.getTotalAttackPower() * get.takeDamageMult(index)))
 			) {
-				enemy.intent = SUMMON;
-				enemy.intentHistory.push(SUMMON);
+				enemy.intent = INTENT.SUMMON;
+				enemy.intentHistory.push(INTENT.SUMMON);
 				enemy.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 2)]] = enemy.eff[ENEMY_EFF.PLAN_SUMMON] - 1;
 				delete enemy.eff[ENEMY_EFF.PLAN_SUMMON];
 			};
 		} else if (enemy.eff[ENEMY_EFF.PLAN_DEFEND]) {
-			if (enemy.intent === DEFEND && enemy.shield > 0) {
+			if (enemy.intent === INTENT.DEFEND && enemy.shield > 0) {
 				if (enemy.eff[EFFECT.DEFUP]) enemy.eff[EFFECT.DEFUP] += 2;
 				else enemy.eff[EFFECT.DEFUP] = 2;
 				enemy.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON][Math.floor(random() * 2)]] = enemy.eff[ENEMY_EFF.PLAN_DEFEND] - 1;
 				delete enemy.eff[ENEMY_EFF.PLAN_DEFEND];
-			} else if (enemy.intent === ATTACK && game.shield >= Math.ceil(enemy.getTotalAttackPower() * get.takeDamageMult(index))) {
-				enemy.intent = DEFEND;
-				enemy.intentHistory.push(DEFEND);
+			} else if (enemy.intent === INTENT.ATTACK && game.shield >= Math.ceil(enemy.getTotalAttackPower() * get.takeDamageMult(index))) {
+				enemy.intent = INTENT.DEFEND;
+				enemy.intentHistory.push(INTENT.DEFEND);
 				enemy.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON][Math.floor(random() * 2)]] = enemy.eff[ENEMY_EFF.PLAN_DEFEND] - 1;
 				delete enemy.eff[ENEMY_EFF.PLAN_DEFEND];
 			};

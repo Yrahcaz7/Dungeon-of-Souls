@@ -41,8 +41,8 @@ function fixEnemyType(item) {
  * @param {string} item - the enemy intent to fix.
  */
 function fixEnemyIntent(item) {
-	if (item == "attack") return ATTACK;
-	else if (item == "defend") return DEFEND;
+	if (item == "attack") return INTENT.ATTACK;
+	else if (item == "defend") return INTENT.DEFEND;
 };
 
 /**

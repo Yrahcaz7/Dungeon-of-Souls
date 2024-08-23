@@ -78,13 +78,13 @@ class Enemy {
 	 * Starts the enemy's action.
 	 */
 	startAction() {
-		if (this.intent === ATTACK) {
+		if (this.intent === INTENT.ATTACK) {
 			if (game.shield && !/shield/.test(playerAnim[1])) {
 				if (game.eff[EFFECT.WEAKNESS]) startAnim.player("crouch_shield");
 				else startAnim.player("shield");
 			};
 			startAnim.enemy();
-		} else if (this.intent === DEFEND) {
+		} else if (this.intent === INTENT.DEFEND) {
 			if (this.type === FRAGMENT || this.type === SINGULARITY || (this.type === SLIME.PRIME && primeAnim != -1)) {
 				this.middleAction();
 			} else {
@@ -98,22 +98,22 @@ class Enemy {
 	 * Triggers the effects of the enemy's action.
 	 */
 	middleAction() {
-		if (this.intent === ATTACK) {
+		if (this.intent === INTENT.ATTACK) {
 			let prevHealth = game.health;
 			takeDamage(this.getTotalAttackPower());
 			if (game.health < prevHealth) startAnim.player("hit");
-		} else if (this.intent === DEFEND) {
+		} else if (this.intent === INTENT.DEFEND) {
 			enemyGainShield(this.getTotalDefendPower());
 			if (this.type === FRAGMENT || this.type === SINGULARITY || (this.type === SLIME.PRIME && primeAnim != -1)) {
 				this.finishAction();
 			};
-		} else if (this.intent === BUFF) {
+		} else if (this.intent === INTENT.BUFF) {
 			if (this.type === FRAGMENT) {
 				if (this.eff[EFFECT.RESILIENCE]) this.eff[EFFECT.RESILIENCE] += 3;
 				else this.eff[EFFECT.RESILIENCE] = 3;
 			};
 			this.finishAction();
-		} else if (this.intent === SUMMON) {
+		} else if (this.intent === INTENT.SUMMON) {
 			game.enemies.push(new Enemy([SLIME.SMALL, SENTRY.SMALL][get.area()], 0));
 			this.finishAction();
 		};
@@ -134,20 +134,20 @@ class Enemy {
 		} else {
 			this.intent = this.getIntent();
 			this.intentHistory.push(this.intent);
-			if (this.overrideIntent(ATTACK, SUMMON)) {
+			if (this.overrideIntent(INTENT.ATTACK, INTENT.SUMMON)) {
 				if (this.type === FRAGMENT) {
-					if (this.health <= this.maxHealth / 4 || this.eff[EFFECT.RESILIENCE] > 1) this.intent = DEFEND;
-					else this.intent = chance(2/3) ? BUFF : DEFEND;
+					if (this.health <= this.maxHealth / 4 || this.eff[EFFECT.RESILIENCE] > 1) this.intent = INTENT.DEFEND;
+					else this.intent = chance(2/3) ? INTENT.BUFF : INTENT.DEFEND;
 				} else {
-					this.intent = DEFEND;
+					this.intent = INTENT.DEFEND;
 				};
 				this.intentHistory.push(this.intent);
-			} else if (this.overrideIntent(DEFEND, BUFF)) {
+			} else if (this.overrideIntent(INTENT.DEFEND, INTENT.BUFF)) {
 				if (this.type === SINGULARITY) {
-					if (game.enemies.length > 2) this.intent = ATTACK;
-					else this.intent = chance(1/3) ? SUMMON : ATTACK;
+					if (game.enemies.length > 2) this.intent = INTENT.ATTACK;
+					else this.intent = chance(1/3) ? INTENT.SUMMON : INTENT.ATTACK;
 				} else {
-					this.intent = ATTACK;
+					this.intent = INTENT.ATTACK;
 				};
 				this.intentHistory.push(this.intent);
 			};
@@ -169,34 +169,34 @@ class Enemy {
 	 */
 	getIntent(first = false) {
 		if (this.type === SINGULARITY) {
-			if (first) return SUMMON;
+			if (first) return INTENT.SUMMON;
 			if (this.health <= this.maxHealth / 5) {
-				if (game.enemies.length > 2) return DEFEND;
-				return chance(1/3) ? SUMMON : DEFEND;
+				if (game.enemies.length > 2) return INTENT.DEFEND;
+				return chance(1/3) ? INTENT.SUMMON : INTENT.DEFEND;
 			} else {
 				if (chance(3/5)) {
-					if (game.enemies.length > 2) return ATTACK;
-					return chance(1/3) ? SUMMON : ATTACK;
+					if (game.enemies.length > 2) return INTENT.ATTACK;
+					return chance(1/3) ? INTENT.SUMMON : INTENT.ATTACK;
 				} else {
-					return DEFEND;
+					return INTENT.DEFEND;
 				};
 			};
 		};
 		if (this.type === FRAGMENT) {
-			if (first) return BUFF;
+			if (first) return INTENT.BUFF;
 			if (chance(3/5)) {
-				return ATTACK;
+				return INTENT.ATTACK;
 			} else {
-				if (this.health <= this.maxHealth / 4 || this.eff[EFFECT.RESILIENCE] > 1) return DEFEND;
-				return chance(2/3) ? BUFF : DEFEND;
+				if (this.health <= this.maxHealth / 4 || this.eff[EFFECT.RESILIENCE] > 1) return INTENT.DEFEND;
+				return chance(2/3) ? INTENT.BUFF : INTENT.DEFEND;
 			};
 		};
-		return chance(3/5) ? ATTACK : DEFEND;
+		return chance(3/5) ? INTENT.ATTACK : INTENT.DEFEND;
 	};
 	/**
 	 * Overrides the enemy's intent if the conditions are satisfied.
-	 * @param {ATTACK | DEFEND | BUFF} type - the type of intent to override.
-	 * @param {ATTACK | DEFEND | BUFF | undefined} type2 - another type to check for, if any.
+	 * @param {INTENT.ATTACK | INTENT.DEFEND | INTENT.BUFF} type - the type of intent to override.
+	 * @param {INTENT.ATTACK | INTENT.DEFEND | INTENT.BUFF | undefined} type2 - another type to check for, if any.
 	 */
 	overrideIntent(type, type2) {
 		let location = this.intentHistory.lastIndexOf(type);
@@ -241,8 +241,8 @@ function isEnemyVisible(index) {
 	if (index !== game.enemyNum || game.enemies[index].transition) return true;
 	const type = game.enemies[index].type;
 	const intent = game.enemies[index].intent;
-	if (intent === ATTACK) return !(type === SLIME.SMALL || type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && primeAnim == -1));
-	else if (intent === DEFEND) return !(type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && primeAnim == -1));
+	if (intent === INTENT.ATTACK) return !(type === SLIME.SMALL || type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && primeAnim == -1));
+	else if (intent === INTENT.DEFEND) return !(type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && primeAnim == -1));
 	else return true;
 };
 
