@@ -25,7 +25,7 @@ const ROOM = {BATTLE: 100, TREASURE: 101, PRIME: 102, ORB: 103, BOSS: 104, EVENT
 const ATT_EFF = {AURA_BLADE: 200};
 
 // normal selections
-const HAND = 300, LOOKAT_YOU = 301, LOOKAT_ENEMY = 302, ATTACK_ENEMY = 303, LOOKER = 304, HELP = 305, END = 306, CONFIRM_END = 307, DECK = 308, DISCARD = 309, MAP = 310, IN_MAP = 311, POPUPS = 312, REWARDS = 313, CARD_REWARDS = 314, ARTIFACTS = 315, VOID = 316, CONFIRM_EXIT = 317, OPTIONS = 318, GAME_OVER = 319, GAME_FIN = 320, GAME_WON = 321, CONFIRM_RESTART = 322, WELCOME = 323, ARTIFACT_REWARDS = 324, CONFIRM_FRAGMENT_UPGRADE = 325, PURIFIER = 326, CONFIRM_PURIFY = 327, CONFIRM_EVENT = 328, REFINER = 329, CONFIRM_REFINE = 330;
+const S = {HAND: 300, PLAYER: 301, ENEMY: 302, ATTACK: 303, LOOKER: 304, HELP: 305, END: 306, CONF_END: 307, DECK: 308, DISCARD: 309, MAP: 311, POPUPS: 312, REWARDS: 313, CARD_REWARD: 314, ARTIFACTS: 315, VOID: 316, CONF_EXIT: 317, OPTIONS: 318, GAME_OVER: 319, GAME_WON: 320, CONF_RESTART: 322, WELCOME: 323, ARTIFACT_REWARD: 324, CONF_HAND_ALIGN: 325, PURIFIER: 326, CONF_PURIFY: 327, CONF_EVENT: 328, REFINER: 329, CONF_REFINE: 330};
 
 // menu selections
 const MENU = {TITLE: 400, DIFFICULTY: 401};
@@ -80,10 +80,10 @@ const FULL_INTENT_DESC = {
 };
 
 // enemy animation states
-const PENDING = 800, STARTING = 801, MIDDLE = 802, ENDING = 803;
+const ANIM = {PENDING: 800, STARTING: 801, MIDDLE: 802, ENDING: 803};
 
 // artifact effect function keys
-const FLOOR_CLEAR = 900, ON_PICKUP = 901, END_OF_TURN = 902, CARD_PLAY = 903;
+const FUNC = {FLOOR_CLEAR: 900, PICKUP: 901, PLAYER_TURN_END: 902, PLAY_CARD: 903};
 
 // room states
 const STATE = {ENTER: 1000, BATTLE: 1001, EVENT_FIN: 1002, GAME_END: 1003, EVENT: 1004};
@@ -92,7 +92,7 @@ const STATE = {ENTER: 1000, BATTLE: 1001, EVENT_FIN: 1002, GAME_END: 1003, EVENT
 const TURN = {PLAYER: 1100, ENEMY: 1101};
 
 // special selects from card effects
-const SELECT_HAND = 1200;
+const SS = {SELECT_HAND: 1200};
 
 // event battle types
 const BATTLE = {CROWD: 1300, AMBUSH: 1301};
@@ -110,7 +110,7 @@ const OPTION = {MUSIC: 1600, SCREEN_SHAKE: 1601, STICKY_CARDS: 1602, PERFECT_SCR
 const OPTION_NAMES = {[OPTION.MUSIC]: "Music", [OPTION.SCREEN_SHAKE]: "Screen shake", [OPTION.STICKY_CARDS]: "Sticky cards", [OPTION.PERFECT_SCREEN]: "Pixel perfect screen", [OPTION.PERFECT_SIZE]: "Pixel perfect size", [OPTION.FAST_MOVEMENT]: "Allow fast movement", [OPTION.MUSIC_TRACK]: "Music Track"};
 
 // general effects
-const EFFECT = {AURA_BLADE: 1700, BURN: 1701, REINFORCE: 1702, RESILIENCE: 1703, WEAKNESS: 1704, BLAZE: 1705, ATKUP: 1706, DEFUP: 1707};
+const EFF = {AURA_BLADE: 1700, BURN: 1701, REINFORCE: 1702, RESILIENCE: 1703, WEAKNESS: 1704, BLAZE: 1705, ATKUP: 1706, DEFUP: 1707};
 
 // card effects
 const CARD_EFF = {ONE_USE: 1800, UNIFORM: 1801, UNPLAYABLE: 1802, COST_REDUCTION: 1803, RETENTION: 1804, DESC: 1899};
@@ -119,16 +119,16 @@ const CARD_EFF = {ONE_USE: 1800, UNIFORM: 1801, UNPLAYABLE: 1802, COST_REDUCTION
 const ENEMY_EFF = {COUNTDOWN: 1900, REWIND: 1901, SHROUD: 1902, PLAN_ATTACK: 1903, PLAN_SUMMON: 1904, PLAN_DEFEND: 1905};
 
 // names of effects
-const EFFECT_NAME = {
+const EFF_NAME = {
 	// general effects
-	[EFFECT.AURA_BLADE]: "aura blade",
-	[EFFECT.BURN]: "burn",
-	[EFFECT.REINFORCE]: "reinforce",
-	[EFFECT.RESILIENCE]: "resilience",
-	[EFFECT.WEAKNESS]: "weakness",
-	[EFFECT.BLAZE]: "blaze",
-	[EFFECT.ATKUP]: "ATK+",
-	[EFFECT.DEFUP]: "DEF+",
+	[EFF.AURA_BLADE]: "aura blade",
+	[EFF.BURN]: "burn",
+	[EFF.REINFORCE]: "reinforce",
+	[EFF.RESILIENCE]: "resilience",
+	[EFF.WEAKNESS]: "weakness",
+	[EFF.BLAZE]: "blaze",
+	[EFF.ATKUP]: "ATK+",
+	[EFF.DEFUP]: "DEF+",
 	// card effects
 	[CARD_EFF.ONE_USE]: "one use",
 	[CARD_EFF.RETENTION]: "retention",
@@ -144,16 +144,16 @@ const EFFECT_NAME = {
 };
 
 // descriptions of effects
-const EFFECT_DESC = {
+const EFF_DESC = {
 	// general effects
-	[EFFECT.AURA_BLADE]: "If something has X aura\nblades, when it attacks,\nit deals 5 + X extra\ndamage, then X is\nreduced by 1.",
-	[EFFECT.BURN]: "If something has X burn,\nat the end of its turn,\nit takes X damage, then\nX is reduced by 1.",
-	[EFFECT.REINFORCE]: "If something has X\nreinforces, at the start\nof its turn, its shield\nis kept, then X is\nreduced by 1.",
-	[EFFECT.RESILIENCE]: "If something has X\nresilience, it takes 25%\nless combat damage,\nrounded down. At the\nstart of its turn, X is\nreduced by 1.",
-	[EFFECT.WEAKNESS]: "If something has X\nweakness, its attack is\nreduced by 25%, rounded\ndown. At the end of its\nturn, X is reduced by 1.",
-	[EFFECT.BLAZE]: "If something has X\nblaze, when it attacks,\nit inflicts 1 fire on\nthe target. At the end\nof its turn, X is\nreduced by 1.",
-	[EFFECT.ATKUP]: "If something has X ATK+,\nits attack is increased\nby 25%, rounded down. At\nthe end of its turn, X\nis reduced by 1.",
-	[EFFECT.DEFUP]: "If something has X DEF+,\nits defense is increased\nby 25%, rounded down. At\nthe end of its turn, X\nis reduced by 1.",
+	[EFF.AURA_BLADE]: "If something has X aura\nblades, when it attacks,\nit deals 5 + X extra\ndamage, then X is\nreduced by 1.",
+	[EFF.BURN]: "If something has X burn,\nat the end of its turn,\nit takes X damage, then\nX is reduced by 1.",
+	[EFF.REINFORCE]: "If something has X\nreinforces, at the start\nof its turn, its shield\nis kept, then X is\nreduced by 1.",
+	[EFF.RESILIENCE]: "If something has X\nresilience, it takes 25%\nless combat damage,\nrounded down. At the\nstart of its turn, X is\nreduced by 1.",
+	[EFF.WEAKNESS]: "If something has X\nweakness, its attack is\nreduced by 25%, rounded\ndown. At the end of its\nturn, X is reduced by 1.",
+	[EFF.BLAZE]: "If something has X\nblaze, when it attacks,\nit inflicts 1 fire on\nthe target. At the end\nof its turn, X is\nreduced by 1.",
+	[EFF.ATKUP]: "If something has X ATK+,\nits attack is increased\nby 25%, rounded down. At\nthe end of its turn, X\nis reduced by 1.",
+	[EFF.DEFUP]: "If something has X DEF+,\nits defense is increased\nby 25%, rounded down. At\nthe end of its turn, X\nis reduced by 1.",
 	// card effects
 	[CARD_EFF.ONE_USE]: "When a one use card is\nplayed, it is sent to\nthe void. Cards in the\nvoid stay there until\nthe end of the battle.",
 	[CARD_EFF.RETENTION]: "A card with X retention\nwill not be discarded\nat the end of your turn.\nInstead, X will be\nreduced by 1.",
@@ -169,10 +169,10 @@ const EFFECT_DESC = {
 	[ENEMY_EFF.PLAN_DEFEND]: "If something has plan\ndefend: If it has shield\nand intends to defend,\nit gains 2 DEF+ and\nmakes a new plan. If you\nhave enough shield to\nblock 100% of its\nattack, it changes its\nintent to defense and\nmakes a new plan.",
 };
 
-for (const key in EFFECT_DESC) {
-	if (EFFECT_DESC.hasOwnProperty(key)) {
-		EFFECT_DESC[key] = EFFECT_DESC[key].replace(/(health|heal|combat\sdamage|extra\sdamage|damage|attacks|attack)/gi, "<#f44>$1</#f44>");
-		EFFECT_DESC[key] = EFFECT_DESC[key].replace(/(extra\sshield|shield|defend|defense)/gi, "<#58f>$1</#58f>");
-		EFFECT_DESC[key] = EFFECT_DESC[key].replace(/(one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
+for (const key in EFF_DESC) {
+	if (EFF_DESC.hasOwnProperty(key)) {
+		EFF_DESC[key] = EFF_DESC[key].replace(/(health|heal|combat\sdamage|extra\sdamage|damage|attacks|attack)/gi, "<#f44>$1</#f44>");
+		EFF_DESC[key] = EFF_DESC[key].replace(/(extra\sshield|shield|defend|defense)/gi, "<#58f>$1</#58f>");
+		EFF_DESC[key] = EFF_DESC[key].replace(/(one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
 	};
 };

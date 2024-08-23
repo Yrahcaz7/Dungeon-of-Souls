@@ -39,8 +39,8 @@ function startEventBattle(type, num = 1) {
  * Finishes an event with no battle or rewards.
  */
 function finishEvent() {
-	activateArtifacts(FLOOR_CLEAR);
-	game.select = [ARTIFACTS, 0];
+	activateArtifacts(FUNC.FLOOR_CLEAR);
+	game.select = [S.ARTIFACTS, 0];
 	game.state = STATE.EVENT_FIN;
 	mapPopup();
 };
@@ -52,7 +52,7 @@ const EVENTS = {
 		11: [() => {startEventBattle(BATTLE.CROWD, 1)}],
 		20: [() => {takeDamage(4)}, "You successfully got past the enemies!\nHowever, you took 4 damage while doing so.", ["get a move on", 21]],
 		21: [() => {finishEvent()}],
-		30: [() => {gainEff(EFFECT.WEAKNESS, 1)}, "You tried to sneak past as best as you could,\nbut the enemies still spotted you!\nYou have also have hard time getting up.\nYou were crawling around for a while...", ["Battle Start!", 31]],
+		30: [() => {gainEff(EFF.WEAKNESS, 1)}, "You tried to sneak past as best as you could,\nbut the enemies still spotted you!\nYou have also have hard time getting up.\nYou were crawling around for a while...", ["Battle Start!", 31]],
 		31: [() => {
 			if (game.floor >= 5) startEventBattle(BATTLE.CROWD, randomInt(2, 3));
 			else startEventBattle(BATTLE.CROWD, 2);
@@ -61,7 +61,7 @@ const EVENTS = {
 		50: [() => {}, "You vaugely feel something long forgotten...\nYou want to fight these enemies fair and square.", ["Battle Start!", 31]],
 	}, {
 		0: [() => {}, "You observe a chasm in the ground.\nIt is clearly blocking your way forward.\nWhat do you do?", ["navigate around the chasm", 100], ["jump across the chasm", 200], ["climb down the side", 300]],
-		100: [() => {gainEff(EFFECT.WEAKNESS, 10)}, "You begin navigating around the chasm.\nIt is very exhausting.\nYou see an enemy in the way.\nWill you fight or go back?", ["fight the enemy", 110], ["go back", 120]],
+		100: [() => {gainEff(EFF.WEAKNESS, 10)}, "You begin navigating around the chasm.\nIt is very exhausting.\nYou see an enemy in the way.\nWill you fight or go back?", ["fight the enemy", 110], ["go back", 120]],
 		110: [() => {}, "You ready yourself and charge at the enemy.", ["Battle Start!", 111]],
 		111: [() => {startEventBattle(BATTLE.AMBUSH)}],
 		120: [() => {}, "You are back at the front of the chasm. What will you do?", ["jump across the chasm", 200], ["climb down the side", 300]],
@@ -76,10 +76,10 @@ const EVENTS = {
 		420: [() => {}, "There is an engraving on the cup.\nIt says: PURIFIES THE SOUL REMARKABLY.\nONLY FOR THE WORTHY.", ["drink from the right cup", 421], ["look closer at left cup", 410], ["forget this, climb back up", 500]],
 		421: [() => {}, "A powerful energy surges within you...", ["utilize this energy", 422]],
 		422: [() => {
-			game.select = [REWARDS, 0];
+			game.select = [S.REWARDS, 0];
 			game.state = STATE.EVENT_FIN;
 			game.rewards = ["1 purifier", "finish"];
-			activateArtifacts(FLOOR_CLEAR);
+			activateArtifacts(FUNC.FLOOR_CLEAR);
 		}, ""],
 		500: [() => {}, "After some time, you manage to climb out.\nYou set off again towards your destination.", ["get a move on", 501]],
 		501: [() => {finishEvent()}],
@@ -126,7 +126,7 @@ const EVENTS = {
 		200: [() => {}, "You decide not to waste time here.\nAs such, you start walking around the ruins.\nYou then see an enemy in the distance.", ["fight the enemy", 210], ["avoid the enemy", 220]],
 		210: [() => {
 			playerGainShield(10, 0);
-			gainEff(EFFECT.REINFORCE, 1);
+			gainEff(EFF.REINFORCE, 1);
 		}, "You charge toward the enemy, shield at the ready.", ["Battle Start!", 111]],
 		220: [() => {}, "You decide to be wary and avoid the enemy.", ["creep further", 221]],
 		221: [() => {}, "You sucessfully got past the enemy!", ["get a move on", 222]],

@@ -93,7 +93,7 @@ window.onload = async function() {
 	seed = internalSeed(game.seed);
 	canvasData();
 	// set things
-	if (game.select[0] == GAME_FIN) game.select[1] = 0;
+	if (game.select[0] == S.GAME_WON) game.select[1] = 0;
 	if (global.options[OPTION.PERFECT_SCREEN]) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
 	else document.getElementById("canvas").style = "";
 	// fix things
@@ -157,34 +157,34 @@ window.onresize = () => {
 document.addEventListener("keydown", event => {
 	if (!loaded) return;
 	const key = event.key, prevAction = action;
-	if ((key == "E" || key == "e") && game.turn === TURN.PLAYER && game.select[0] !== CONFIRM_END) endTurnConfirm();
+	if ((key == "E" || key == "e") && game.turn === TURN.PLAYER && game.select[0] !== S.CONF_END) endTurnConfirm();
 	else if (key == "1" && !event.repeat && actionTimer == -1) {
-		if (game.select[0] === DECK && game.select[1]) {
+		if (game.select[0] === S.DECK && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
-			else game.select = [DECK, 0];
+			else game.select = [S.DECK, 0];
 		} else {
-			if (game.select[2]) game.select = [DECK, 1, game.select[2]];
-			else game.select = [DECK, 1, game.select];
+			if (game.select[2]) game.select = [S.DECK, 1, game.select[2]];
+			else game.select = [S.DECK, 1, game.select];
 		};
 		action = -1;
 		actionTimer = 2;
 	} else if (key == "2" && !event.repeat && actionTimer == -1) {
-		if (game.select[0] === DISCARD && game.select[1]) {
+		if (game.select[0] === S.DISCARD && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
-			else game.select = [DISCARD, 0];
+			else game.select = [S.DISCARD, 0];
 		} else {
-			if (game.select[2]) game.select = [DISCARD, 1, game.select[2]];
-			else game.select = [DISCARD, 1, game.select];
+			if (game.select[2]) game.select = [S.DISCARD, 1, game.select[2]];
+			else game.select = [S.DISCARD, 1, game.select];
 		};
 		action = -1;
 		actionTimer = 2;
 	} else if (key == "3" && !event.repeat && game.void.length && actionTimer == -1) {
-		if (game.select[0] === VOID && game.select[1]) {
+		if (game.select[0] === S.VOID && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
-			else game.select = [VOID, 0];
+			else game.select = [S.VOID, 0];
 		} else {
-			if (game.select[2]) game.select = [VOID, 1, game.select[2]];
-			else game.select = [VOID, 1, game.select];
+			if (game.select[2]) game.select = [S.VOID, 1, game.select[2]];
+			else game.select = [S.VOID, 1, game.select];
 		};
 		action = -1;
 		actionTimer = 2;

@@ -26,81 +26,14 @@ function save() {
 };
 
 /**
- * Returns a fixed enemy type.
- * @param {string} item - the enemy type to fix.
- */
-function fixEnemyType(item) {
-	if (item == "slime_big") return SLIME.BIG;
-	else if (item == "slime_small") return SLIME.SMALL;
-	else if (item == "slime_prime") return SLIME.PRIME;
-	else return ("" + item).replace("slime_small", SLIME.SMALL);
-};
-
-/**
- * Returns a fixed enemy intent.
- * @param {string} item - the enemy intent to fix.
- */
-function fixEnemyIntent(item) {
-	if (item == "attack") return INTENT.ATTACK;
-	else if (item == "defend") return INTENT.DEFEND;
-};
-
-/**
- * Fixes a room.
- * @param {Array} item - the room to fix.
- */
-function fixRoom(item) {
-	if (item[0] == "battle") item[0] = ROOM.BATTLE;
-	else if (item[0] == "treasure") item[0] = ROOM.TREASURE;
-	else if (item[0] == "battle_prime") item[0] = ROOM.PRIME;
-	if (item[3] == "closed") item[3] = false;
-	else if (item[3] == "open") item[3] = true;
-	if (item[3]?.length) {
-		for (let index = 0; index < item[3].length; index++) {
-			if (typeof item[3][index] == "string") item[3][index] = fixEnemyType(item[3][index]);
-		};
-	};
-};
-
-/**
- * Returns a fixed selector.
- * @param {string} item - the selector to fix.
- */
-function fixSelect(item) {
-	if (item == "hand") return HAND;
-	else if (item == "lookat_you") return LOOKAT_YOU;
-	else if (item == "lookat_enemy") return LOOKAT_ENEMY;
-	else if (item == "attack_enemy") return ATTACK_ENEMY;
-	else if (item == "looker") return LOOKER;
-	else if (item == "help") return HELP;
-	else if (item == "end") return END;
-	else if (item == "confirm_end") return CONFIRM_END;
-	else if (item == "deck") return DECK;
-	else if (item == "discard") return DISCARD;
-	else if (item == "in_map") return IN_MAP;
-	else if (item == "popups") return POPUPS;
-	else if (item == "rewards") return REWARDS;
-	else if (item == "card_rewards") return CARD_REWARDS;
-	else if (item == "artifacts" || item == "map" || item === MAP) return ARTIFACTS;
-	else if (item == "void") return VOID;
-	else if (item == "confirm_exit") return CONFIRM_EXIT;
-	else if (item == "options") return OPTIONS;
-	else if (item == "game_over") return GAME_OVER;
-	else if (item == "game_fin" || item == "game_won" || item == GAME_WON) return GAME_FIN;
-	else if (item == "confirm_restart") return CONFIRM_RESTART;
-	else if (item == "welcome") return WELCOME;
-	else return -1;
-};
-
-/**
  * Fixes the save according to its version number.
  * @param {number} version - The version the save is from.
  */
 function fixSave(version) {
-	// fix PENDING enemy stage (version: all versions)
-	if (game.enemyStage === PENDING) {
-		if (game.enemies[game.enemyNum].done) game.enemyStage = ENDING;
-		else game.enemyStage = STARTING;
+	// fix ANIM.PENDING enemy stage (version: all versions)
+	if (game.enemyStage === ANIM.PENDING) {
+		if (game.enemies[game.enemyNum].done) game.enemyStage = ANIM.ENDING;
+		else game.enemyStage = ANIM.STARTING;
 	};
 };
 
@@ -169,9 +102,9 @@ function load() {
 			if (id >= 100 && id < 200) artifactIDs.push(+id);
 		};
 	};
-	for (const eff in EFFECT) {
-		if (EFFECT.hasOwnProperty(eff)) {
-			I.icon[EFFECT[eff]] = new Image;
+	for (const eff in EFF) {
+		if (EFF.hasOwnProperty(eff)) {
+			I.icon[EFF[eff]] = new Image;
 		};
 	};
 	for (const eff in ENEMY_EFF) {

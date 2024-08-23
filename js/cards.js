@@ -40,8 +40,8 @@ const cards = {
 		attack(level = 0) {
 			let burn = (level >= 1 ? 3 : 2);
 			for (let index = 0; index < game.enemies.length; index++) {
-				if (game.enemies[index].eff[EFFECT.BURN]) game.enemies[index].eff[EFFECT.BURN] += burn;
-				else game.enemies[index].eff[EFFECT.BURN] = burn;
+				if (game.enemies[index].eff[EFF.BURN]) game.enemies[index].eff[EFF.BURN] += burn;
+				else game.enemies[index].eff[EFF.BURN] = burn;
 			};
 		},
 	},
@@ -66,12 +66,12 @@ const cards = {
 		cost: [2, 1],
 		attackEffects: false,
 		attack(level = 0) {
-			if (game.eff[EFFECT.AURA_BLADE]) {
-				dealDamage(game.eff[EFFECT.AURA_BLADE] * 6, 0.5);
+			if (game.eff[EFF.AURA_BLADE]) {
+				dealDamage(game.eff[EFF.AURA_BLADE] * 6, 0.5);
 				for (let index = 0; index < game.enemies.length; index++) {
-					if (index != game.enemyAtt[1]) dealDamage(game.eff[EFFECT.AURA_BLADE], 0.5, index);
+					if (index != game.enemyAtt[1]) dealDamage(game.eff[EFF.AURA_BLADE], 0.5, index);
 				};
-				game.eff[EFFECT.AURA_BLADE] = 0;
+				game.eff[EFF.AURA_BLADE] = 0;
 			};
 		},
 	},
@@ -118,10 +118,10 @@ const cards = {
 		effect(level = 0) {
 			if (level >= 1) {
 				playerGainShield(4);
-				gainEff(EFFECT.REINFORCE, 2);
+				gainEff(EFF.REINFORCE, 2);
 			} else {
 				playerGainShield(2);
-				gainEff(EFFECT.REINFORCE, 1);
+				gainEff(EFF.REINFORCE, 1);
 			};
 		},
 	},
@@ -130,7 +130,7 @@ const cards = {
 		desc: "Gain 3 reinforces.",
 		rarity: 2,
 		cost: [2, 1],
-		effect(level = 0) {gainEff(EFFECT.REINFORCE, 3)},
+		effect(level = 0) {gainEff(EFF.REINFORCE, 3)},
 	},
 	2003: {
 		name: "cower",
@@ -140,10 +140,10 @@ const cards = {
 		effect(level = 0) {
 			if (level >= 1) {
 				playerGainShield(10);
-				gainEff(EFFECT.WEAKNESS, 1);
+				gainEff(EFF.WEAKNESS, 1);
 			} else {
 				playerGainShield(9);
-				gainEff(EFFECT.WEAKNESS, 2);
+				gainEff(EFF.WEAKNESS, 2);
 			};
 		},
 	},
@@ -152,7 +152,7 @@ const cards = {
 		desc: ["Gain 2 resilience.", "Gain 3 resilience."],
 		rarity: 2,
 		cost: 1,
-		effect(level = 0) {gainEff(EFFECT.RESILIENCE, (level >= 1 ? 3 : 2))},
+		effect(level = 0) {gainEff(EFF.RESILIENCE, (level >= 1 ? 3 : 2))},
 	},
 	2005: {
 		name: "the eternal gold",
@@ -167,7 +167,7 @@ const cards = {
 				game.gold -= 45;
 				playerGainShield(10);
 			};
-			gainEff(EFFECT.REINFORCE, 1);
+			gainEff(EFF.REINFORCE, 1);
 		},
 		can(level = 0) {
 			if (level >= 1) return game.gold >= 30;
@@ -212,10 +212,10 @@ const cards = {
 		cost: 0,
 		effect(level = 0) {
 			let burn = (level >= 1 ? 2 : 1);
-			gainEff(EFFECT.BURN, burn);
+			gainEff(EFF.BURN, burn);
 			for (let index = 0; index < game.enemies.length; index++) {
-				if (game.enemies[index].eff[EFFECT.BURN]) game.enemies[index].eff[EFFECT.BURN] += burn;
-				else game.enemies[index].eff[EFFECT.BURN] = burn;
+				if (game.enemies[index].eff[EFF.BURN]) game.enemies[index].eff[EFF.BURN] += burn;
+				else game.enemies[index].eff[EFF.BURN] = burn;
 			};
 		},
 	},
@@ -224,7 +224,7 @@ const cards = {
 		desc: "Choose a card from\nyour hand. Apply\n1 cost reduction\nand 1 retention to\nthe chosen card.",
 		rarity: 2,
 		cost: [1, 0],
-		select: [SELECT_HAND, -1],
+		select: [SS.SELECT_HAND, -1],
 		effect(level = 0) {
 			if (game.hand[game.select[1]][CARD_EFF.RETENTION]) game.hand[game.select[1]][CARD_EFF.RETENTION]++;
 			else game.hand[game.select[1]][CARD_EFF.RETENTION] = 1;
@@ -239,14 +239,14 @@ const cards = {
 		desc: "Gain 1 aura blade.",
 		rarity: 1,
 		cost: [1, 0],
-		effect(level = 0) {gainEff(EFFECT.AURA_BLADE, 1)},
+		effect(level = 0) {gainEff(EFF.AURA_BLADE, 1)},
 	},
 	4001: {
 		name: "aura blaze",
 		desc: "Gain 4 aura blades.\nOne use.",
 		rarity: 2,
 		cost: [3, 2],
-		effect(level = 0) {gainEff(EFFECT.AURA_BLADE, 4)},
+		effect(level = 0) {gainEff(EFF.AURA_BLADE, 4)},
 	},
 };
 
@@ -285,14 +285,14 @@ function loadCard(ref, desc) {
 	desc = desc.replace(/(one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
 	// list keywords
 	if (!ref.keywords) ref.keywords = [];
-	for (const eff in EFFECT) {
-		if (EFFECT.hasOwnProperty(eff)) {
-			if (!ref.keywords.includes(EFFECT[eff]) && new RegExp(EFFECT_NAME[EFFECT[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) ref.keywords.push(EFFECT[eff]);
+	for (const eff in EFF) {
+		if (EFF.hasOwnProperty(eff)) {
+			if (!ref.keywords.includes(EFF[eff]) && new RegExp(EFF_NAME[EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) ref.keywords.push(EFF[eff]);
 		};
 	};
 	for (const eff in CARD_EFF) {
 		if (CARD_EFF.hasOwnProperty(eff) && CARD_EFF[eff] !== CARD_EFF.COST_REDUCTION && CARD_EFF[eff] !== CARD_EFF.DESC) {
-			if (!ref.keywords.includes(CARD_EFF[eff]) && new RegExp(EFFECT_NAME[CARD_EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) ref.keywords.push(CARD_EFF[eff]);
+			if (!ref.keywords.includes(CARD_EFF[eff]) && new RegExp(EFF_NAME[CARD_EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) ref.keywords.push(CARD_EFF[eff]);
 		};
 	};
 	// extra info

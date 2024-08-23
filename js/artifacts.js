@@ -31,14 +31,14 @@ const artifacts = {
 	102: {
 		name: "candy",
 		desc: "You have 15 less max\nhealth, but you heal by\n3 each time you clear a\nfloor.",
-		[FLOOR_CLEAR]() {
+		[FUNC.FLOOR_CLEAR]() {
 			game.health += 3;
 		},
 	},
 	103: {
 		name: "corrosion",
 		desc: "You have 1 more max\nenergy, but you take\n4 damage after each of\nyour turns.",
-		[END_OF_TURN]() {
+		[FUNC.PLAYER_TURN_END]() {
 			takeDamage(4, false);
 		},
 	},
@@ -49,14 +49,14 @@ const artifacts = {
 	105: {
 		name: "nutritious meal",
 		desc: "You have 15 more max health.\nOn pickup, heal 10 health.",
-		[ON_PICKUP]() {
+		[FUNC.PICKUP]() {
 			game.health += 10;
 		},
 	},
 	106: {
 		name: "magic book",
 		desc: "You draw a card each\ntime you play a magic\ntype card.",
-		[CARD_PLAY](cardObj) {
+		[FUNC.PLAY_CARD](cardObj) {
 			if (Math.floor(cardObj.id / 1000) == 4) {
 				drawCards(1);
 			};
@@ -73,7 +73,7 @@ const artifacts = {
 	201: {
 		name: "iron will",
 		desc: "You heal 2 health each\ntime you clear a floor.",
-		[FLOOR_CLEAR]() {
+		[FUNC.FLOOR_CLEAR]() {
 			game.health += 2;
 		},
 	},
@@ -93,7 +93,7 @@ for (const key in artifacts) {
 
 /**
  * Activates all artifact effects of a type.
- * @param {FLOOR_CLEAR | END_OF_TURN | CARD_PLAY} type - the type of effect.
+ * @param {number} type - the type of effect.
  */
 function activateArtifacts(type, ...params) {
 	for (let index = 0; index < game.artifacts.length; index++) {

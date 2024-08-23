@@ -17,7 +17,7 @@
 
 let auraBladePos = [[65, 10], [80, 25], [42, 0], [28, 35]], enemyPos = [], handPos = [], paths = {};
 
-let backAnim = [0, 1.5, 3, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], enemyAnimSync = 0, intentAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], tempAnim = [0, STARTING], effAnim = [0, "none"], playerAnim = [0, "idle"], extraAnim = [], primeAnim = 0, transition = 0, screenShake = 0, auraBladeAnim = [0, 3, 6, 1];
+let backAnim = [0, 1.5, 3, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], enemyAnimSync = 0, intentAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], tempAnim = [0, ANIM.STARTING], effAnim = [0, "none"], playerAnim = [0, "idle"], extraAnim = [], primeAnim = 0, transition = 0, screenShake = 0, auraBladeAnim = [0, 3, 6, 1];
 
 let enemyAnimData = [], infoPos = 0, infoLimit = 0;
 
@@ -431,7 +431,7 @@ const draw = {
 		let desc = getCardAttr("desc", cardObj.id, cardObj.level), exDamage = get.extraDamage(), mulDamage = get.dealDamageMult(), valueIsLess = false;
 		if (cards[cardObj.id].attackEffects !== false && !outside) {
 			if (cards[cardObj.id].keywords.includes(CARD_EFF.UNIFORM)) exDamage = Math.floor(exDamage * 0.5);
-			if (game.select[0] === ATTACK_ENEMY) mulDamage = get.dealDamageMult(game.select[1]);
+			if (game.select[0] === S.ATTACK) mulDamage = get.dealDamageMult(game.select[1]);
 			if (exDamage || mulDamage !== 1) {
 				desc = desc.replace(/(deal\s)(\d+)(\s<#f44>damage<\/#f44>)/gi, (substring, pre, number, post) => {
 					const original = parseInt(number);
@@ -552,7 +552,7 @@ const draw = {
 const info = {
 	/**
 	 * Draws an infobox for a card in the player's hand.
-	 * @param {string | number} type - the infobox contains `EFFECT_DESC[type]`.
+	 * @param {string | number} type - the infobox contains `EFF_DESC[type]`.
 	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
@@ -562,14 +562,14 @@ const info = {
 			const ref = cards[game.hand[game.prevCard].id];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
 			else x -= 145;
-			if (!EFFECT_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
+			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
 		};
-		if (EFFECT_DESC[type]) return draw.textBox(x, y, 24, EFFECT_DESC[type], {"text-small": true});
+		if (EFF_DESC[type]) return draw.textBox(x, y, 24, EFF_DESC[type], {"text-small": true});
 		else return draw.textBox(x, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
 	/**
 	 * Draws an infobox for a card in a special hand select.
-	 * @param {string | number} type - the infobox contains `EFFECT_DESC[type]`.
+	 * @param {string | number} type - the infobox contains `EFF_DESC[type]`.
 	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
@@ -579,14 +579,14 @@ const info = {
 			const ref = cards[game.hand[game.select[1]].id];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
 			else x -= 145;
-			if (!EFFECT_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
+			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
 		};
-		if (EFFECT_DESC[type]) return draw.textBox(x, y, 24, EFFECT_DESC[type], {"text-small": true});
+		if (EFF_DESC[type]) return draw.textBox(x, y, 24, EFF_DESC[type], {"text-small": true});
 		else return draw.textBox(x, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
 	/**
 	 * Draws an infobox for a card reward choice.
-	 * @param {string | number} type - the infobox contains `EFFECT_DESC[type]`.
+	 * @param {string | number} type - the infobox contains `EFF_DESC[type]`.
 	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
@@ -596,46 +596,46 @@ const info = {
 			const ref = cards[game.room[5][game.select[1]]];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
 			else x -= 145;
-			if (!EFFECT_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
+			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
 		};
-		if (EFFECT_DESC[type]) return draw.textBox(x + 69, 51 + yPlus, 24, EFFECT_DESC[type], {"text-small": true});
+		if (EFF_DESC[type]) return draw.textBox(x + 69, 51 + yPlus, 24, EFF_DESC[type], {"text-small": true});
 		else return draw.textBox(x + 69, 51 + yPlus, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
 	/**
 	 * Draws an infobox for a card in a deck.
-	 * @param {string | number} type - the infobox contains `EFFECT_DESC[type]`.
+	 * @param {string | number} type - the infobox contains `EFF_DESC[type]`.
 	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	deck(type, xPlus = 0, yPlus = 0) {
 		let x = (game.cardSelect[0] * 66) + xPlus, y = 15 + (game.cardSelect[1] * 98) - game.deckPos + yPlus;
 		if (game.cardSelect[0] >= 4) {
-			const loc = (inOutsideDeck() ? "deck" : (game.select[0] === DECK ? "deckLocal" : (game.select[0] === VOID ? "void" : "discard")));
+			const loc = (inOutsideDeck() ? "deck" : (game.select[0] === S.DECK ? "deckLocal" : (game.select[0] === S.VOID ? "void" : "discard")));
 			const ref = cards[game[loc][game.cardSelect[0] + (game.cardSelect[1] * 6)].id];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
 			else x -= 145;
-			if (!EFFECT_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
+			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
 		};
-		if (EFFECT_DESC[type]) return draw.textBox(x + 71, y, 24, EFFECT_DESC[type], {"text-small": true});
+		if (EFF_DESC[type]) return draw.textBox(x + 71, y, 24, EFF_DESC[type], {"text-small": true});
 		else return draw.textBox(x + 71, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
 	/**
 	 * Draws an infobox for the player.
-	 * @param {number} type - the infobox contains `EFFECT_DESC[type]`.
+	 * @param {number} type - the infobox contains `EFF_DESC[type]`.
 	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	player(type, xPlus = 0, yPlus = 0) {
 		const eff = game.eff[type];
 		let y = 68 + yPlus, move = 0;
-		let desc = "You have " + eff + " " + EFFECT_NAME[type] + ((type === EFFECT.AURA_BLADE || type === EFFECT.REINFORCE) && eff >= 2 ? "s" : "") + ".";
+		let desc = "You have " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE) && eff >= 2 ? "s" : "") + ".";
 		move += draw.textBox(85 + xPlus, y + move, desc.length, desc, {"text-small": true});
-		move += draw.textBox(85 + xPlus, y + move, 24, EFFECT_DESC[type], {"text-small": true});
+		move += draw.textBox(85 + xPlus, y + move, 24, EFF_DESC[type], {"text-small": true});
 		return move;
 	},
 	/**
 	 * Draws an infobox for the selected enemy.
-	 * @param {number} type - the infobox contains `EFFECT_DESC[type]`.
+	 * @param {number} type - the infobox contains `EFF_DESC[type]`.
 	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
@@ -643,9 +643,9 @@ const info = {
 		const pos = enemyPos[game.select[1]];
 		const eff = game.enemies[game.select[1]].eff[type];
 		let y = pos[1] + yPlus, move = 0;
-		let desc = "This has " + eff + " " + EFFECT_NAME[type] + ((type === EFFECT.AURA_BLADE || type === EFFECT.REINFORCE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "") + ".";
+		let desc = "This has " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "") + ".";
 		move += draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, y + move, desc.length, desc, {"text-small": true});
-		move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, EFFECT_DESC[type], {"text-small": true});
+		move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, EFF_DESC[type], {"text-small": true});
 		if (type === ENEMY_EFF.COUNTDOWN) move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, "The next intent will be\nto " + MIN_INTENT_DESC[game.enemies[game.select[1]].intentHistory[eff - 1]] + ".", {"text-small": true});
 		return move;
 	},
@@ -813,12 +813,12 @@ const graphics = {
 		// menus
 		const past = game.select[2];
 		if (past) {
-			if (past[0] === REWARDS) graphics.rewards(false);
-			else if (past[0] === CARD_REWARDS) graphics.cardRewards(false);
-			else if (past[0] === ARTIFACT_REWARDS) graphics.artifactRewards(false);
+			if (past[0] === S.REWARDS) graphics.rewards(false);
+			else if (past[0] === S.CARD_REWARD) graphics.cardRewards(false);
+			else if (past[0] === S.ARTIFACT_REWARD) graphics.artifactRewards(false);
 		};
 		// looker
-		if (game.select[0] === LOOKER && game.select[1] === 1) {
+		if (game.select[0] === S.LOOKER && game.select[1] === 1) {
 			draw.imageSector(I.extra.looker, 16, 0, 16, 16, 343, 3);
 			draw.image(I.select.round, 342, 2);
 			return;
@@ -845,26 +845,26 @@ const graphics = {
 		// artifacts
 		for (let index = 0; index < game.artifacts.length; index++) {
 			draw.image(I.artifact[game.artifacts[index]], 2 + (index * 18), 13);
-			if (game.select[0] === ARTIFACTS && game.select[1] === index) draw.image(I.artifact.select[game.artifacts[index]], 1 + (index * 18), 12);
+			if (game.select[0] === S.ARTIFACTS && game.select[1] === index) draw.image(I.artifact.select[game.artifacts[index]], 1 + (index * 18), 12);
 		};
 		// selected
-		if (game.select[0] === LOOKER) draw.image(I.select.round, 342, 2);
-		else if (game.select[0] === HELP) draw.image(I.select.round, 361, 2);
-		else if (game.select[0] === OPTIONS) draw.image(get.area() == 1 ? I.select.options : I.select.options_yellow, 380, 2);
-		else if (game.select[0] === END) draw.image(I.select.round, 2, 162);
-		else if (game.select[0] === DECK) draw.image(I.select.deck, 3, 181);
-		else if (game.select[0] === VOID) draw.image(I.select.round, 380, 162);
-		else if (game.select[0] === DISCARD) draw.image(I.select.discard, 381, 181);
+		if (game.select[0] === S.LOOKER) draw.image(I.select.round, 342, 2);
+		else if (game.select[0] === S.HELP) draw.image(I.select.round, 361, 2);
+		else if (game.select[0] === S.OPTIONS) draw.image(get.area() == 1 ? I.select.options : I.select.options_yellow, 380, 2);
+		else if (game.select[0] === S.END) draw.image(I.select.round, 2, 162);
+		else if (game.select[0] === S.DECK) draw.image(I.select.deck, 3, 181);
+		else if (game.select[0] === S.VOID) draw.image(I.select.round, 380, 162);
+		else if (game.select[0] === S.DISCARD) draw.image(I.select.discard, 381, 181);
 		// info
 		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": (get.area() == 1 ? "#000" : "#f44")});
 		// intents
-		if (!hidden() && !(game.select[0] === LOOKER || game.select[0] === HELP || game.select[0] === OPTIONS)) {
+		if (!hidden() && !(game.select[0] === S.LOOKER || game.select[0] === S.HELP || game.select[0] === S.OPTIONS)) {
 			for (let index = 0; index < game.enemies.length; index++) {
 				draw.intent(index);
 			};
 		};
 		// enemy icons
-		if (game.select[0] === ATTACK_ENEMY || game.select[0] === LOOKAT_ENEMY) draw.enemyIcons(game.select[1]);
+		if (game.select[0] === S.ATTACK || game.select[0] === S.ENEMY) draw.enemyIcons(game.select[1]);
 	},
 	/**
 	 * Draws the player on the canvas.
@@ -872,7 +872,7 @@ const graphics = {
 	player() {
 		let x = 15, y = 27;
 		// aura blades
-		for (let index = 0; index < game.eff[EFFECT.AURA_BLADE] && index < 4; index++) {
+		for (let index = 0; index < game.eff[EFF.AURA_BLADE] && index < 4; index++) {
 			draw.image(I.aura_blade, x + auraBladePos[index][0], y + auraBladePos[index][1] + 4 - Math.abs(Math.round(auraBladeAnim[index]) - 4));
 			auraBladeAnim[index] += (Math.random() + 0.5) * 0.05;
 			if (auraBladeAnim[index] >= 8) auraBladeAnim[index] -= 8;
@@ -945,7 +945,7 @@ const graphics = {
 	enemy() {
 		// icons
 		for (let index = 0; index < game.enemies.length; index++) {
-			if ((game.select[0] === ATTACK_ENEMY || game.select[0] === LOOKAT_ENEMY) && index == game.select[1]) continue;
+			if ((game.select[0] === S.ATTACK || game.select[0] === S.ENEMY) && index == game.select[1]) continue;
 			draw.enemyIcons(index);
 		};
 		// enemy drawing
@@ -1053,20 +1053,20 @@ const graphics = {
 						posX = Math.round(((pos[0] - 94)) * phase);
 						posY = Math.round(((pos[1] - 44)) * phase);
 					};
-					if (tempAnim[1] === ENDING) {
-						tempAnim = [0, STARTING];
-						game.enemyStage = ENDING;
-					} else if (game.enemyStage === MIDDLE) {
+					if (tempAnim[1] === ANIM.ENDING) {
+						tempAnim = [0, ANIM.STARTING];
+						game.enemyStage = ANIM.ENDING;
+					} else if (game.enemyStage === ANIM.MIDDLE) {
 						draw.imageSector(I.enemy.slime.big_attack, 4 * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
-						tempAnim[1] = ENDING;
-						game.enemyStage = PENDING;
+						tempAnim[1] = ANIM.ENDING;
+						game.enemyStage = ANIM.PENDING;
 					} else {
 						draw.imageSector(I.enemy.slime.big_attack, (tempAnim[0] % 4) * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
 						tempAnim[0]++;
-						game.enemyStage = PENDING;
+						game.enemyStage = ANIM.PENDING;
 						if (tempAnim[0] >= 11) {
 							tempAnim[0] = 11;
-							game.enemyStage = MIDDLE;
+							game.enemyStage = ANIM.MIDDLE;
 						};
 					};
 				} else if (type === SLIME.SMALL) {
@@ -1076,18 +1076,18 @@ const graphics = {
 							posY = Math.round(((pos[1] - (game.shield > 0 ? 61 : 57))) * phase);
 						draw.imageSector(I.enemy.slime.small_attack, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
 					} else draw.imageSector(I.enemy.slime.small_attack, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
-					if (tempAnim[1] === STARTING) tempAnim[0]++;
-					else if (tempAnim[1] === ENDING) tempAnim[0]--;
+					if (tempAnim[1] === ANIM.STARTING) tempAnim[0]++;
+					else if (tempAnim[1] === ANIM.ENDING) tempAnim[0]--;
 					if (tempAnim[0] >= 20) {
 						tempAnim[0] = 18;
-						tempAnim[1] = ENDING;
-						game.enemyStage = MIDDLE;
+						tempAnim[1] = ANIM.ENDING;
+						game.enemyStage = ANIM.MIDDLE;
 					} else if (tempAnim[0] < 0) {
-						tempAnim = [0, STARTING];
+						tempAnim = [0, ANIM.STARTING];
 						enemyAnim[game.enemyNum] = 0;
-						game.enemyStage = ENDING;
+						game.enemyStage = ANIM.ENDING;
 					} else {
-						game.enemyStage = PENDING;
+						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SLIME.PRIME) {
 					if (tempAnim[0] >= 4) {
@@ -1095,14 +1095,14 @@ const graphics = {
 						draw.imageSector(I.enemy.slime.prime_attack, 4 * 36, 0, 36, 18, pos[0] - 32 - posX, 80, 36, 18);
 					} else draw.imageSector(I.enemy.slime.prime_attack, Math.floor(tempAnim[0]) * 36, 0, 36, 18, pos[0] - 32, 80, 36, 18);
 					tempAnim[0]++;
-					if (game.enemyStage === MIDDLE) {
-						tempAnim = [0, STARTING];
-						game.enemyStage = ENDING;
+					if (game.enemyStage === ANIM.MIDDLE) {
+						tempAnim = [0, ANIM.STARTING];
+						game.enemyStage = ANIM.ENDING;
 					} else if (tempAnim[0] >= 14) {
 						tempAnim[0] = 14;
-						game.enemyStage = MIDDLE;
+						game.enemyStage = ANIM.MIDDLE;
 					} else {
-						game.enemyStage = PENDING;
+						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === FRAGMENT && primeAnim == -1) {
 					draw.imageSector(I.enemy.fragment.attack, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
@@ -1110,12 +1110,12 @@ const graphics = {
 					if (tempAnim[0] >= 4 && tempAnim[0] < 6) draw.rect("#f00", 0, pos[1] + 4, pos[0], 60);
 					tempAnim[0]++;
 					if (tempAnim[0] >= 7) {
-						tempAnim = [0, STARTING];
-						game.enemyStage = ENDING;
+						tempAnim = [0, ANIM.STARTING];
+						game.enemyStage = ANIM.ENDING;
 					} else if (tempAnim[0] == 4) {
-						game.enemyStage = MIDDLE;
+						game.enemyStage = ANIM.MIDDLE;
 					} else {
-						game.enemyStage = PENDING;
+						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SENTRY.BIG) {
 					draw.imageSector(I.enemy.sentry.big_attack, Math.floor(tempAnim[0]) * 88, 0, 88, 70, pos[0] - 12, pos[1] - 1, 88, 70);
@@ -1124,19 +1124,19 @@ const graphics = {
 						const end = (game.shield > 0 ? [92, 87] : [72, 82]);
 						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
 					};
-					if (tempAnim[1] === STARTING) tempAnim[0]++;
-					else if (tempAnim[1] === ENDING) tempAnim[0]--;
+					if (tempAnim[1] === ANIM.STARTING) tempAnim[0]++;
+					else if (tempAnim[1] === ANIM.ENDING) tempAnim[0]--;
 					if (tempAnim[0] >= 5) {
 						tempAnim[0] = 4;
-						tempAnim[1] = ENDING;
-					} else if (tempAnim[0] == 3 && tempAnim[1] === ENDING) {
-						game.enemyStage = MIDDLE;
+						tempAnim[1] = ANIM.ENDING;
+					} else if (tempAnim[0] == 3 && tempAnim[1] === ANIM.ENDING) {
+						game.enemyStage = ANIM.MIDDLE;
 					} else if (tempAnim[0] < 0) {
-						tempAnim = [0, STARTING];
+						tempAnim = [0, ANIM.STARTING];
 						enemyAnim[game.enemyNum] = 0;
-						game.enemyStage = ENDING;
+						game.enemyStage = ANIM.ENDING;
 					} else {
-						game.enemyStage = PENDING;
+						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SENTRY.SMALL) {
 					draw.imageSector(I.enemy.sentry.small_attack, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
@@ -1145,19 +1145,19 @@ const graphics = {
 						const end = (game.shield > 0 ? [92, 87] : [72, 82]);
 						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
 					};
-					if (tempAnim[1] === STARTING) tempAnim[0]++;
-					else if (tempAnim[1] === ENDING) tempAnim[0]--;
+					if (tempAnim[1] === ANIM.STARTING) tempAnim[0]++;
+					else if (tempAnim[1] === ANIM.ENDING) tempAnim[0]--;
 					if (tempAnim[0] >= 12) {
 						tempAnim[0] = 11;
-						tempAnim[1] = ENDING;
-					} else if (tempAnim[0] == 10 && tempAnim[1] === ENDING) {
-						game.enemyStage = MIDDLE;
+						tempAnim[1] = ANIM.ENDING;
+					} else if (tempAnim[0] == 10 && tempAnim[1] === ANIM.ENDING) {
+						game.enemyStage = ANIM.MIDDLE;
 					} else if (tempAnim[0] < 0) {
-						tempAnim = [0, STARTING];
+						tempAnim = [0, ANIM.STARTING];
 						enemyAnim[game.enemyNum] = 0;
-						game.enemyStage = ENDING;
+						game.enemyStage = ANIM.ENDING;
 					} else {
-						game.enemyStage = PENDING;
+						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SENTRY.PRIME && primeAnim == -1) {
 					draw.imageSector(I.enemy.sentry.prime_attack, Math.floor(tempAnim[0]) * 64, 0, 64, 86, pos[0], pos[1] - 22);
@@ -1168,19 +1168,19 @@ const graphics = {
 						start[1] += 7;
 						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
 					};
-					if (tempAnim[1] === STARTING) tempAnim[0]++;
-					else if (tempAnim[1] === ENDING) tempAnim[0]--;
+					if (tempAnim[1] === ANIM.STARTING) tempAnim[0]++;
+					else if (tempAnim[1] === ANIM.ENDING) tempAnim[0]--;
 					if (tempAnim[0] >= 13) {
 						tempAnim[0] = 12;
-						tempAnim[1] = ENDING;
-					} else if (tempAnim[0] == 11 && tempAnim[1] === ENDING) {
-						game.enemyStage = MIDDLE;
+						tempAnim[1] = ANIM.ENDING;
+					} else if (tempAnim[0] == 11 && tempAnim[1] === ANIM.ENDING) {
+						game.enemyStage = ANIM.MIDDLE;
 					} else if (tempAnim[0] < 0) {
-						tempAnim = [0, STARTING];
+						tempAnim = [0, ANIM.STARTING];
 						enemyAnim[game.enemyNum] = 0;
-						game.enemyStage = ENDING;
+						game.enemyStage = ANIM.ENDING;
 					} else {
-						game.enemyStage = PENDING;
+						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SINGULARITY) {
 					if (!enemyAnimData.length) enemyAnimData = [Math.floor(Math.random() * 4), (game.shield > 0 ? (/crouch/.test(playerAnim[1]) ? 0 : 1) : 2)];
@@ -1192,93 +1192,93 @@ const graphics = {
 						const end = [[94, 95], [92, 87], [72, 82]][enemyAnimData[1]];
 						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 4);
 					};
-					if (tempAnim[1] === STARTING) tempAnim[0]++;
-					else if (tempAnim[1] === ENDING) tempAnim[0]--;
+					if (tempAnim[1] === ANIM.STARTING) tempAnim[0]++;
+					else if (tempAnim[1] === ANIM.ENDING) tempAnim[0]--;
 					if (tempAnim[0] >= 9) {
 						tempAnim[0] = 8;
-						tempAnim[1] = ENDING;
-					} else if (tempAnim[0] == 7 && tempAnim[1] === ENDING) {
-						game.enemyStage = MIDDLE;
+						tempAnim[1] = ANIM.ENDING;
+					} else if (tempAnim[0] == 7 && tempAnim[1] === ANIM.ENDING) {
+						game.enemyStage = ANIM.MIDDLE;
 					} else if (tempAnim[0] < 0) {
-						tempAnim = [0, STARTING];
-						game.enemyStage = ENDING;
+						tempAnim = [0, ANIM.STARTING];
+						game.enemyStage = ANIM.ENDING;
 						enemyAnimData = [];
 					} else {
-						game.enemyStage = PENDING;
+						game.enemyStage = ANIM.PENDING;
 					};
 				};
 			} else if (intent === INTENT.DEFEND) {
 				if (type === SLIME.BIG) {
 					draw.imageSector(I.enemy.slime.big_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, tempAnim[0] * 2 + 5, 64, pos[0], pos[1]);
 					tempAnim[0]++;
-					if (game.enemyStage === MIDDLE) {
-						tempAnim = [0, STARTING];
-						game.enemyStage = ENDING;
+					if (game.enemyStage === ANIM.MIDDLE) {
+						tempAnim = [0, ANIM.STARTING];
+						game.enemyStage = ANIM.ENDING;
 					} else if (tempAnim[0] >= 27) {
 						tempAnim[0] = 27;
-						game.enemyStage = MIDDLE;
+						game.enemyStage = ANIM.MIDDLE;
 					} else {
-						game.enemyStage = PENDING;
+						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SLIME.SMALL) {
 					draw.imageSector(I.enemy.slime.small_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, tempAnim[0] + 20, 64, pos[0], pos[1]);
 					tempAnim[0]++;
-					if (game.enemyStage === MIDDLE) {
-						tempAnim = [0, STARTING];
-						game.enemyStage = ENDING;
+					if (game.enemyStage === ANIM.MIDDLE) {
+						tempAnim = [0, ANIM.STARTING];
+						game.enemyStage = ANIM.ENDING;
 					} else if (tempAnim[0] >= 24) {
 						tempAnim[0] = 24;
-						game.enemyStage = MIDDLE;
+						game.enemyStage = ANIM.MIDDLE;
 					} else {
-						game.enemyStage = PENDING;
+						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SLIME.PRIME) {
 					draw.imageSector(I.enemy.slime.prime_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, tempAnim[0] * 3, 64, pos[0], pos[1] + 1);
 					tempAnim[0]++;
-					if (game.enemyStage === MIDDLE) {
-						tempAnim = [0, STARTING];
-						game.enemyStage = ENDING;
+					if (game.enemyStage === ANIM.MIDDLE) {
+						tempAnim = [0, ANIM.STARTING];
+						game.enemyStage = ANIM.ENDING;
 					} else if (tempAnim[0] >= 20) {
 						tempAnim[0] = 20;
-						game.enemyStage = MIDDLE;
+						game.enemyStage = ANIM.MIDDLE;
 					} else {
-						game.enemyStage = PENDING;
+						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SENTRY.BIG) {
 					draw.imageSector(I.enemy.sentry.big_defend, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 					tempAnim[0]++;
-					if (game.enemyStage === MIDDLE) {
-						tempAnim = [0, STARTING];
-						game.enemyStage = ENDING;
+					if (game.enemyStage === ANIM.MIDDLE) {
+						tempAnim = [0, ANIM.STARTING];
+						game.enemyStage = ANIM.ENDING;
 					} else if (tempAnim[0] >= 7) {
 						tempAnim[0] = 7;
-						game.enemyStage = MIDDLE;
+						game.enemyStage = ANIM.MIDDLE;
 					} else {
-						game.enemyStage = PENDING;
+						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SENTRY.SMALL) {
 					draw.imageSector(I.enemy.sentry.small_defend, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
 					tempAnim[0]++;
-					if (game.enemyStage === MIDDLE) {
-						tempAnim = [0, STARTING];
-						game.enemyStage = ENDING;
+					if (game.enemyStage === ANIM.MIDDLE) {
+						tempAnim = [0, ANIM.STARTING];
+						game.enemyStage = ANIM.ENDING;
 					} else if (tempAnim[0] >= 5) {
 						tempAnim[0] = 5;
-						game.enemyStage = MIDDLE;
+						game.enemyStage = ANIM.MIDDLE;
 					} else {
-						game.enemyStage = PENDING;
+						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SENTRY.PRIME && primeAnim == -1) {
 					draw.imageSector(I.enemy.sentry.prime_defend, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
 					tempAnim[0]++;
-					if (game.enemyStage === MIDDLE) {
-						tempAnim = [0, STARTING];
-						game.enemyStage = ENDING;
+					if (game.enemyStage === ANIM.MIDDLE) {
+						tempAnim = [0, ANIM.STARTING];
+						game.enemyStage = ANIM.ENDING;
 					} else if (tempAnim[0] >= 9) {
 						tempAnim[0] = 9;
-						game.enemyStage = MIDDLE;
+						game.enemyStage = ANIM.MIDDLE;
 					} else {
-						game.enemyStage = PENDING;
+						game.enemyStage = ANIM.PENDING;
 					};
 				};
 			};
@@ -1290,7 +1290,7 @@ const graphics = {
 		};
 		enemyAnimSync++;
 		// draw intents
-		if (game.select[0] === LOOKER || game.select[0] === HELP || game.select[0] === OPTIONS) {
+		if (game.select[0] === S.LOOKER || game.select[0] === S.HELP || game.select[0] === S.OPTIONS) {
 			for (let index = 0; index < game.enemies.length; index++) {
 				draw.intent(index);
 			};
@@ -1370,9 +1370,9 @@ const graphics = {
 			if (game.deckPos > Math.max(98 * (Math.floor((len - 1) / 6) - 1) + 11, 0)) game.deckPos = Math.max(98 * (Math.floor((len - 1) / 6) - 1) + 11, 0);
 			let selected;
 			for (let x = 0, y = 0; x + (y * 6) < len; x++) {
-				if (x === game.cardSelect[0] && y === game.cardSelect[1] && game.select[0] !== CONFIRM_REFINE) {
+				if (x === game.cardSelect[0] && y === game.cardSelect[1] && game.select[0] !== S.CONF_REFINE) {
 					selected = [x, y];
-				} else if ((game.select[0] === REFINER || game.select[0] === CONFIRM_REFINE) && deck[x + (y * 6)].level > 0) {
+				} else if ((game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) && deck[x + (y * 6)].level > 0) {
 					ctx.globalAlpha = 0.75;
 					draw.card(deck[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66), inOutsideDeck());
 					ctx.globalAlpha = 1;
@@ -1385,7 +1385,7 @@ const graphics = {
 				};
 			};
 			if (selected) {
-				if ((game.select[0] === REFINER || game.select[0] === CONFIRM_REFINE) && deck[selected[0] + (selected[1] * 6)].level > 0) {
+				if ((game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) && deck[selected[0] + (selected[1] * 6)].level > 0) {
 					ctx.globalAlpha = 0.75;
 					draw.card(deck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66), inOutsideDeck());
 					ctx.globalAlpha = 1;
@@ -1393,7 +1393,7 @@ const graphics = {
 					draw.card(deck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66), inOutsideDeck());
 				};
 			};
-			if (game.select[0] !== CONFIRM_REFINE) {
+			if (game.select[0] !== S.CONF_REFINE) {
 				graphics.target();
 				selected = game.cardSelect;
 				if (game.deckPos >= 98 * selected[1]) {
@@ -1404,26 +1404,26 @@ const graphics = {
 			};
 		};
 		draw.rect("#0004", 0, 0, 400, 13);
-		if (game.select[0] === DECK) draw.lore(200 - 2, 1, "Deck", {"color": "#fff", "text-align": DIR.CENTER});
-		else if (game.select[0] === DISCARD) draw.lore(200 - 2, 1, "Discard", {"color": "#fff", "text-align": DIR.CENTER});
-		else if (game.select[0] === VOID) draw.lore(200 - 2, 1, "Void", {"color": "#fff", "text-align": DIR.CENTER});
-		else if (game.select[0] === IN_MAP) draw.lore(200 - 2, 1, "Cards", {"color": "#fff", "text-align": DIR.CENTER});
-		else if (game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY) draw.lore(200 - 2, 1, "Purifier: Pick a Card to Destroy", {"color": "#fff", "text-align": DIR.CENTER});
-		else if (game.select[0] === REFINER || game.select[0] === CONFIRM_REFINE) draw.lore(200 - 2, 1, "Refiner: Pick a Card to Improve", {"color": "#fff", "text-align": DIR.CENTER});
+		if (game.select[0] === S.DECK) draw.lore(200 - 2, 1, "Deck", {"color": "#fff", "text-align": DIR.CENTER});
+		else if (game.select[0] === S.DISCARD) draw.lore(200 - 2, 1, "Discard", {"color": "#fff", "text-align": DIR.CENTER});
+		else if (game.select[0] === S.VOID) draw.lore(200 - 2, 1, "Void", {"color": "#fff", "text-align": DIR.CENTER});
+		else if (game.select[0] === S.MAP) draw.lore(200 - 2, 1, "Cards", {"color": "#fff", "text-align": DIR.CENTER});
+		else if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY) draw.lore(200 - 2, 1, "Purifier: Pick a Card to Destroy", {"color": "#fff", "text-align": DIR.CENTER});
+		else if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) draw.lore(200 - 2, 1, "Refiner: Pick a Card to Improve", {"color": "#fff", "text-align": DIR.CENTER});
 		draw.rect("#fff", 1, 12, 398, 1);
 	},
 	/**
 	 * Draws the player's hand on the canvas.
 	 */
 	hand() {
-		if (game.select[0] === ATTACK_ENEMY) {
+		if (game.select[0] === S.ATTACK) {
 			draw.card(game.enemyAtt[2], 0, 22, true, 50);
 		};
-		if (game.select[0] === ATTACK_ENEMY || game.select[0] === LOOKAT_ENEMY) return;
+		if (game.select[0] === S.ATTACK || game.select[0] === S.ENEMY) return;
 		let temp = -1;
 		for (let index = 0; index < game.hand.length; index++) {
 			if (!cardAnim[index]) cardAnim[index] = 0;
-			if ((game.select[0] === HAND && game.select[1] == index) || (index == game.prevCard && global.options[OPTION.STICKY_CARDS])) {
+			if ((game.select[0] === S.HAND && game.select[1] == index) || (index == game.prevCard && global.options[OPTION.STICKY_CARDS])) {
 				temp = index;
 			} else {
 				if (cardAnim[index] > 0) cardAnim[index] -= 6 + Math.random();
@@ -1494,7 +1494,7 @@ const graphics = {
 	 * Draws the selector and the info it targets on the canvas.
 	 */
 	target() {
-		if (game.select[0] === ATTACK_ENEMY || game.select[0] === LOOKAT_ENEMY) {
+		if (game.select[0] === S.ATTACK || game.select[0] === S.ENEMY) {
 			const enemy = game.enemies[game.select[1]];
 			const type = enemy.type;
 			const pos = enemyPos[game.select[1]];
@@ -1535,7 +1535,7 @@ const graphics = {
 				let x = coords[0] - 5.5, y = coords[1] - 1;
 				for (const key in game.enemies[game.select[1]].eff) {
 					if (game.enemies[game.select[1]].eff.hasOwnProperty(key) && game.enemies[game.select[1]].eff[key]) {
-						let height = Math.ceil((EFFECT_DESC[key].match(/\n/g) || []).length * 5.5 + 22);
+						let height = Math.ceil((EFF_DESC[key].match(/\n/g) || []).length * 5.5 + 22);
 						if (y + height >= 200 - pos[1]) {
 							y = coords[1] - 1;
 							x -= 77;
@@ -1544,7 +1544,7 @@ const graphics = {
 					};
 				};
 			};
-		} else if (game.select[0] === LOOKAT_YOU) {
+		} else if (game.select[0] === S.PLAYER) {
 			let coords = [58, 69, 24, 39];
 			draw.selector(coords[0], coords[1], coords[2], coords[3]);
 			if (game.character === CHARACTER.KNIGHT) {
@@ -1554,7 +1554,7 @@ const graphics = {
 			let x = coords[0] + coords[2] - 80, y = 0;
 			for (const key in game.eff) {
 				if (game.eff.hasOwnProperty(key) && game.eff[key]) {
-					let height = Math.ceil((EFFECT_DESC[key].match(/\n/g) || []).length * 5.5 + 22);
+					let height = Math.ceil((EFF_DESC[key].match(/\n/g) || []).length * 5.5 + 22);
 					if (y + height >= 200 - coords[1]) {
 						y = 0;
 						x += 77;
@@ -1562,22 +1562,22 @@ const graphics = {
 					y += info.player(+key, x, y);
 				};
 			};
-		} else if (game.select[0] === ARTIFACTS) {
+		} else if (game.select[0] === S.ARTIFACTS) {
 			info.artifact(game.artifacts[game.select[1]]);
-		} else if (game.select[0] === ARTIFACT_REWARDS) {
+		} else if (game.select[0] === S.ARTIFACT_REWARD) {
 			info.artifact(game.room[6][game.select[1]], 179 + (game.select[1] * 32), 90);
-		} else if (game.select[0] === DECK && game.select[1] == 1 && game.deckLocal.length) {
+		} else if (game.select[0] === S.DECK && game.select[1] == 1 && game.deckLocal.length) {
 			graphics.cardInfo("deck", game.deckLocal.slice().cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)]);
-		} else if ((game.select[0] === VOID || game.select[0] === DISCARD) && game.select[1] == 1 && game[game.select[0] === VOID ? "void" : "discard"].length) {
-			graphics.cardInfo("deck", game[game.select[0] === VOID ? "void" : "discard"][game.cardSelect[0] + (game.cardSelect[1] * 6)]);
-		} else if (game.select[0] === CARD_REWARDS && game.select[1] > -1 && game.select[1] < get.cardRewardChoices()) {
+		} else if ((game.select[0] === S.VOID || game.select[0] === S.DISCARD) && game.select[1] == 1 && game[game.select[0] === S.VOID ? "void" : "discard"].length) {
+			graphics.cardInfo("deck", game[game.select[0] === S.VOID ? "void" : "discard"][game.cardSelect[0] + (game.cardSelect[1] * 6)]);
+		} else if (game.select[0] === S.CARD_REWARD && game.select[1] > -1 && game.select[1] < get.cardRewardChoices()) {
 			graphics.cardInfo("reward", new Card(game.room[5][game.select[1]]));
 		} else if (inOutsideDeck()) {
 			graphics.cardInfo("deck", game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)]);
 		};
-		if ((game.select[0] === HAND || (game.select[0] != ATTACK_ENEMY && game.select[0] != LOOKAT_ENEMY && !hidden() && global.options[OPTION.STICKY_CARDS])) && game.hand.length && game.prevCard < game.hand.length) {
+		if ((game.select[0] === S.HAND || (game.select[0] != S.ATTACK && game.select[0] != S.ENEMY && !hidden() && global.options[OPTION.STICKY_CARDS])) && game.hand.length && game.prevCard < game.hand.length) {
 			graphics.cardInfo("card", game.hand[game.prevCard]);
-		} else if (game.select[0] === SELECT_HAND && game.select[1] >= 0 && game.select[1] < game.hand.length) {
+		} else if (game.select[0] === SS.SELECT_HAND && game.select[1] >= 0 && game.select[1] < game.hand.length) {
 			graphics.cardInfo("cardSelect", game.hand[game.select[1]]);
 		};
 	},
@@ -1603,7 +1603,7 @@ const graphics = {
 			draw.image(I.popup.back, x, 150 - (index * 21));
 			draw.lore(x + 13, 150 - (index * 21) + 8, popups[index][3] ? popups[index][1] + "\n" + popups[index][3] : popups[index][1], {"text-small": !!popups[index][3]});
 			if (I.popup[popups[index][0]]) draw.image(I.popup[popups[index][0]], x + 2, 150 - (index * 21) + 2);
-			if (game.select[0] === POPUPS && game.select[1] == index) {
+			if (game.select[0] === S.POPUPS && game.select[1] == index) {
 				draw.image(I.select.popup, x - 1, 150 - (index * 21) - 1);
 			};
 			ctx.globalAlpha = 1;
@@ -1703,9 +1703,9 @@ const graphics = {
 				};
 			};
 			draw.image(I.extra.deck, 22, 16);
-			if (game.select[0] === IN_MAP && game.mapSelect == (paths[game.location] || []).length) draw.image(I.select.deck, 21, 15);
+			if (game.select[0] === S.MAP && game.mapSelect == (paths[game.location] || []).length) draw.image(I.select.deck, 21, 15);
 			draw.image(I.extra.end, 22, 179);
-			if (game.select[0] === IN_MAP && game.mapSelect == -1) draw.image(I.select.round, 21, 178);
+			if (game.select[0] === S.MAP && game.mapSelect == -1) draw.image(I.select.round, 21, 178);
 			draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
 			draw.lore(399, 1, "seed: " + game.seed, {"color": "#fff", "text-align": DIR.LEFT});
 		};
@@ -1895,8 +1895,8 @@ const startAnim = {
 	 */
 	player(name) {
 		if (!I.player[name] || playerAnim[1] == "death") return;
-		if (game.eff[EFFECT.AURA_BLADE] && (name == "attack" || name == "attack_2")) name += "_aura";
-		if (game.eff[EFFECT.REINFORCE] && (name == "shield" || name == "crouch_shield")) name += "_reinforced";
+		if (game.eff[EFF.AURA_BLADE] && (name == "attack" || name == "attack_2")) name += "_aura";
+		if (game.eff[EFF.REINFORCE] && (name == "shield" || name == "crouch_shield")) name += "_reinforced";
 		playerAnim = [0, name];
 	},
 	/**
@@ -1910,6 +1910,6 @@ const startAnim = {
 	 * Starts an enemy animation.
 	 */
 	enemy() {
-		tempAnim = [0, STARTING];
+		tempAnim = [0, ANIM.STARTING];
 	},
 };

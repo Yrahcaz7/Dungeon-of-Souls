@@ -45,21 +45,21 @@ function randomize(str) {
  * Returns a boolean indicating whether the middleground layers are hidden.
  */
 function hidden() {
-	return !!((game.select[0] === LOOKER || game.select[0] === HELP || game.select[0] === OPTIONS || game.select[0] === DECK || game.select[0] === VOID || game.select[0] === DISCARD) && game.select[1]) || game.select[0] === IN_MAP || game.select[0] === CONFIRM_RESTART;
+	return !!((game.select[0] === S.LOOKER || game.select[0] === S.HELP || game.select[0] === S.OPTIONS || game.select[0] === S.DECK || game.select[0] === S.VOID || game.select[0] === S.DISCARD) && game.select[1]) || game.select[0] === S.MAP || game.select[0] === S.CONF_RESTART;
 };
 
 /**
  * Returns a boolean indicating whether a deck outside battle is being viewed.
  */
 function inOutsideDeck() {
-	return ((game.select[0] === IN_MAP && game.select[1]) || game.select[0] === PURIFIER || game.select[0] === CONFIRM_PURIFY || game.select[0] === REFINER || game.select[0] === CONFIRM_REFINE);
+	return ((game.select[0] === S.MAP && game.select[1]) || game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY || game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE);
 };
 
 /**
  * Returns a boolean indicating whether a deck is being viewed.
  */
 function inDeck() {
-	return ((game.select[0] === DECK || game.select[0] === VOID || game.select[0] === DISCARD) && game.select[1]) || inOutsideDeck();
+	return ((game.select[0] === S.DECK || game.select[0] === S.VOID || game.select[0] === S.DISCARD) && game.select[1]) || inOutsideDeck();
 };
 
 const get = {
@@ -118,9 +118,9 @@ const get = {
 	extraDamage(attacking = false) {
 		let extra = 0;
 		if (game.attackEffects.includes(ATT_EFF.AURA_BLADE)) {
-			extra += 5 + ((game.eff[EFFECT.AURA_BLADE] || 0) + 1);
-		} else if (game.eff[EFFECT.AURA_BLADE] && !attacking) {
-			extra += 5 + game.eff[EFFECT.AURA_BLADE];
+			extra += 5 + ((game.eff[EFF.AURA_BLADE] || 0) + 1);
+		} else if (game.eff[EFF.AURA_BLADE] && !attacking) {
+			extra += 5 + game.eff[EFF.AURA_BLADE];
 		};
 		if (game.artifacts.includes(101)) extra += 2;
 		return extra;
@@ -131,9 +131,9 @@ const get = {
 	 */
 	dealDamageMult(enemy = game.enemyAtt[1]) {
 		let mult = 1;
-		if (game.eff[EFFECT.WEAKNESS]) mult -= 0.25;
-		if (game.eff[EFFECT.ATKUP]) mult += 0.25;
-		if (game.enemies[enemy]?.eff[EFFECT.RESILIENCE]) mult -= 0.25;
+		if (game.eff[EFF.WEAKNESS]) mult -= 0.25;
+		if (game.eff[EFF.ATKUP]) mult += 0.25;
+		if (game.enemies[enemy]?.eff[EFF.RESILIENCE]) mult -= 0.25;
 		return mult;
 	},
 	/**
@@ -142,9 +142,9 @@ const get = {
 	 */
 	takeDamageMult(enemy = game.enemyNum) {
 		let mult = 1;
-		if (game.enemies[enemy]?.eff[EFFECT.WEAKNESS]) mult -= 0.25;
-		if (game.enemies[enemy]?.eff[EFFECT.ATKUP]) mult += 0.25;
-		if (game.eff[EFFECT.RESILIENCE]) mult -= 0.25;
+		if (game.enemies[enemy]?.eff[EFF.WEAKNESS]) mult -= 0.25;
+		if (game.enemies[enemy]?.eff[EFF.ATKUP]) mult += 0.25;
+		if (game.eff[EFF.RESILIENCE]) mult -= 0.25;
 		return mult;
 	},
 	/**
@@ -160,7 +160,7 @@ const get = {
 	 */
 	playerShieldMult() {
 		let mult = 1;
-		if (game.eff[EFFECT.DEFUP]) mult += 0.25;
+		if (game.eff[EFF.DEFUP]) mult += 0.25;
 		return mult;
 	},
 	/**
@@ -169,7 +169,7 @@ const get = {
 	 */
 	enemyShieldMult(enemy = game.enemyNum) {
 		let mult = 1;
-		if (game.enemies[enemy]?.eff[EFFECT.DEFUP]) mult += 0.25;
+		if (game.enemies[enemy]?.eff[EFF.DEFUP]) mult += 0.25;
 		return mult;
 	},
 	/**
@@ -332,9 +332,9 @@ function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true) 
 		game.enemies[index].health -= amount;
 	};
 	// additional effects
-	if (attack && game.eff[EFFECT.BLAZE]) {
-		if (game.enemies[index].eff[EFFECT.BURN]) game.enemies[index].eff[EFFECT.BURN]++;
-		else game.enemies[index].eff[EFFECT.BURN] = 1;
+	if (attack && game.eff[EFF.BLAZE]) {
+		if (game.enemies[index].eff[EFF.BURN]) game.enemies[index].eff[EFF.BURN]++;
+		else game.enemies[index].eff[EFF.BURN] = 1;
 	};
 	// transitions
 	startEnemyTransition(index, prevShield);
@@ -359,7 +359,7 @@ function takeDamage(amount, attack = true, index = game.enemyNum) {
 		game.health -= amount;
 	};
 	// additional effects
-	if (attack && game.enemies[index].eff[EFFECT.BLAZE]) gainEff(EFFECT.BURN, 1);
+	if (attack && game.enemies[index].eff[EFF.BLAZE]) gainEff(EFF.BURN, 1);
 };
 
 /**
@@ -410,8 +410,8 @@ function activateAttackEffects(id) {
 	// start player anim
 	startAnim.player(cards[id].anim);
 	// trigger aura blades
-	if (game.eff[EFFECT.AURA_BLADE]) {
-		game.eff[EFFECT.AURA_BLADE]--;
+	if (game.eff[EFF.AURA_BLADE]) {
+		game.eff[EFF.AURA_BLADE]--;
 		game.attackEffects.push(ATT_EFF.AURA_BLADE);
 	};
 };

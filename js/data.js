@@ -172,7 +172,7 @@ function updateData() {
 	// handPos
 	if (game.hand.length !== handPos.length) {
 		handPos = [];
-		const margin = [-2, -2, -2, -2, -2, 8, 16, 24, 28, 32, 36, 38, 40, 42, 44, 46, 46, 48, 48, 50, 50, 52, 52, 52, 52];
+		const margin = [-4, -4, -4, -4, -4, 8, 16, 24, 28, 32, 36, 38, 40, 42, 44, 46, 46, 48, 48, 50, 50, 52, 52, 52, 52];
 		// discard extra cards
 		if (game.hand.length > margin.length) {
 			let extraCards = game.hand.splice(margin.length);
@@ -233,8 +233,8 @@ function updateData() {
 		let enemy = game.enemies[index];
 		if (enemy.eff[ENEMY_EFF.PLAN_ATTACK]) {
 			if (enemy.intent === INTENT.ATTACK && game.shield >= Math.ceil(enemy.getTotalAttackPower() * get.takeDamageMult(index))) {
-				if (enemy.eff[EFFECT.ATKUP]) enemy.eff[EFFECT.ATKUP] += 2;
-				else enemy.eff[EFFECT.ATKUP] = 2;
+				if (enemy.eff[EFF.ATKUP]) enemy.eff[EFF.ATKUP] += 2;
+				else enemy.eff[EFF.ATKUP] = 2;
 				enemy.eff[[ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 2)]] = enemy.eff[ENEMY_EFF.PLAN_ATTACK] - 1;
 				delete enemy.eff[ENEMY_EFF.PLAN_ATTACK];
 			} else if (enemy.intent === INTENT.DEFEND && enemy.shield > 0) {
@@ -254,8 +254,8 @@ function updateData() {
 			};
 		} else if (enemy.eff[ENEMY_EFF.PLAN_DEFEND]) {
 			if (enemy.intent === INTENT.DEFEND && enemy.shield > 0) {
-				if (enemy.eff[EFFECT.DEFUP]) enemy.eff[EFFECT.DEFUP] += 2;
-				else enemy.eff[EFFECT.DEFUP] = 2;
+				if (enemy.eff[EFF.DEFUP]) enemy.eff[EFF.DEFUP] += 2;
+				else enemy.eff[EFF.DEFUP] = 2;
 				enemy.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON][Math.floor(random() * 2)]] = enemy.eff[ENEMY_EFF.PLAN_DEFEND] - 1;
 				delete enemy.eff[ENEMY_EFF.PLAN_DEFEND];
 			} else if (enemy.intent === INTENT.ATTACK && game.shield >= Math.ceil(enemy.getTotalAttackPower() * get.takeDamageMult(index))) {
@@ -271,13 +271,13 @@ function updateData() {
 		startAnim.player("death");
 		game.turn = -1;
 		game.state = STATE.GAME_END;
-		game.select = [GAME_OVER, 0];
+		game.select = [S.GAME_OVER, 0];
 	};
 	// game won
-	if (game.floor == 20 && game.state === STATE.EVENT_FIN && game.select[0] === IN_MAP) {
+	if (game.floor == 20 && game.state === STATE.EVENT_FIN && game.select[0] === S.MAP) {
 		game.turn = -1;
 		game.state = STATE.GAME_END;
-		game.select = [GAME_FIN, 0];
+		game.select = [S.GAME_WON, 0];
 	};
 	// state changes
 	endBattle();
@@ -286,8 +286,8 @@ function updateData() {
 	game.deck.cardSort();
 	game.void.cardSort();
 	game.discard.cardSort();
-	if (game.select[0] === HAND) {
+	if (game.select[0] === S.HAND) {
 		if (game.hand.length) game.prevCard = game.select[1];
-		else game.select = [END, 0];
+		else game.select = [S.END, 0];
 	};
 };

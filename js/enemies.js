@@ -39,11 +39,11 @@ class Enemy {
 		this.shield = 0;
 		this.attackPower = Math.max(Math.round(power * 2.5), 1);
 		this.defendPower = Math.max(Math.round(power * 3), 1);
-		this.eff = {};
-		if (type === FRAGMENT && game.artifacts.includes(202)) this.eff[ENEMY_EFF.REWIND] = 1;
 		this.intent = this.getIntent(true);
 		this.intentHistory = [this.intent];
-		if (type === SENTRY.BIG || type === SENTRY.SMALL || type === SENTRY.PRIME || type === SINGULARITY) this.eff[EFFECT.BLAZE] = 99;
+		this.eff = {};
+		if (type === FRAGMENT && game.artifacts.includes(202)) this.eff[ENEMY_EFF.REWIND] = 1;
+		if (type === SENTRY.BIG || type === SENTRY.SMALL || type === SENTRY.PRIME || type === SINGULARITY) this.eff[EFF.BLAZE] = 99;
 		if (type === SINGULARITY) this.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 3)]] = 99;
 	};
 	/**
@@ -80,7 +80,7 @@ class Enemy {
 	startAction() {
 		if (this.intent === INTENT.ATTACK) {
 			if (game.shield && !/shield/.test(playerAnim[1])) {
-				if (game.eff[EFFECT.WEAKNESS]) startAnim.player("crouch_shield");
+				if (game.eff[EFF.WEAKNESS]) startAnim.player("crouch_shield");
 				else startAnim.player("shield");
 			};
 			startAnim.enemy();
@@ -109,8 +109,8 @@ class Enemy {
 			};
 		} else if (this.intent === INTENT.BUFF) {
 			if (this.type === FRAGMENT) {
-				if (this.eff[EFFECT.RESILIENCE]) this.eff[EFFECT.RESILIENCE] += 3;
-				else this.eff[EFFECT.RESILIENCE] = 3;
+				if (this.eff[EFF.RESILIENCE]) this.eff[EFF.RESILIENCE] += 3;
+				else this.eff[EFF.RESILIENCE] = 3;
 			};
 			this.finishAction();
 		} else if (this.intent === INTENT.SUMMON) {
@@ -136,7 +136,7 @@ class Enemy {
 			this.intentHistory.push(this.intent);
 			if (this.overrideIntent(INTENT.ATTACK, INTENT.SUMMON)) {
 				if (this.type === FRAGMENT) {
-					if (this.health <= this.maxHealth / 4 || this.eff[EFFECT.RESILIENCE] > 1) this.intent = INTENT.DEFEND;
+					if (this.health <= this.maxHealth / 4 || this.eff[EFF.RESILIENCE] > 1) this.intent = INTENT.DEFEND;
 					else this.intent = chance(2/3) ? INTENT.BUFF : INTENT.DEFEND;
 				} else {
 					this.intent = INTENT.DEFEND;
@@ -187,7 +187,7 @@ class Enemy {
 			if (chance(3/5)) {
 				return INTENT.ATTACK;
 			} else {
-				if (this.health <= this.maxHealth / 4 || this.eff[EFFECT.RESILIENCE] > 1) return INTENT.DEFEND;
+				if (this.health <= this.maxHealth / 4 || this.eff[EFF.RESILIENCE] > 1) return INTENT.DEFEND;
 				return chance(2/3) ? INTENT.BUFF : INTENT.DEFEND;
 			};
 		};
@@ -195,8 +195,8 @@ class Enemy {
 	};
 	/**
 	 * Overrides the enemy's intent if the conditions are satisfied.
-	 * @param {INTENT.ATTACK | INTENT.DEFEND | INTENT.BUFF} type - the type of intent to override.
-	 * @param {INTENT.ATTACK | INTENT.DEFEND | INTENT.BUFF | undefined} type2 - another type to check for, if any.
+	 * @param {number} type - the type of intent to override.
+	 * @param {number | undefined} type2 - another type to check for, if any.
 	 */
 	overrideIntent(type, type2) {
 		let location = this.intentHistory.lastIndexOf(type);
