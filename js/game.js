@@ -555,118 +555,74 @@ function updateVisuals() {
 		draw.image(I.card.refine, (200 - I.card.refine.width / 2), 95);
 	};
 	graphics.popups();
-	if (game.select[0] === S.GAME_OVER) {
-		ctx.globalAlpha = game.select[1] / 64;
+	if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) {
+		ctx.globalAlpha = game.select[1] / (game.select[0] === S.GAME_WON ? 50 : 64);
 		if (game.select[1] < 50) game.select[1]++;
 		draw.rect("#000");
+		if (game.select[0] === S.GAME_WON) {
+			draw.image(I.victorious, 168, 42 + Math.round(Math.abs(winAnim - 4) - 2), I.victorious.width * 2, I.victorious.height * 2);
+			winAnim += Math.random() * 0.05 + 0.05;
+			if (winAnim >= 8) winAnim -= 8;
+			draw.rect("#0004");
+		};
 		const factors = get.scoreFactors();
-		let text = "GAME OVER\n\nDIFFICULTY: ";
-		if (game.artifacts.includes(202)) text += "<#fcf050>DETERMINATION</#fcf050>";
-		else if (game.difficulty) text += "HARD";
-		else text += "EASY";
-		text += "\n\nTOP FLOOR: " + game.floor;
+		let text = "";
+		if (game.select[0] === S.GAME_WON) {
+			text += "YOU BEAT THE GAME ";
+			if (game.artifacts.includes(202)) text += "<#fcf050>WITH DETERMINATION</#fcf050>";
+			else if (game.difficulty) text += "ON <#f00>HARD MODE!</#f00>";
+			else text += "ON EASY MODE!";
+			text += "\n\nThank you for playing!\n\nMore content is coming soon!";
+		} else {
+			text += "GAME OVER\n\nDIFFICULTY: ";
+			if (game.artifacts.includes(202)) text += "<#fcf050>DETERMINATION</#fcf050>";
+			else if (game.difficulty) text += "HARD";
+			else text += "EASY";
+			text += "\n\nTOP FLOOR: " + game.floor;
+		};
 		let len = factors.length;
-		if (game.difficulty) len += 4;
-		draw.lore(200 - 2, 100 - (len + 17) * 2.75, text, {"color": "#f00", "text-align": DIR.CENTER});
-		draw.lore(200 - 2, 100 + (len + 15) * 2.75, "PRESS ENTER TO START A NEW RUN", {"color": "#f00", "text-align": DIR.CENTER});
+		if (game.difficulty) len += 2;
+		let normalColor = (game.select[0] === S.GAME_WON ? "#0f0" : "#f00");
+		let hardColor = (game.select[0] === S.GAME_WON ? "#f00" : "#0f0");
+		draw.lore(200 - 2, 100 - (len + 17) * 2.75, text, {"color": normalColor, "text-align": DIR.CENTER});
+		draw.lore(200 - 2, 100 + (len + 15) * 2.75, "PRESS ENTER TO START A NEW RUN", {"color": normalColor, "text-align": DIR.CENTER});
 		text = "";
 		for (let index = 0; index < factors.length; index++) {
 			text += factors[index][0] + ":\n";
 		};
-		if (game.difficulty) {
-			if (game.artifacts.includes(202) && game.kills[FRAGMENT]) text += "\nbase score:\n\n<#fcf050>DETERMINATION</#fcf050> bonus:\n\ntotal score:";
-			else text += "\nbase score:\n\n<#0f0>hard difficulty bonus:</#0f0>\n\ntotal score:";
-		} else {
-			text += "\ntotal score:";
-		};
-		draw.lore(125, 100 - (len - 7) * 2.75, text, {"color": "#f00", "text-small": true});
+		if (game.difficulty) text += "\nBase score:\n\nTotal score:";
+		else text += "\nTotal score:";
+		draw.lore(120, 100 - (len - 7) * 2.75, text, {"color": normalColor, "text-small": true});
 		text = "";
 		let totalScore = 0;
 		for (let index = 0; index < factors.length; index++) {
-			if (factors[index][1] == 1) {
-				text += "1 point\n";
+			text += factors[index][1] + "x" + factors[index][2] + " = ";
+			let amt = factors[index][1] * factors[index][2];
+			if (amt < 1000) text += " ".repeat(4 - ("" + amt).length);
+			if (amt == 1) {
+				text += "1 point \n";
 				totalScore++;
 			} else {
-				text += factors[index][1] + " points\n";
-				totalScore += factors[index][1];
+				text += amt + " points\n";
+				totalScore += amt;
 			};
 		};
 		if (game.difficulty) {
 			text += "\n" + totalScore + " points";
 			if (game.artifacts.includes(202) && game.kills[FRAGMENT]) {
+				text += "\n\n" + totalScore + "<#fcf050>x3</#fcf050>";
 				totalScore *= 3;
-				text += "\n\n<#fcf050>3x multiplier</#fcf050>";
 			} else {
+				text += "\n\n" + totalScore + "<" + hardColor + ">x2</" + hardColor + ">";
 				totalScore *= 2;
-				text += "\n\n<#0f0>2x multiplier</#0f0>";
 			};
-			text += "\n\n" + totalScore + " points";
+			text += " = " + totalScore + " points";
 		} else {
 			text += "\n" + totalScore + " points";
 		};
-		draw.lore(275, 100 - (len - 7) * 2.75, text, {"color": "#f00", "text-align": DIR.LEFT, "text-small": true});
+		draw.lore(280, 100 - (len - 7) * 2.75, text, {"color": normalColor, "text-align": DIR.LEFT, "text-small": true});
 		if (!global.highScore || totalScore > global.highScore) {
-			draw.lore(275, 100 + (len + 9) * 2.75, ": NEW HIGH SCORE!", {"color": "#f00", "text-small": true});
-		};
-		ctx.globalAlpha = 1;
-	} else if (game.select[0] === S.GAME_WON) {
-		if (game.select[1] < 50) {
-			ctx.globalAlpha = game.select[1] / 50;
-			game.select[1]++;
-		};
-		draw.rect("#000");
-		draw.image(I.victorious, 168, 42 + Math.round(Math.abs(winAnim - 4) - 2), I.victorious.width * 2, I.victorious.height * 2);
-		winAnim += Math.random() * 0.05 + 0.05;
-		if (winAnim >= 8) winAnim -= 8;
-		draw.rect("#0004");
-		const factors = get.scoreFactors();
-		let text = "YOU BEAT THE GAME ";
-		if (game.artifacts.includes(202)) text += "<#fcf050>WITH DETERMINATION</#fcf050>";
-		else if (game.difficulty) text += "ON <#f00>HARD MODE!</#f00>";
-		else text += "ON EASY MODE!";
-		text += "\n\nThank you for playing!\n\nMore content is coming soon!";
-		let len = factors.length;
-		if (game.difficulty) len += 4;
-		draw.lore(200 - 2, 100 - (len + 17) * 2.75, text, {"color": "#0f0", "text-align": DIR.CENTER});
-		draw.lore(200 - 2, 100 + (len + 15) * 2.75, "PRESS ENTER TO START A NEW RUN", {"color": "#0f0", "text-align": DIR.CENTER});
-		text = "";
-		for (let index = 0; index < factors.length; index++) {
-			text += factors[index][0] + ":\n";
-		};
-		if (game.difficulty) {
-			if (game.artifacts.includes(202)) text += "\nbase score:\n\n<#fcf050>DETERMINATION</#fcf050> bonus:\n\ntotal score:";
-			else text += "\nbase score:\n\n<#f00>hard difficulty bonus:</#f00>\n\ntotal score:";
-		} else {
-			text += "\ntotal score:";
-		};
-		draw.lore(125, 100 - (len - 7) * 2.75, text, {"color": "#0f0", "text-small": true});
-		text = "";
-		let totalScore = 0;
-		for (let index = 0; index < factors.length; index++) {
-			if (factors[index][1] == 1) {
-				text += "1 point\n";
-				totalScore++;
-			} else {
-				text += factors[index][1] + " points\n";
-				totalScore += factors[index][1];
-			};
-		};
-		if (game.difficulty) {
-			text += "\n" + totalScore + " points";
-			if (game.artifacts.includes(202)) {
-				totalScore *= 3;
-				text += "\n\n<#fcf050>3x multiplier</#fcf050>";
-			} else {
-				totalScore *= 2;
-				text += "\n\n<#f00>2x multiplier</#f00>";
-			};
-			text += "\n\n" + totalScore + " points";
-		} else {
-			text += "\n" + totalScore + " points";
-		};
-		draw.lore(275, 100 - (len - 7) * 2.75, text, {"color": "#0f0", "text-align": DIR.LEFT, "text-small": true});
-		if (!global.highScore || totalScore > global.highScore) {
-			draw.lore(275, 100 + (len + 9) * 2.75, ": NEW HIGH SCORE!", {"color": "#0f0", "text-small": true});
+			draw.lore(280, 100 + (len + 9) * 2.75, ": NEW HIGH SCORE!", {"color": normalColor, "text-small": true});
 		};
 		ctx.globalAlpha = 1;
 	};

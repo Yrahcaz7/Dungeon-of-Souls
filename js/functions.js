@@ -180,12 +180,12 @@ const get = {
 		for (const key in game.kills) {
 			if (game.kills.hasOwnProperty(key)) {
 				const amt = game.kills[+key];
-				if (+key === FRAGMENT || +key === SINGULARITY) factors.push(["killed " + ENEMY_NAME[+key], amt * ENEMY_WORTH[+key]]);
-				else factors.push(["killed " + amt + " " + ENEMY_NAME[+key] + (amt > 1 ? "s" : ""), amt * ENEMY_WORTH[+key]]);
+				if (+key === FRAGMENT || +key === SINGULARITY) factors.push(["Killed " + ENEMY_NAME[+key], ENEMY_WORTH[+key], amt]);
+				else factors.push(["Killed " + amt + " " + (amt > 1 ? PLURAL_ENEMY_NAME : ENEMY_NAME)[+key], ENEMY_WORTH[+key], amt]);
 			};
 		};
-		factors.push(["saved " + game.gold + " gold", Math.floor(game.gold / 5)]);
-		if (game.health > 0) factors.push(["saved " + game.health + " health", game.health * 5]);
+		factors.push(["Saved " + game.gold + " gold", 1, Math.floor(game.gold / 5)]);
+		if (game.health > 0) factors.push(["Saved " + game.health + " health", 5, game.health]);
 		return factors;
 	},
 	/**

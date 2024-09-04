@@ -48,6 +48,16 @@ const ENEMY_NAME = {
 	[SINGULARITY]: "the singularity",
 };
 
+// plural names of enemy types
+const PLURAL_ENEMY_NAME = {
+	[SLIME.BIG]: "big slimes",
+	[SLIME.SMALL]: "small slimes",
+	[SLIME.PRIME]: "prime slimes",
+	[SENTRY.BIG]: "big sentries",
+	[SENTRY.SMALL]: "small sentries",
+	[SENTRY.PRIME]: "prime sentries",
+};
+
 // score worth of enemy types
 const ENEMY_WORTH = {
 	[SLIME.BIG]: 100,

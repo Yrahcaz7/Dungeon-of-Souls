@@ -22,7 +22,8 @@ let mapProg = 0, mapTotal = 100, death_zones = 0, rowFalses = 0, rowNodes = 0, e
  * @param {number} row - the row the enemy will be contained in.
  */
 function weakerSmallEnemy(row) {
-	return [SLIME.SMALL, SENTRY.SMALL][get.area(row + 1)] + ", " + (Math.round((0.5 + (row * 0.05)) * 100) / 100);
+	let area = get.area(row + 1);
+	return [SLIME.SMALL, SENTRY.SMALL][area] + ", " + (Math.round(((row + (1 - area) * 10) * 0.05) * 100) / 100);
 };
 
 /**
