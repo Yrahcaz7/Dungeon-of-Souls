@@ -146,6 +146,7 @@ const I = {
 		attack: new Number(11),
 		buff: new Image,
 		summon: new Image,
+		ritual: new Image,
 	}, popup: {
 		back: new Image,
 		music: new Image,

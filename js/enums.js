@@ -71,7 +71,7 @@ const ENEMY_WORTH = {
 };
 
 // enemy intents
-const INTENT = {ATTACK: 700, DEFEND: 701, BUFF: 702, SUMMON: 703};
+const INTENT = {ATTACK: 700, DEFEND: 701, BUFF: 702, SUMMON: 703, RITUAL: 704};
 
 // minimal descriptions of enemy intents
 const MIN_INTENT_DESC = {
@@ -87,6 +87,7 @@ const FULL_INTENT_DESC = {
 	[INTENT.DEFEND]: "This enemy intends to defend\nitself on its next turn.",
 	[INTENT.BUFF]: "This enemy intends to buff\nitself on its next turn.",
 	[INTENT.SUMMON]: "This enemy intends to summon\nminion(s) on its next turn.",
+	[INTENT.RITUAL]: "This enemy would have\nsummoned minion(s) on its\nnext turn, but since there\nare already five, it will\nperform a ritual instead.",
 };
 
 // enemy animation states
@@ -128,9 +129,6 @@ const CARD_EFF = {ONE_USE: 1800, UNIFORM: 1801, UNPLAYABLE: 1802, COST_REDUCTION
 // enemy effects
 const ENEMY_EFF = {COUNTDOWN: 1900, REWIND: 1901, SHROUD: 1902, PLAN_ATTACK: 1903, PLAN_SUMMON: 1904, PLAN_DEFEND: 1905, SCRAP_HEAP: 1906};
 
-// permanent effect descriptions
-const PERM_EFF_DESC = {[ENEMY_EFF.SCRAP_HEAP]: "This is a scrap heap."};
-
 // names of effects
 const EFF_NAME = {
 	// general effects
@@ -155,6 +153,14 @@ const EFF_NAME = {
 	[ENEMY_EFF.PLAN_SUMMON]: "plan summon",
 	[ENEMY_EFF.PLAN_DEFEND]: "plan defend",
 	[ENEMY_EFF.SCRAP_HEAP]: "scrap heap",
+};
+
+// descriptions of having permanent effects
+const PERM_EFF_DESC = {
+	[ENEMY_EFF.PLAN_ATTACK]: "This has plan attack.",
+	[ENEMY_EFF.PLAN_SUMMON]: "This has plan summon.",
+	[ENEMY_EFF.PLAN_DEFEND]: "This has plan defend.",
+	[ENEMY_EFF.SCRAP_HEAP]: "This is a scrap heap.",
 };
 
 // descriptions of effects

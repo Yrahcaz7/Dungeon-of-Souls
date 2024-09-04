@@ -88,7 +88,7 @@ const cards = {
 		},
 		can(level = 0) {
 			if (level >= 1) return game.gold >= 20;
-			else return game.gold >= 25;
+			return game.gold >= 25;
 		},
 		cannotMessage: "not enough gold",
 	},
@@ -171,21 +171,21 @@ const cards = {
 		},
 		can(level = 0) {
 			if (level >= 1) return game.gold >= 30;
-			else return game.gold >= 45;
+			return game.gold >= 45;
 		},
 		cannotMessage: "not enough gold",
 	},
 	3000: {
 		name: "war cry",
-		desc: ["All enemies (except\nbosses) switch\ntheir intents to\ndefense. One use.", "All enemies (except\nbosses) switch\ntheir intents to\ndefense. Draw a\ncard. One use."],
+		desc: ["All non-boss\nenemies switch\ntheir intents to\ndefense. One use.", "All non-boss\nenemies switch\ntheir intents to\ndefense. Draw a\ncard. One use."],
 		rarity: 1,
 		cost: 0,
 		effect(level = 0) {
 			startAnim.effect("war cry");
 			for (let index = 0; index < game.enemies.length; index++) {
-				if (game.enemies[index].type !== FRAGMENT) {
+				if (!isEnemyBoss(index)) {
 					game.enemies[index].intent = INTENT.DEFEND;
-					game.enemies[index].intentHistory[game.enemies[index].intentHistory.length - 1] = INTENT.DEFEND;
+					game.enemies[index].intentHistory.push(INTENT.DEFEND);
 				};
 			};
 			if (level >= 1) drawCards(1);
@@ -198,7 +198,7 @@ const cards = {
 		cost: 0,
 		attackEffects: false,
 		attack(level = 0) {
-			if (game.enemies[game.enemyAtt[1]].type !== FRAGMENT && game.enemies[game.enemyAtt[1]].type !== SINGULARITY) {
+			if (!isEnemyBoss(game.enemyAtt[1])) {
 				takeDamage(Math.ceil(game.enemies[game.enemyAtt[1]].health / 2), false);
 				game.enemies[game.enemyAtt[1]].health = 0;
 			};

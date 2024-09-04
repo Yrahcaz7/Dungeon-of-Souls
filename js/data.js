@@ -220,6 +220,7 @@ function updateData() {
 				};
 				game.enemies.splice(index, 1);
 				if (game.enemyNum >= index) game.enemyNum--;
+				index--;
 			};
 		};
 	};
@@ -237,12 +238,12 @@ function updateData() {
 			if (enemy.intent === INTENT.ATTACK && game.shield >= Math.ceil(enemy.getTotalAttackPower() * get.takeDamageMult(index))) {
 				if (enemy.eff[EFF.ATKUP]) enemy.eff[EFF.ATKUP] += 2;
 				else enemy.eff[EFF.ATKUP] = 2;
-				enemy.eff[[ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 2)]] = enemy.eff[ENEMY_EFF.PLAN_ATTACK] - 1;
+				enemy.eff[[ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 2)]] = 1;
 				delete enemy.eff[ENEMY_EFF.PLAN_ATTACK];
 			} else if (enemy.intent === INTENT.DEFEND && enemy.shield > 0) {
 				enemy.intent = INTENT.ATTACK;
 				enemy.intentHistory.push(this.intent);
-				enemy.eff[[ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 2)]] = enemy.eff[ENEMY_EFF.PLAN_ATTACK] - 1;
+				enemy.eff[[ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 2)]] = 1;
 				delete enemy.eff[ENEMY_EFF.PLAN_ATTACK];
 			};
 		} else if (enemy.eff[ENEMY_EFF.PLAN_SUMMON]) {
@@ -251,19 +252,19 @@ function updateData() {
 			) {
 				enemy.intent = INTENT.SUMMON;
 				enemy.intentHistory.push(INTENT.SUMMON);
-				enemy.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 2)]] = enemy.eff[ENEMY_EFF.PLAN_SUMMON] - 1;
+				enemy.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 2)]] = 1;
 				delete enemy.eff[ENEMY_EFF.PLAN_SUMMON];
 			};
 		} else if (enemy.eff[ENEMY_EFF.PLAN_DEFEND]) {
 			if (enemy.intent === INTENT.DEFEND && enemy.shield > 0) {
 				if (enemy.eff[EFF.DEFUP]) enemy.eff[EFF.DEFUP] += 2;
 				else enemy.eff[EFF.DEFUP] = 2;
-				enemy.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON][Math.floor(random() * 2)]] = enemy.eff[ENEMY_EFF.PLAN_DEFEND] - 1;
+				enemy.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON][Math.floor(random() * 2)]] = 1;
 				delete enemy.eff[ENEMY_EFF.PLAN_DEFEND];
 			} else if (enemy.intent === INTENT.ATTACK && game.shield >= Math.ceil(enemy.getTotalAttackPower() * get.takeDamageMult(index))) {
 				enemy.intent = INTENT.DEFEND;
 				enemy.intentHistory.push(INTENT.DEFEND);
-				enemy.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON][Math.floor(random() * 2)]] = enemy.eff[ENEMY_EFF.PLAN_DEFEND] - 1;
+				enemy.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON][Math.floor(random() * 2)]] = 1;
 				delete enemy.eff[ENEMY_EFF.PLAN_DEFEND];
 			};
 		};

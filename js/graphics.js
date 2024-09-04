@@ -316,7 +316,8 @@ const draw = {
 		let x = enemyPos[index][0] + 16;
 		let y = getEnemyIntentPos(index, true);
 		if (game.enemies[index].intent === INTENT.SUMMON) {
-			draw.image(I.intent.summon, x, y);
+			if (game.enemies.length >= 6) draw.image(I.intent.ritual, x, y);
+			else draw.image(I.intent.summon, x, y);
 		} else if (game.enemies[index].intent === INTENT.BUFF) {
 			draw.image(I.intent.buff, x, y);
 		} else if (game.enemies[index].intent === INTENT.ATTACK) {
@@ -657,7 +658,8 @@ const info = {
 	intent(xPlus = 0, yPlus = 0) {
 		let y = getEnemyIntentPos(game.select[1]) + yPlus;
 		if (y === y) {
-			let desc = FULL_INTENT_DESC[game.enemies[game.select[1]]?.intent];
+			let intent = game.enemies[game.select[1]]?.intent;
+			let desc = (intent === INTENT.SUMMON && game.enemies.length >= 6 ? FULL_INTENT_DESC[INTENT.RITUAL] : FULL_INTENT_DESC[intent]);
 			if (desc) draw.textBox(enemyPos[game.select[1]][0] - 71 + xPlus, y - (desc.match(/\n/g) || []).length * 3, 28, desc, {"text-small": true});
 		};
 	},

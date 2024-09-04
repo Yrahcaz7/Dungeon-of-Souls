@@ -44,7 +44,7 @@ class Enemy {
 		this.eff = {};
 		if (type === FRAGMENT && game.artifacts.includes(202)) this.eff[ENEMY_EFF.REWIND] = 1;
 		if (type === SENTRY.BIG || type === SENTRY.SMALL || type === SENTRY.PRIME || type === SINGULARITY) this.eff[EFF.BLAZE] = 99;
-		if (type === SINGULARITY) this.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 3)]] = 99;
+		if (type === SINGULARITY) this.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 3)]] = 1;
 	};
 	/**
 	 * Gets the enemy's extra attack power.
@@ -114,8 +114,22 @@ class Enemy {
 			};
 			this.finishAction();
 		} else if (this.intent === INTENT.SUMMON) {
-			game.enemies.push(new Enemy([SLIME.SMALL, SENTRY.SMALL][get.area()], 0));
-			game.enemies[game.enemies.length - 1].eff[ENEMY_EFF.SCRAP_HEAP] = 1
+			if (game.enemies.length >= 6) {
+				let damage = 0;
+				for (let index = 0; index < game.enemies.length; index++) {
+					if (game.enemies[index].eff[ENEMY_EFF.SCRAP_HEAP]) {
+						damage += game.enemies[index].health;
+						game.enemies.splice(index, 1);
+						index--;
+					};
+				};
+				let prevHealth = game.health;
+				takeDamage(damage);
+				if (game.health < prevHealth) startAnim.player("hit");
+			} else {
+				game.enemies.push(new Enemy([SLIME.SMALL, SENTRY.SMALL][get.area()], 0));
+				game.enemies[game.enemies.length - 1].eff[ENEMY_EFF.SCRAP_HEAP] = 1;
+			};
 			this.finishAction();
 		};
 		this.done = true;
@@ -171,16 +185,11 @@ class Enemy {
 	getIntent(first = false) {
 		if (this.type === SINGULARITY) {
 			if (first) return INTENT.SUMMON;
-			if (this.health <= this.maxHealth / 5) {
-				if (game.enemies.length > 2) return INTENT.DEFEND;
+			if (this.health <= this.maxHealth / 4) {
 				return chance(1/3) ? INTENT.SUMMON : INTENT.DEFEND;
 			} else {
-				if (chance(3/5)) {
-					if (game.enemies.length > 2) return INTENT.ATTACK;
-					return chance(1/3) ? INTENT.SUMMON : INTENT.ATTACK;
-				} else {
-					return INTENT.DEFEND;
-				};
+				if (chance(3/5)) return chance(1/3) ? INTENT.SUMMON : INTENT.ATTACK;
+				return INTENT.DEFEND;
 			};
 		};
 		if (this.type === FRAGMENT) {
@@ -234,6 +243,14 @@ function classifyEnemy(object = {}) {
 };
 
 /**
+ * Checks if an enemy is a boss.
+ * @param {number} index - the index of the enemy.
+ */
+function isEnemyBoss(index) {
+	return game.enemies[index].type === FRAGMENT || game.enemies[index].type === SINGULARITY;
+};
+
+/**
  * Checks if an enemy should be visible.
  * @param {number} index - the index of the enemy.
  */
@@ -243,8 +260,8 @@ function isEnemyVisible(index) {
 	const type = game.enemies[index].type;
 	const intent = game.enemies[index].intent;
 	if (intent === INTENT.ATTACK) return !(type === SLIME.SMALL || type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && primeAnim == -1));
-	else if (intent === INTENT.DEFEND) return !(type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && primeAnim == -1));
-	else return true;
+	if (intent === INTENT.DEFEND) return !(type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && primeAnim == -1));
+	return true;
 };
 
 /**
