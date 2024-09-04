@@ -115,6 +115,7 @@ class Enemy {
 			this.finishAction();
 		} else if (this.intent === INTENT.SUMMON) {
 			game.enemies.push(new Enemy([SLIME.SMALL, SENTRY.SMALL][get.area()], 0));
+			game.enemies[game.enemies.length - 1].eff[ENEMY_EFF.SCRAP_HEAP] = 1
 			this.finishAction();
 		};
 		this.done = true;

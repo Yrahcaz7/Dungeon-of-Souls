@@ -126,7 +126,10 @@ const EFF = {AURA_BLADE: 1700, BURN: 1701, REINFORCE: 1702, RESILIENCE: 1703, WE
 const CARD_EFF = {ONE_USE: 1800, UNIFORM: 1801, UNPLAYABLE: 1802, COST_REDUCTION: 1803, RETENTION: 1804, DESC: 1899};
 
 // enemy effects
-const ENEMY_EFF = {COUNTDOWN: 1900, REWIND: 1901, SHROUD: 1902, PLAN_ATTACK: 1903, PLAN_SUMMON: 1904, PLAN_DEFEND: 1905};
+const ENEMY_EFF = {COUNTDOWN: 1900, REWIND: 1901, SHROUD: 1902, PLAN_ATTACK: 1903, PLAN_SUMMON: 1904, PLAN_DEFEND: 1905, SCRAP_HEAP: 1906};
+
+// permanent effect descriptions
+const PERM_EFF_DESC = {[ENEMY_EFF.SCRAP_HEAP]: "This is a scrap heap."};
 
 // names of effects
 const EFF_NAME = {
@@ -151,6 +154,7 @@ const EFF_NAME = {
 	[ENEMY_EFF.PLAN_ATTACK]: "plan attack",
 	[ENEMY_EFF.PLAN_SUMMON]: "plan summon",
 	[ENEMY_EFF.PLAN_DEFEND]: "plan defend",
+	[ENEMY_EFF.SCRAP_HEAP]: "scrap heap",
 };
 
 // descriptions of effects
@@ -177,6 +181,7 @@ const EFF_DESC = {
 	[ENEMY_EFF.PLAN_ATTACK]: "If something has plan\nattack: If you have\nenough shield to block\n100% of its attack, it\ngains 2 ATK+ and makes a\nnew plan. If it has\nshield and intends to\ndefend, it changes its\nintent to attack and\nmakes a new plan.",
 	[ENEMY_EFF.PLAN_SUMMON]: "If something has plan\nsummon: If you have\nenough shield to block\n100% of its attack or it\nhas shield and intends\nto defend, it changes\nits intent to summon and\nmakes a new plan.",
 	[ENEMY_EFF.PLAN_DEFEND]: "If something has plan\ndefend: If it has shield\nand intends to defend,\nit gains 2 DEF+ and\nmakes a new plan. If you\nhave enough shield to\nblock 100% of its\nattack, it changes its\nintent to defense and\nmakes a new plan.",
+	[ENEMY_EFF.SCRAP_HEAP]: "If something is a scrap\nheap, no benefits of any\nkind may be gained from\nits defeat.",
 };
 
 for (const key in EFF_DESC) {

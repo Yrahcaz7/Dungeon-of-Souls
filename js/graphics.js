@@ -530,11 +530,11 @@ const draw = {
 				if (enemy.shield) {
 					if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x - 1, y + 88);
 					draw.image(img, x, y + 89);
-					draw.lore(x + 17, y + 97, enemy.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
+					if (!PERM_EFF_DESC[key]) draw.lore(x + 17, y + 97, enemy.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
 				} else {
 					if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x - 1, y + 77);
 					draw.image(img, x, y + 78);
-					draw.lore(x + 17, y + 86, enemy.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
+					if (!PERM_EFF_DESC[key]) draw.lore(x + 17, y + 86, enemy.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
 				};
 				x += 17;
 				if (x >= pos[0] + (index == 0 && game.void.length && game.enemies.length > 2 ?
@@ -628,7 +628,7 @@ const info = {
 	player(type, xPlus = 0, yPlus = 0) {
 		const eff = game.eff[type];
 		let y = 68 + yPlus, move = 0;
-		let desc = "You have " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE) && eff >= 2 ? "s" : "") + ".";
+		let desc = (PERM_EFF_DESC[type] ? PERM_EFF_DESC[type] : "You have " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE) && eff >= 2 ? "s" : "") + ".");
 		move += draw.textBox(85 + xPlus, y + move, desc.length, desc, {"text-small": true});
 		move += draw.textBox(85 + xPlus, y + move, 24, EFF_DESC[type], {"text-small": true});
 		return move;
@@ -643,7 +643,7 @@ const info = {
 		const pos = enemyPos[game.select[1]];
 		const eff = game.enemies[game.select[1]].eff[type];
 		let y = pos[1] + yPlus, move = 0;
-		let desc = "This has " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "") + ".";
+		let desc = (PERM_EFF_DESC[type] ? PERM_EFF_DESC[type] : "This has " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "") + ".");
 		move += draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, y + move, desc.length, desc, {"text-small": true});
 		move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, EFF_DESC[type], {"text-small": true});
 		if (type === ENEMY_EFF.COUNTDOWN) move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, "The next intent will be\nto " + MIN_INTENT_DESC[game.enemies[game.select[1]].intentHistory[eff - 1]] + ".", {"text-small": true});
@@ -884,11 +884,11 @@ const graphics = {
 				if (game.shield) {
 					if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x + 22, y + 103);
 					draw.image(img, x + 23, y + 104);
-					draw.lore(x + 40, y + 112, game.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
+					if (!PERM_EFF_DESC[key]) draw.lore(x + 40, y + 112, game.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
 				} else {
 					if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x + 22, y + 92);
 					draw.image(img, x + 23, y + 93);
-					draw.lore(x + 40, y + 101, game.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
+					if (!PERM_EFF_DESC[key]) draw.lore(x + 40, y + 101, game.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
 				};
 				x += 17;
 			};

@@ -214,8 +214,10 @@ function updateData() {
 				healAll = true;
 			} else {
 				const type = game.enemies[index].type;
-				if (game.kills[type]) game.kills[type]++;
-				else game.kills[type] = 1;
+				if (!game.enemies[index].eff[ENEMY_EFF.SCRAP_HEAP]) {
+					if (game.kills[type]) game.kills[type]++;
+					else game.kills[type] = 1;
+				};
 				game.enemies.splice(index, 1);
 				if (game.enemyNum >= index) game.enemyNum--;
 			};
