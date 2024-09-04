@@ -198,7 +198,7 @@ const cards = {
 		cost: 0,
 		attackEffects: false,
 		attack(level = 0) {
-			if (game.enemies[game.enemyAtt[1]].type !== FRAGMENT) {
+			if (game.enemies[game.enemyAtt[1]].type !== FRAGMENT && game.enemies[game.enemyAtt[1]].type !== SINGULARITY) {
 				takeDamage(Math.ceil(game.enemies[game.enemyAtt[1]].health / 2), false);
 				game.enemies[game.enemyAtt[1]].health = 0;
 			};

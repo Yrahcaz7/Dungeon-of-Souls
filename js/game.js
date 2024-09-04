@@ -149,34 +149,28 @@ function fadeMusic() {
 };
 
 /**
- * Enters the battle.
- */
-function enterBattle() {
-	game.state = STATE.BATTLE;
-	game.deckLocal = shuffle(game.deck.slice().map(obj => classifyCard(obj)));
-	startTurn();
-};
-
-/**
  * Starts the player's turn.
+ * @param {boolean} firstTurn - if true, it is the player's first turn.
  */
-function startTurn() {
+function startTurn(firstTurn = false) {
 	// end of enemy turn effects
-	for (let index = 0; index < game.enemies.length; index++) {
-		if (game.enemies[index].eff[EFF.BURN]) {
-			let prevHealth = game.enemies[index].health;
-			dealDamage(game.enemies[index].eff[EFF.BURN], 0, index, false);
-			game.enemies[index].eff[EFF.BURN]--;
-			if (game.artifacts.includes(107) && game.enemies[index].eff[EFF.BURN] && game.enemies[index].health < prevHealth) {
+	if (!firstTurn) {
+		for (let index = 0; index < game.enemies.length; index++) {
+			if (game.enemies[index].eff[EFF.BURN]) {
+				let prevHealth = game.enemies[index].health;
 				dealDamage(game.enemies[index].eff[EFF.BURN], 0, index, false);
 				game.enemies[index].eff[EFF.BURN]--;
+				if (game.artifacts.includes(107) && game.enemies[index].eff[EFF.BURN] && game.enemies[index].health < prevHealth) {
+					dealDamage(game.enemies[index].eff[EFF.BURN], 0, index, false);
+					game.enemies[index].eff[EFF.BURN]--;
+				};
 			};
+			if (game.enemies[index].eff[EFF.WEAKNESS]) game.enemies[index].eff[EFF.WEAKNESS]--;
+			if (game.enemies[index].eff[EFF.BLAZE]) game.enemies[index].eff[EFF.BLAZE]--;
+			if (game.enemies[index].eff[EFF.ATKUP]) game.enemies[index].eff[EFF.ATKUP]--;
+			if (game.enemies[index].eff[EFF.DEFUP]) game.enemies[index].eff[EFF.DEFUP]--;
+			if (game.enemies[index].eff[ENEMY_EFF.SHROUD]) game.enemies[index].eff[ENEMY_EFF.SHROUD]--;
 		};
-		if (game.enemies[index].eff[EFF.WEAKNESS]) game.enemies[index].eff[EFF.WEAKNESS]--;
-		if (game.enemies[index].eff[EFF.BLAZE]) game.enemies[index].eff[EFF.BLAZE]--;
-		if (game.enemies[index].eff[EFF.ATKUP]) game.enemies[index].eff[EFF.ATKUP]--;
-		if (game.enemies[index].eff[EFF.DEFUP]) game.enemies[index].eff[EFF.DEFUP]--;
-		if (game.enemies[index].eff[ENEMY_EFF.SHROUD]) game.enemies[index].eff[ENEMY_EFF.SHROUD]--;
 	};
 	// start of your turn effects
 	drawCards(get.handSize());
@@ -236,6 +230,15 @@ function endTurnConfirm() {
 	if (confirm) game.select = [S.CONF_END, 0];
 	else endTurn();
 	actionTimer = 2;
+};
+
+/**
+ * Enters the battle.
+ */
+function enterBattle() {
+	game.state = STATE.BATTLE;
+	game.deckLocal = shuffle(game.deck.slice().map(obj => classifyCard(obj)));
+	startTurn(true);
 };
 
 /**

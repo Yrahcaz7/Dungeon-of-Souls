@@ -1637,7 +1637,7 @@ const graphics = {
 	 */
 	cardRewards(focused = true) {
 		const choices = get.cardRewardChoices();
-		let x = 199 - (choices * 68 / 2), y = 20, width = (choices * 68) + 2, height = 160;
+		let x = 198 - (choices * 68 / 2), y = 20, width = (choices * 68) + 4, height = 160;
 		draw.box(x, y, width, height);
 		if (choices === 1) draw.lore(200 - 2, y + 1, "Take the\ncard?", {"text-align": DIR.CENTER});
 		else draw.lore(200 - 2, y + 1, "Pick a card:", {"text-align": DIR.CENTER});
