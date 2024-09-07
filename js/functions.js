@@ -29,6 +29,18 @@ function title(str) {
 };
 
 /**
+ * Returns a string formatted with color tags.
+ * @param {string} text - the string to color.
+ */
+function color(text) {
+	text = text.replace(/(max\shealth|health|non-combat\sdamage|combat\sdamage|extra\sdamage|damage|attacks|attack)/gi, "<#f44>$1</#f44>");
+	text = text.replace(/(extra\sshield|shield|defend|defense)/gi, "<#58f>$1</#58f>");
+	text = text.replace(/(cost\sreduction|one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
+	text = text.replace(/(magic)(\stype)/gi, "<#f0f>$1</#f0f>$2");
+	return text;
+};
+
+/**
  * Returns a string with each character's position randomized.
  * @param {string} str - the string.
  */
@@ -127,23 +139,23 @@ const get = {
 	},
 	/**
 	 * Gets the current dealing damage multiplier effect.
-	 * @param {number} enemy - the index of the enemy that is being damaged. Defaults to `game.enemyAtt[1]`.
+	 * @param {number} index - the index of the enemy that is being damaged. Defaults to `game.enemyAtt[1]`.
 	 */
-	dealDamageMult(enemy = game.enemyAtt[1]) {
+	dealDamageMult(index = game.enemyAtt[1]) {
 		let mult = 1;
 		if (game.eff[EFF.WEAKNESS]) mult -= 0.25;
 		if (game.eff[EFF.ATKUP]) mult += 0.25;
-		if (game.enemies[enemy]?.eff[EFF.RESILIENCE]) mult -= 0.25;
+		if (game.enemies[index]?.eff[EFF.RESILIENCE]) mult -= 0.25;
 		return mult;
 	},
 	/**
 	 * Gets the current taking damage multiplier effect.
-	 * @param {number} enemy - the index of the enemy that is attacking. Defaults to `game.enemyNum`.
+	 * @param {number} index - the index of the enemy that is attacking. Defaults to `game.enemyNum`.
 	 */
-	takeDamageMult(enemy = game.enemyNum) {
+	takeDamageMult(index = game.enemyNum) {
 		let mult = 1;
-		if (game.enemies[enemy]?.eff[EFF.WEAKNESS]) mult -= 0.25;
-		if (game.enemies[enemy]?.eff[EFF.ATKUP]) mult += 0.25;
+		if (game.enemies[index]?.eff[EFF.WEAKNESS]) mult -= 0.25;
+		if (game.enemies[index]?.eff[EFF.ATKUP]) mult += 0.25;
 		if (game.eff[EFF.RESILIENCE]) mult -= 0.25;
 		return mult;
 	},
@@ -206,30 +218,6 @@ const get = {
 		};
 		return score;
 	},
-};
-
-/**
- * Resets everything. Use carefully!
- */
-function hardReset() {
-	for (let index = 0; index < localStorage.length; index++) {
-		const key = localStorage.key(index);
-		if (key.startsWith("Yrahcaz7/Dungeon-of-Souls/save/")) {
-			localStorage.removeItem(key);
-		};
-	};
-	game = null;
-	global = null;
-	location.reload();
-};
-
-/**
- * Restarts the current run.
- */
-function restartRun() {
-	localStorage.setItem("Yrahcaz7/Dungeon-of-Souls/save/0", btoa(JSON.stringify({difficulty: game.difficulty})));
-	game = null;
-	location.reload();
 };
 
 /**
@@ -359,7 +347,7 @@ function takeDamage(amount, attack = true, index = game.enemyNum) {
 		game.health -= amount;
 	};
 	// additional effects
-	if (attack && game.enemies[index].eff[EFF.BLAZE]) gainEff(EFF.BURN, 1);
+	if (attack && index >= 0 && game.enemies[index].eff[EFF.BLAZE]) gainEff(EFF.BURN, 1);
 };
 
 /**

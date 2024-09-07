@@ -22,7 +22,7 @@ const artifacts = {
 	},
 	100: {
 		name: "supershield",
-		desc: "All cards that give\nshield give 2 extra.",
+		desc: "All cards that give you\nshield give you 2 extra.",
 	},
 	101: {
 		name: "gem of rage",
@@ -30,16 +30,16 @@ const artifacts = {
 	},
 	102: {
 		name: "candy",
-		desc: "You have 15 less max\nhealth, but you heal by\n3 each time you clear a\nfloor.",
+		desc: "You have 15 less max\nhealth, but you gain 3\nhealth each time you\nclear a floor.",
 		[FUNC.FLOOR_CLEAR]() {
 			game.health += 3;
 		},
 	},
 	103: {
 		name: "corrosion",
-		desc: "You have 1 more max\nenergy, but you take\n4 damage after each of\nyour turns.",
+		desc: "You have 1 more max\nenergy, but you take 4\ncombat damage at the end\nof each of your turns.",
 		[FUNC.PLAYER_TURN_END]() {
-			takeDamage(4, false);
+			takeDamage(4, true, -1);
 		},
 	},
 	104: {
@@ -48,23 +48,23 @@ const artifacts = {
 	},
 	105: {
 		name: "nutritious meal",
-		desc: "You have 15 more max health.\nOn pickup, heal 10 health.",
+		desc: "You have 15 more max health.\nOn pickup, you gain 10 health.",
 		[FUNC.PICKUP]() {
 			game.health += 10;
 		},
 	},
 	106: {
 		name: "magic book",
-		desc: "You draw a card each\ntime you play a magic\ntype card.",
+		desc: "You draw 2 cards each\ntime you play a magic\ntype card.",
 		[FUNC.PLAY_CARD](cardObj) {
 			if (Math.floor(cardObj.id / 1000) == 4) {
-				drawCards(1);
+				drawCards(2);
 			};
 		},
 	},
 	107: {
 		name: "bottled fire",
-		desc: "If an enemy takes damage\nfrom a burn effect, it\ntriggers an additional\ntime. This effect cannot\ntrigger itself.",
+		desc: "Enemies start with 1\nburn, and burn deals 3\nextra damage to enemies.",
 	},
 	200: {
 		name: "the map",
@@ -72,7 +72,7 @@ const artifacts = {
 	},
 	201: {
 		name: "iron will",
-		desc: "You heal 2 health each\ntime you clear a floor.",
+		desc: "You gain 2 health each\ntime you clear a floor.",
 		[FUNC.FLOOR_CLEAR]() {
 			game.health += 2;
 		},
@@ -85,9 +85,7 @@ const artifacts = {
 
 for (const key in artifacts) {
 	if (artifacts.hasOwnProperty(key)) {
-		artifacts[key].desc = artifacts[key].desc.replace(/(max\shealth|health|heal|damage|attack)/gi, "<#f44>$1</#f44>");
-		artifacts[key].desc = artifacts[key].desc.replace(/(shield|defense)/gi, "<#58f>$1</#58f>");
-		artifacts[key].desc = artifacts[key].desc.replace(/(magic)(\stype)/gi, "<#f0f>$1</#f0f>$2");
+		artifacts[key].desc = color(artifacts[key].desc);
 	};
 };
 

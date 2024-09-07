@@ -36,7 +36,7 @@ canvas {
 	left: 0;
 	bottom: 0;
 	right: 0;
-	width: 100%;
+	width: min(100vw, 200vh);
 	background-color: black;
 	margin: auto;
 	-ms-interpolation-mode: nearest-neighbor;

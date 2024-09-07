@@ -166,12 +166,12 @@ const PERM_EFF_DESC = {
 // descriptions of effects
 const EFF_DESC = {
 	// general effects
-	[EFF.AURA_BLADE]: "If something has X aura\nblades, when it attacks,\nit deals 5 + X extra\ndamage, then X is\nreduced by 1.",
-	[EFF.BURN]: "If something has X burn,\nat the end of its turn,\nit takes X damage, then\nX is reduced by 1.",
+	[EFF.AURA_BLADE]: "If you have X aura\nblades, when you attack,\nyou deal 5 + X extra\ndamage, then X is\nreduced by 1.",
+	[EFF.BURN]: "If something has X burn,\nat the end of its turn,\nit takes X non-combat\ndamage, then X is\nreduced by 1.",
 	[EFF.REINFORCE]: "If something has X\nreinforces, at the start\nof its turn, its shield\nis kept, then X is\nreduced by 1.",
 	[EFF.RESILIENCE]: "If something has X\nresilience, it takes 25%\nless combat damage,\nrounded down. At the\nstart of its turn, X is\nreduced by 1.",
 	[EFF.WEAKNESS]: "If something has X\nweakness, its attack is\nreduced by 25%, rounded\ndown. At the end of its\nturn, X is reduced by 1.",
-	[EFF.BLAZE]: "If something has X\nblaze, when it attacks,\nit inflicts 1 fire on\nthe target. At the end\nof its turn, X is\nreduced by 1.",
+	[EFF.BLAZE]: "If something has X\nblaze, when it attacks,\nit applies 1 burn on\nthe target. At the end\nof its turn, X is\nreduced by 1.",
 	[EFF.ATKUP]: "If something has X ATK+,\nits attack is increased\nby 25%, rounded down. At\nthe end of its turn, X\nis reduced by 1.",
 	[EFF.DEFUP]: "If something has X DEF+,\nits defense is increased\nby 25%, rounded down. At\nthe end of its turn, X\nis reduced by 1.",
 	// card effects
@@ -192,8 +192,6 @@ const EFF_DESC = {
 
 for (const key in EFF_DESC) {
 	if (EFF_DESC.hasOwnProperty(key)) {
-		EFF_DESC[key] = EFF_DESC[key].replace(/(health|heal|combat\sdamage|extra\sdamage|damage|attacks|attack)/gi, "<#f44>$1</#f44>");
-		EFF_DESC[key] = EFF_DESC[key].replace(/(extra\sshield|shield|defend|defense)/gi, "<#58f>$1</#58f>");
-		EFF_DESC[key] = EFF_DESC[key].replace(/(one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
+		EFF_DESC[key] = color(EFF_DESC[key]);
 	};
 };

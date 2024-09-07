@@ -283,8 +283,10 @@ function updateData() {
 		game.select = [S.GAME_WON, 0];
 	};
 	// state changes
-	endBattle();
-	loadRoom();
+	if (game.select[0] !== S.WELCOME) {
+		endBattle();
+		loadRoom();
+	};
 	// other
 	game.deck.cardSort();
 	game.void.cardSort();

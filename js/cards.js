@@ -221,7 +221,7 @@ const cards = {
 	},
 	3003: {
 		name: "memorize",
-		desc: "Choose a card from\nyour hand. Apply\n1 cost reduction\nand 1 retention to\nthe chosen card.",
+		desc: "Choose a card from\nyour hand. Apply 1\ncost reduction\nand 1 retention to\nthe chosen card.",
 		rarity: 2,
 		cost: [1, 0],
 		select: [SS.SELECT_HAND, -1],
@@ -280,9 +280,7 @@ const CARD_TYPE = ["error", "attack", "defense", "skill", "magic"];
  */
 function loadCard(ref, desc) {
 	// color text
-	desc = desc.replace(/(health|damage|attack)/gi, "<#f44>$1</#f44>");
-	desc = desc.replace(/(shield|defense)/gi, "<#58f>$1</#58f>");
-	desc = desc.replace(/(one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
+	desc = color(desc);
 	// list keywords
 	if (!ref.keywords) ref.keywords = [];
 	for (const eff in EFF) {

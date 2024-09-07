@@ -157,13 +157,10 @@ function startTurn(firstTurn = false) {
 	if (!firstTurn) {
 		for (let index = 0; index < game.enemies.length; index++) {
 			if (game.enemies[index].eff[EFF.BURN]) {
-				let prevHealth = game.enemies[index].health;
-				dealDamage(game.enemies[index].eff[EFF.BURN], 0, index, false);
+				let damage = game.enemies[index].eff[EFF.BURN];
+				if (game.artifacts.includes(107)) damage += 3;
+				dealDamage(damage, 0, index, false);
 				game.enemies[index].eff[EFF.BURN]--;
-				if (game.artifacts.includes(107) && game.enemies[index].eff[EFF.BURN] && game.enemies[index].health < prevHealth) {
-					dealDamage(game.enemies[index].eff[EFF.BURN], 0, index, false);
-					game.enemies[index].eff[EFF.BURN]--;
-				};
 			};
 			if (game.enemies[index].eff[EFF.WEAKNESS]) game.enemies[index].eff[EFF.WEAKNESS]--;
 			if (game.enemies[index].eff[EFF.BLAZE]) game.enemies[index].eff[EFF.BLAZE]--;
@@ -237,7 +234,6 @@ function endTurnConfirm() {
  */
 function enterBattle() {
 	game.state = STATE.BATTLE;
-	game.deckLocal = shuffle(game.deck.slice().map(obj => classifyCard(obj)));
 	startTurn(true);
 };
 
@@ -311,15 +307,15 @@ function endBattle() {
 function loadRoom() {
 	if (game.state === STATE.ENTER) {
 		// reset things
-		game.rewards = [];
-		game.energy = get.maxEnergy();
 		game.shield = 0;
-		game.eff = {};
+		game.energy = get.maxEnergy();
+		game.rewards = [];
+		game.enemies = [];
 		game.hand = [];
-		game.deckLocal = [];
+		game.deckLocal = shuffle(game.deck.slice().map(obj => classifyCard(obj)));
 		game.discard = [];
 		game.void = [];
-		game.enemies = [];
+		game.eff = {};
 		// enter room
 		const place = game.location.split(", ");
 		const type = (game.location == "-1" ? ROOM.BATTLE : game.map[place[0]][place[1]][0]);
@@ -399,7 +395,6 @@ function updateVisuals() {
 		else if (get.area() == 1) draw.lore(200 - 2, 53, "Act 2: The Color of the Soul", {"color": "#fff", "text-align": DIR.CENTER});
 		else draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": DIR.CENTER});
 		if (get.area() == 0 && new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "#fff", "text-align": DIR.CENTER});
-		if (game.difficulty === undefined) game.difficulty = 0;
 		draw.imageSector(I.difficulty, 0, game.difficulty * 16, 64, 16, 168, 146);
 		if (game.artifacts.includes(202)) {
 			if (game.floor == 10 && transition < 100) {
@@ -632,7 +627,7 @@ function updateVisuals() {
 	if (game.artifacts.includes(202) && game.floor == 10 && transition < 100) transition++;
 };
 
-const gameloop = setInterval(() => {
+const gameLoop = setInterval(() => {
 	if (!loaded) return;
 	// gameplay
 	if (menuLocation === -1) manageGameplay();
@@ -655,7 +650,7 @@ const gameloop = setInterval(() => {
 	save();
 }, 100);
 
-const musicloop = setInterval(() => {
+const musicLoop = setInterval(() => {
 	if (global.options[OPTION.MUSIC] && document.getElementById("music")?.src) {
 		let time = document.getElementById("music").currentTime;
 		if (time === 0 && menuLocation === -1) {

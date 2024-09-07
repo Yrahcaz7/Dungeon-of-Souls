@@ -329,7 +329,7 @@ function selection() {
 			actionTimer = 1;
 			return;
 		} else if (action === DIR.DOWN) {
-			if (game.cardSelect[1] < Math.floor(len / 6) && (game.cardSelect[0] < len % 6 || game.cardSelect[1] < Math.floor(len / 6) - 1)) {
+			if (game.cardSelect[1] < Math.floor(len / 6)) {
 				game.cardSelect[1]++;
 			};
 			actionTimer = 1;
@@ -382,10 +382,10 @@ function selection() {
 			actionTimer = 1;
 			return;
 		} else if (action === DIR.DOWN) {
-			if (game.cardSelect[1] < Math.floor(len / 6) && (game.cardSelect[0] < len % 6 || game.cardSelect[1] < Math.floor(len / 6) - 1)) {
+			if (game.cardSelect[1] < Math.floor(len / 6)) {
 				game.cardSelect[1]++;
 			};
-			while (game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)].level > 0) {
+			while (game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)]?.level > 0) {
 				if (game.cardSelect[0] < 5 && (game.cardSelect[0] < (len - 1) % 6 || game.cardSelect[1] < Math.floor(len / 6))) {
 					game.cardSelect[0]++;
 				} else if (game.cardSelect[0] + (game.cardSelect[1] * 6) < len - 1) {

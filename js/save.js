@@ -26,6 +26,28 @@ function save() {
 };
 
 /**
+ * Resets everything. Use carefully!
+ */
+function hardReset() {
+	for (let index = 0; index < localStorage.length; index++) {
+		const key = localStorage.key(index);
+		if (key.startsWith(ID)) localStorage.removeItem(key);
+	};
+	game = null;
+	global = null;
+	location.reload();
+};
+
+/**
+ * Restarts the current run.
+ */
+function restartRun() {
+	localStorage.setItem(ID + "/0", btoa(JSON.stringify({difficulty: game.difficulty})));
+	game = null;
+	location.reload();
+};
+
+/**
  * Fixes the save according to its version number.
  * @param {number} version - The version the save is from.
  */

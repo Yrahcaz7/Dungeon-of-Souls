@@ -342,8 +342,8 @@ const draw = {
 	 * @param {number} height - the height of the box.
 	 * @param style - the box's style object.
 	 */
-	box(x, y, width, height, style = {"background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
-		if (!style["background-color"]) style["background-color"] = "#ccc";
+	box(x, y, width, height, style = {"background-color": "#aaa", "border-width": 1, "border-color": "#000"}) {
+		if (!style["background-color"]) style["background-color"] = "#aaa";
 		if (!style["border-width"]) style["border-width"] = 1;
 		if (!style["border-color"]) style["border-color"] = "#000";
 		draw.rect(style["background-color"], x, y, width, height);
@@ -377,7 +377,6 @@ const draw = {
 		draw.imageSector(I.bar.health_empty, cutoff + 1, 0, 64 - (cutoff + 1), 12, x + (cutoff + 1), y + 65);
 		draw.lore(x + 31, y + 67, health, {"text-align": DIR.LEFT});
 		draw.lore(x + 34, y + 67, maxHealth);
-		if (!shield || !maxShield) return;
 		percentage = shield / maxShield;
 		if (percentage < 0) cutoff = 0;
 		else if (percentage > 1) cutoff = 62;
@@ -414,10 +413,10 @@ const draw = {
 		// card selector
 		if (selected) {
 			if (cards[cardObj.id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
-				if (rarity == 2) draw.image(I.select.card_rare_unplayable, x - 3, y - 3);
+				if (rarity == 2) draw.image(I.select.card_rare_unplayable, x - 2, y - 3);
 				else draw.image(I.select.card_unplayable, x + 1, y + 1);
 			} else {
-				if (rarity == 2) draw.image(I.select.card_rare, x - 3, y - 3);
+				if (rarity == 2) draw.image(I.select.card_rare, x - 2, y - 3);
 				else draw.image(I.select.card, x - 1, y - 1);
 			};
 		};
@@ -460,10 +459,11 @@ const draw = {
 				};
 			});
 		};
-		// draw text and image
+		// card text
 		draw.lore(x + 6, y + 55, desc, {"highlight-color": (valueIsLess ? "#f00" : "#000"), "text-small": true});
 		draw.lore(x + 33, y + 89.5, (RARITY[rarity] || "error") + "|" + type, {"text-align": DIR.CENTER, "text-small": true});
-		if (rarity == 2) draw.image(I.card.rarity.rare, x - 2, y - 2);
+		// card energy and rarity
+		if (rarity == 2) draw.image(I.card.rarity.rare, x - 1, y - 2);
 		if (!cards[cardObj.id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
 			let originalCost = getCardAttr("cost", cardObj.id, cardObj.level);
 			if (outside) {
@@ -486,12 +486,12 @@ const draw = {
 	 * @param {string} str - the string containing the lore to insert into the textbox.
 	 * @param style - the textbox's style object.
 	 */
-	textBox(x, y, width, str, style = {"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
+	textBox(x, y, width, str, style = {"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false, "background-color": "#aaa", "border-width": 1, "border-color": "#000"}) {
 		if (!style["color"]) style["color"] = "#000";
 		if (!style["highlight-color"]) style["highlight-color"] = "#222";
 		if (!style["text-align"]) style["text-align"] = DIR.RIGHT;
 		if (!style["text-small"]) style["text-small"] = false;
-		if (!style["background-color"]) style["background-color"] = "#ccc";
+		if (!style["background-color"]) style["background-color"] = "#aaa";
 		if (!style["border-width"]) style["border-width"] = 1;
 		if (!style["border-color"]) style["border-color"] = "#000";
 		let small = style["text-small"];
@@ -528,19 +528,13 @@ const draw = {
 		for (const key in enemy.eff) {
 			if (enemy.eff.hasOwnProperty(key) && enemy.eff[key]) {
 				let img = I.icon[key];
-				if (enemy.shield) {
-					if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x - 1, y + 88);
-					draw.image(img, x, y + 89);
-					if (!PERM_EFF_DESC[key]) draw.lore(x + 17, y + 97, enemy.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
-				} else {
-					if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x - 1, y + 77);
-					draw.image(img, x, y + 78);
-					if (!PERM_EFF_DESC[key]) draw.lore(x + 17, y + 86, enemy.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
-				};
+				if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x - 1, y + 88);
+				draw.image(img, x, y + 89);
+				if (!PERM_EFF_DESC[key]) draw.lore(x + 17, y + 97, enemy.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
 				x += 17;
 				if (x >= pos[0] + (index == 0 && game.void.length && game.enemies.length > 2 ?
 					(Object.keys(enemy.eff).length > (game.enemies.length > 3 ? 4 : 6) ? 51 : 34)
-					: (game.enemies.length > 1 ? 68 : 102)
+					: 68
 				)) {
 					x = pos[0];
 					y += 17;
@@ -565,8 +559,8 @@ const info = {
 			else x -= 145;
 			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
 		};
-		if (EFF_DESC[type]) return draw.textBox(x, y, 24, EFF_DESC[type], {"text-small": true});
-		else return draw.textBox(x, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
+		if (EFF_DESC[type]) return draw.textBox(x, y, 24, EFF_DESC[type], {"text-small": true, "background-color": "#ccc"});
+		return draw.textBox(x, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true, "background-color": "#ccc"});
 	},
 	/**
 	 * Draws an infobox for a card in a special hand select.
@@ -582,8 +576,8 @@ const info = {
 			else x -= 145;
 			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
 		};
-		if (EFF_DESC[type]) return draw.textBox(x, y, 24, EFF_DESC[type], {"text-small": true});
-		else return draw.textBox(x, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
+		if (EFF_DESC[type]) return draw.textBox(x, y, 24, EFF_DESC[type], {"text-small": true, "background-color": "#ccc"});
+		return draw.textBox(x, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true, "background-color": "#ccc"});
 	},
 	/**
 	 * Draws an infobox for a card reward choice.
@@ -599,8 +593,8 @@ const info = {
 			else x -= 145;
 			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
 		};
-		if (EFF_DESC[type]) return draw.textBox(x + 69, 51 + yPlus, 24, EFF_DESC[type], {"text-small": true});
-		else return draw.textBox(x + 69, 51 + yPlus, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
+		if (EFF_DESC[type]) return draw.textBox(x + 69, 51 + yPlus, 24, EFF_DESC[type], {"text-small": true, "background-color": "#ccc"});
+		return draw.textBox(x + 69, 51 + yPlus, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true, "background-color": "#ccc"});
 	},
 	/**
 	 * Draws an infobox for a card in a deck.
@@ -617,8 +611,8 @@ const info = {
 			else x -= 145;
 			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
 		};
-		if (EFF_DESC[type]) return draw.textBox(x + 71, y, 24, EFF_DESC[type], {"text-small": true});
-		else return draw.textBox(x + 71, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
+		if (EFF_DESC[type]) return draw.textBox(x + 71, y, 24, EFF_DESC[type], {"text-small": true, "background-color": "#ccc"});
+		return draw.textBox(x + 71, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true, "background-color": "#ccc"});
 	},
 	/**
 	 * Draws an infobox for the player.
@@ -630,8 +624,8 @@ const info = {
 		const eff = game.eff[type];
 		let y = 68 + yPlus, move = 0;
 		let desc = (PERM_EFF_DESC[type] ? PERM_EFF_DESC[type] : "You have " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE) && eff >= 2 ? "s" : "") + ".");
-		move += draw.textBox(85 + xPlus, y + move, desc.length, desc, {"text-small": true});
-		move += draw.textBox(85 + xPlus, y + move, 24, EFF_DESC[type], {"text-small": true});
+		move += draw.textBox(85 + xPlus, y + move, desc.length, desc, {"text-small": true, "background-color": "#ccc"});
+		move += draw.textBox(85 + xPlus, y + move, 24, EFF_DESC[type], {"text-small": true, "background-color": "#ccc"});
 		return move;
 	},
 	/**
@@ -645,9 +639,9 @@ const info = {
 		const eff = game.enemies[game.select[1]].eff[type];
 		let y = pos[1] + yPlus, move = 0;
 		let desc = (PERM_EFF_DESC[type] ? PERM_EFF_DESC[type] : "This has " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "") + ".");
-		move += draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, y + move, desc.length, desc, {"text-small": true});
-		move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, EFF_DESC[type], {"text-small": true});
-		if (type === ENEMY_EFF.COUNTDOWN) move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, "The next intent will be\nto " + MIN_INTENT_DESC[game.enemies[game.select[1]].intentHistory[eff - 1]] + ".", {"text-small": true});
+		move += draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, y + move, desc.length, desc, {"text-small": true, "background-color": "#ccc"});
+		move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, EFF_DESC[type], {"text-small": true, "background-color": "#ccc"});
+		if (type === ENEMY_EFF.COUNTDOWN) move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, "The next intent will be\nto " + MIN_INTENT_DESC[game.enemies[game.select[1]].intentHistory[eff - 1]] + ".", {"text-small": true, "background-color": "#ccc"});
 		return move;
 	},
 	/**
@@ -660,7 +654,7 @@ const info = {
 		if (y === y) {
 			let intent = game.enemies[game.select[1]]?.intent;
 			let desc = (intent === INTENT.SUMMON && game.enemies.length >= 6 ? FULL_INTENT_DESC[INTENT.RITUAL] : FULL_INTENT_DESC[intent]);
-			if (desc) draw.textBox(enemyPos[game.select[1]][0] - 71 + xPlus, y - (desc.match(/\n/g) || []).length * 3, 28, desc, {"text-small": true});
+			if (desc) draw.textBox(enemyPos[game.select[1]][0] - 71 + xPlus, y - (desc.match(/\n/g) || []).length * 3, 28, desc, {"text-small": true, "background-color": "#ccc"});
 		};
 	},
 	/**
@@ -674,11 +668,11 @@ const info = {
 		const obj = artifacts[type];
 		if (!obj) return;
 		if (obj.name.length <= 12) {
-			draw.textBox(x, y, 12, title(obj.name), {"text-align": DIR.CENTER});
-			draw.textBox(x, y + 13, 24, obj.desc, {"text-small": true});
+			draw.textBox(x, y, 12, title(obj.name), {"text-align": DIR.CENTER, "background-color": "#ccc"});
+			draw.textBox(x, y + 13, 24, obj.desc, {"text-small": true, "background-color": "#ccc"});
 		} else {
-			draw.textBox(x, y, obj.name.length, title(obj.name));
-			draw.textBox(x, y + 13, obj.name.length * 2, obj.desc, {"text-small": true});
+			draw.textBox(x, y, obj.name.length, title(obj.name), {"background-color": "#ccc"});
+			draw.textBox(x, y + 13, obj.name.length * 2, obj.desc, {"text-small": true, "background-color": "#ccc"});
 		};
 	},
 };
@@ -883,19 +877,17 @@ const graphics = {
 		for (const key in game.eff) {
 			if (game.eff.hasOwnProperty(key) && game.eff[key]) {
 				let img = I.icon[key];
-				if (game.shield) {
-					if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x + 22, y + 103);
-					draw.image(img, x + 23, y + 104);
-					if (!PERM_EFF_DESC[key]) draw.lore(x + 40, y + 112, game.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
-				} else {
-					if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x + 22, y + 92);
-					draw.image(img, x + 23, y + 93);
-					if (!PERM_EFF_DESC[key]) draw.lore(x + 40, y + 101, game.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
-				};
+				if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x + 22, y + 103);
+				draw.image(img, x + 23, y + 104);
+				if (!PERM_EFF_DESC[key]) draw.lore(x + 40, y + 112, game.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
 				x += 17;
+				if (x >= 15 + 68) {
+					x = 15;
+					y += 17;
+				};
 			};
 		};
-		x = 15;
+		x = 15; y = 27;
 		// animations
 		draw.imageSector(I.player[playerAnim[1]], Math.floor(playerAnim[0]) * 120, 0, 120, I.player[playerAnim[1]].height, x, y, 120);
 		if (playerAnim[1] == "idle") {
@@ -926,10 +918,10 @@ const graphics = {
 		if (energy < 10 && get.maxEnergy() >= 10) {
 			energy = "0" + energy;
 		};
-		draw.imageSector(I.bar.energy_full, 0, 0, cutoff + 1, 32, x, y + 16);
-		draw.imageSector(I.bar.energy_empty, cutoff + 1, 0, 32 - (cutoff + 1), 32, x + (cutoff + 1), y + 16);
-		draw.lore(x + 15, y + 28, energy, {"text-align": DIR.LEFT});
-		draw.lore(x + 18, y + 28, get.maxEnergy());
+		draw.imageSector(I.bar.energy_full, 0, 0, cutoff + 1, 32, x - 1, y + 16);
+		draw.imageSector(I.bar.energy_empty, cutoff + 1, 0, 32 - (cutoff + 1), 32, x + cutoff, y + 16);
+		draw.lore(x + 14, y + 28, energy, {"text-align": DIR.LEFT});
+		draw.lore(x + 17, y + 28, get.maxEnergy());
 	},
 	/**
 	 * Draws the current effect on the canvas.
@@ -1421,7 +1413,7 @@ const graphics = {
 		if (game.select[0] === S.ATTACK) {
 			draw.card(game.enemyAtt[2], 0, 22, true, 50);
 		};
-		if (game.select[0] === S.ATTACK || game.select[0] === S.ENEMY) return;
+		if (game.select[0] === S.PLAYER || game.select[0] === S.ENEMY || game.select[0] === S.ATTACK) return;
 		let temp = -1;
 		for (let index = 0; index < game.hand.length; index++) {
 			if (!cardAnim[index]) cardAnim[index] = 0;
@@ -1538,7 +1530,7 @@ const graphics = {
 				for (const key in game.enemies[game.select[1]].eff) {
 					if (game.enemies[game.select[1]].eff.hasOwnProperty(key) && game.enemies[game.select[1]].eff[key]) {
 						let height = Math.ceil((EFF_DESC[key].match(/\n/g) || []).length * 5.5 + 22);
-						if (y + height >= 200 - pos[1]) {
+						if ((left ? y + 12 : y) + height >= 202 - pos[1]) {
 							y = coords[1] - 1;
 							x -= 77;
 						};
@@ -1557,7 +1549,7 @@ const graphics = {
 			for (const key in game.eff) {
 				if (game.eff.hasOwnProperty(key) && game.eff[key]) {
 					let height = Math.ceil((EFF_DESC[key].match(/\n/g) || []).length * 5.5 + 22);
-					if (y + height >= 200 - coords[1]) {
+					if (y + height >= 202 - coords[1]) {
 						y = 0;
 						x += 77;
 					};
@@ -1616,7 +1608,7 @@ const graphics = {
 	 * @param {boolean} focused - whether the reward layer is focused. Defaults to `true`.
 	 */
 	rewards(focused = true) {
-		draw.box(150, 20, 100, 160);
+		draw.box(145, 20, 110, 160);
 		const place = game.location.split(", ");
 		const type = (game.location == "-1" ? ROOM.BATTLE : game.map[place[0]][place[1]][0]);
 		if (type === ROOM.BATTLE) draw.lore(200 - 2, 21, "Battle Loot!", {"text-align": DIR.CENTER});
@@ -1625,12 +1617,12 @@ const graphics = {
 		else draw.lore(200 - 2, 21, "Rewards!", {"text-align": DIR.CENTER});
 		for (let index = 0; index < game.rewards.length; index++) {
 			let item = game.rewards[index];
-			draw.image(I.reward.item, 151, 32 + (index * 19));
-			if (game.select[1] == index && focused) draw.image(I.select.item_border, 150, 31 + (index * 19));
-			if (item.endsWith(" - claimed")) draw.image(I.select.item_green, 151, 32 + (index * 19));
-			else if (game.select[1] == index && focused) draw.image(I.select.item, 151, 32 + (index * 19));
-			if (item == "finish") draw.image(I.reward.back, 151, 32 + (index * 19));
-			draw.lore(171, 36 + (index * 19), item.replace(" - claimed", ""));
+			draw.image(I.reward.item, 149, 33 + (index * 20));
+			if (game.select[1] == index && focused) draw.image(I.select.item_border, 148, 32 + (index * 20));
+			if (item.endsWith(" - claimed")) draw.image(I.select.item_green, 149, 33 + (index * 20));
+			else if (game.select[1] == index && focused) draw.image(I.select.item, 149, 33 + (index * 20));
+			if (item == "finish") draw.image(I.reward.back, 149, 33 + (index * 20));
+			draw.lore(166, 37 + (index * 20), item.replace(" - claimed", ""));
 		};
 	},
 	/**
@@ -1652,7 +1644,7 @@ const graphics = {
 			draw.card(new Card(game.room[5][game.select[1]]), game.select[1], 50, true, NaN, true);
 		};
 		if ((game.select[1] === -1 || game.select[1] === choices) && focused) draw.rect("#fff", x, y + height - 14, width, 14);
-		draw.box(x + 2, y + height - 12, width - 4, 10);
+		draw.box(x + 2, y + height - 12, width - 4, 10, {"background-color": "#ccc"});
 		draw.lore(x + 3, y + height - 11, "Go back");
 	},
 	/**
@@ -1669,7 +1661,7 @@ const graphics = {
 			if (game.select[1] === index) draw.image(I.artifact.select[game.room[6][index]], 159 + (index * 32), 89);
 		};
 		if ((game.select[1] === -1 || game.select[1] === 3) && focused) draw.rect("#fff", x, y + height - 14, width, 14);
-		draw.box(x + 2, y + height - 12, width - 4, 10);
+		draw.box(x + 2, y + height - 12, width - 4, 10, {"background-color": "#ccc"});
 		draw.lore(x + 3, y + height - 11, "Go back");
 	},
 	/**
