@@ -24,7 +24,7 @@ const cards = {
 	},
 	1000: {
 		name: "slash",
-		desc: ["Deal 5 damage.", "Deal 10 damage."],
+		desc: ["Deal 5 damage to\nan enemy.", "Deal 10 damage to\nan enemy."],
 		rarity: 0,
 		cost: 1,
 		anim: "attack",
@@ -32,13 +32,13 @@ const cards = {
 	},
 	1001: {
 		name: "heat wave",
-		desc: ["Deal 7 damage to\nan enemy, and apply\n2 burn to all\nenemies.", "Deal 8 damage to\nan enemy, and apply\n3 burn to all\nenemies."],
+		desc: ["Deal 7 damage to\nan enemy, and apply\n2 burn to all\nenemies.", "Deal 7 damage to\nan enemy, and apply\n4 burn to all\nenemies."],
 		rarity: 2,
 		cost: 2,
 		anim: "attack",
-		damage: [7, 8],
+		damage: 7,
 		attack(level = 0) {
-			let burn = (level >= 1 ? 3 : 2);
+			let burn = (level >= 1 ? 4 : 2);
 			for (let index = 0; index < game.enemies.length; index++) {
 				if (game.enemies[index].eff[EFF.BURN]) game.enemies[index].eff[EFF.BURN] += burn;
 				else game.enemies[index].eff[EFF.BURN] = burn;
@@ -61,7 +61,7 @@ const cards = {
 	},
 	1003: {
 		name: "bladestorm",
-		desc: "Consume all X aura\nblades to deal\nX times 6 damage\nto one enemy and\nX to all others.\nUniform.",
+		desc: "Consume all X aura\nblades to deal\nX times 6 damage\nto an enemy and X\nto all others.\nUniform.",
 		rarity: 2,
 		cost: [2, 1],
 		attackEffects: false,
@@ -77,7 +77,7 @@ const cards = {
 	},
 	1004: {
 		name: "gold slash",
-		desc: ["Consume 25 gold to\ndeal 8 damage.", "Consume 20 gold to\ndeal 15 damage."],
+		desc: ["Consume 25 gold to\ndeal 8 damage to\nan enemy.", "Consume 20 gold to\ndeal 15 damage to\nan enemy."],
 		rarity: 1,
 		cost: 1,
 		anim: "attack",
@@ -94,7 +94,7 @@ const cards = {
 	},
 	1005: {
 		name: "iron slash",
-		desc: "Deal 12 damage.",
+		desc: "Deal 12 damage to\nan enemy.",
 		rarity: 1,
 		cost: [2, 1],
 		anim: "attack",
@@ -207,12 +207,12 @@ const cards = {
 	},
 	3002: {
 		name: "burn",
-		desc: ["Apply 1 burn to\nyourself and all\nenemies.", "Apply 2 burn to\nyourself and all\nenemies."],
+		desc: ["Apply 1 burn to\nyourself and all\nenemies.", "Apply 1 burn to\nyourself and apply\n2 burn to all\nenemies."],
 		rarity: 1,
 		cost: 0,
 		effect(level = 0) {
+			gainEff(EFF.BURN, 1);
 			let burn = (level >= 1 ? 2 : 1);
-			gainEff(EFF.BURN, burn);
 			for (let index = 0; index < game.enemies.length; index++) {
 				if (game.enemies[index].eff[EFF.BURN]) game.enemies[index].eff[EFF.BURN] += burn;
 				else game.enemies[index].eff[EFF.BURN] = burn;

@@ -102,7 +102,11 @@ class Enemy {
 		if (this.intent === INTENT.ATTACK) {
 			let prevHealth = game.health;
 			takeDamage(this.getTotalAttackPower());
-			if (game.health < prevHealth) startAnim.player("hit");
+			if (game.health < prevHealth) {
+				startAnim.player("hit");
+			} else if (game.shield == 0 && playerAnim[1] != "idle") {
+				startAnim.player("idle");
+			};
 		} else if (this.intent === INTENT.DEFEND) {
 			enemyGainShield(this.getTotalDefendPower());
 			if (this.type === FRAGMENT || this.type === SINGULARITY || (this.type === SLIME.PRIME && primeAnim != -1)) {
@@ -139,9 +143,6 @@ class Enemy {
 	 * Finishes the enemy's action.
 	 */
 	finishAction() {
-		if (game.shield == 0 && playerAnim[1] != "idle" && playerAnim[1] != "hit") {
-			startAnim.player("idle");
-		};
 		if (this.eff[ENEMY_EFF.COUNTDOWN]) {
 			this.intent = this.intentHistory[this.eff[ENEMY_EFF.COUNTDOWN] - 1];
 			this.intentHistory.push(this.intent);

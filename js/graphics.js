@@ -623,8 +623,10 @@ const info = {
 	player(type, xPlus = 0, yPlus = 0) {
 		const eff = game.eff[type];
 		let y = 68 + yPlus, move = 0;
-		let desc = (PERM_EFF_DESC[type] ? PERM_EFF_DESC[type] : "You have " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE) && eff >= 2 ? "s" : "") + ".");
-		move += draw.textBox(85 + xPlus, y + move, desc.length, desc, {"text-small": true, "background-color": "#ccc"});
+		if (eff > 0) {
+			let desc = (PERM_EFF_DESC[type] ? PERM_EFF_DESC[type] : "You have " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE) && eff >= 2 ? "s" : "") + ".");
+			move += draw.textBox(85 + xPlus, y + move, desc.length, desc, {"text-small": true, "background-color": "#ccc"});
+		};
 		move += draw.textBox(85 + xPlus, y + move, 24, EFF_DESC[type], {"text-small": true, "background-color": "#ccc"});
 		return move;
 	},
@@ -638,8 +640,10 @@ const info = {
 		const pos = enemyPos[game.select[1]];
 		const eff = game.enemies[game.select[1]].eff[type];
 		let y = pos[1] + yPlus, move = 0;
-		let desc = (PERM_EFF_DESC[type] ? PERM_EFF_DESC[type] : "This has " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "") + ".");
-		move += draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, y + move, desc.length, desc, {"text-small": true, "background-color": "#ccc"});
+		if (eff > 0) {
+			let desc = (PERM_EFF_DESC[type] ? PERM_EFF_DESC[type] : "This has " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "") + ".");
+			move += draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, y + move, desc.length, desc, {"text-small": true, "background-color": "#ccc"});
+		};
 		move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, EFF_DESC[type], {"text-small": true, "background-color": "#ccc"});
 		if (type === ENEMY_EFF.COUNTDOWN) move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, "The next intent will be\nto " + MIN_INTENT_DESC[game.enemies[game.select[1]].intentHistory[eff - 1]] + ".", {"text-small": true, "background-color": "#ccc"});
 		return move;
@@ -1480,7 +1484,8 @@ const graphics = {
 		const keywords = cards[cardObj.id]?.keywords;
 		if (keywords instanceof Array) {
 			for (let index = 0; index < keywords.length; index++) {
-				if (keywords[index]) y += info[type](keywords[index], x, y);
+				y += info[type](keywords[index], x, y);
+				if (keywords[index] === EFF.BLAZE && !keywords.includes(EFF.BURN)) y += info[type](EFF.BURN, x, y);
 			};
 		};
 	},
@@ -1527,14 +1532,18 @@ const graphics = {
 				if (left) draw.lore(pos[0] + coords[0] - 2.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-align": DIR.LEFT, "text-small": true});
 				else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-small": true});
 				let x = coords[0] - 5.5, y = coords[1] - 1;
+				const logEff = (type) => {
+					let height = Math.ceil((EFF_DESC[type].match(/\n/g) || []).length * 5.5 + (game.enemies[game.select[1]].eff[type] > 0 ? 22 : 11));
+					if ((left ? y + 12 : y) + height >= 202 - pos[1]) {
+						y = coords[1] - 1;
+						x -= 77;
+					};
+					y += info.enemy(type, x, (left ? y + 12 : y));
+					if (type === EFF.BLAZE && !game.enemies[game.select[1]].eff[EFF.BURN]) logEff(EFF.BURN);
+				};
 				for (const key in game.enemies[game.select[1]].eff) {
-					if (game.enemies[game.select[1]].eff.hasOwnProperty(key) && game.enemies[game.select[1]].eff[key]) {
-						let height = Math.ceil((EFF_DESC[key].match(/\n/g) || []).length * 5.5 + 22);
-						if ((left ? y + 12 : y) + height >= 202 - pos[1]) {
-							y = coords[1] - 1;
-							x -= 77;
-						};
-						y += info.enemy(+key, x, (left ? y + 12 : y));
+					if (game.enemies[game.select[1]].eff.hasOwnProperty(key)) {
+						logEff(+key);
 					};
 				};
 			};
@@ -1546,14 +1555,18 @@ const graphics = {
 				else if (global.charStage[CHARACTER.KNIGHT] === 1) draw.lore(coords[0] + (coords[2] / 2) - 1, 61.5, "the true knight", {"color": "#fff", "text-align": DIR.CENTER, "text-small": true});
 			};
 			let x = coords[0] + coords[2] - 80, y = 0;
+			const logEff = (type) => {
+				let height = Math.ceil((EFF_DESC[type].match(/\n/g) || []).length * 5.5 + (game.eff[type] > 0 ? 22 : 11));
+				if (y + height >= 202 - coords[1]) {
+					y = 0;
+					x += 77;
+				};
+				y += info.player(type, x, y);
+				if (type === EFF.BLAZE && !game.eff[EFF.BURN]) logEff(EFF.BURN);
+			};
 			for (const key in game.eff) {
-				if (game.eff.hasOwnProperty(key) && game.eff[key]) {
-					let height = Math.ceil((EFF_DESC[key].match(/\n/g) || []).length * 5.5 + 22);
-					if (y + height >= 202 - coords[1]) {
-						y = 0;
-						x += 77;
-					};
-					y += info.player(+key, x, y);
+				if (game.eff.hasOwnProperty(key)) {
+					logEff(+key);
 				};
 			};
 		} else if (game.select[0] === S.ARTIFACTS) {
