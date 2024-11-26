@@ -74,6 +74,22 @@ function inDeck() {
 	return ((game.select[0] === S.DECK || game.select[0] === S.VOID || game.select[0] === S.DISCARD) && game.select[1]) || inOutsideDeck();
 };
 
+/**
+ * Returns a boolean indicating whether the specified player image is defending.
+ * @param {HTMLImageElement} image - the player image to check.
+ */
+function isDefending(image) {
+	return image === I.player.shield || image === I.player.shield_reinforced || image === I.player.crouch_shield || image === I.player.crouch_shield_reinforced;
+};
+
+/**
+ * Returns a boolean indicating whether the specified player image is crouching.
+ * @param {HTMLImageElement} image - the player image to check.
+ */
+function isCrouching(image) {
+	return image === I.player.crouch_shield || image === I.player.crouch_shield_reinforced;
+};
+
 const get = {
 	/**
 	 * Gets the current area number based on the floor.
@@ -395,8 +411,8 @@ function gainEff(type, amt) {
 function activateAttackEffects(id) {
 	// stop if effects are not allowed
 	if (cards[id].attackEffects === false) return;
-	// start player anim
-	startAnim.player(cards[id].anim);
+	// start player animation
+	startAnim.player(cards[id].attackAnim || I.player.attack);
 	// trigger aura blades
 	if (game.eff[EFF.AURA_BLADE]) {
 		game.eff[EFF.AURA_BLADE]--;

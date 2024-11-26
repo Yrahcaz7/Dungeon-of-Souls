@@ -27,7 +27,6 @@ const cards = {
 		desc: ["Deal 5 damage to\nan enemy.", "Deal 10 damage to\nan enemy."],
 		rarity: 0,
 		cost: 1,
-		anim: "attack",
 		damage: [5, 10],
 	},
 	1001: {
@@ -35,7 +34,6 @@ const cards = {
 		desc: ["Deal 7 damage to\nan enemy, and apply\n2 burn to all\nenemies.", "Deal 7 damage to\nan enemy, and apply\n4 burn to all\nenemies."],
 		rarity: 2,
 		cost: 2,
-		anim: "attack",
 		damage: 7,
 		attack(level = 0) {
 			let burn = (level >= 1 ? 4 : 2);
@@ -50,7 +48,7 @@ const cards = {
 		desc: ["Deal 4 damage to\nall enemies.\nUniform.", "Deal 8 damage to\nall enemies.\nUniform."],
 		rarity: 1,
 		cost: 1,
-		anim: "attack_2",
+		attackAnim: I.player.attack_2,
 		target: false,
 		attack(level = 0) {
 			let damage = (level >= 1 ? 8 : 4);
@@ -80,7 +78,6 @@ const cards = {
 		desc: ["Consume 25 gold to\ndeal 8 damage to\nan enemy.", "Consume 20 gold to\ndeal 15 damage to\nan enemy."],
 		rarity: 1,
 		cost: 1,
-		anim: "attack",
 		damage: [8, 15],
 		attack(level = 0) {
 			if (level >= 1) game.gold -= 20;
@@ -97,7 +94,6 @@ const cards = {
 		desc: "Deal 12 damage to\nan enemy.",
 		rarity: 1,
 		cost: [2, 1],
-		anim: "attack",
 		damage: 12,
 	},
 	2000: {
@@ -181,7 +177,7 @@ const cards = {
 		rarity: 1,
 		cost: 0,
 		effect(level = 0) {
-			startAnim.effect("war cry");
+			startAnim.effect(I.effect.war_cry);
 			for (let index = 0; index < game.enemies.length; index++) {
 				if (!isEnemyBoss(index)) {
 					game.enemies[index].intent = INTENT.DEFEND;

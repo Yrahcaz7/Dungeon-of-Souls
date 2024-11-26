@@ -277,8 +277,8 @@ function updateData() {
 		};
 	};
 	// game over
-	if (game.health === 0 && playerAnim[1] != "death") {
-		startAnim.player("death");
+	if (game.health === 0 && playerAnim[1] !== I.player.death) {
+		startAnim.player(I.player.death);
 		game.turn = -1;
 		game.state = STATE.GAME_END;
 		game.select = [S.GAME_OVER, 0];

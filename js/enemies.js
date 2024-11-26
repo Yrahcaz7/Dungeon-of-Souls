@@ -80,9 +80,9 @@ class Enemy {
 	 */
 	startAction() {
 		if (this.intent === INTENT.ATTACK) {
-			if (game.shield && !/shield/.test(playerAnim[1])) {
-				if (game.eff[EFF.WEAKNESS]) startAnim.player("crouch_shield");
-				else startAnim.player("shield");
+			if (game.shield && !isDefending(playerAnim[1])) {
+				if (game.eff[EFF.WEAKNESS]) startAnim.player(I.player.crouch_shield);
+				else startAnim.player(I.player.shield);
 			};
 			startAnim.enemy();
 		} else if (this.intent === INTENT.DEFEND) {
@@ -103,9 +103,9 @@ class Enemy {
 			let prevHealth = game.health;
 			takeDamage(this.getTotalAttackPower());
 			if (game.health < prevHealth) {
-				startAnim.player("hit");
-			} else if (game.shield == 0 && playerAnim[1] != "idle") {
-				startAnim.player("idle");
+				startAnim.player(I.player.hit);
+			} else if (game.shield == 0 && playerAnim[1] !== I.player.idle) {
+				startAnim.player(I.player.idle);
 			};
 		} else if (this.intent === INTENT.DEFEND) {
 			enemyGainShield(this.getTotalDefendPower());
@@ -130,7 +130,7 @@ class Enemy {
 				};
 				let prevHealth = game.health;
 				takeDamage(damage);
-				if (game.health < prevHealth) startAnim.player("hit");
+				if (game.health < prevHealth) startAnim.player(I.player.hit);
 			} else {
 				game.enemies.push(new Enemy([SLIME.SMALL, SENTRY.SMALL][get.area()], 0));
 				game.enemies[game.enemies.length - 1].eff[ENEMY_EFF.SCRAP_HEAP] = 1;

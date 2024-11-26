@@ -17,7 +17,7 @@
 
 let auraBladePos = [[65, 10], [80, 25], [42, 0], [28, 35]], enemyPos = [], handPos = [], paths = {};
 
-let backAnim = [0, 1.5, 3, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], enemyAnimSync = 0, intentAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], tempAnim = [0, ANIM.STARTING], effAnim = [0, "none"], playerAnim = [0, "idle"], extraAnim = [], primeAnim = 0, transition = 0, screenShake = 0, auraBladeAnim = [0, 3, 6, 1];
+let backAnim = [0, 1.5, 3, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], enemyAnimSync = 0, intentAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], tempAnim = [0, ANIM.STARTING], effAnim = [0, null], playerAnim = [0, I.player.idle], extraAnim = [], primeAnim = 0, transition = 0, screenShake = 0, auraBladeAnim = [0, 3, 6, 1];
 
 let enemyAnimData = [], infoPos = 0, infoLimit = 0;
 
@@ -893,23 +893,23 @@ const graphics = {
 		};
 		x = 15; y = 27;
 		// animations
-		draw.imageSector(I.player[playerAnim[1]], Math.floor(playerAnim[0]) * 120, 0, 120, I.player[playerAnim[1]].height, x, y, 120);
-		if (playerAnim[1] == "idle") {
+		draw.imageSector(playerAnim[1], Math.floor(playerAnim[0]) * 120, 0, 120, playerAnim[1].height, x, y, 120);
+		if (playerAnim[1] === I.player.idle) {
 			playerAnim[0] += 0.25;
 			if (playerAnim[0] >= 10) playerAnim[0] = 0;
-		} else if (playerAnim[1] == "attack" || playerAnim[1] == "attack_aura") {
+		} else if (playerAnim[1] === I.player.attack || playerAnim[1] === I.player.attack_aura) {
 			playerAnim[0]++;
-			if (playerAnim[0] >= 4) playerAnim = [0, "idle"];
-		} else if (playerAnim[1] == "attack_2" || playerAnim[1] == "attack_2_aura") {
+			if (playerAnim[0] >= 4) playerAnim = [0, I.player.idle];
+		} else if (playerAnim[1] === I.player.attack_2 || playerAnim[1] === I.player.attack_2_aura) {
 			playerAnim[0]++;
-			if (playerAnim[0] >= 6) playerAnim = [0, "idle"];
-		} else if (/shield/.test(playerAnim[1])) {
+			if (playerAnim[0] >= 6) playerAnim = [0, I.player.idle];
+		} else if (isDefending(playerAnim[1])) {
 			playerAnim[0] += 0.5;
 			if (playerAnim[0] >= 3) playerAnim[0] = 2;
-		} else if (playerAnim[1] == "hit") {
+		} else if (playerAnim[1] === I.player.hit) {
 			playerAnim[0] += 0.25;
-			if (playerAnim[0] >= 1) playerAnim = [0, "idle"];
-		} else if (playerAnim[1] == "death") {
+			if (playerAnim[0] >= 1) playerAnim = [0, I.player.idle];
+		} else if (playerAnim[1] === I.player.death) {
 			playerAnim[0] += 0.5;
 			if (playerAnim[0] >= 10) playerAnim[0] = 9;
 		};
@@ -931,10 +931,10 @@ const graphics = {
 	 * Draws the current effect on the canvas.
 	 */
 	effect() {
-		if (effAnim[1] == "war cry") {
-			draw.imageSector(I.war_cry, Math.floor(effAnim[0]) * 188, 0, 188, 188, -22, -18, 188, 188);
+		if (effAnim[1] === I.effect.war_cry) {
+			draw.imageSector(I.effect.war_cry, Math.floor(effAnim[0]) * 188, 0, 188, 188, -22, -18, 188, 188);
 			effAnim[0]++;
-			if (effAnim[0] >= 35) effAnim = [0, "none"];
+			if (effAnim[0] >= 35) effAnim = [0, null];
 		};
 	},
 	/**
@@ -1047,7 +1047,7 @@ const graphics = {
 					let phase = (tempAnim[0] / 10),
 						posX = Math.round(((pos[0] - 80)) * phase),
 						posY = Math.round(((pos[1] - 42)) * phase);
-					if (playerAnim[1].startsWith("shield")) {
+					if (isDefending(playerAnim[1])) {
 						posX = Math.round(((pos[0] - 94)) * phase);
 						posY = Math.round(((pos[1] - 44)) * phase);
 					};
@@ -1181,7 +1181,7 @@ const graphics = {
 						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SINGULARITY) {
-					if (!enemyAnimData.length) enemyAnimData = [Math.floor(Math.random() * 4), (game.shield > 0 ? (/crouch/.test(playerAnim[1]) ? 0 : 1) : 2)];
+					if (!enemyAnimData.length) enemyAnimData = [Math.floor(Math.random() * 4), (game.shield > 0 ? (isCrouching(playerAnim[1]) ? 0 : 1) : 2)];
 					pos = [[133 + enemyAnimData[0] * 17, 88], [155 + enemyAnimData[0] * 17, 79], [142 + enemyAnimData[0] * 17, 70]][enemyAnimData[1]];
 					draw.imageSector(I.enemy.singularity.attack, Math.floor(tempAnim[0]) * 68 + (enemyAnimData[0] % 2 + (enemyAnimData[1] % 2 == 1 ? 2 : 0)) * 17, 0, 17, 55, pos[0], pos[1]);
 					draw.imageSector(I.enemy.singularity.attack_overlay, Math.floor(tempAnim[0]) * 34 + (enemyAnimData[1] % 2 == 1 ? 17 : 0), 0, 17, 55, pos[0], pos[1]);
@@ -1898,20 +1898,27 @@ const graphics = {
 const startAnim = {
 	/**
 	 * Starts a player animation.
-	 * @param {string} name - the name of the player animation.
+	 * @param {HTMLImageElement} image - the image of the player animation.
 	 */
-	player(name) {
-		if (!I.player[name] || playerAnim[1] == "death") return;
-		if (game.eff[EFF.AURA_BLADE] && (name == "attack" || name == "attack_2")) name += "_aura";
-		if (game.eff[EFF.REINFORCE] && (name == "shield" || name == "crouch_shield")) name += "_reinforced";
-		playerAnim = [0, name];
+	player(image) {
+		if (!(image instanceof HTMLImageElement) || playerAnim[1] === I.player.death) return;
+		if (game.eff[EFF.AURA_BLADE]) {
+			if (image == I.player.attack) image = I.player.attack_aura;
+			else if (image == I.player.attack_2) image = I.player.attack_2_aura;
+		};
+		if (game.eff[EFF.REINFORCE]) {
+			if (image == I.player.shield) image = I.player.shield_reinforced;
+			else if (image == I.player.crouch_shield) image = I.player.crouch_shield_reinforced;
+		};
+		playerAnim = [0, image];
 	},
 	/**
 	 * Starts an effect animation.
-	 * @param {string} name - the name of the effect animation.
+	 * @param {HTMLImageElement} image - the image of the effect animation.
 	 */
-	effect(name) {
-		effAnim = [0, name];
+	effect(image) {
+		if (!(image instanceof HTMLImageElement)) return;
+		effAnim = [0, image];
 	},
 	/**
 	 * Starts an enemy animation.

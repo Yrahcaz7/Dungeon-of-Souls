@@ -177,7 +177,7 @@ function startTurn(firstTurn = false) {
 	if (game.eff[EFF.RESILIENCE]) game.eff[EFF.RESILIENCE]--;
 	game.energy = get.maxEnergy();
 	game.select = [S.HAND, 0];
-	if (playerAnim[1] != "idle" && playerAnim[1] != "hit") startAnim.player("idle");
+	if (playerAnim[1] !== I.player.idle && playerAnim[1] !== I.player.hit) startAnim.player(I.player.idle);
 };
 
 /**
@@ -242,7 +242,7 @@ function enterBattle() {
  */
 function playerTurn() {
 	// finish attack enemy
-	if (game.enemyAtt[3] && playerAnim[1] == "idle") {
+	if (game.enemyAtt[3] && playerAnim[1] === I.player.idle) {
 		const attCard = cards[game.enemyAtt[2].id];
 		if (attCard.target !== false && attCard.damage) {
 			if (cards[game.enemyAtt[2].id].keywords.includes(CARD_EFF.UNIFORM)) dealDamage(getCardAttr("damage", game.enemyAtt[2].id, game.enemyAtt[2].level), 0.5);

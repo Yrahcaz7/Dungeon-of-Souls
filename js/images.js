@@ -172,13 +172,14 @@ const I = {
 	}, reward: {
 		item: new Image,
 		back: new Image,
+	}, effect: {
+		war_cry: new Image,
 	},
 	title: new Image,
 	difficulty: new Image,
 	victorious: new Image,
 	arrows: new Image,
 	aura_blade: new Image,
-	war_cry: new Image,
 };
 
 /**
