@@ -17,9 +17,9 @@
 
 let auraBladePos = [[65, 10], [80, 25], [42, 0], [28, 35]], enemyPos = [], handPos = [], paths = {};
 
-let backAnim = [0, 1.5, 3, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], enemyAnimSync = 0, intentAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], tempAnim = [0, ANIM.STARTING], effAnim = [0, null], playerAnim = [0, I.player.idle], extraAnim = [], primeAnim = 0, transition = 0, screenShake = 0, auraBladeAnim = [0, 3, 6, 1];
+let backAnim = [0, 1.5, 3, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], enemyAnimSync = 0, enemyActionAnim = [0, ANIM.STARTING], intentAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], effAnim = [0, null], playerAnim = [0, I.player.idle], extraAnim = [], primeAnim = 0, transition = 0, screenShake = 0, auraBladeAnim = [0, 3, 6, 1];
 
-let enemyAnimData = [], infoPos = 0, infoLimit = 0;
+let enemyActionAnimData = [], infoPos = 0, infoLimit = 0;
 
 const draw = {
 	/**
@@ -45,7 +45,7 @@ const draw = {
 	 * @param {number} dw - the width of the image. Defaults to `sw`.
 	 * @param {number} dh - the height of the image. Defaults to `sh`.
 	 */
-	imageSector(image, sx, sy, sw, sh, dx = 0, dy = 0, dw = +sw, dh = +sh) {
+	imageSector(image, sx, sy, sw, sh, dx = 0, dy = 0, dw = sw, dh = sh) {
 		ctx.drawImage(image, sx, sy, sw, sh, dx * scale, dy * scale, dw * scale, dh * scale);
 	},
 	/**
@@ -1044,236 +1044,264 @@ const graphics = {
 			const intent = game.enemies[game.enemyNum].intent;
 			if (intent === INTENT.ATTACK) {
 				if (type === SLIME.BIG) {
-					let phase = (tempAnim[0] / 10),
-						posX = Math.round(((pos[0] - 80)) * phase),
-						posY = Math.round(((pos[1] - 42)) * phase);
-					if (isDefending(playerAnim[1])) {
-						posX = Math.round(((pos[0] - 94)) * phase);
-						posY = Math.round(((pos[1] - 44)) * phase);
-					};
-					if (tempAnim[1] === ANIM.ENDING) {
-						tempAnim = [0, ANIM.STARTING];
+					if (!enemyActionAnimData.length) enemyActionAnimData = [
+						pos[0] - (isDefending(playerAnim[1]) ? 94 : 80),
+						pos[1] - (isDefending(playerAnim[1]) ? 44 : 42),
+					];
+					let phase = (enemyActionAnim[0] / 10),
+						posX = Math.round(enemyActionAnimData[0] * phase),
+						posY = Math.round(enemyActionAnimData[1] * phase);
+					if (enemyActionAnim[1] === ANIM.ENDING) {
+						enemyActionAnim = [0, ANIM.STARTING];
 						game.enemyStage = ANIM.ENDING;
+						enemyActionAnimData = [];
 					} else if (game.enemyStage === ANIM.MIDDLE) {
 						draw.imageSector(I.enemy.slime.big_attack, 4 * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
-						tempAnim[1] = ANIM.ENDING;
+						enemyActionAnim[1] = ANIM.ENDING;
 						game.enemyStage = ANIM.PENDING;
 					} else {
-						draw.imageSector(I.enemy.slime.big_attack, (tempAnim[0] % 4) * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
-						tempAnim[0]++;
+						draw.imageSector(I.enemy.slime.big_attack, (enemyActionAnim[0] % 4) * 7, 0, 7, 7, pos[0] + 16 - posX, pos[1] + 43 - posY);
+						enemyActionAnim[0]++;
 						game.enemyStage = ANIM.PENDING;
-						if (tempAnim[0] >= 11) {
-							tempAnim[0] = 11;
+						if (enemyActionAnim[0] >= 11) {
+							enemyActionAnim[0] = 11;
 							game.enemyStage = ANIM.MIDDLE;
 						};
 					};
 				} else if (type === SLIME.SMALL) {
-					if (tempAnim[0] >= 10) {
-						let phase = ((tempAnim[0] - 9) / 10),
-							posX = Math.round(((pos[0] - (game.shield > 0 ? 81 : 62)) - 64) * phase),
-							posY = Math.round(((pos[1] - (game.shield > 0 ? 61 : 57))) * phase);
+					if (!enemyActionAnimData.length) enemyActionAnimData = [
+						pos[0] - (isDefending(playerAnim[1]) ? 81 : 62) - 64,
+						pos[1] - (isDefending(playerAnim[1]) ? 61 : 57),
+					];
+					if (enemyActionAnim[0] >= 10) {
+						let phase = ((enemyActionAnim[0] - 9) / 10),
+							posX = Math.round(enemyActionAnimData[0] * phase),
+							posY = Math.round(enemyActionAnimData[1] * phase);
 						draw.imageSector(I.enemy.slime.small_attack, 9 * 128, 0, 128, 64, pos[0] - 64 - posX, pos[1] - posY, 128, 64);
-					} else draw.imageSector(I.enemy.slime.small_attack, Math.floor(tempAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
-					if (tempAnim[1] === ANIM.STARTING) tempAnim[0]++;
-					else if (tempAnim[1] === ANIM.ENDING) tempAnim[0]--;
-					if (tempAnim[0] >= 20) {
-						tempAnim[0] = 18;
-						tempAnim[1] = ANIM.ENDING;
+					} else draw.imageSector(I.enemy.slime.small_attack, Math.floor(enemyActionAnim[0]) * 128, 0, 128, 64, pos[0] - 64, pos[1], 128, 64);
+					if (enemyActionAnim[1] === ANIM.STARTING) enemyActionAnim[0]++;
+					else if (enemyActionAnim[1] === ANIM.ENDING) enemyActionAnim[0]--;
+					if (enemyActionAnim[0] >= 20) {
+						enemyActionAnim[0] = 18;
+						enemyActionAnim[1] = ANIM.ENDING;
 						game.enemyStage = ANIM.MIDDLE;
-					} else if (tempAnim[0] < 0) {
-						tempAnim = [0, ANIM.STARTING];
+					} else if (enemyActionAnim[0] < 0) {
+						enemyActionAnim = [0, ANIM.STARTING];
 						enemyAnim[game.enemyNum] = 0;
 						game.enemyStage = ANIM.ENDING;
+						enemyActionAnimData = [];
 					} else {
 						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SLIME.PRIME) {
-					if (tempAnim[0] >= 4) {
-						let phase = ((tempAnim[0] - 4) / 10), posX = Math.round(((pos[0] - 68) - 40) * phase);
+					if (enemyActionAnim[0] >= 4) {
+						let phase = ((enemyActionAnim[0] - 4) / 10), posX = Math.round(((pos[0] - 68) - 40) * phase);
 						draw.imageSector(I.enemy.slime.prime_attack, 4 * 36, 0, 36, 18, pos[0] - 32 - posX, 80, 36, 18);
-					} else draw.imageSector(I.enemy.slime.prime_attack, Math.floor(tempAnim[0]) * 36, 0, 36, 18, pos[0] - 32, 80, 36, 18);
-					tempAnim[0]++;
+					} else draw.imageSector(I.enemy.slime.prime_attack, Math.floor(enemyActionAnim[0]) * 36, 0, 36, 18, pos[0] - 32, 80, 36, 18);
+					enemyActionAnim[0]++;
 					if (game.enemyStage === ANIM.MIDDLE) {
-						tempAnim = [0, ANIM.STARTING];
+						enemyActionAnim = [0, ANIM.STARTING];
 						game.enemyStage = ANIM.ENDING;
-					} else if (tempAnim[0] >= 14) {
-						tempAnim[0] = 14;
+					} else if (enemyActionAnim[0] >= 14) {
+						enemyActionAnim[0] = 14;
 						game.enemyStage = ANIM.MIDDLE;
 					} else {
 						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === FRAGMENT && primeAnim == -1) {
-					draw.imageSector(I.enemy.fragment.attack, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
-					draw.clock(pos[0] + 2, pos[1] + 4, -1, (tempAnim[0] >= 3 ? 0 : Math.floor(tempAnim[0] + 1) * 15));
-					if (tempAnim[0] >= 4 && tempAnim[0] < 6) draw.rect("#f00", 0, pos[1] + 4, pos[0], 60);
-					tempAnim[0]++;
-					if (tempAnim[0] >= 7) {
-						tempAnim = [0, ANIM.STARTING];
+					draw.imageSector(I.enemy.fragment.attack, Math.floor(enemyActionAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
+					draw.clock(pos[0] + 2, pos[1] + 4, -1, (enemyActionAnim[0] >= 3 ? 0 : Math.floor(enemyActionAnim[0] + 1) * 15));
+					if (enemyActionAnim[0] >= 4 && enemyActionAnim[0] < 6) draw.rect("#f00", 0, pos[1] + 4, pos[0], 60);
+					enemyActionAnim[0]++;
+					if (enemyActionAnim[0] >= 7) {
+						enemyActionAnim = [0, ANIM.STARTING];
 						game.enemyStage = ANIM.ENDING;
-					} else if (tempAnim[0] == 4) {
+					} else if (enemyActionAnim[0] == 4) {
 						game.enemyStage = ANIM.MIDDLE;
 					} else {
 						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SENTRY.BIG) {
-					draw.imageSector(I.enemy.sentry.big_attack, Math.floor(tempAnim[0]) * 88, 0, 88, 70, pos[0] - 12, pos[1] - 1, 88, 70);
-					if (tempAnim[0] >= 4) {
+					if (!enemyActionAnimData.length) enemyActionAnimData = [
+						(isDefending(playerAnim[1]) ? 92 : 72),
+						(isDefending(playerAnim[1]) ? 87 : 82),
+					];
+					draw.imageSector(I.enemy.sentry.big_attack, Math.floor(enemyActionAnim[0]) * 88, 0, 88, 70, pos[0] - 12, pos[1] - 1, 88, 70);
+					if (enemyActionAnim[0] >= 4) {
 						const start = [pos[0] + 17, pos[1] + 16];
-						const end = (game.shield > 0 ? [92, 87] : [72, 82]);
+						const end = enemyActionAnimData;
 						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
 					};
-					if (tempAnim[1] === ANIM.STARTING) tempAnim[0]++;
-					else if (tempAnim[1] === ANIM.ENDING) tempAnim[0]--;
-					if (tempAnim[0] >= 5) {
-						tempAnim[0] = 4;
-						tempAnim[1] = ANIM.ENDING;
-					} else if (tempAnim[0] == 3 && tempAnim[1] === ANIM.ENDING) {
+					if (enemyActionAnim[1] === ANIM.STARTING) enemyActionAnim[0]++;
+					else if (enemyActionAnim[1] === ANIM.ENDING) enemyActionAnim[0]--;
+					if (enemyActionAnim[0] >= 5) {
+						enemyActionAnim[0] = 4;
+						enemyActionAnim[1] = ANIM.ENDING;
+					} else if (enemyActionAnim[0] == 3 && enemyActionAnim[1] === ANIM.ENDING) {
 						game.enemyStage = ANIM.MIDDLE;
-					} else if (tempAnim[0] < 0) {
-						tempAnim = [0, ANIM.STARTING];
+					} else if (enemyActionAnim[0] < 0) {
+						enemyActionAnim = [0, ANIM.STARTING];
 						enemyAnim[game.enemyNum] = 0;
 						game.enemyStage = ANIM.ENDING;
+						enemyActionAnimData = [];
 					} else {
 						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SENTRY.SMALL) {
-					draw.imageSector(I.enemy.sentry.small_attack, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
-					if (tempAnim[0] >= 11) {
+					if (!enemyActionAnimData.length) enemyActionAnimData = [
+						(isDefending(playerAnim[1]) ? 92 : 72),
+						(isDefending(playerAnim[1]) ? 87 : 82),
+					];
+					draw.imageSector(I.enemy.sentry.small_attack, Math.floor(enemyActionAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
+					if (enemyActionAnim[0] >= 11) {
 						const start = [pos[0] + 14, pos[1] + 30];
-						const end = (game.shield > 0 ? [92, 87] : [72, 82]);
+						const end = enemyActionAnimData;
 						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
 					};
-					if (tempAnim[1] === ANIM.STARTING) tempAnim[0]++;
-					else if (tempAnim[1] === ANIM.ENDING) tempAnim[0]--;
-					if (tempAnim[0] >= 12) {
-						tempAnim[0] = 11;
-						tempAnim[1] = ANIM.ENDING;
-					} else if (tempAnim[0] == 10 && tempAnim[1] === ANIM.ENDING) {
+					if (enemyActionAnim[1] === ANIM.STARTING) enemyActionAnim[0]++;
+					else if (enemyActionAnim[1] === ANIM.ENDING) enemyActionAnim[0]--;
+					if (enemyActionAnim[0] >= 12) {
+						enemyActionAnim[0] = 11;
+						enemyActionAnim[1] = ANIM.ENDING;
+					} else if (enemyActionAnim[0] == 10 && enemyActionAnim[1] === ANIM.ENDING) {
 						game.enemyStage = ANIM.MIDDLE;
-					} else if (tempAnim[0] < 0) {
-						tempAnim = [0, ANIM.STARTING];
+					} else if (enemyActionAnim[0] < 0) {
+						enemyActionAnim = [0, ANIM.STARTING];
 						enemyAnim[game.enemyNum] = 0;
 						game.enemyStage = ANIM.ENDING;
+						enemyActionAnimData = [];
 					} else {
 						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SENTRY.PRIME && primeAnim == -1) {
-					draw.imageSector(I.enemy.sentry.prime_attack, Math.floor(tempAnim[0]) * 64, 0, 64, 86, pos[0], pos[1] - 22);
-					if (tempAnim[0] >= 12) {
+					if (!enemyActionAnimData.length) enemyActionAnimData = [
+						(isDefending(playerAnim[1]) ? 92 : 72),
+						(isDefending(playerAnim[1]) ? 87 : 82),
+					];
+					draw.imageSector(I.enemy.sentry.prime_attack, Math.floor(enemyActionAnim[0]) * 64, 0, 64, 86, pos[0], pos[1] - 22);
+					if (enemyActionAnim[0] >= 12) {
 						let start = [pos[0] + 12, pos[1] + 29];
-						const end = (game.shield > 0 ? [92, 87] : [72, 82]);
+						const end = enemyActionAnimData;
 						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
 						start[1] += 7;
 						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
 					};
-					if (tempAnim[1] === ANIM.STARTING) tempAnim[0]++;
-					else if (tempAnim[1] === ANIM.ENDING) tempAnim[0]--;
-					if (tempAnim[0] >= 13) {
-						tempAnim[0] = 12;
-						tempAnim[1] = ANIM.ENDING;
-					} else if (tempAnim[0] == 11 && tempAnim[1] === ANIM.ENDING) {
+					if (enemyActionAnim[1] === ANIM.STARTING) enemyActionAnim[0]++;
+					else if (enemyActionAnim[1] === ANIM.ENDING) enemyActionAnim[0]--;
+					if (enemyActionAnim[0] >= 13) {
+						enemyActionAnim[0] = 12;
+						enemyActionAnim[1] = ANIM.ENDING;
+					} else if (enemyActionAnim[0] == 11 && enemyActionAnim[1] === ANIM.ENDING) {
 						game.enemyStage = ANIM.MIDDLE;
-					} else if (tempAnim[0] < 0) {
-						tempAnim = [0, ANIM.STARTING];
+					} else if (enemyActionAnim[0] < 0) {
+						enemyActionAnim = [0, ANIM.STARTING];
 						enemyAnim[game.enemyNum] = 0;
 						game.enemyStage = ANIM.ENDING;
+						enemyActionAnimData = [];
 					} else {
 						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SINGULARITY) {
-					if (!enemyAnimData.length) enemyAnimData = [Math.floor(Math.random() * 4), (game.shield > 0 ? (isCrouching(playerAnim[1]) ? 0 : 1) : 2)];
-					pos = [[133 + enemyAnimData[0] * 17, 88], [155 + enemyAnimData[0] * 17, 79], [142 + enemyAnimData[0] * 17, 70]][enemyAnimData[1]];
-					draw.imageSector(I.enemy.singularity.attack, Math.floor(tempAnim[0]) * 68 + (enemyAnimData[0] % 2 + (enemyAnimData[1] % 2 == 1 ? 2 : 0)) * 17, 0, 17, 55, pos[0], pos[1]);
-					draw.imageSector(I.enemy.singularity.attack_overlay, Math.floor(tempAnim[0]) * 34 + (enemyAnimData[1] % 2 == 1 ? 17 : 0), 0, 17, 55, pos[0], pos[1]);
-					if (tempAnim[0] >= 8) {
+					if (!enemyActionAnimData.length) enemyActionAnimData = [
+						Math.floor(Math.random() * 4),
+						(isDefending(playerAnim[1]) ? (isCrouching(playerAnim[1]) ? 0 : 1) : 2),
+					];
+					pos = [
+						[133 + enemyActionAnimData[0] * 17, 88],
+						[155 + enemyActionAnimData[0] * 17, 79],
+						[142 + enemyActionAnimData[0] * 17, 70],
+					][enemyActionAnimData[1]];
+					draw.imageSector(I.enemy.singularity.attack, Math.floor(enemyActionAnim[0]) * 68 + (enemyActionAnimData[0] % 2 + (enemyActionAnimData[1] % 2 == 1 ? 2 : 0)) * 17, 0, 17, 55, pos[0], pos[1]);
+					draw.imageSector(I.enemy.singularity.attack_overlay, Math.floor(enemyActionAnim[0]) * 34 + (enemyActionAnimData[1] % 2 == 1 ? 17 : 0), 0, 17, 55, pos[0], pos[1]);
+					if (enemyActionAnim[0] >= 8) {
 						const start = [pos[0] + 7, pos[1] + 5];
-						const end = [[94, 95], [92, 87], [72, 82]][enemyAnimData[1]];
+						const end = [[94, 95], [92, 87], [72, 82]][enemyActionAnimData[1]];
 						draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 4);
 					};
-					if (tempAnim[1] === ANIM.STARTING) tempAnim[0]++;
-					else if (tempAnim[1] === ANIM.ENDING) tempAnim[0]--;
-					if (tempAnim[0] >= 9) {
-						tempAnim[0] = 8;
-						tempAnim[1] = ANIM.ENDING;
-					} else if (tempAnim[0] == 7 && tempAnim[1] === ANIM.ENDING) {
+					if (enemyActionAnim[1] === ANIM.STARTING) enemyActionAnim[0]++;
+					else if (enemyActionAnim[1] === ANIM.ENDING) enemyActionAnim[0]--;
+					if (enemyActionAnim[0] >= 9) {
+						enemyActionAnim[0] = 8;
+						enemyActionAnim[1] = ANIM.ENDING;
+					} else if (enemyActionAnim[0] == 7 && enemyActionAnim[1] === ANIM.ENDING) {
 						game.enemyStage = ANIM.MIDDLE;
-					} else if (tempAnim[0] < 0) {
-						tempAnim = [0, ANIM.STARTING];
+					} else if (enemyActionAnim[0] < 0) {
+						enemyActionAnim = [0, ANIM.STARTING];
 						game.enemyStage = ANIM.ENDING;
-						enemyAnimData = [];
+						enemyActionAnimData = [];
 					} else {
 						game.enemyStage = ANIM.PENDING;
 					};
 				};
 			} else if (intent === INTENT.DEFEND) {
 				if (type === SLIME.BIG) {
-					draw.imageSector(I.enemy.slime.big_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, tempAnim[0] * 2 + 5, 64, pos[0], pos[1]);
-					tempAnim[0]++;
+					draw.imageSector(I.enemy.slime.big_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, enemyActionAnim[0] * 2 + 5, 64, pos[0], pos[1]);
+					enemyActionAnim[0]++;
 					if (game.enemyStage === ANIM.MIDDLE) {
-						tempAnim = [0, ANIM.STARTING];
+						enemyActionAnim = [0, ANIM.STARTING];
 						game.enemyStage = ANIM.ENDING;
-					} else if (tempAnim[0] >= 27) {
-						tempAnim[0] = 27;
+					} else if (enemyActionAnim[0] >= 27) {
+						enemyActionAnim[0] = 27;
 						game.enemyStage = ANIM.MIDDLE;
 					} else {
 						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SLIME.SMALL) {
-					draw.imageSector(I.enemy.slime.small_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, tempAnim[0] + 20, 64, pos[0], pos[1]);
-					tempAnim[0]++;
+					draw.imageSector(I.enemy.slime.small_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, enemyActionAnim[0] + 20, 64, pos[0], pos[1]);
+					enemyActionAnim[0]++;
 					if (game.enemyStage === ANIM.MIDDLE) {
-						tempAnim = [0, ANIM.STARTING];
+						enemyActionAnim = [0, ANIM.STARTING];
 						game.enemyStage = ANIM.ENDING;
-					} else if (tempAnim[0] >= 24) {
-						tempAnim[0] = 24;
+					} else if (enemyActionAnim[0] >= 24) {
+						enemyActionAnim[0] = 24;
 						game.enemyStage = ANIM.MIDDLE;
 					} else {
 						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SLIME.PRIME) {
-					draw.imageSector(I.enemy.slime.prime_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, tempAnim[0] * 3, 64, pos[0], pos[1] + 1);
-					tempAnim[0]++;
+					draw.imageSector(I.enemy.slime.prime_defend, Math.floor(enemyAnim[game.enemyNum]) * 64, 0, enemyActionAnim[0] * 3, 64, pos[0], pos[1] + 1);
+					enemyActionAnim[0]++;
 					if (game.enemyStage === ANIM.MIDDLE) {
-						tempAnim = [0, ANIM.STARTING];
+						enemyActionAnim = [0, ANIM.STARTING];
 						game.enemyStage = ANIM.ENDING;
-					} else if (tempAnim[0] >= 20) {
-						tempAnim[0] = 20;
+					} else if (enemyActionAnim[0] >= 20) {
+						enemyActionAnim[0] = 20;
 						game.enemyStage = ANIM.MIDDLE;
 					} else {
 						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SENTRY.BIG) {
-					draw.imageSector(I.enemy.sentry.big_defend, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
-					tempAnim[0]++;
+					draw.imageSector(I.enemy.sentry.big_defend, Math.floor(enemyActionAnim[0]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
+					enemyActionAnim[0]++;
 					if (game.enemyStage === ANIM.MIDDLE) {
-						tempAnim = [0, ANIM.STARTING];
+						enemyActionAnim = [0, ANIM.STARTING];
 						game.enemyStage = ANIM.ENDING;
-					} else if (tempAnim[0] >= 7) {
-						tempAnim[0] = 7;
+					} else if (enemyActionAnim[0] >= 7) {
+						enemyActionAnim[0] = 7;
 						game.enemyStage = ANIM.MIDDLE;
 					} else {
 						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SENTRY.SMALL) {
-					draw.imageSector(I.enemy.sentry.small_defend, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
-					tempAnim[0]++;
+					draw.imageSector(I.enemy.sentry.small_defend, Math.floor(enemyActionAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
+					enemyActionAnim[0]++;
 					if (game.enemyStage === ANIM.MIDDLE) {
-						tempAnim = [0, ANIM.STARTING];
+						enemyActionAnim = [0, ANIM.STARTING];
 						game.enemyStage = ANIM.ENDING;
-					} else if (tempAnim[0] >= 5) {
-						tempAnim[0] = 5;
+					} else if (enemyActionAnim[0] >= 5) {
+						enemyActionAnim[0] = 5;
 						game.enemyStage = ANIM.MIDDLE;
 					} else {
 						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === SENTRY.PRIME && primeAnim == -1) {
-					draw.imageSector(I.enemy.sentry.prime_defend, Math.floor(tempAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
-					tempAnim[0]++;
+					draw.imageSector(I.enemy.sentry.prime_defend, Math.floor(enemyActionAnim[0]) * 64, 0, 64, 64, pos[0], pos[1]);
+					enemyActionAnim[0]++;
 					if (game.enemyStage === ANIM.MIDDLE) {
-						tempAnim = [0, ANIM.STARTING];
+						enemyActionAnim = [0, ANIM.STARTING];
 						game.enemyStage = ANIM.ENDING;
-					} else if (tempAnim[0] >= 9) {
-						tempAnim[0] = 9;
+					} else if (enemyActionAnim[0] >= 9) {
+						enemyActionAnim[0] = 9;
 						game.enemyStage = ANIM.MIDDLE;
 					} else {
 						game.enemyStage = ANIM.PENDING;
@@ -1924,6 +1952,6 @@ const startAnim = {
 	 * Starts an enemy animation.
 	 */
 	enemy() {
-		tempAnim = [0, ANIM.STARTING];
+		enemyActionAnim = [0, ANIM.STARTING];
 	},
 };
