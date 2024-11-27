@@ -83,8 +83,8 @@ const MIN_INTENT_DESC = {
 
 // full descriptions of enemy intents
 const FULL_INTENT_DESC = {
-	[INTENT.ATTACK]: "This enemy intends to attack\nyou on its next turn.",
-	[INTENT.DEFEND]: "This enemy intends to defend\nitself on its next turn.",
+	[INTENT.ATTACK]: "This enemy intends to <#f44>attack</#f44>\nyou on its next turn.",
+	[INTENT.DEFEND]: "This enemy intends to <#58f>defend</#58f>\nitself on its next turn.",
 	[INTENT.BUFF]: "This enemy intends to buff\nitself on its next turn.",
 	[INTENT.SUMMON]: "This enemy intends to summon\na minion on its next turn.",
 	[INTENT.RITUAL]: "This enemy would have\nsummoned a minion on its\nnext turn, but since there\nare already five, it will\nperform a ritual instead.",

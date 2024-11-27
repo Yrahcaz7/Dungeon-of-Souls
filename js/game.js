@@ -390,6 +390,7 @@ function updateVisuals() {
 	if (menuLocation !== -1) {
 		graphics.middleLayer();
 		draw.image(I.title, (400 - I.title.width) / 2, 0);
+		if (global.version) draw.lore(390, 51, "Version " + global.version + (global.version % 1 == 0 ? ".0" : ""), {"color": "#f00", "text-align": DIR.LEFT, "text-small": true});
 		if (global.highScore > 0) draw.lore(1, 1, "HIGH SCORE: " + global.highScore + " points", {"color": "#fff", "text-small": true});
 		if (game.artifacts.includes(202) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": DIR.CENTER});
 		else if (get.area() == 1) draw.lore(200 - 2, 53, "Act 2: The Color of the Soul", {"color": "#fff", "text-align": DIR.CENTER});
