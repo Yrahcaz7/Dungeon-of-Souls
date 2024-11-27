@@ -26,7 +26,7 @@ function startEventBattle(type, num = 1) {
 		if (num > 6) num = 6;
 		let enemy = [SLIME.SMALL, SENTRY.SMALL][get.area()];
 		for (let index = 0; index < num; index++) {
-			game.enemies.push(new Enemy(enemy, 1 - (index + num) / 5));
+			game.enemies.push(new Enemy(enemy, 1 - (index + num) / (5 - game.difficulty)));
 		};
 	} else if (type === BATTLE.AMBUSH) {
 		let enemy = [SLIME.BIG, SENTRY.BIG][get.area()];
@@ -52,7 +52,7 @@ const EVENTS = {
 		11: [() => {startEventBattle(BATTLE.CROWD, 1)}],
 		20: [() => {takeDamage(4)}, "You successfully got past the enemies!\nHowever, you took 4 damage while doing so.", ["get a move on", 21]],
 		21: [() => {finishEvent()}],
-		30: [() => {gainEff(EFF.WEAKNESS, 1)}, "You tried to sneak past as best as you could,\nbut the enemies still spotted you!\nYou have also have hard time getting up.\nYou were crawling around for a while...", ["Battle Start!", 31]],
+		30: [() => {gainEff(EFF.WEAKNESS, 1)}, "You tried to sneak past as best as you could,\nbut the enemies still spotted you!\nYou also have hard time getting up.\nYou were crawling around for a while, after all...", ["Battle Start!", 31]],
 		31: [() => {
 			if (game.floor >= 5) startEventBattle(BATTLE.CROWD, randomInt(2, 3));
 			else startEventBattle(BATTLE.CROWD, 2);
@@ -90,7 +90,7 @@ const EVENTS = {
 		111: [() => {finishEvent()}],
 		120: [() => {takeDamage(25, false)}, "You brutally stab yourself and bleed onto the altar.\nSeemingly in response, a compartment in the altar opens.\nInside is a brilliant red gem.\nJust holding it makes you feel stronger.", ["take the gem", 121]],
 		121: [() => {game.artifacts.push(101)}, "You pocket the gem.\nYou then stumble around lightheadedly for a bit.\nMaybe you should be a bit more careful with your blood.", ["get a move on", 111]],
-		130: [() => {game.health += 5}, "You brutally stab yourself and bleed onto the altar.\nYour Gem of Rage glows ever brighter...\nSuddenly, your blood starts to trickle back into your wound.\nThe blood stains become liquid again and enter as well.\nYou heal 5 health, but you feel rather queasy...", ["get a move on", 111]],
+		130: [() => {game.health += 6}, "You brutally stab yourself and bleed onto the altar.\nYour Gem of Rage glows ever brighter...\nSuddenly, your blood starts to trickle back into your wound.\nThe blood stains become liquid again and enter as well.\nYou heal 6 health, but you feel rather queasy...", ["get a move on", 111]],
 		200: [() => {}, "You have a bad feeling about this...", ["do it anyway", 201], ["cancel", 0]],
 		201: [() => {}, "You topple the altar, and a dark cloud spreads...\nYou feel sluggish, and you can't see ahead of you.", ["run out of the cloud", 202]],
 		202: [() => {}, "Blindly running ahead, you smack into an enemy.", ["Battle Start!", 203]],

@@ -78,7 +78,7 @@ const MIN_INTENT_DESC = {
 	[INTENT.ATTACK]: "<#f44>attack</#f44> you",
 	[INTENT.DEFEND]: "<#58f>defend</#58f> itself",
 	[INTENT.BUFF]: "buff itself",
-	[INTENT.SUMMON]: "summon minion(s)",
+	[INTENT.SUMMON]: "summon a minion",
 };
 
 // full descriptions of enemy intents
@@ -86,8 +86,8 @@ const FULL_INTENT_DESC = {
 	[INTENT.ATTACK]: "This enemy intends to attack\nyou on its next turn.",
 	[INTENT.DEFEND]: "This enemy intends to defend\nitself on its next turn.",
 	[INTENT.BUFF]: "This enemy intends to buff\nitself on its next turn.",
-	[INTENT.SUMMON]: "This enemy intends to summon\nminion(s) on its next turn.",
-	[INTENT.RITUAL]: "This enemy would have\nsummoned minion(s) on its\nnext turn, but since there\nare already five, it will\nperform a ritual instead.",
+	[INTENT.SUMMON]: "This enemy intends to summon\na minion on its next turn.",
+	[INTENT.RITUAL]: "This enemy would have\nsummoned a minion on its\nnext turn, but since there\nare already five, it will\nperform a ritual instead.",
 };
 
 // enemy animation states

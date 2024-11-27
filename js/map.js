@@ -23,7 +23,7 @@ let mapProg = 0, mapTotal = 100, death_zones = 0, rowFalses = 0, rowNodes = 0, e
  */
 function weakerSmallEnemy(row) {
 	let area = get.area(row + 1);
-	return [SLIME.SMALL, SENTRY.SMALL][area] + ", " + (Math.round(((row + (1 - area) * 10) * 0.05) * 100) / 100);
+	return [SLIME.SMALL, SENTRY.SMALL][area] + ", " + (Math.round(((row - game.difficulty * 5 + (1 - area) * 10) * 0.05) * 100) / 100);
 };
 
 /**

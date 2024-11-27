@@ -1464,7 +1464,7 @@ const graphics = {
 		};
 		if (notif[0] != -1) {
 			draw.lore(handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1] + notif[3], notif[2], {
-				"color": "#ff4444" + Math.min(16 - notif[1], 15).toString(16) + "f",
+				"color": "#ff8888" + Math.min(16 - notif[1], 15).toString(16) + "f",
 				"text-align": DIR.CENTER,
 			});
 			notif[1]++;
@@ -1568,6 +1568,8 @@ const graphics = {
 					};
 					y += info.enemy(type, x, (left ? y + 12 : y));
 					if (type === EFF.BLAZE && !game.enemies[game.select[1]].eff[EFF.BURN]) logEff(EFF.BURN);
+					else if (type === ENEMY_EFF.PLAN_ATTACK && !game.enemies[game.select[1]].eff[EFF.ATKUP]) logEff(EFF.ATKUP);
+					else if (type === ENEMY_EFF.PLAN_DEFEND && !game.enemies[game.select[1]].eff[EFF.DEFUP]) logEff(EFF.DEFUP);
 				};
 				for (const key in game.enemies[game.select[1]].eff) {
 					if (game.enemies[game.select[1]].eff.hasOwnProperty(key)) {

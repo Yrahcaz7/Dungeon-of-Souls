@@ -25,8 +25,7 @@ class Enemy {
 		if (type === SLIME.SMALL || type === SENTRY.SMALL) power--;
 		else if (type === SLIME.PRIME || type === SENTRY.PRIME) power++;
 		else if (type === FRAGMENT || type === SINGULARITY) power += 2;
-		power += (game.difficulty * 0.75) + 2;
-		power += (game.floor * 0.05) * (2 ** game.difficulty);
+		power += game.difficulty + 2 + (game.floor * 0.05);
 		if (game.artifacts.includes(202)) power += 0.5;
 		this.type = +type;
 		if (type === SINGULARITY) this.maxHealth = (power * 10) * 1.25;
@@ -132,7 +131,7 @@ class Enemy {
 				takeDamage(damage);
 				if (game.health < prevHealth) startAnim.player(I.player.hit);
 			} else {
-				game.enemies.push(new Enemy([SLIME.SMALL, SENTRY.SMALL][get.area()], 0));
+				game.enemies.push(new Enemy([SLIME.SMALL, SENTRY.SMALL][get.area()], -0.5));
 				game.enemies[game.enemies.length - 1].eff[ENEMY_EFF.SCRAP_HEAP] = 1;
 			};
 			this.finishAction();

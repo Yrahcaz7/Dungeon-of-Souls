@@ -406,7 +406,7 @@ function updateVisuals() {
 		if (game.select[0] === S.WELCOME) {
 			draw.box(80, 83, 240, 34);
 			if (game.difficulty === 0) draw.lore(200 - 2, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
-			else draw.lore(200 - 2, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start a lot stronger from the beginning.\nAdditionally, the enemies get more powerful twice as fast as easy mode.\nOtherwise, this is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
+			else draw.lore(200 - 2, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start much stronger from the beginning.\nAnd by much stronger, I mean <#f00>MUCH STRONGER</#f00>.\nOtherwise, it is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
 		} else if (menuLocation === MENU.DIFFICULTY) {
 			let x = 116, y = 83;
 			draw.rect("#0008");
@@ -525,14 +525,14 @@ function updateVisuals() {
 		let cardObj = game.deck[game.cardSelect[0] + game.cardSelect[1] * 6];
 		draw.lore(x + 2, y + 2, "Are you sure you want to destroy the card " + getCardAttr("name", cardObj.id, cardObj.level) + "?\nIf you have multiple, this will only destroy one copy of the card.", {"text-small": true});
 		if (game.select[1] == 0) draw.rect("#fff", x + 1, y + 13, 23, 14);
-		else if (game.select[1] == 1) draw.rect("#fff", x + 23, y + 13, 17, 14);
-		else draw.rect("#fff", x + 39, y + 13, 29, 14);
+		else if (game.select[1] == 1) draw.rect("#fff", x + 23, y + 13, 53, 14);
+		else draw.rect("#fff", x + 75, y + 13, 29, 14);
 		draw.box(x + 3, y + 15, 19, 10);
-		draw.box(x + 25, y + 15, 13, 10);
-		draw.box(x + 41, y + 15, 25, 10);
+		draw.box(x + 25, y + 15, 49, 10);
+		draw.box(x + 77, y + 15, 25, 10);
 		draw.lore(x + 4, y + 16, "YES");
-		draw.lore(x + 26, y + 16, "NO");
-		draw.lore(x + 42, y + 16, "BACK");
+		draw.lore(x + 26, y + 16, "RESELECT");
+		draw.lore(x + 78, y + 16, "BACK");
 	} else if (game.select[0] === S.CONF_REFINE) {
 		let x = 99, y = 20;
 		draw.rect("#0008");
@@ -540,14 +540,14 @@ function updateVisuals() {
 		let cardObj = game.deck[game.cardSelect[0] + game.cardSelect[1] * 6];
 		draw.lore(x + 2, y + 2, "Are you sure you want to improve the card " + getCardAttr("name", cardObj.id, cardObj.level) + "?\nIf you have multiple, this will only improve one copy of the card.", {"text-small": true});
 		if (game.select[1] == 0) draw.rect("#fff", x + 1, y + 13, 23, 14);
-		else if (game.select[1] == 1) draw.rect("#fff", x + 23, y + 13, 17, 14);
-		else draw.rect("#fff", x + 39, y + 13, 29, 14);
+		else if (game.select[1] == 1) draw.rect("#fff", x + 23, y + 13, 53, 14);
+		else draw.rect("#fff", x + 75, y + 13, 29, 14);
 		draw.box(x + 3, y + 15, 19, 10);
-		draw.box(x + 25, y + 15, 13, 10);
-		draw.box(x + 41, y + 15, 25, 10);
+		draw.box(x + 25, y + 15, 49, 10);
+		draw.box(x + 77, y + 15, 25, 10);
 		draw.lore(x + 4, y + 16, "YES");
-		draw.lore(x + 26, y + 16, "NO");
-		draw.lore(x + 42, y + 16, "BACK");
+		draw.lore(x + 26, y + 16, "RESELECT");
+		draw.lore(x + 78, y + 16, "BACK");
 		draw.card(cardObj, -1, 51, true, 100, true);
 		draw.card(new Card(cardObj.id, 1), -1, 51, true, 234, true);
 		draw.image(I.card.refine, (200 - I.card.refine.width / 2), 95);
