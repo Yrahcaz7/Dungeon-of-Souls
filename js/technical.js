@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2022 Yrahcaz7
+ *  Copyright (C) 2024 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -93,9 +93,9 @@ window.onload = async function() {
 	seed = internalSeed(game.seed);
 	canvasData();
 	// set things
-	if (game.select[0] == GAME_FIN) game.select[1] = 0;
-	if (global.options.pixel_perfect_screen) document.getElementById("canvas").style = "width: " + (800 * global.options.pixel_perfect_size) + "px";
-	else delete document.getElementById("canvas").style;
+	if (game.select[0] == S.GAME_WON) game.select[1] = 0;
+	if (global.options[OPTION.PERFECT_SCREEN]) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
+	else document.getElementById("canvas").style = "";
 	// fix things
 	fixCanvas();
 	// calculate things
@@ -104,7 +104,6 @@ window.onload = async function() {
 	} else {
 		graphics.map(true);
 		changeMusic();
-		updateVisuals();
 		loaded = true;
 	};
 };
@@ -112,11 +111,10 @@ window.onload = async function() {
 var canvas, scale, ctx, action = -1, lastAction = -1;
 
 /**
- * Sets up the canvas. Returns true if successful.
+ * Sets up the canvas.
  */
 function canvasData() {
 	let canv = document.getElementById("canvas");
-	if (!canv) return false;
 	scale = canv.width / 400;
 	canv.height = canv.width / 2;
 	canvas = canv;
@@ -125,7 +123,6 @@ function canvasData() {
 	ctx.webkitImageSmoothingEnabled = false;
 	ctx.msImageSmoothingEnabled = false;
 	ctx.imageSmoothingEnabled = false;
-	return true;
 };
 
 /**
@@ -139,7 +136,7 @@ function clearCanvas() {
  * Fixes the canvas in the html.
  */
 function fixCanvas() {
-	if (global.options.pixel_perfect_screen) {
+	if (global.options[OPTION.PERFECT_SCREEN]) {
 		const width = +(document.getElementById("canvas").style.width.match(/\d+/) || [800])[0];
 		if (window.innerHeight <= width / 2) {
 			if (window.innerWidth <= width) document.getElementById("canvas").className = "onlyScroll";
@@ -157,57 +154,59 @@ window.onresize = () => {
 	fixCanvas();
 };
 
-document.addEventListener("keydown", (event) => {
-	const key = event.key, prevAction = +action;
-	if ((key == "E" || key == "e") && game.turn === TURN.PLAYER) {
-		if (game.select[0] != CONFIRM_END) endTurnConfirm();
-	} else if (key == "1" && actionTimer == -1) {
-		if (game.select[0] === DECK && game.select[1]) {
+document.addEventListener("keydown", event => {
+	if (!loaded) return;
+	const key = event.key, prevAction = action;
+	if ((key == "E" || key == "e") && game.turn === TURN.PLAYER && game.select[0] !== S.CONF_END) endTurnConfirm();
+	else if (key == "1" && !event.repeat && actionTimer == -1) {
+		if (game.select[0] === S.DECK && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
-			else game.select = [DECK, 0];
+			else game.select = [S.DECK, 0];
 		} else {
-			if (game.select[2]) game.select = [DECK, 1, game.select[2]];
-			else game.select = [DECK, 1, game.select];
-			action = -1;
+			if (game.select[2]) game.select = [S.DECK, 1, game.select[2]];
+			else game.select = [S.DECK, 1, game.select];
 		};
+		action = -1;
 		actionTimer = 2;
-	} else if (key == "2" && game.void.length && actionTimer == -1) {
-		if (game.select[0] === VOID && game.select[1]) {
+	} else if (key == "2" && !event.repeat && actionTimer == -1) {
+		if (game.select[0] === S.DISCARD && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
-			else game.select = [VOID, 0];
+			else game.select = [S.DISCARD, 0];
 		} else {
-			if (game.select[2]) game.select = [VOID, 1, game.select[2]];
-			else game.select = [VOID, 1, game.select];
-			action = -1;
+			if (game.select[2]) game.select = [S.DISCARD, 1, game.select[2]];
+			else game.select = [S.DISCARD, 1, game.select];
 		};
+		action = -1;
 		actionTimer = 2;
-	} else if (key == "3" && actionTimer == -1) {
-		if (game.select[0] === DISCARD && game.select[1]) {
+	} else if (key == "3" && !event.repeat && game.void.length && actionTimer == -1) {
+		if (game.select[0] === S.VOID && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
-			else game.select = [DISCARD, 0];
+			else game.select = [S.VOID, 0];
 		} else {
-			if (game.select[2]) game.select = [DISCARD, 1, game.select[2]];
-			else game.select = [DISCARD, 1, game.select];
-			action = -1;
+			if (game.select[2]) game.select = [S.VOID, 1, game.select[2]];
+			else game.select = [S.VOID, 1, game.select];
 		};
+		action = -1;
 		actionTimer = 2;
-	} else if ((key == " " || key == "Enter") && !(game.select[2] && menuLocation === -1)) action = ENTER;
-	else if (key == "W" || key == "w" || key == "ArrowUp") action = UP;
-	else if (key == "A" || key == "a" || key == "ArrowLeft") action = LEFT;
-	else if (key == "S" || key == "s" || key == "ArrowDown") action = DOWN;
-	else if (key == "D" || key == "d" || key == "ArrowRight") action = RIGHT;
+	} else if ((key == " " || key == "Enter") && !event.repeat && actionTimer == -1) {
+		action = -1;
+		performAction();
+	} else if (key == "W" || key == "w" || key == "ArrowUp") action = DIR.UP;
+	else if (key == "A" || key == "a" || key == "ArrowLeft") action = DIR.LEFT;
+	else if (key == "S" || key == "s" || key == "ArrowDown") action = DIR.DOWN;
+	else if (key == "D" || key == "d" || key == "ArrowRight") action = DIR.RIGHT;
 	else action = -1;
 	if (key == "Escape") fullscreen(true);
 	else if (key == "Tab") fullscreen();
-	if (!event.repeat && prevAction === -1 && lastAction === action && global.options.allow_fast_movement && loaded) {
+	if (!event.repeat && prevAction === -1 && lastAction === action && global.options[OPTION.FAST_MOVEMENT] && loaded) {
 		if (menuLocation === -1) manageGameplay();
-		if (action !== ENTER) selection();
+		selection();
 		updateVisuals();
 	};
 	if (action !== -1) lastAction = action;
 });
 
-document.addEventListener("keyup", (event) => {
+document.addEventListener("keyup", event => {
 	const key = event.key;
 	if (key == " " || key == "Enter" || key == "W" || key == "w" || key == "ArrowUp" || key == "A" || key == "a" || key == "ArrowLeft" || key == "S" || key == "s" || key == "ArrowDown" || key == "D" || key == "d" || key == "ArrowRight") action = -1;
 });

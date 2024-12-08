@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2022 Yrahcaz7
+ *  Copyright (C) 2024 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,22 +16,36 @@
  */
 
 /**
- * Returns the string formatted in title case.
+ * Returns a string formatted in title case.
+ * @param {string} str - the string.
  */
-String.prototype.title = function() {
+function title(str) {
 	let result = "";
-	for (let num = 0; num < this.length; num++) {
-		if (num === 0 || (/\s/.test(this.charAt(num - 1)) && !/^(a|an|and|at|but|by|for|in|nor|of|on|or|so|the|to|up|yet)(?!\w)/.test(this.substring(num)))) result += this.charAt(num).toUpperCase();
-		else result += this.charAt(num);
+	for (let num = 0; num < str.length; num++) {
+		if (num === 0 || (/\s/.test(str.charAt(num - 1)) && !/^(a|an|and|at|but|by|for|in|nor|of|on|or|so|the|to|up|yet)(?!\w)/.test(str.substring(num)))) result += str.charAt(num).toUpperCase();
+		else result += str.charAt(num);
 	};
 	return result;
 };
 
 /**
- * Returns the string with each character's position randomized.
+ * Returns a string formatted with color tags.
+ * @param {string} text - the string to color.
  */
-String.prototype.randomize = function() {
-	let arr = this.split("");
+function color(text) {
+	text = text.replace(/(max\shealth|health|non-combat\sdamage|combat\sdamage|extra\sdamage|damage|attacks|attack)/gi, "<#f44>$1</#f44>");
+	text = text.replace(/(extra\sshield|shield|defend|defense)/gi, "<#58f>$1</#58f>");
+	text = text.replace(/(cost\sreduction|one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
+	text = text.replace(/(magic)(\stype)/gi, "<#f0f>$1</#f0f>$2");
+	return text;
+};
+
+/**
+ * Returns a string with each character's position randomized.
+ * @param {string} str - the string.
+ */
+function randomize(str) {
+	let arr = str.split("");
 	for (let index = arr.length - 1; index > 0; index--) {
 		let rand = Math.floor(Math.random() * (index + 1));
 		[arr[index], arr[rand]] = [arr[rand], arr[index]];
@@ -43,16 +57,54 @@ String.prototype.randomize = function() {
  * Returns a boolean indicating whether the middleground layers are hidden.
  */
 function hidden() {
-	return !!((game.select[0] === LOOKER || game.select[0] === HELP || game.select[0] === OPTIONS || game.select[0] === DECK || game.select[0] === VOID || game.select[0] === DISCARD) && game.select[1]) || game.select[0] === IN_MAP || game.select[0] === CONFIRM_RESTART;
+	return !!((game.select[0] === S.LOOKER || game.select[0] === S.HELP || game.select[0] === S.OPTIONS || game.select[0] === S.DECK || game.select[0] === S.VOID || game.select[0] === S.DISCARD) && game.select[1]) || game.select[0] === S.MAP || game.select[0] === S.CONF_RESTART;
+};
+
+/**
+ * Returns a boolean indicating whether a deck outside battle is being viewed.
+ */
+function inOutsideDeck() {
+	return ((game.select[0] === S.MAP && game.select[1]) || game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY || game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE);
+};
+
+/**
+ * Returns a boolean indicating whether a deck is being viewed.
+ */
+function inDeck() {
+	return ((game.select[0] === S.DECK || game.select[0] === S.VOID || game.select[0] === S.DISCARD) && game.select[1]) || inOutsideDeck();
+};
+
+/**
+ * Returns a boolean indicating whether the specified player image is defending.
+ * @param {HTMLImageElement} image - the player image to check.
+ */
+function isDefending(image) {
+	return image === I.player.shield || image === I.player.shield_reinforced || image === I.player.crouch_shield || image === I.player.crouch_shield_reinforced;
+};
+
+/**
+ * Returns a boolean indicating whether the specified player image is crouching.
+ * @param {HTMLImageElement} image - the player image to check.
+ */
+function isCrouching(image) {
+	return image === I.player.crouch_shield || image === I.player.crouch_shield_reinforced;
 };
 
 const get = {
+	/**
+	 * Gets the current area number based on the floor.
+	 * @param {number} floor - defaults to `game.floor`.
+	 */
+	area(floor = game.floor) {
+		if (floor < 1) return 0;
+		return Math.floor((floor - 1) / 10);
+	},
 	/**
 	 * Gets the hand size.
 	 */
 	handSize() {
 		let size = 5;
-		if (game.artifacts.includes(6)) size--;
+		if (game.artifacts.includes(104)) size--;
 		return size;
 	},
 	/**
@@ -60,7 +112,7 @@ const get = {
 	 */
 	cardRewardChoices() {
 		let choices = 3;
-		if (game.artifacts.includes(6)) choices++;
+		if (game.artifacts.includes(104)) choices++;
 		return choices;
 	},
 	/**
@@ -68,8 +120,8 @@ const get = {
 	 */
 	maxHealth() {
 		let max = 60;
-		if (game.artifacts.includes(4)) max -= 15;
-		if (game.artifacts.includes(7)) max += 15;
+		if (game.artifacts.includes(102)) max -= 15;
+		if (game.artifacts.includes(105)) max += 15;
 		return max;
 	},
 	/**
@@ -84,7 +136,7 @@ const get = {
 	 */
 	maxEnergy() {
 		let max = 3;
-		if (game.artifacts.includes(5)) max++;
+		if (game.artifacts.includes(103)) max++;
 		return max;
 	},
 	/**
@@ -93,32 +145,34 @@ const get = {
 	 */
 	extraDamage(attacking = false) {
 		let extra = 0;
-		if (game.attackEffects.includes(AURA_BLADE)) {
-			extra += 5 + (game.eff.aura_blades + 1);
-		} else if (game.eff.aura_blades && !attacking) {
-			extra += 5 + game.eff.aura_blades;
+		if (game.attackEffects.includes(ATT_EFF.AURA_BLADE)) {
+			extra += 5 + ((game.eff[EFF.AURA_BLADE] || 0) + 1);
+		} else if (game.eff[EFF.AURA_BLADE] && !attacking) {
+			extra += 5 + game.eff[EFF.AURA_BLADE];
 		};
-		if (game.artifacts.includes(3)) extra += 2;
+		if (game.artifacts.includes(101)) extra += 2;
 		return extra;
 	},
 	/**
 	 * Gets the current dealing damage multiplier effect.
-	 * @param {number} enemy - the index of the enemy that is being damaged. Defaults to `game.enemyAtt[1]`.
+	 * @param {number} index - the index of the enemy that is being damaged. Defaults to `game.enemyAtt[1]`.
 	 */
-	dealDamageMult(enemy = game.enemyAtt[1]) {
+	dealDamageMult(index = game.enemyAtt[1]) {
 		let mult = 1;
-		if (game.eff.weakness) mult -= 0.25;
-		if (game.enemies[enemy]?.eff.resilience) mult -= 0.25;
+		if (game.eff[EFF.WEAKNESS]) mult -= 0.25;
+		if (game.eff[EFF.ATKUP]) mult += 0.25;
+		if (game.enemies[index]?.eff[EFF.RESILIENCE]) mult -= 0.25;
 		return mult;
 	},
 	/**
 	 * Gets the current taking damage multiplier effect.
-	 * @param {number} enemy - the index of the enemy that is being damaged. Defaults to `game.enemyNum`.
+	 * @param {number} index - the index of the enemy that is attacking. Defaults to `game.enemyNum`.
 	 */
-	takeDamageMult(enemy = game.enemyNum) {
+	takeDamageMult(index = game.enemyNum) {
 		let mult = 1;
-		if (game.enemies[enemy]?.eff.weakness) mult -= 0.25;
-		if (game.eff.resilience) mult -= 0.25;
+		if (game.enemies[index]?.eff[EFF.WEAKNESS]) mult -= 0.25;
+		if (game.enemies[index]?.eff[EFF.ATKUP]) mult += 0.25;
+		if (game.eff[EFF.RESILIENCE]) mult -= 0.25;
 		return mult;
 	},
 	/**
@@ -126,8 +180,25 @@ const get = {
 	 */
 	extraShield() {
 		let extra = 0;
-		if (game.artifacts.includes(2)) extra += 2;
+		if (game.artifacts.includes(100)) extra += 2;
 		return extra;
+	},
+	/**
+	 * Gets the current shield gaining multiplier effect for the player.
+	 */
+	playerShieldMult() {
+		let mult = 1;
+		if (game.eff[EFF.DEFUP]) mult += 0.25;
+		return mult;
+	},
+	/**
+	 * Gets the current shield gaining multiplier effect for an enemy.
+	 * @param {number} enemy - the index of the enemy that is gaining shield. Defaults to `game.enemyNum`.
+	 */
+	enemyShieldMult(enemy = game.enemyNum) {
+		let mult = 1;
+		if (game.enemies[enemy]?.eff[EFF.DEFUP]) mult += 0.25;
+		return mult;
 	},
 	/**
 	 * Gets the score factors.
@@ -135,14 +206,14 @@ const get = {
 	scoreFactors() {
 		let factors = [];
 		for (const key in game.kills) {
-			if (Object.hasOwnProperty.call(game.kills, key)) {
+			if (game.kills.hasOwnProperty(key)) {
 				const amt = game.kills[+key];
-				if (+key === FRAGMENT) factors.push(["killed the " + ENEMY_NAMES[+key], amt * ENEMY_WORTH[+key]]);
-				else factors.push(["killed " + amt + " " + ENEMY_NAMES[+key] + (amt > 1 ? "s" : ""), amt * ENEMY_WORTH[+key]]);
+				if (+key === FRAGMENT || +key === SINGULARITY) factors.push(["Killed " + ENEMY_NAME[+key], ENEMY_WORTH[+key], amt]);
+				else factors.push(["Killed " + amt + " " + (amt > 1 ? PLURAL_ENEMY_NAME : ENEMY_NAME)[+key], ENEMY_WORTH[+key], amt]);
 			};
 		};
-		factors.push(["saved " + game.gold + " gold", Math.floor(game.gold / 5)]);
-		if (game.health > 0) factors.push(["saved " + game.health + " health", game.health * 5]);
+		factors.push(["Saved " + game.gold + " gold", 1, Math.floor(game.gold / 5)]);
+		if (game.health > 0) factors.push(["Saved " + game.health + " health", 5, game.health]);
 		return factors;
 	},
 	/**
@@ -151,42 +222,18 @@ const get = {
 	totalScore() {
 		let score = 0;
 		for (const key in game.kills) {
-			if (Object.hasOwnProperty.call(game.kills, key)) {
+			if (game.kills.hasOwnProperty(key)) {
 				score += game.kills[+key] * ENEMY_WORTH[+key];
 			};
 		};
 		score += Math.floor(game.gold / 5);
 		if (game.health > 0) score += game.health * 5;
 		if (game.difficulty) {
-			if (game.artifacts.includes(0) && game.kills[FRAGMENT]) score *= 3;
+			if (game.artifacts.includes(202) && game.kills[FRAGMENT]) score *= 3;
 			else score *= 2;
 		};
 		return score;
 	},
-};
-
-/**
- * Resets everything. Use carefully!
- */
-function hardReset() {
-	for (let index = 0; index < localStorage.length; index++) {
-		const key = localStorage.key(index);
-		if (key.startsWith("Yrahcaz7/Dungeon-of-Souls/save/")) {
-			localStorage.removeItem(key);
-		};
-	};
-	game = null;
-	global = null;
-	location.reload();
-};
-
-/**
- * Restarts the current run.
- */
-function restartRun() {
-	localStorage.setItem("Yrahcaz7/Dungeon-of-Souls/save/0", btoa(JSON.stringify({difficulty: game.difficulty})));
-	game = null;
-	location.reload();
 };
 
 /**
@@ -204,91 +251,109 @@ function shuffle(deck) {
 };
 
 /**
- * Has the player draw their hand.
+ * Draws cards.
+ * @param {number} num - the number of cards to draw.
  */
-function drawHand() {
-	const handSize = get.handSize();
-	let index = 0, len = game.deckLocal.length;
+function drawCards(num) {
 	if (game.deckLocal.length) {
-		for (; index < handSize && index < len; index++) {
-			game.hand.push(game.deckLocal[0]);
-			game.deckLocal.splice(0, 1);
+		for (; num > 0 && game.deckLocal.length > 0; num--) {
+			game.hand.push(game.deckLocal.shift());
 		};
 	};
-	if (index != handSize) {
-		len = game.discard.length;
-		for (let a = 0; a < len; a++) {
-			game.deckLocal.push(game.discard[a]);
-		};
+	if (num > 0) {
+		game.deckLocal = shuffle(game.discard.slice());
 		game.discard = [];
-		game.deckLocal = shuffle(game.deckLocal);
-		len = game.deckLocal.length;
-		for (; index < handSize && index < len; index++) {
-			game.hand.push(game.deckLocal[0]);
-			game.deckLocal.splice(0, 1);
+		for (; num > 0 && game.deckLocal.length > 0; num--) {
+			game.hand.push(game.deckLocal.shift());
 		};
 	};
 };
 
 /**
- * Has the player discard their hand.
+ * Discards a card, not including removing the card from the hand.
+ * @param {Card} cardObj - the card object.
+ * @param {boolean} used - whether the card was used. Defaults to `false`.
+ */
+function discardCard(cardObj, used = false) {
+	if (used && cards[cardObj.id].keywords.includes(CARD_EFF.ONE_USE)) game.void.push(new Card(cardObj.id, cardObj.level));
+	else game.discard.push(new Card(cardObj.id, cardObj.level));
+};
+
+/**
+ * Discards the player's hand.
  */
 function discardHand() {
 	for (let index = 0; index < game.hand.length; ) {
-		if (game.hand[index].retention >= 1) {
-			game.hand[index].retention--;
+		if (game.hand[index][CARD_EFF.RETENTION]) {
+			game.hand[index][CARD_EFF.RETENTION]--;
 			index++;
 		} else {
-			delete game.hand[index].charge;
-			delete game.hand[index].retention;
-			game.discard.push(game.hand[index]);
-			game.hand.splice(index, 1);
+			discardCard(game.hand.splice(index, 1)[0]);
 		};
 	};
 };
 
 /**
  * Gets the cost of a card.
- * @param {Card} obj - the card object.
+ * @param {Card} cardObj - the card object.
  */
-function getCardCost(obj) {
-	if (obj.charge > 0) return Math.max(cards[obj.id].cost - obj.charge, 0);
-	return +cards[obj.id].cost;
+function getCardCost(cardObj) {
+	if (cardObj[CARD_EFF.COST_REDUCTION]) return Math.max(getCardAttr("cost", cardObj.id, cardObj.level) - cardObj[CARD_EFF.COST_REDUCTION], 0);
+	return +getCardAttr("cost", cardObj.id, cardObj.level);
 };
 
-const AURA_BLADE = 200;
+/**
+ * Starts a transition animation of an enemy.
+ * @param {number} index - the index of the enemy.
+ * @param {number} prevShield - defaults to `game.enemies[index].shield`.
+ */
+function startEnemyTransition(index, prevShield = game.enemies[index].shield) {
+	if (game.enemies[index].type !== SENTRY.BIG && game.enemies[index].type !== SENTRY.SMALL && game.enemies[index].type !== SENTRY.PRIME) return;
+	if (prevShield > 0 && game.enemies[index].shield == 0) game.enemies[index].transition = [0, TRANSITION.SHIELD];
+};
 
 /**
  * Deals damage to an enemy.
  * @param {number} amount - the amount of damage.
  * @param {number} exMod - the extra damage modifier. Defaults to `1`.
- * @param {number} enemy - the index of the enemy. Defaults to `game.enemyAtt[1]`.
+ * @param {number} index - the index of the enemy. Defaults to `game.enemyAtt[1]`.
  * @param {boolean} attack - whether the damage is considered an attack. Defaults to `true`.
  */
-function dealDamage(amount, exMod = 1, enemy = game.enemyAtt[1], attack = true) {
+function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true) {
 	if (isNaN(amount)) return;
+	// setup
+	let prevShield = game.enemies[index].shield;
 	// increase damage
 	if (attack) amount += Math.floor(get.extraDamage(true) * exMod);
 	// multiply damage
-	if (attack) amount = Math.ceil(amount * get.dealDamageMult(enemy));
+	if (attack) amount = Math.ceil(amount * get.dealDamageMult(index));
 	// damage enemy
-	if (amount < game.enemies[enemy].shield) {
-		game.enemies[enemy].shield -= amount;
+	if (amount < game.enemies[index].shield) {
+		game.enemies[index].shield -= amount;
 	} else {
-		amount -= game.enemies[enemy].shield;
-		game.enemies[enemy].shield = 0;
-		game.enemies[enemy].health -= amount;
+		amount -= game.enemies[index].shield;
+		game.enemies[index].shield = 0;
+		game.enemies[index].health -= amount;
 	};
+	// additional effects
+	if (attack && game.eff[EFF.BLAZE]) {
+		if (game.enemies[index].eff[EFF.BURN]) game.enemies[index].eff[EFF.BURN]++;
+		else game.enemies[index].eff[EFF.BURN] = 1;
+	};
+	// transitions
+	startEnemyTransition(index, prevShield);
 };
 
 /**
  * Makes the player take damage.
  * @param {number} amount - the amount of damage to take.
  * @param {boolean} attack - whether the damage is considered an attack. Defaults to `true`.
+ * @param {number} index - the index of the enemy. Defaults to `game.enemyNum`.
  */
-function takeDamage(amount, attack = true) {
+function takeDamage(amount, attack = true, index = game.enemyNum) {
+	if (isNaN(amount)) return;
 	// multiply damage
-	if (attack) amount = Math.ceil(amount * get.takeDamageMult());
+	if (attack) amount = Math.ceil(amount * get.takeDamageMult(index));
 	// take damage
 	if (amount < game.shield) {
 		game.shield -= amount;
@@ -297,6 +362,8 @@ function takeDamage(amount, attack = true) {
 		game.shield = 0;
 		game.health -= amount;
 	};
+	// additional effects
+	if (attack && index >= 0 && game.enemies[index].eff[EFF.BLAZE]) gainEff(EFF.BURN, 1);
 };
 
 /**
@@ -304,12 +371,37 @@ function takeDamage(amount, attack = true) {
  * @param {number} amount - the amount of shield to gain.
  * @param {number} exMod - the extra shield modifier. Defaults to `1`.
  */
-function gainShield(amount = 0, exMod = 1) {
+function playerGainShield(amount = 0, exMod = 1) {
 	if (isNaN(amount)) return;
 	// increase shield
 	amount += Math.floor(get.extraShield() * exMod);
+	// multiply shield
+	amount = Math.ceil(amount * get.playerShieldMult());
 	// gain shield
 	game.shield += amount;
+};
+
+/**
+ * Has an enemy gain shield.
+ * @param {number} amount - the amount of shield to gain.
+ * @param {number} index - the index of the enemy. Defaults to `game.enemyNum`.
+ */
+function enemyGainShield(amount = 0, index = game.enemyNum) {
+	if (isNaN(amount)) return;
+	// multiply shield
+	amount = Math.ceil(amount * get.enemyShieldMult(index));
+	// gain shield
+	game.enemies[index].shield += amount;
+};
+
+/**
+ * Has the player gain an effect.
+ * @param {number} type - the type of effect to gain.
+ * @param {number} amt - the amount of the effect to gain.
+ */
+function gainEff(type, amt) {
+	if (game.eff[type]) game.eff[type] += amt;
+	else game.eff[type] = amt;
 };
 
 /**
@@ -319,11 +411,11 @@ function gainShield(amount = 0, exMod = 1) {
 function activateAttackEffects(id) {
 	// stop if effects are not allowed
 	if (cards[id].attackEffects === false) return;
-	// start player anim
-	startAnim.player(cards[id].anim);
+	// start player animation
+	startAnim.player(cards[id].attackAnim || I.player.attack);
 	// trigger aura blades
-	if (game.eff.aura_blades) {
-		game.eff.aura_blades--;
-		game.attackEffects.push(AURA_BLADE);
+	if (game.eff[EFF.AURA_BLADE]) {
+		game.eff[EFF.AURA_BLADE]--;
+		game.attackEffects.push(ATT_EFF.AURA_BLADE);
 	};
 };

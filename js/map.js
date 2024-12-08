@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2022 Yrahcaz7
+ *  Copyright (C) 2024 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,18 +15,15 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const FIRSTBATTLE = 0, TREASURE = 1, PRIME = 2, ORB = 3, BOSS = 4, EVENT = 5;
-
-const ROOM = {BATTLE: 100, TREASURE: 101, PRIME: 102, ORB: 103, BOSS: 104, EVENT: 105};
-
-let mapProg = 0, mapTotal = 50, death_zones = 0, rowFalses = 0, rowNodes = 0, eventShift = 0;
+let mapProg = 0, mapTotal = 100, death_zones = 0, rowFalses = 0, rowNodes = 0, eventShift = 0;
 
 /**
- * Gets a weaker small slime in the map syntax.
+ * Gets a weaker small enemy in the map syntax.
  * @param {number} row - the row the enemy will be contained in.
  */
-function weakerSmallSlime(row) {
-	return SLIME.SMALL + ", " + (Math.round((0.5 + (row * 0.05)) * 100) / 100);
+function weakerSmallEnemy(row) {
+	let area = get.area(row + 1);
+	return [SLIME.SMALL, SENTRY.SMALL][area] + ", " + (Math.round(((row - game.difficulty * 5 + (1 - area) * 10) * 0.05) * 100) / 100);
 };
 
 /**
@@ -42,40 +39,41 @@ function goldReward(row) {
  */
 async function updateMapProg() {
 	clearCanvas();
-	if (mapProg === mapTotal) draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\nrunning final checks...", {"color": "#fff", "text-align": CENTER});
-	else draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\n" + (mapProg / mapTotal * 100).toFixed(0) + "%", {"color": "#fff", "text-align": CENTER});
+	if (mapProg === mapTotal) draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\nrunning final checks...", {"color": "#fff", "text-align": DIR.CENTER});
+	else draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\n" + (mapProg / mapTotal * 100).toFixed(0) + "%", {"color": "#fff", "text-align": DIR.CENTER});
 	mapProg++;
 	if (mapProg > mapTotal) mapProg = 0;
-	await new Promise(r => setTimeout(r, 0));
+	await new Promise(r => setTimeout(r));
 };
 
 /**
  * Returns a map piece.
  * @param {number} row - the row of the map piece.
  * @param {number} num - the number of map pieces in the row so far.
- * @param {FIRSTBATTLE | TREASURE | PRIME | ORB | BOSS} attribute - the attribute of the map piece, if any.
+ * @param {number} attribute - the attribute of the map piece, if any.
  */
 async function mapPiece(row, num, attribute = -1) {
-	if (attribute === FIRSTBATTLE) return [ROOM.BATTLE, 0, 0, [SLIME.SMALL], goldReward(row), randomCardSet(5)];
-	if (attribute === TREASURE) return [ROOM.TREASURE, randomInt(-5, 5), randomInt(-5, 5), false, goldReward(row) * 2, randomCardSet(5)];
-	if (attribute === PRIME) return [ROOM.PRIME, randomInt(-5, 5), randomInt(-5, 5), [weakerSmallSlime(row), SLIME.PRIME, weakerSmallSlime(row)], goldReward(row) * 2, randomCardSet(5), randomArtifactSet(3)];
-	if (attribute === EVENT) {
-		let index = randomInt(0, EVENTS.any.length + EVENTS[1].length - 1);
+	let area = get.area(row + 1);
+	if (attribute === MAP_PIECE.FIRST) return [ROOM.BATTLE, 0, 0, [[SLIME.SMALL, SENTRY.SMALL][area]], goldReward(row), randomCardSet(5)];
+	if (attribute === MAP_PIECE.TREASURE) return [ROOM.TREASURE, randomInt(-5, 5), randomInt(-5, 5), false, goldReward(row) * 2, randomCardSet(5, 4/10)];
+	if (attribute === MAP_PIECE.PRIME) return [ROOM.PRIME, randomInt(-5, 5), randomInt(-5, 5), [weakerSmallEnemy(row), [SLIME.PRIME, SENTRY.PRIME][area], weakerSmallEnemy(row)], goldReward(row) * 2, randomCardSet(5, 9/10), randomArtifactSet(3)];
+	if (attribute === MAP_PIECE.EVENT) {
+		let index = randomInt(0, EVENTS.any.length + EVENTS[area].length - 1);
 		if (index >= EVENTS.any.length) index += 100 - EVENTS.any.length;
 		return [ROOM.EVENT, randomInt(-5, 5), randomInt(-5, 5), index, goldReward(row), randomCardSet(5)];
 	};
 	await updateMapProg();
-	if (attribute === ORB) return [ROOM.ORB, randomInt(-5, 5), randomInt(-5, 5)];
-	if (attribute === BOSS) return [ROOM.BOSS, 0, 0, [FRAGMENT], goldReward(row) * 4, randomCardSet(5), randomArtifactSet(3)];
+	if (attribute === MAP_PIECE.ORB) return [ROOM.ORB, randomInt(-5, 5), randomInt(-5, 5)];
+	if (attribute === MAP_PIECE.BOSS) return [ROOM.BOSS, 0, 0, [[FRAGMENT, SINGULARITY][area]], goldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
 	let type = chance(3/5) ? ROOM.BATTLE : false;
-	if (rowFalses >= 3 || (row === 0 && rowFalses >= 2) || (num == 2 && rowFalses == 2)) type = ROOM.BATTLE;
+	if (rowFalses >= 3 || (row % 10 == 0 && rowFalses >= 2) || (num == 2 && rowFalses == 2)) type = ROOM.BATTLE;
 	if (type) rowNodes++;
 	else rowFalses++;
 	if (!type || rowNodes == 6) return false;
 	let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
 	if (type === ROOM.BATTLE) {
-		if (row >= 5) result.push(chance(1/3) ? [SLIME.BIG] : (chance(2/3) ? [SLIME.BIG, weakerSmallSlime(row)] : [SLIME.SMALL, SLIME.SMALL]));
-		else result.push(chance() ? [SLIME.BIG] : [SLIME.SMALL, weakerSmallSlime(row)]);
+		if (row % 10 >= 5) result.push(chance(1/3) ? [[SLIME.BIG, SENTRY.BIG][area]] : (chance(2/3) ? [[SLIME.BIG, SENTRY.BIG][area], weakerSmallEnemy(row)] : [[SLIME.SMALL, SENTRY.SMALL][area], [SLIME.SMALL, SENTRY.SMALL][area]]));
+		else result.push(chance() ? [[SLIME.BIG, SENTRY.BIG][area]] : [[SLIME.SMALL, SENTRY.SMALL][area], weakerSmallEnemy(row)]);
 		result.push(goldReward(row), randomCardSet(5));
 	};
 	return result;
@@ -93,6 +91,9 @@ function pathHasTypes(coords, types = [], front = false) {
 	let locations = [coords];
 	for (let a = 0; a < locations.length; a++) {
 		const loc = locations[a].split(", ");
+		if (game.map[loc[0]] && game.map[loc[0]][loc[1]][0] === ROOM.BOSS) {
+			continue;
+		};
 		if (a > 0 && game.map[loc[0]] && types.includes(game.map[loc[0]][loc[1]][0])) {
 			return true;
 		};
@@ -116,60 +117,60 @@ function pathHasTypes(coords, types = [], front = false) {
 async function mapRow(row) {
 	rowFalses = 0;
 	rowNodes = 0;
-	if (row === 0) return [false, await mapPiece(0, 0), await mapPiece(0, 1), await mapPiece(0, 2), await mapPiece(0, 3), false];
-	if (row === 8) {
+	if (row % 10 == 0) return [false, await mapPiece(row, 0), await mapPiece(row, 1), await mapPiece(row, 2), await mapPiece(row, 3), false];
+	if (row % 10 == 8) {
 		if (chance()) {
-			if (chance()) return [await mapPiece(8, 0, ORB), false, await mapPiece(8, 1, ORB), false, false, await mapPiece(8, 2, ORB)];
-			else return [await mapPiece(8, 0, ORB), false, await mapPiece(8, 1, ORB), false, await mapPiece(8, 2, ORB), false];
+			if (chance()) return [await mapPiece(row, 0, MAP_PIECE.ORB), false, await mapPiece(row, 1, MAP_PIECE.ORB), false, false, await mapPiece(row, 2, MAP_PIECE.ORB)];
+			else return [await mapPiece(row, 0, MAP_PIECE.ORB), false, await mapPiece(row, 1, MAP_PIECE.ORB), false, await mapPiece(row, 2, MAP_PIECE.ORB), false];
 		} else {
-			if (chance()) return [await mapPiece(8, 0, ORB), false, false, await mapPiece(8, 1, ORB), false, await mapPiece(8, 2, ORB)];
-			else return [false, await mapPiece(8, 0, ORB), false, await mapPiece(8, 1, ORB), false, await mapPiece(8, 2, ORB)];
+			if (chance()) return [await mapPiece(row, 0, MAP_PIECE.ORB), false, false, await mapPiece(row, 1, MAP_PIECE.ORB), false, await mapPiece(row, 2, MAP_PIECE.ORB)];
+			else return [false, await mapPiece(row, 0, MAP_PIECE.ORB), false, await mapPiece(row, 1, MAP_PIECE.ORB), false, await mapPiece(row, 2, MAP_PIECE.ORB)];
 		};
 	};
-	if (row === 9) return [false, false, await mapPiece(9, 0, BOSS), false, false, false];
+	if (row % 10 == 9) return [false, false, await mapPiece(row, 0, MAP_PIECE.BOSS), false, false, false];
 	let arr = [await mapPiece(row, 0), await mapPiece(row, 1), await mapPiece(row, 2), await mapPiece(row, 3), await mapPiece(row, 4), await mapPiece(row, 5)];
-	if (row > 0) {
+	if (row % 10 > 0) {
 		game.map.push(arr);
-		graphics.map(true);
+		graphics.map(true, get.area(row + 1));
 		game.map.pop();
 		pathEntries = Object.entries(paths);
-		if (row > 1) {
+		if (row % 10 > 1) {
 			let available = [0, 1, 2, 3, 4, 5];
 			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 			while (true) {
 				if (arr[rand] && !pathHasTypes(row + ", " + rand, [ROOM.TREASURE, ROOM.PRIME])) {
-					arr[rand] = await mapPiece(row, rand, TREASURE);
+					arr[rand] = await mapPiece(row, rand, MAP_PIECE.TREASURE);
 					break;
-				} else if (available.length > 0) {
+				} else if (available.length) {
 					rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 				} else {
 					break;
 				};
 			};
 		};
-		if (row >= 3 && death_zones < 2) {
+		if (row % 10 >= 3 && death_zones < 2) {
 			let available = [0, 1, 2, 3, 4, 5];
 			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 			while (true) {
 				if (arr[rand] && arr[rand][0] !== ROOM.TREASURE && !pathHasTypes(row + ", " + rand, [ROOM.TREASURE, ROOM.PRIME])) {
-					arr[rand] = await mapPiece(row, rand, PRIME);
+					arr[rand] = await mapPiece(row, rand, MAP_PIECE.PRIME);
 					death_zones++;
 					break;
-				} else if (available.length > 0) {
+				} else if (available.length) {
 					rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 				} else {
 					break;
 				};
 			};
 		};
-		if (row % 2 == eventShift && row < 7) {
+		if (row % 2 == eventShift && row % 10 < 7) {
 			let available = [0, 1, 2, 3, 4, 5];
 			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 			while (true) {
 				if (arr[rand] && arr[rand][0] !== ROOM.TREASURE && arr[rand][0] !== ROOM.PRIME && !pathHasTypes(row + ", " + rand, [ROOM.EVENT])) {
-					arr[rand] = await mapPiece(row, rand, EVENT);
+					arr[rand] = await mapPiece(row, rand, MAP_PIECE.EVENT);
 					break;
-				} else if (available.length > 0) {
+				} else if (available.length) {
 					rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 				} else {
 					break;
@@ -181,28 +182,71 @@ async function mapRow(row) {
 };
 
 /**
+ * Generates an area of the map.
+ * @param {number} num - the area number.
+ */
+async function generateArea(num) {
+	death_zones = 0;
+	eventShift = randomInt(0, 1);
+	for (let index = 0; index < 10; index++) {
+		game.map.push(await mapRow(index + num * 10));
+	};
+	pathEntries = Object.entries(paths);
+	let row = 3 + num * 10;
+	while (death_zones === 0) {
+		let available = [0, 1, 2, 3, 4, 5];
+		let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+		while (true) {
+			if (game.map[row][rand] && (game.map[row][rand][0] === ROOM.TREASURE || (row % 10 == 2 && game.map[row][rand][0] === ROOM.BATTLE)) && !pathHasTypes(row + ", " + rand, [ROOM.TREASURE, ROOM.PRIME], true)) {
+				game.map[row][rand] = await mapPiece(row, rand, MAP_PIECE.PRIME);
+				death_zones++;
+				break;
+			} else if (available.length) {
+				rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+			} else {
+				break;
+			};
+		};
+		if (row % 10 >= 7) row = 2 + num * 10;
+		else if (row % 10 == 2) break;
+		else row++;
+	};
+};
+
+/**
+ * Returns a boolean indicating whether the map has a node at the respective coordinates.
+ * @param {number} x - the x-coordinate to check for a node at.
+ * @param {number} y - the y-coordinate to check for a node at.
+ * @param {boolean} loose - if true, considers anything a node.
+ */
+function mapHasNode(x, y, loose = false) {
+	if (loose) return typeof game.map[x][y] != "boolean" || (typeof game.map[x][y - 1] == "object" && game.map[x][y - 1][0] === ROOM.BOSS);
+	return typeof game.map[x][y] == "object" || (typeof game.map[x][y - 1] == "object" && game.map[x][y - 1][0] === ROOM.BOSS);
+};
+
+/**
  * Adds scribbles to the map.
  */
 function addScribbles() {
-	let available = [0, 1, 2, 3];
+	let available = [0, 1, 2, 3, 4];
 	for (let x = 0; x < game.map.length - 1; x++) {
-		const offset = (x == 0 ? 1 : 0);
+		const offset = (x % 10 == 0 ? 1 : 0);
 		for (let y = offset; y < game.map[x].length - (offset + 1); y++) {
-			if (typeof game.map[x][y] != "boolean" ||
-				typeof game.map[x + 1][y] != "boolean" ||
-				typeof game.map[x][y + 1] != "boolean" ||
-				typeof game.map[x + 1][y + 1] != "boolean" ||
-				(typeof game.map[x][y - 1] != "object" && typeof game.map[x][y - 2] != "object" && typeof game.map[x + 1][y - 1] == "object") ||
-				(typeof game.map[x + 1][y - 1] != "object" && typeof game.map[x + 1][y - 2] != "object" && typeof game.map[x][y - 1] == "object") ||
-				(typeof game.map[x][y + 2] != "object" && typeof game.map[x][y + 3] != "object" && typeof game.map[x + 1][y + 2] == "object") ||
-				(typeof game.map[x + 1][y + 2] != "object" && typeof game.map[x + 1][y + 3] != "object" && typeof game.map[x][y + 2] == "object") ||
-				(game.map[x - 1] && typeof game.map[x - 1][y] == "number") ||
-				typeof game.map[x][y - 1] == "number" ||
-				typeof game.map[x][y + 1] == "number" ||
-				typeof game.map[x + 1][y] == "number"
+			if (mapHasNode(x, y, true)
+				|| mapHasNode(x + 1, y, true)
+				|| mapHasNode(x, y + 1, true)
+				|| mapHasNode(x + 1, y + 1, true)
+				|| (!mapHasNode(x, y - 1) && !mapHasNode(x, y - 2) && mapHasNode(x + 1, y - 1))
+				|| (!mapHasNode(x + 1, y - 1) && !mapHasNode(x + 1, y - 2) && mapHasNode(x, y - 1))
+				|| (!mapHasNode(x, y + 2) && !mapHasNode(x, y + 3) && mapHasNode(x + 1, y + 2))
+				|| (!mapHasNode(x + 1, y + 2) && !mapHasNode(x + 1, y + 3) && mapHasNode(x, y + 2))
+				|| (game.map[x - 1] && typeof game.map[x - 1][y] == "number")
+				|| typeof game.map[x][y - 1] == "number"
+				|| typeof game.map[x][y + 1] == "number"
+				|| typeof game.map[x + 1][y] == "number"
 			) continue;
 			game.map[x][y] = available.splice(randomInt(0, available.length - 1), 1)[0];
-			if (available.length == 0) available = [0, 1, 2, 3];
+			if (available.length == 0) available = [0, 1, 2, 3, 4];
 		};
 	};
 };
@@ -212,36 +256,12 @@ function addScribbles() {
  */
 async function generateMap() {
 	await updateMapProg();
-	game.firstRoom = await mapPiece(0, 0, FIRSTBATTLE);
+	game.firstRoom = await mapPiece(0, 0, MAP_PIECE.FIRST);
 	game.map = [];
-	death_zones = 0;
-	eventShift = randomInt(0, 1);
-	for (let index = 0; index < 10; index++) {
-		game.map.push(await mapRow(index));
-	};
-	pathEntries = Object.entries(paths);
-	let row = 3;
-	while (death_zones === 0) {
-		let available = [0, 1, 2, 3, 4, 5];
-		let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-		while (true) {
-			if (game.map[row][rand] && (game.map[row][rand][0] === ROOM.TREASURE || (row == 2 && game.map[row][rand][0] === ROOM.BATTLE)) && !pathHasTypes(row + ", " + rand, [ROOM.TREASURE, ROOM.PRIME], true)) {
-				game.map[row][rand] = await mapPiece(row, rand, PRIME);
-				death_zones++;
-				break;
-			} else if (available.length > 0) {
-				rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-			} else {
-				break;
-			};
-		};
-		if (row >= 7) row = 2;
-		else if (row == 2) break;
-		else row++;
-	};
+	await generateArea(0);
+	await generateArea(1);
 	addScribbles();
 	graphics.map(true);
 	changeMusic();
-	updateVisuals();
 	loaded = true;
 };

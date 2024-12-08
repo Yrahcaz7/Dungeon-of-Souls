@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2022 Yrahcaz7
+ *  Copyright (C) 2024 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,8 +17,6 @@
 
 * {
 	overscroll-behavior: none;
-	overscroll-behavior-block: none;
-	overscroll-behavior-inline: none;
 }
 
 html, body {
@@ -26,7 +24,7 @@ html, body {
 	background-color: black;
 	text-align: center;
 	color: white;
-	margin: 0px;
+	margin: 0;
 	cursor: none;
 }
 
@@ -36,7 +34,7 @@ canvas {
 	left: 0;
 	bottom: 0;
 	right: 0;
-	width: 100%;
+	width: min(100vw, 200vh);
 	background-color: black;
 	margin: auto;
 	-ms-interpolation-mode: nearest-neighbor;
@@ -50,9 +48,9 @@ canvas {
 }
 
 .fixed {
-	margin: 0px auto !important;
+	margin: 0 auto !important;
 }
 
 .onlyScroll {
-	margin: 0px !important;
+	margin: 0 !important;
 }

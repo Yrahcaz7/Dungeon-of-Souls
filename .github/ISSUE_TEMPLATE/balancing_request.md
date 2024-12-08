@@ -8,7 +8,7 @@ assignees: ''
 ---
 
 **Which Card/Feature?**
-A clear and concise description of which feature you want balanced.
+A clear and concise description of which card (or other feature) you want balanced.
 
 **Balancing Suggestions**
 A clear and concise description of what should be changed.

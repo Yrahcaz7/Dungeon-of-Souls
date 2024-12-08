@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2022 Yrahcaz7
+ *  Copyright (C) 2024 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,91 +15,111 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const END_OF_BATTLE = 900, ON_PICKUP = 901, END_OF_TURN = 902;
-
 const artifacts = {
 	0: {
-		name: "determination",
-		desc: "As you confront your\ngreatest challenge yet,\nyou are filled with\na familiar feeling...",
-		rarity: 0,
+		name: "error",
+		desc: "This artifact is clearly\nan error. It does\nabsolutely nothing.",
 	},
-	1: {
-		name: "iron will",
-		desc: "Every time a battle\nends, you heal 2 health.",
-		rarity: 0,
-		[END_OF_BATTLE]() {
-			game.health += 2;
-		},
-	},
-	2: {
+	100: {
 		name: "supershield",
-		rarity: 1,
-		desc: "All cards that give\nshield give 2 extra.",
+		desc: "All cards that give you\nshield give you 2 extra.",
 	},
-	3: {
+	101: {
 		name: "gem of rage",
-		rarity: 1,
 		desc: "All cards that deal\ndamage deal 2 extra.",
 	},
-	4: {
+	102: {
 		name: "candy",
-		rarity: 1,
-		desc: "You have 15 less max\nhealth, but you heal by\n3 after every battle.",
-		[END_OF_BATTLE]() {
+		desc: "You have 15 less max\nhealth, but you gain 3\nhealth each time you\nclear a floor.",
+		[FUNC.FLOOR_CLEAR]() {
 			game.health += 3;
 		},
 	},
-	5: {
+	103: {
 		name: "corrosion",
-		rarity: 1,
-		desc: "You have 1 more max\nenergy, but you take\n4 damage after each of\nyour turns.",
-		[END_OF_TURN]() {
-			takeDamage(4, false);
+		desc: "You have 1 more max\nenergy, but you take 4\ncombat damage at the end\nof each of your turns.",
+		[FUNC.PLAYER_TURN_END]() {
+			takeDamage(4, true, -1);
 		},
 	},
-	6: {
+	104: {
 		name: "card charm",
-		rarity: 1,
 		desc: "You get 1 extra card\nreward choice, but your\nhand size is 1 smaller.",
 	},
-	7: {
+	105: {
 		name: "nutritious meal",
-		rarity: 1,
-		desc: "You have 15 more max health.\nOn pickup, heal 10 health.",
-		[ON_PICKUP]() {
+		desc: "You have 15 more max health.\nOn pickup, you gain 10 health.",
+		[FUNC.PICKUP]() {
 			game.health += 10;
 		},
+	},
+	106: {
+		name: "magic book",
+		desc: "You draw 2 cards each\ntime you play a magic\ntype card.",
+		[FUNC.PLAY_CARD](cardObj) {
+			if (Math.floor(cardObj.id / 1000) == 4) {
+				drawCards(2);
+			};
+		},
+	},
+	107: {
+		name: "bottled fire",
+		desc: "Enemies start with 1\nburn, and burn deals 3\nextra damage to enemies.",
+	},
+	200: {
+		name: "the map",
+		desc: "You can choose where\nto go next each time\nyou clear a floor.",
+	},
+	201: {
+		name: "iron will",
+		desc: "You gain 2 health each\ntime you clear a floor.",
+		[FUNC.FLOOR_CLEAR]() {
+			game.health += 2;
+		},
+	},
+	202: {
+		name: "determination",
+		desc: "As you confront your\ngreatest challenge yet,\nyou are filled with\na familiar feeling...",
 	},
 };
 
 for (const key in artifacts) {
-	if (Object.hasOwnProperty.call(artifacts, key)) {
-		artifacts[key].desc = artifacts[key].desc.replace(/(max\shealth|health|heal|damage|attack)/gi, "<#f44>$1</#f44>");
-		artifacts[key].desc = artifacts[key].desc.replace(/(shield|defense)/gi, "<#58f>$1</#58f>");
+	if (artifacts.hasOwnProperty(key)) {
+		artifacts[key].desc = color(artifacts[key].desc);
 	};
 };
+
+/**
+ * Activates all artifact effects of a type.
+ * @param {number} type - the type of effect.
+ */
+function activateArtifacts(type, ...params) {
+	for (let index = 0; index < game.artifacts.length; index++) {
+		const func = artifacts[game.artifacts[index]][type];
+		if (typeof func == "function") func(...params);
+	};
+};
+
+const artifactIDs = [];
 
 /**
  * Returns a random artifact's id.
  * @param {number[]} notInclude - the ids to not include.
  */
 function randomArtifact(notInclude = []) {
-	let bool = true;
 	if (notInclude.length) {
-		for (const key in artifacts) {
-			if (Object.hasOwnProperty.call(artifacts, key)) {
-				if (artifacts[key].rarity > 0 && !notInclude.includes(+key)) {
-					bool = false;
-				};
+		let bool = true;
+		for (let index = 0; index < artifactIDs.length; index++) {
+			if (!notInclude.includes(artifactIDs[index])) {
+				bool = false;
+				break;
 			};
 		};
-	};
-	if (bool) {
-		return randomInt(2, Object.keys(artifact).length - 1);
+		if (bool) return 0;
 	};
 	let result;
 	while (!result || notInclude.includes(result)) {
-		result = randomInt(2, Object.keys(artifact).length - 1);
+		result = artifactIDs[randomInt(0, artifactIDs.length - 1)];
 	};
 	return result;
 };
@@ -110,6 +130,7 @@ function randomArtifact(notInclude = []) {
  */
 function randomArtifactSet(length = 0) {
 	if (length <= 0) return [];
+	if (length > 5) length = 5;
 	let result = [];
 	for (let index = 0; index < length; index++) {
 		result.push(randomArtifact(result));
