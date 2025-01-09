@@ -119,6 +119,7 @@ class Enemy {
 			this.finishAction();
 		} else if (this.intent === INTENT.SUMMON) {
 			if (game.enemies.length >= 6) {
+				// RITUAL (sacrifice all minions to deal damage to the player equal to their combined health)
 				let damage = 0;
 				for (let index = 0; index < game.enemies.length; index++) {
 					if (game.enemies[index].eff[ENEMY_EFF.SCRAP_HEAP]) {
@@ -130,7 +131,12 @@ class Enemy {
 				let prevHealth = game.health;
 				takeDamage(damage);
 				if (game.health < prevHealth) startAnim.player(I.player.hit);
+				// If the player survives the ritual, they get the easter egg "Warped Essence"
+				if (game.health > 0 && !game.artifacts.includes(203)) {
+					game.artifacts.push(203);
+				};
 			} else {
+				// SUMMON (summon a small enemy that gives no points when defeated)
 				game.enemies.push(new Enemy([SLIME.SMALL, SENTRY.SMALL][get.area()], -0.5));
 				game.enemies[game.enemies.length - 1].eff[ENEMY_EFF.SCRAP_HEAP] = 1;
 			};

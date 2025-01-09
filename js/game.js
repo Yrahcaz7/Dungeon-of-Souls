@@ -186,31 +186,33 @@ function startTurn(firstTurn = false) {
  * Ends the player's turn.
  */
 function endTurn() {
-	// end of your turn effects
-	if (game.hand.length) discardHand();
-	cardAnim = [];
-	notif = [-1, 0, "", 0];
-	if (game.eff[EFF.BURN]) {
-		takeDamage(game.eff[EFF.BURN], false);
-		game.eff[EFF.BURN]--;
-	};
-	if (game.eff[EFF.WEAKNESS]) game.eff[EFF.WEAKNESS]--;
-	if (game.eff[EFF.BLAZE]) game.eff[EFF.BLAZE]--;
-	if (game.eff[EFF.ATKUP]) game.eff[EFF.ATKUP]--;
-	if (game.eff[EFF.DEFUP]) game.eff[EFF.DEFUP]--;
-	// activate artifacts
-	activateArtifacts(FUNC.PLAYER_TURN_END);
-	// start of enemy turn effects
-	game.turn = TURN.ENEMY;
-	game.enemyNum = -1;
-	for (let index = 0; index < game.enemies.length; index++) {
-		// effects
-		let prevShield = game.enemies[index].shield;
-		if (game.enemies[index].eff[EFF.REINFORCE]) game.enemies[index].eff[EFF.REINFORCE]--;
-		else game.enemies[index].shield = 0;
-		if (game.enemies[index].eff[EFF.RESILIENCE]) game.enemies[index].eff[EFF.RESILIENCE]--;
-		// transitions
-		startEnemyTransition(index, prevShield);
+	if (game.state === STATE.BATTLE) {
+		// end of your turn effects
+		if (game.hand.length) discardHand();
+		cardAnim = [];
+		notif = [-1, 0, "", 0];
+		if (game.eff[EFF.BURN]) {
+			takeDamage(game.eff[EFF.BURN], false);
+			game.eff[EFF.BURN]--;
+		};
+		if (game.eff[EFF.WEAKNESS]) game.eff[EFF.WEAKNESS]--;
+		if (game.eff[EFF.BLAZE]) game.eff[EFF.BLAZE]--;
+		if (game.eff[EFF.ATKUP]) game.eff[EFF.ATKUP]--;
+		if (game.eff[EFF.DEFUP]) game.eff[EFF.DEFUP]--;
+		// activate artifacts
+		activateArtifacts(FUNC.PLAYER_TURN_END);
+		// start of enemy turn effects
+		game.turn = TURN.ENEMY;
+		game.enemyNum = -1;
+		for (let index = 0; index < game.enemies.length; index++) {
+			// effects
+			let prevShield = game.enemies[index].shield;
+			if (game.enemies[index].eff[EFF.REINFORCE]) game.enemies[index].eff[EFF.REINFORCE]--;
+			else game.enemies[index].shield = 0;
+			if (game.enemies[index].eff[EFF.RESILIENCE]) game.enemies[index].eff[EFF.RESILIENCE]--;
+			// transitions
+			startEnemyTransition(index, prevShield);
+		};
 	};
 };
 
@@ -227,19 +229,22 @@ function endTurnConfirm() {
  * Does stuff after the player plays a card and its effect activates.
  */
 function postCardActivation() {
-	// finish attack enemy
-	if (game.enemyAtt[3]) {
-		const attCard = cards[game.enemyAtt[2].id];
-		if (attCard.target !== false && attCard.damage) {
-			if (cards[game.enemyAtt[2].id].keywords.includes(CARD_EFF.UNIFORM)) dealDamage(getCardAttr("damage", game.enemyAtt[2].id, game.enemyAtt[2].level), 0.5);
-			else dealDamage(getCardAttr("damage", game.enemyAtt[2].id, game.enemyAtt[2].level));
+	if (game.turn === TURN.PLAYER) {
+		// finish attack enemy
+		if (game.enemyAtt[3]) {
+			const attCard = cards[game.enemyAtt[2].id];
+			if (attCard.target !== false && attCard.damage) {
+				if (cards[game.enemyAtt[2].id].keywords.includes(CARD_EFF.UNIFORM)) dealDamage(getCardAttr("damage", game.enemyAtt[2].id, game.enemyAtt[2].level), 0.5);
+				else dealDamage(getCardAttr("damage", game.enemyAtt[2].id, game.enemyAtt[2].level));
+			};
+			if (typeof attCard.attack == "function") attCard.attack(game.enemyAtt[2].level);
+			game.enemyAtt = [-1, -1, new Card(), false];
+			game.attackEffects = [];
+			updateData();
 		};
-		if (typeof attCard.attack == "function") attCard.attack(game.enemyAtt[2].level);
-		game.enemyAtt = [-1, -1, new Card(), false];
-		game.attackEffects = [];
+		// auto end turn
+		if (global.options[OPTION.AUTO_END_TURN] && !areAnyCardsPlayable()) endTurn();
 	};
-	// auto end turn
-	if (global.options[OPTION.AUTO_END_TURN] && !areAnyCardsPlayable()) endTurn();
 };
 
 /**
@@ -276,6 +281,8 @@ function endBattle() {
 		game.select = [S.REWARDS, 0];
 		game.state = STATE.EVENT_FIN;
 		game.turn = -1;
+		game.enemyNum = -1;
+		game.enemyStage = -1;
 		// activate artifacts
 		activateArtifacts(FUNC.FLOOR_CLEAR);
 		// set rewards

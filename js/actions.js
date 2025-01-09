@@ -579,8 +579,9 @@ function performAction() {
 		if (game.enemyAtt[3]) return;
 		// attack enemy
 		if (game.select[0] === S.ATTACK) {
+			let id = game.enemyAtt[2].id;
 			game.energy -= getCardCost(game.enemyAtt[2]);
-			activateAttackEffects(game.enemyAtt[2].id);
+			activateAttackEffects(id);
 			game.enemyAtt[3] = true;
 			discardCard(game.hand.splice(game.enemyAtt[0], 1)[0], true);
 			cardAnim.splice(game.enemyAtt[0], 1);
@@ -591,6 +592,7 @@ function performAction() {
 			else game.select = [S.HAND, 0];
 			actionTimer = 4;
 			updateData();
+			if (cards[id].attackEffects === false) postCardActivation();
 			return;
 		};
 		// activate special selection effect
@@ -660,6 +662,7 @@ function performAction() {
 						else game.select = [S.HAND, 0];
 						actionTimer = 4;
 						updateData();
+						if (cards[id].attackEffects === false) postCardActivation();
 					} else {
 						game.enemyAtt[0] = game.select[1];
 						game.select = [S.ATTACK, game.enemies.length - 1];

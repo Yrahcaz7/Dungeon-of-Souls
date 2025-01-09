@@ -147,6 +147,7 @@ const get = {
 	maxEnergy() {
 		let max = 3;
 		if (game.artifacts.includes(103)) max++;
+		if (game.artifacts.includes(203)) max++;
 		return max;
 	},
 	/**
@@ -183,6 +184,7 @@ const get = {
 		if (game.enemies[index]?.eff[EFF.WEAKNESS]) mult -= 0.25;
 		if (game.enemies[index]?.eff[EFF.ATKUP]) mult += 0.25;
 		if (game.eff[EFF.RESILIENCE]) mult -= 0.25;
+		if (game.artifacts.includes(203)) mult += 0.25;
 		return mult;
 	},
 	/**

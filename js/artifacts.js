@@ -81,6 +81,10 @@ const artifacts = {
 		name: "determination",
 		desc: "As you confront your\ngreatest challenge yet,\nyou are filled with\na familiar feeling...",
 	},
+	203: {
+		name: "warped essence",
+		desc: "You have 1 more max energy,\nbut you take 25% more\ndamage, rounded up.",
+	},
 };
 
 for (const key in artifacts) {
