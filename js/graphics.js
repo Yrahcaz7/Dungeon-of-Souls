@@ -896,22 +896,36 @@ const graphics = {
 		draw.imageSector(playerAnim[1], Math.floor(playerAnim[0]) * 120, 0, 120, playerAnim[1].height, x, y, 120);
 		if (playerAnim[1] === I.player.idle) {
 			playerAnim[0] += 0.25;
-			if (playerAnim[0] >= 10) playerAnim[0] = 0;
+			if (playerAnim[0] >= 10) {
+				playerAnim[0] = 0;
+			};
 		} else if (playerAnim[1] === I.player.attack || playerAnim[1] === I.player.attack_aura) {
 			playerAnim[0]++;
-			if (playerAnim[0] >= 4) playerAnim = [0, I.player.idle];
+			if (playerAnim[0] >= 4) {
+				playerAnim = [0, I.player.idle];
+				postCardActivation();
+			};
 		} else if (playerAnim[1] === I.player.attack_2 || playerAnim[1] === I.player.attack_2_aura) {
 			playerAnim[0]++;
-			if (playerAnim[0] >= 6) playerAnim = [0, I.player.idle];
+			if (playerAnim[0] >= 6) {
+				playerAnim = [0, I.player.idle];
+				postCardActivation();
+			};
 		} else if (isDefending(playerAnim[1])) {
 			playerAnim[0] += 0.5;
-			if (playerAnim[0] >= 3) playerAnim[0] = 2;
+			if (playerAnim[0] >= 3) {
+				playerAnim[0] = 2;
+			};
 		} else if (playerAnim[1] === I.player.hit) {
 			playerAnim[0] += 0.25;
-			if (playerAnim[0] >= 1) playerAnim = [0, I.player.idle];
+			if (playerAnim[0] >= 1) {
+				playerAnim = [0, I.player.idle];
+			};
 		} else if (playerAnim[1] === I.player.death) {
 			playerAnim[0] += 0.5;
-			if (playerAnim[0] >= 10) playerAnim[0] = 9;
+			if (playerAnim[0] >= 10) {
+				playerAnim[0] = 9;
+			};
 		};
 		// bars
 		draw.bars(x + 22, y + 15, game.health, get.maxHealth(), game.shield, get.maxShield());

@@ -90,6 +90,16 @@ function isCrouching(image) {
 	return image === I.player.crouch_shield || image === I.player.crouch_shield_reinforced;
 };
 
+/**
+ * Returns a boolean indicating whether the player can play any card from their hand.
+ */
+function areAnyCardsPlayable() {
+	return game.turn === TURN.PLAYER && game.hand.some(card => {
+		const cardInfo = cards[card.id];
+		return getCardCost(card) <= game.energy && !cardInfo.keywords.includes(CARD_EFF.UNPLAYABLE) && (!cardInfo.can || cardInfo.can(card.level));
+	});
+};
+
 const get = {
 	/**
 	 * Gets the current area number based on the floor.

@@ -609,6 +609,7 @@ function performAction() {
 				game.enemyAtt = [-1, -1, new Card(), false];
 				actionTimer = 4;
 				updateData();
+				postCardActivation();
 				return;
 			};
 		};
@@ -639,6 +640,8 @@ function performAction() {
 					if (game.prevCard) game.select = [S.HAND, game.prevCard - 1];
 					else game.select = [S.HAND, 0];
 					actionTimer = 4;
+					updateData();
+					postCardActivation();
 				} else if (cards[id].damage || cards[id].attack) { // effects of attack cards
 					if (cards[id].target === false) {
 						game.energy -= getCardCost(selected);
@@ -654,6 +657,7 @@ function performAction() {
 						if (game.prevCard) game.select = [S.HAND, game.prevCard - 1];
 						else game.select = [S.HAND, 0];
 						actionTimer = 4;
+						updateData();
 					} else {
 						game.enemyAtt[0] = game.select[1];
 						game.select = [S.ATTACK, game.enemies.length - 1];
@@ -666,7 +670,6 @@ function performAction() {
 				else notif = [game.select[1], 0, "not enough energy", 0];
 				actionTimer = 1;
 			};
-			updateData();
 			return;
 		};
 	};
@@ -970,14 +973,20 @@ function performAction() {
 		} else if (option === OPTION.MUSIC_TRACK) {
 			fadeMusic();
 		};
-		if (global.options[OPTION.MUSIC_TRACK]) {} else if (secret) {
+		if (global.options[OPTION.MUSIC_TRACK]) {
+			// secret already obtained
+		} else if (secret) {
 			if (global.options[OPTION.MUSIC] === false
 				&& global.options[OPTION.SCREEN_SHAKE] === true
 				&& global.options[OPTION.STICKY_CARDS] === true
 				&& global.options[OPTION.PERFECT_SCREEN] === false
 				&& global.options[OPTION.PERFECT_SIZE] == 1
 				&& global.options[OPTION.FAST_MOVEMENT] === true
-			) global.options[OPTION.MUSIC_TRACK] = "default";
+				&& global.options[OPTION.AUTO_END_TURN] === false
+				&& global.options[OPTION.END_TURN_CONFIRM] === true
+			) {
+				global.options[OPTION.MUSIC_TRACK] = "default";
+			};
 		} else {
 			if (global.options[OPTION.MUSIC] === true
 				&& global.options[OPTION.SCREEN_SHAKE] === false
@@ -985,7 +994,11 @@ function performAction() {
 				&& global.options[OPTION.PERFECT_SCREEN] === true
 				&& global.options[OPTION.PERFECT_SIZE] == 2
 				&& global.options[OPTION.FAST_MOVEMENT] === false
-			) secret = true;
+				&& global.options[OPTION.AUTO_END_TURN] === true
+				&& global.options[OPTION.END_TURN_CONFIRM] === false
+			) {
+				secret = true;
+			};
 		};
 		actionTimer = 2;
 		return;

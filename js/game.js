@@ -23,6 +23,8 @@ let global = {
 		[OPTION.PERFECT_SCREEN]: false,
 		[OPTION.PERFECT_SIZE]: 1,
 		[OPTION.FAST_MOVEMENT]: true,
+		[OPTION.AUTO_END_TURN]: false,
+		[OPTION.END_TURN_CONFIRM]: true,
 	},
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
@@ -216,33 +218,17 @@ function endTurn() {
  * Ends the player's turn (after a confirmation if the player can still play cards).
  */
 function endTurnConfirm() {
-	let confirm = false;
-	for (let index = 0; index < game.hand.length; index++) {
-		const id = game.hand[index].id;
-		if (getCardCost(game.hand[index]) <= game.energy && !cards[id].keywords.includes(CARD_EFF.UNPLAYABLE) && (!cards[id].can || cards[id].can(game.hand[index].level))) {
-			confirm = true;
-			break;
-		};
-	};
-	if (confirm) game.select = [S.CONF_END, 0];
+	if (global.options[OPTION.END_TURN_CONFIRM] && areAnyCardsPlayable()) game.select = [S.CONF_END, 0];
 	else endTurn();
 	actionTimer = 2;
 };
 
 /**
- * Enters the battle.
+ * Does stuff after the player plays a card and its effect activates.
  */
-function enterBattle() {
-	game.state = STATE.BATTLE;
-	startTurn(true);
-};
-
-/**
- * Handles the player's turn.
- */
-function playerTurn() {
+function postCardActivation() {
 	// finish attack enemy
-	if (game.enemyAtt[3] && playerAnim[1] === I.player.idle) {
+	if (game.enemyAtt[3]) {
 		const attCard = cards[game.enemyAtt[2].id];
 		if (attCard.target !== false && attCard.damage) {
 			if (cards[game.enemyAtt[2].id].keywords.includes(CARD_EFF.UNIFORM)) dealDamage(getCardAttr("damage", game.enemyAtt[2].id, game.enemyAtt[2].level), 0.5);
@@ -252,6 +238,16 @@ function playerTurn() {
 		game.enemyAtt = [-1, -1, new Card(), false];
 		game.attackEffects = [];
 	};
+	// auto end turn
+	if (global.options[OPTION.AUTO_END_TURN] && !areAnyCardsPlayable()) endTurn();
+};
+
+/**
+ * Enters the battle.
+ */
+function enterBattle() {
+	game.state = STATE.BATTLE;
+	startTurn(true);
 };
 
 /**
@@ -366,10 +362,6 @@ function loadRoom() {
  */
 function manageGameplay() {
 	// update data
-	updateData();
-	// actions
-	if (game.turn === TURN.PLAYER) playerTurn();
-	// update data again
 	updateData();
 	// enemy actions
 	if (game.turn === TURN.ENEMY || game.enemyNum >= 0 || game.enemyStage !== -1) enemyTurn();
