@@ -1,6 +1,6 @@
 # Dungeon of Souls
 
-> Copyright (C) 2024 Yrahcaz7
+> Copyright (C) 2025 Yrahcaz7
 >
 > GNU General Public License (version 3)
 >

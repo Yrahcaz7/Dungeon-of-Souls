@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2024 Yrahcaz7
+ *  Copyright (C) 2025 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,7 +28,9 @@ function selection() {
 	if (actionTimer > -1) return;
 	if (!actionTimer || actionTimer < -1) actionTimer = -1;
 	// menus
-	if (menuLocation === MENU.TITLE) {
+	if (game.select[0] === S.WELCOME) {
+		return;
+	} else if (menuLocation === MENU.TITLE) {
 		if (!game.artifacts.includes(202)) {
 			if ((action === DIR.LEFT && game.difficulty === 1) || (action === DIR.RIGHT && game.difficulty === 0)) {
 				menuLocation = MENU.DIFFICULTY;
