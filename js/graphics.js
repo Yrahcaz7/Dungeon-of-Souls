@@ -615,6 +615,23 @@ const info = {
 		return draw.textBox(x + 71, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
 	/**
+	 * Draws an infobox for a card in the refinable deck.
+	 * @param {string | number} type - the infobox contains `EFF_DESC[type]`.
+	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
+	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
+	 */
+	refinableDeck(type, xPlus = 0, yPlus = 0) {
+		let x = 72 + (game.cardSelect[0] * 68) + xPlus, y = 15 + (game.cardSelect[1] * 100) - game.deckPos + yPlus;
+		if (game.cardSelect[0] >= 2) {
+			const ref = cards[refinableDeck[game.cardSelect[0] + (game.cardSelect[1] * 3)].id];
+			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
+			else x -= 145;
+			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
+		};
+		if (EFF_DESC[type]) return draw.textBox(x, y, 24, EFF_DESC[type], {"text-small": true});
+		return draw.textBox(x, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
+	},
+	/**
 	 * Draws an infobox for the player.
 	 * @param {number} type - the infobox contains `EFF_DESC[type]`.
 	 * @param {number} xPlus - adds to the x-coordinate of the infobox.
@@ -1412,10 +1429,6 @@ const graphics = {
 			for (let x = 0, y = 0; x + (y * 6) < len; x++) {
 				if (x === game.cardSelect[0] && y === game.cardSelect[1] && game.select[0] !== S.CONF_REFINE) {
 					selected = [x, y];
-				} else if ((game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) && deck[x + (y * 6)].level > 0) {
-					ctx.globalAlpha = 0.75;
-					draw.card(deck[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66), inOutsideDeck());
-					ctx.globalAlpha = 1;
 				} else {
 					draw.card(deck[x + (y * 6)], -1, 14 + (y * 98) - game.deckPos, false, 2 + (x * 66), inOutsideDeck());
 				};
@@ -1425,22 +1438,14 @@ const graphics = {
 				};
 			};
 			if (selected) {
-				if ((game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) && deck[selected[0] + (selected[1] * 6)].level > 0) {
-					ctx.globalAlpha = 0.75;
-					draw.card(deck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66), inOutsideDeck());
-					ctx.globalAlpha = 1;
-				} else {
-					draw.card(deck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66), inOutsideDeck());
-				};
+				draw.card(deck[selected[0] + (selected[1] * 6)], -1, 14 + (selected[1] * 98) - game.deckPos, true, 2 + (selected[0] * 66), inOutsideDeck());
 			};
-			if (game.select[0] !== S.CONF_REFINE) {
-				graphics.target();
-				selected = game.cardSelect;
-				if (game.deckPos >= 98 * selected[1]) {
-					game.deckPos -= Math.min(10, Math.abs(game.deckPos - (98 * selected[1])));
-				} else if (game.deckPos <= (98 * (selected[1] - 1)) + 11) {
-					game.deckPos += Math.min(10, Math.abs(game.deckPos - ((98 * (selected[1] - 1)) + 11)));
-				};
+			graphics.target();
+			selected = game.cardSelect;
+			if (game.deckPos >= 98 * selected[1]) {
+				game.deckPos -= Math.min(10, Math.abs(game.deckPos - (98 * selected[1])));
+			} else if (game.deckPos <= (98 * (selected[1] - 1)) + 11) {
+				game.deckPos += Math.min(10, Math.abs(game.deckPos - ((98 * (selected[1] - 1)) + 11)));
 			};
 		};
 		draw.rect("#0004", 0, 0, 400, 13);
@@ -1449,8 +1454,53 @@ const graphics = {
 		else if (game.select[0] === S.VOID) draw.lore(200 - 2, 1, "Void", {"color": "#fff", "text-align": DIR.CENTER});
 		else if (game.select[0] === S.MAP) draw.lore(200 - 2, 1, "Cards", {"color": "#fff", "text-align": DIR.CENTER});
 		else if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY) draw.lore(200 - 2, 1, "Purifier: Pick a Card to Destroy", {"color": "#fff", "text-align": DIR.CENTER});
-		else if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) draw.lore(200 - 2, 1, "Refiner: Pick a Card to Improve", {"color": "#fff", "text-align": DIR.CENTER});
 		draw.rect("#fff", 1, 12, 398, 1);
+	},
+	/**
+	 * Draws the refiner selection screen on the canvas.
+	 */
+	refiner() {
+		if (refinableDeck.length == 0) {
+			refinableDeck = game.deck.filter(card => card.level == 0);
+			if (refinableDeck.length == 0) refinableDeck = [new Card()];
+		};
+		draw.rect("#000c");
+		draw.rect("#fff", 207, 14, 1, 185);
+		const len = refinableDeck.length;
+		if (len > 0) {
+			if (game.cardSelect[0] + (game.cardSelect[1] * 3) >= len) game.cardSelect = [(len - 1) % 3, Math.floor((len - 1) / 3)];
+			if (game.deckPos > Math.max(100 * (Math.floor((len - 1) / 3) - 1) + 14, 0)) game.deckPos = Math.max(100 * (Math.floor((len - 1) / 3) - 1) + 14, 0);
+			let selected;
+			for (let x = 0, y = 0; x + (y * 3) < len; x++) {
+				if (x === game.cardSelect[0] && y === game.cardSelect[1] && game.select[0] !== S.CONF_REFINE) {
+					selected = [x, y];
+				} else if (refinableDeck[x + (y * 3)].level == 0) {
+					draw.card(refinableDeck[x + (y * 3)], -1, 15 + (y * 100) - game.deckPos, false, 3 + (x * 68), inOutsideDeck());
+				};
+				if (x >= 2) {
+					x = -1;
+					y++;
+				};
+			};
+			if (selected) {
+				draw.card(refinableDeck[selected[0] + (selected[1] * 3)], -1, 15 + (selected[1] * 100) - game.deckPos, true, 3 + (selected[0] * 68), true);
+			};
+			graphics.target();
+			selected = game.cardSelect;
+			if (game.deckPos >= 100 * selected[1]) {
+				game.deckPos -= Math.min(10, Math.abs(game.deckPos - (100 * selected[1])));
+			} else if (game.deckPos <= (100 * (selected[1] - 1)) + 14) {
+				game.deckPos += Math.min(10, Math.abs(game.deckPos - ((100 * (selected[1] - 1)) + 14)));
+			};
+		};
+		draw.rect("#0004", 0, 0, 400, 13);
+		draw.lore(200 - 2, 1, "Refiner: Pick a Card to Improve", {"color": "#fff", "text-align": DIR.CENTER});
+		draw.rect("#fff", 1, 12, 398, 1);
+		let cardObj = refinableDeck[game.cardSelect[0] + (game.cardSelect[1] * 3)];
+		draw.lore(213, 18, "Press B to go back to the reward selection screen.\n\nPress space or enter to refine the selected card.\n\nA preview of the refined card is shown below.", {"color": "#FFFFFF", "text-small": true});
+		draw.card(cardObj, -1, 51, true, 213, true);
+		draw.card(new Card(cardObj.id, 1), -1, 51, true, 329, true);
+		draw.image(I.card.refine, 305 - I.card.refine.width / 2, 95);
 	},
 	/**
 	 * Draws the player's hand on the canvas.
@@ -1619,10 +1669,14 @@ const graphics = {
 			info.artifact(game.room[6][game.select[1]], 179 + (game.select[1] * 32), 90);
 		} else if (game.select[0] === S.DECK && game.select[1] == 1 && game.deckLocal.length) {
 			graphics.cardInfo("deck", game.deckLocal.slice().cardSort()[game.cardSelect[0] + (game.cardSelect[1] * 6)]);
-		} else if ((game.select[0] === S.VOID || game.select[0] === S.DISCARD) && game.select[1] == 1 && game[game.select[0] === S.VOID ? "void" : "discard"].length) {
-			graphics.cardInfo("deck", game[game.select[0] === S.VOID ? "void" : "discard"][game.cardSelect[0] + (game.cardSelect[1] * 6)]);
+		} else if (game.select[0] === S.DISCARD && game.select[1] == 1 && game.discard.length) {
+			graphics.cardInfo("deck", game.discard[game.cardSelect[0] + (game.cardSelect[1] * 6)]);
+		} else if (game.select[0] === S.VOID && game.select[1] == 1 && game.void.length) {
+			graphics.cardInfo("deck", game.void[game.cardSelect[0] + (game.cardSelect[1] * 6)]);
 		} else if (game.select[0] === S.CARD_REWARD && game.select[1] > -1 && game.select[1] < get.cardRewardChoices()) {
 			graphics.cardInfo("reward", new Card(game.room[5][game.select[1]]));
+		} else if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) {
+			graphics.cardInfo("refinableDeck", refinableDeck[game.cardSelect[0] + (game.cardSelect[1] * 3)]);
 		} else if (inOutsideDeck()) {
 			graphics.cardInfo("deck", game.deck[game.cardSelect[0] + (game.cardSelect[1] * 6)]);
 		};

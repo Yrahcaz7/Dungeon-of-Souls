@@ -29,7 +29,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2,
+	version: 2.1,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -65,7 +65,7 @@ let global = {
 	map: [],
 	traveled: [],
 	seed: randomize((Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase()),
-}, popups = [], notif = [-1, 0, "", 0], menuLocation = MENU.TITLE, menuSelect = 0, winAnim = 0;
+}, popups = [], notif = [-1, 0, "", 0], menuLocation = MENU.TITLE, menuSelect = 0, refinableDeck = [], winAnim = 0;
 
 /**
  * Checks if there is any active popups.
@@ -335,7 +335,7 @@ function loadRoom() {
 					game.enemies.push(new Enemy(+enemy));
 				};
 			};
-			if (type === ROOM.BOSS || game.floor == 11) fadeMusic();
+			if (type === ROOM.BOSS || (game.floor > 10 && game.floor % 10 == 1)) fadeMusic();
 			enterBattle();
 		} else if (type === ROOM.TREASURE) {
 			game.traveled.push(+place[1]);
@@ -359,6 +359,7 @@ function loadRoom() {
 			game.traveled.push(+place[1]);
 			game.select = [S.CONF_EVENT, -1];
 			game.state = STATE.EVENT;
+			game.rewards = [];
 			game.turn = 10000;
 		};
 	};
@@ -434,10 +435,6 @@ function updateVisuals() {
 		if (game.select[0] === SS.SELECT_HAND) graphics.handSelect();
 		else graphics.hand();
 	};
-	if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY || game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) {
-		graphics.rewards(false);
-		graphics.deck(game.deck);
-	};
 	if (game.select[0] === S.MAP) {
 		graphics.map();
 	} else if (game.select[0] === S.CONF_EVENT) {
@@ -461,6 +458,12 @@ function updateVisuals() {
 	} else if (game.select[0] === S.DISCARD && game.select[1]) {
 		if (game.select[2] && game.select[2][0] === S.MAP) graphics.map();
 		graphics.deck(game.discard);
+	} else if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY) {
+		graphics.rewards(false);
+		graphics.deck(game.deck);
+	} else if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) {
+		graphics.rewards(false);
+		graphics.refiner();
 	};
 	if (game.select[0] === S.MAP && game.select[1]) {
 		graphics.deck(game.deck);
@@ -537,17 +540,14 @@ function updateVisuals() {
 		let x = 99, y = 20;
 		draw.rect("#0008");
 		draw.box(x + 1, y + 1, 200, 26);
-		let cardObj = game.deck[game.cardSelect[0] + game.cardSelect[1] * 6];
+		let cardObj = refinableDeck[game.cardSelect[0] + game.cardSelect[1] * 3];
 		draw.lore(x + 2, y + 2, "Are you sure you want to improve the card " + getCardAttr("name", cardObj.id, cardObj.level) + "?\nIf you have multiple, this will only improve one copy of the card.", {"text-small": true});
 		if (game.select[1] == 0) draw.rect("#fff", x + 1, y + 13, 23, 14);
-		else if (game.select[1] == 1) draw.rect("#fff", x + 23, y + 13, 53, 14);
-		else draw.rect("#fff", x + 75, y + 13, 29, 14);
+		else draw.rect("#fff", x + 23, y + 13, 29, 14);
 		draw.box(x + 3, y + 15, 19, 10);
-		draw.box(x + 25, y + 15, 49, 10);
-		draw.box(x + 77, y + 15, 25, 10);
+		draw.box(x + 25, y + 15, 25, 10);
 		draw.lore(x + 4, y + 16, "YES");
-		draw.lore(x + 26, y + 16, "RESELECT");
-		draw.lore(x + 78, y + 16, "BACK");
+		draw.lore(x + 26, y + 16, "BACK");
 		draw.card(cardObj, -1, 51, true, 100, true);
 		draw.card(new Card(cardObj.id, 1), -1, 51, true, 234, true);
 		draw.image(I.card.refine, (200 - I.card.refine.width / 2), 95);

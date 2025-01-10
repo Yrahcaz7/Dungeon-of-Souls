@@ -83,6 +83,7 @@ gameplay = ""
 	+ "Then, you can use your new knowledge and cards to reach higher heights next time.",
 changelog = ""
 	+ "<b>Version 2.1 - Revolution<s>"
+	+ " - finally reworked the refiner screen!\n"
 	+ " - added two new options, including auto end turn!\n"
 	+ " - there is one new artifact (shhhhh... it's a secret)\n"
 	+ " - some bugfixes and performance optimizations\n"

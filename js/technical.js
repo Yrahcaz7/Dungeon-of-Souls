@@ -156,9 +156,11 @@ window.onresize = () => {
 
 document.addEventListener("keydown", event => {
 	if (!loaded) return;
-	const key = event.key, prevAction = action;
-	if ((key == "E" || key == "e") && game.turn === TURN.PLAYER && game.select[0] !== S.CONF_END) endTurnConfirm();
-	else if (key == "1" && !event.repeat && actionTimer == -1) {
+	const key = event.key;
+	if ((key == "E" || key == "e") && game.turn === TURN.PLAYER && game.select[0] !== S.CONF_END) {
+		endTurnConfirm();
+		action = -1;
+	} else if (key == "1" && !event.repeat && actionTimer == -1) {
 		if (game.select[0] === S.DECK && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [S.DECK, 0];
@@ -188,6 +190,15 @@ document.addEventListener("keydown", event => {
 		};
 		action = -1;
 		actionTimer = 2;
+	} else if ((key == "B" || key == "b") && !event.repeat && game.select[0] === S.REFINER && actionTimer == -1) {
+		for (let index = 0; index < game.rewards.length; index++) {
+			if (game.rewards[index] == "1 refiner") {
+				game.select = [S.REWARDS, index];
+				action = -1;
+				actionTimer = 2;
+				break;
+			};
+		};
 	} else if ((key == " " || key == "Enter") && !event.repeat && actionTimer == -1) {
 		action = -1;
 		performAction();
@@ -198,7 +209,7 @@ document.addEventListener("keydown", event => {
 	else action = -1;
 	if (key == "Escape") fullscreen(true);
 	else if (key == "Tab") fullscreen();
-	if (!event.repeat && prevAction === -1 && lastAction === action && global.options[OPTION.FAST_MOVEMENT] && loaded) {
+	if (!event.repeat && lastAction === action && global.options[OPTION.FAST_MOVEMENT]) {
 		if (menuLocation === -1) manageGameplay();
 		selection();
 		updateVisuals();
@@ -208,7 +219,7 @@ document.addEventListener("keydown", event => {
 
 document.addEventListener("keyup", event => {
 	const key = event.key;
-	if (key == " " || key == "Enter" || key == "W" || key == "w" || key == "ArrowUp" || key == "A" || key == "a" || key == "ArrowLeft" || key == "S" || key == "s" || key == "ArrowDown" || key == "D" || key == "d" || key == "ArrowRight") action = -1;
+	if (key == "W" || key == "w" || key == "ArrowUp" || key == "A" || key == "a" || key == "ArrowLeft" || key == "S" || key == "s" || key == "ArrowDown" || key == "D" || key == "d" || key == "ArrowRight") action = -1;
 });
 
 /**

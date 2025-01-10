@@ -249,10 +249,10 @@ const cards = {
 /**
  * Returns a card's attribute.
  * @param {string} attr - the attribute to return.
- * @param {number} id - the card's id.
+ * @param {number} id - the card's id. Defaults to `0`.
  * @param {number} level - the card's level. Defaults to `0`.
  */
-function getCardAttr(attr, id, level = 0) {
+function getCardAttr(attr, id = 0, level = 0) {
 	if (!cards[id] || cards[id][attr] === null) return;
 	if (attr == "name") return title(cards[id].name) + "+".repeat(level);
 	if (typeof cards[id][attr] == "object") {
@@ -308,14 +308,16 @@ for (const key in cards) {
 };
 
 class Card {
+	id = 0;
+	level = 0;
+
 	/**
 	 * Returns a new card.
-	 * @param {number} id - the card's id.
+	 * @param {number} id - the card's id. Defaults to `0`.
 	 * @param {number} level - the card's level. Defaults to `0`.
 	 */
-	constructor(id, level = 0) {
-		if (cards[id] === undefined) this.id = 0;
-		else this.id = id;
+	constructor(id = 0, level = 0) {
+		this.id = id;
 		this.level = level;
 	};
 };
