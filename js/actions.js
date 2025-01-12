@@ -301,73 +301,30 @@ function selection() {
 		};
 	};
 	// deck selection
-	if (((game.select[0] === S.DECK || game.select[0] === S.VOID || game.select[0] === S.DISCARD || (game.select[0] === S.MAP && game.mapSelect == (paths[game.location] || []).length)) && game.select[1]) || game.select[0] === S.PURIFIER) {
-		let len = game.deckLocal.length;
-		if (game.select[0] === S.VOID) len = game.void.length;
-		else if (game.select[0] === S.DISCARD) len = game.discard.length;
-		else if (game.select[0] === S.MAP || game.select[0] === S.PURIFIER) len = game.deck.length;
+	if (((game.select[0] === S.DECK || game.select[0] === S.DISCARD || game.select[0] === S.VOID || game.select[0] === S.MAP) && game.select[1]) || game.select[0] === S.PURIFIER || game.select[0] === S.REFINER) {
+		let len = currentDeck().length;
+		let cols = (game.select[0] === S.REFINER ? 3 : 6);
 		if (action === DIR.LEFT) {
-			if (game.cardSelect[0] > 0) {
-				game.cardSelect[0]--;
-			} else if (game.cardSelect[1] > 0) {
-				game.cardSelect[0] = 5;
-				game.cardSelect[1]--;
+			if (game.cardSelect > 0) {
+				game.cardSelect--;
 			};
 			actionTimer = 1;
 			return;
 		} else if (action === DIR.RIGHT) {
-			if (game.cardSelect[0] < 5 && (game.cardSelect[0] < (len - 1) % 6 || game.cardSelect[1] < Math.floor(len / 6))) {
-				game.cardSelect[0]++;
-			} else if (game.cardSelect[0] + (game.cardSelect[1] * 6) < len - 1) {
-				game.cardSelect[0] = 0;
-				game.cardSelect[1]++;
+			if (game.cardSelect < len - 1) {
+				game.cardSelect++;
 			};
 			actionTimer = 1;
 			return;
 		} else if (action === DIR.UP) {
-			if (game.cardSelect[1] > 0) {
-				game.cardSelect[1]--;
+			if (game.cardSelect > 0) {
+				game.cardSelect = Math.max(game.cardSelect - cols, 0);
 			};
 			actionTimer = 1;
 			return;
 		} else if (action === DIR.DOWN) {
-			if (game.cardSelect[1] < Math.floor(len / 6)) {
-				game.cardSelect[1]++;
-			};
-			actionTimer = 1;
-			return;
-		};
-	};
-	// deck selection from refiner
-	if (game.select[0] === S.REFINER) {
-		let len = refinableDeck.length;
-		if (action === DIR.LEFT) {
-			if (game.cardSelect[0] > 0) {
-				game.cardSelect[0]--;
-			} else if (game.cardSelect[1] > 0) {
-				game.cardSelect[0] = 2;
-				game.cardSelect[1]--;
-			};
-			actionTimer = 1;
-			return;
-		} else if (action === DIR.RIGHT) {
-			if (game.cardSelect[0] < 2 && (game.cardSelect[0] < (len - 1) % 3 || game.cardSelect[1] < Math.floor(len / 3))) {
-				game.cardSelect[0]++;
-			} else if (game.cardSelect[0] + (game.cardSelect[1] * 3) < len - 1) {
-				game.cardSelect[0] = 0;
-				game.cardSelect[1]++;
-			};
-			actionTimer = 1;
-			return;
-		} else if (action === DIR.UP) {
-			if (game.cardSelect[1] > 0) {
-				game.cardSelect[1]--;
-			};
-			actionTimer = 1;
-			return;
-		} else if (action === DIR.DOWN) {
-			if (game.cardSelect[1] < Math.floor(len / 3)) {
-				game.cardSelect[1]++;
+			if (game.cardSelect < len - 1) {
+				game.cardSelect = Math.min(game.cardSelect + cols, len - 1);
 			};
 			actionTimer = 1;
 			return;
@@ -665,7 +622,9 @@ function performAction() {
 		if (!game.select[1]) {
 			endTurn();
 			game.select = [S.END, 0];
-		} else if (game.hand.length) game.select = [S.HAND, game.prevCard];
+		} else if (game.hand.length) {
+			game.select = [S.HAND, game.prevCard];
+		};
 		actionTimer = 2;
 		return;
 	} else if (game.select[0] === S.CONF_EXIT) {
@@ -701,7 +660,7 @@ function performAction() {
 		if (game.select[1] == 1) {
 			game.select = [S.PURIFIER, 0];
 		} else {
-			if (game.select[1] == 0) game.deck.splice(game.cardSelect[0] + game.cardSelect[1] * 6, 1);
+			if (game.select[1] == 0) game.deck.splice(game.cardSelect, 1);
 			for (let index = 0; index < game.rewards.length; index++) {
 				if (game.rewards[index] == "1 purifier") {
 					if (game.select[1] == 0) game.rewards[index] += " - claimed";
@@ -713,10 +672,10 @@ function performAction() {
 		actionTimer = 2;
 		return;
 	} else if (game.select[0] === S.CONF_REFINE) {
-		if (game.select[1] == 1) {
+		if (game.select[1]) {
 			game.select = [S.REFINER, 0];
 		} else {
-			refinableDeck[game.cardSelect[0] + game.cardSelect[1] * 3].level = 1;
+			refinableDeck[game.cardSelect].level = 1;
 			refinableDeck = [];
 			for (let index = 0; index < game.rewards.length; index++) {
 				if (game.rewards[index] == "1 refiner") {
@@ -876,13 +835,13 @@ function performAction() {
 		return;
 	};
 	// activate refiner
-	if (game.select[0] === S.REFINER && refinableDeck[game.cardSelect[0] + game.cardSelect[1] * 3]) {
+	if (game.select[0] === S.REFINER && refinableDeck[game.cardSelect]) {
 		game.select = [S.CONF_REFINE, 1];
 		actionTimer = 2;
 		return;
 	};
 	// activate / deactivate extras
-	if (game.select[0] === S.DECK || game.select[0] === S.VOID || game.select[0] === S.DISCARD) {
+	if (game.select[0] === S.DECK || game.select[0] === S.DISCARD || game.select[0] === S.VOID) {
 		if (game.select[2]) game.select = game.select[2];
 		else if (game.select[1] == 0) game.select[1] = 1;
 		else game.select[1] = 0;

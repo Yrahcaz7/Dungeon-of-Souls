@@ -71,7 +71,21 @@ function inOutsideDeck() {
  * Returns a boolean indicating whether a deck is being viewed.
  */
 function inDeck() {
-	return ((game.select[0] === S.DECK || game.select[0] === S.VOID || game.select[0] === S.DISCARD) && game.select[1]) || inOutsideDeck();
+	return ((game.select[0] === S.DECK || game.select[0] === S.DISCARD || game.select[0] === S.VOID) && game.select[1]) || inOutsideDeck();
+};
+
+/**
+ * Returns the current deck being viewed. If there is none, returns an empty array.
+ * @returns {Card[]}
+ */
+function currentDeck() {
+	if (game.select[0] === S.DECK && game.select[1]) return game.deckLocal.slice().cardSort();
+	if (game.select[0] === S.DISCARD && game.select[1]) return game.discard;
+	if (game.select[0] === S.VOID && game.select[1]) return game.void;
+	if (game.select[0] === S.MAP && game.select[1]) return game.deck;
+	if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY) return game.deck;
+	if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) return refinableDeck;
+	return [];
 };
 
 /**

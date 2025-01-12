@@ -52,10 +52,18 @@ function restartRun() {
  * @param {number} version - The version the save is from.
  */
 function fixSave(version) {
-	// fix ANIM.PENDING enemy stage (version: all versions)
+	// fix ANIM.PENDING enemy stage (all versions)
 	if (game.enemyStage === ANIM.PENDING) {
 		if (game.enemies[game.enemyNum].done) game.enemyStage = ANIM.ENDING;
 		else game.enemyStage = ANIM.STARTING;
+	};
+	// version 2.1.0
+	if (version < 2_001_000) {
+		// game.deckPos is renamed to game.deckScroll
+		game.deckScroll = game.deckPos;
+		delete game.deckPos;
+		// game.cardSelect is now a number
+		game.cardSelect = 0;
 	};
 };
 

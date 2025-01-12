@@ -29,7 +29,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2.1,
+	version: 2_001_000,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -44,7 +44,7 @@ let global = {
 	turn: -1,
 	select: [S.WELCOME, 0],
 	prevCard: -1,
-	cardSelect: [0, 0],
+	cardSelect: 0,
 	mapSelect: -1,
 	kills: {},
 	enemies: [],
@@ -55,7 +55,7 @@ let global = {
 	artifacts: [200, 201],
 	deck: [new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000), new Card(2001), new Card(4000)],
 	deckLocal: [],
-	deckPos: 0,
+	deckScroll: 0,
 	hand: [],
 	discard: [],
 	void: [],
@@ -390,7 +390,9 @@ function updateVisuals() {
 	if (menuLocation !== -1) {
 		graphics.middleLayer();
 		draw.image(I.title, (400 - I.title.width) / 2, 0);
-		if (global.version) draw.lore(390, 51, "Version " + global.version + (global.version % 1 == 0 ? ".0" : ""), {"color": "#f00", "text-align": DIR.LEFT, "text-small": true});
+		let majorVersion = Math.floor(global.version / 1000000) % 1000;
+		let minorVersion = Math.floor(global.version / 1000) % 1000;
+		if (global.version) draw.lore(390, 51, "Version " + majorVersion + "." + minorVersion, {"color": "#f00", "text-align": DIR.LEFT, "text-small": true});
 		if (global.highScore > 0) draw.lore(1, 1, "HIGH SCORE: " + global.highScore + " points", {"color": "#fff", "text-small": true});
 		if (game.artifacts.includes(202) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": DIR.CENTER});
 		else if (get.area() == 1) draw.lore(200 - 2, 53, "Act 2: The Color of the Soul", {"color": "#fff", "text-align": DIR.CENTER});
@@ -449,24 +451,15 @@ function updateVisuals() {
 		graphics.info();
 	} else if (game.select[0] === S.OPTIONS && game.select[1]) {
 		graphics.options();
-	} else if (game.select[0] === S.DECK && game.select[1]) {
+	} else if ((game.select[0] === S.DECK || game.select[0] === S.DISCARD || game.select[0] === S.VOID) && game.select[1]) {
 		if (game.select[2] && game.select[2][0] === S.MAP) graphics.map();
-		graphics.deck(game.deckLocal.slice().cardSort());
-	} else if (game.select[0] === S.VOID && game.select[1]) {
-		if (game.select[2] && game.select[2][0] === S.MAP) graphics.map();
-		graphics.deck(game.void);
-	} else if (game.select[0] === S.DISCARD && game.select[1]) {
-		if (game.select[2] && game.select[2][0] === S.MAP) graphics.map();
-		graphics.deck(game.discard);
-	} else if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY) {
+		graphics.deck();
+	} else if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY || game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) {
 		graphics.rewards(false);
-		graphics.deck(game.deck);
-	} else if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) {
-		graphics.rewards(false);
-		graphics.refiner();
+		graphics.deck(game.select[0] === S.PURIFIER || game.select[0] === S.REFINER);
 	};
 	if (game.select[0] === S.MAP && game.select[1]) {
-		graphics.deck(game.deck);
+		graphics.deck();
 	};
 	if (!hidden() && !inDeck()) {
 		graphics.target();
@@ -525,7 +518,7 @@ function updateVisuals() {
 		let x = 99, y = 83;
 		draw.rect("#0008");
 		draw.box(x + 1, y + 1, 200, 26);
-		let cardObj = game.deck[game.cardSelect[0] + game.cardSelect[1] * 6];
+		let cardObj = game.deck[game.cardSelect];
 		draw.lore(x + 2, y + 2, "Are you sure you want to destroy the card " + getCardAttr("name", cardObj.id, cardObj.level) + "?\nIf you have multiple, this will only destroy one copy of the card.", {"text-small": true});
 		if (game.select[1] == 0) draw.rect("#fff", x + 1, y + 13, 23, 14);
 		else if (game.select[1] == 1) draw.rect("#fff", x + 23, y + 13, 53, 14);
@@ -540,7 +533,7 @@ function updateVisuals() {
 		let x = 99, y = 20;
 		draw.rect("#0008");
 		draw.box(x + 1, y + 1, 200, 26);
-		let cardObj = refinableDeck[game.cardSelect[0] + game.cardSelect[1] * 3];
+		let cardObj = refinableDeck[game.cardSelect];
 		draw.lore(x + 2, y + 2, "Are you sure you want to improve the card " + getCardAttr("name", cardObj.id, cardObj.level) + "?\nIf you have multiple, this will only improve one copy of the card.", {"text-small": true});
 		if (game.select[1] == 0) draw.rect("#fff", x + 1, y + 13, 23, 14);
 		else draw.rect("#fff", x + 23, y + 13, 29, 14);
