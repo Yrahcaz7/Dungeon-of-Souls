@@ -168,6 +168,7 @@ const I = {
 			boss: new Image,
 			event: new Image,
 			select: {},
+			select_blue: {},
 		},
 	}, reward: {
 		item: new Image,
@@ -185,10 +186,10 @@ const I = {
 /**
  * Loads an image or all images in a folder.
  * @param {object} ref - a reference to the containing folder.
- * @param {object} name - the name of the image to load.
+ * @param {string} name - the name of the image to load.
  * @param {string} path - the path of the containing folder.
  * @param {boolean} select - if true, loads the select image as well.
- * @param {boolean} blue - if true, loads the blue select as well.
+ * @param {boolean} blue - if true, loads the blue select image as well.
  */
 function loadImage(ref, name, path, select = false, blue = false) {
 	if (ref[name] instanceof Image) {
@@ -198,9 +199,8 @@ function loadImage(ref, name, path, select = false, blue = false) {
 			ref.select[name].src = path + "select/" + name + ".png";
 		};
 		if (blue) {
-			name += "_blue";
-			ref.select[name] = new Image;
-			ref.select[name].src = path + "select/" + name + ".png";
+			ref.select_blue[name] = new Image;
+			ref.select_blue[name].src = path + "select_blue/" + name + ".png";
 		};
 	} else if (ref[name] instanceof Number) {
 		let num = +ref[name];
@@ -211,9 +211,10 @@ function loadImage(ref, name, path, select = false, blue = false) {
 		};
 	} else {
 		select = ref[name].select && !(ref[name].select instanceof Image);
+		blue = ref[name].select_blue && !(ref[name].select_blue instanceof Image);
 		for (const folder in ref[name]) {
 			if (ref[name].hasOwnProperty(folder)) {
-				loadImage(ref[name], folder, path + name + "/", select, select && name == "node");
+				loadImage(ref[name], folder, path + name + "/", select, blue);
 			};
 		};
 	};
