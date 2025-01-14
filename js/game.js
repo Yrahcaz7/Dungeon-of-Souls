@@ -29,7 +29,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_001_001,
+	version: 2_001_002,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -541,8 +541,8 @@ function updateVisuals() {
 		draw.box(x + 25, y + 15, 25, 10);
 		draw.lore(x + 4, y + 16, "YES");
 		draw.lore(x + 26, y + 16, "BACK");
-		draw.card(cardObj, -1, 51, true, 100, true);
-		draw.card(new Card(cardObj.id, 1), -1, 51, true, 234, true);
+		draw.card(cardObj, 100, 51, true, true);
+		draw.card(new Card(cardObj.id, 1), 234, 51, true, true);
 		draw.image(I.card.refine, (200 - I.card.refine.width / 2), 95);
 	};
 	graphics.popups();

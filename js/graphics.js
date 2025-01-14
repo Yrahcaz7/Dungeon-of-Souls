@@ -392,17 +392,15 @@ const draw = {
 	/**
 	 * Draws a card on the canvas.
 	 * @param {Card} cardObj - the card object.
-	 * @param {number} index - the index of the card.
+	 * @param {number} x - the x-coordinate to draw the card at.
 	 * @param {number} y - the y-coordinate to draw the card at.
 	 * @param {boolean} selected - whether the card is selected or not. Defaults to `false`.
-	 * @param {number} overrideX - overrides the calculated x-coordinate to draw at.
 	 * @param {boolean} outside - whether the card is outside the battle or not. Defaults to `false`.
 	 */
-	card(cardObj, index, y, selected = false, overrideX = NaN, outside = false) {
+	card(cardObj, x, y, selected = false, outside = false) {
 		// setup
 		if (!(cardObj instanceof Object)) cardObj = new Card(cardObj);
-		let x = handPos[index], img = I.card.error;
-		if ((overrideX || overrideX === 0) && overrideX === overrideX) x = overrideX;
+		let img = I.card.error;
 		const rarity = +cards[cardObj.id].rarity;
 		if (rarity >= 0 && I.card[RARITY[rarity]]) img = I.card[RARITY[rarity]][cardObj.id];
 		// card back
@@ -1436,11 +1434,11 @@ const graphics = {
 					y++;
 				};
 				if (x != selected[0] || y != selected[1] || !focused) {
-					draw.card(deck[x + (y * cols)], -1, startY + (y * spaceY) - game.deckScroll, false, startX + (x * spaceX), inOutsideDeck());
+					draw.card(deck[x + (y * cols)], startX + (x * spaceX), startY + (y * spaceY) - game.deckScroll, false, inOutsideDeck());
 				};
 			};
 			if (focused) {
-				draw.card(deck[game.cardSelect], -1, startY + (selected[1] * spaceY) - game.deckScroll, true, startX + (selected[0] * spaceX), inOutsideDeck());
+				draw.card(deck[game.cardSelect], startX + (selected[0] * spaceX), startY + (selected[1] * spaceY) - game.deckScroll, true, inOutsideDeck());
 				graphics.target();
 				if (game.deckScroll >= spaceY * selected[1]) {
 					game.deckScroll -= Math.min(10, Math.abs(game.deckScroll - (spaceY * selected[1])));
@@ -1460,8 +1458,8 @@ const graphics = {
 		if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) {
 			let cardObj = deck[game.cardSelect];
 			draw.lore(213, 18, "Press B to go back to the reward selection screen.\n\nPress space or enter to refine the selected card.\n\nA preview of the refined card is shown below.", {"color": "#fff", "text-small": true});
-			draw.card(cardObj, -1, 51, true, 213, true);
-			draw.card(new Card(cardObj.id, 1), -1, 51, true, 329, true);
+			draw.card(cardObj, 213, 51, true, true);
+			draw.card(new Card(cardObj.id, 1), 329, 51, true, true);
 			draw.image(I.card.refine, 305 - I.card.refine.width / 2, 95);
 		};
 	},
@@ -1470,9 +1468,11 @@ const graphics = {
 	 */
 	hand() {
 		if (game.select[0] === S.ATTACK) {
-			draw.card(game.enemyAtt[2], 0, 22, true, 50);
+			draw.card(game.enemyAtt[2], 50, 22, true);
+			return;
+		} else if (game.select[0] === S.PLAYER || game.select[0] === S.ENEMY) {
+			return;
 		};
-		if (game.select[0] === S.PLAYER || game.select[0] === S.ENEMY || game.select[0] === S.ATTACK) return;
 		let temp = -1;
 		for (let index = 0; index < game.hand.length; index++) {
 			if (!cardAnim[index]) cardAnim[index] = 0;
@@ -1481,13 +1481,13 @@ const graphics = {
 			} else {
 				if (cardAnim[index] > 0) cardAnim[index] -= 6 + Math.random();
 				if (cardAnim[index] < 0) cardAnim[index] = 0;
-				draw.card(game.hand[index], index, 146 - Math.floor(cardAnim[index]));
+				draw.card(game.hand[index], handPos[index], 146 - Math.floor(cardAnim[index]));
 			};
 		};
 		if (temp != -1) {
 			if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
 			if (cardAnim[temp] > 44) cardAnim[temp] = 44;
-			draw.card(game.hand[temp], temp, 146 - Math.floor(cardAnim[temp]), true);
+			draw.card(game.hand[temp], handPos[temp], 146 - Math.floor(cardAnim[temp]), true);
 		};
 		if (notif[0] != -1) {
 			draw.lore(handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1] + notif[3], notif[2], {
@@ -1507,20 +1507,19 @@ const graphics = {
 		draw.image(I.extra.end, 381, 55);
 		if (game.select[1] == -1) draw.image(I.select.round, 2, 54);
 		else if (game.select[1] == game.hand.length) draw.image(I.select.round, 380, 54);
-		let temp = -1;
 		for (let index = 0; index < game.hand.length; index++) {
 			if (index == game.select[1]) {
-				temp = index;
+				continue;
 			} else if (index == game.enemyAtt[0]) {
 				ctx.globalAlpha = 0.75;
-				draw.card(game.hand[index], index, 14);
+				draw.card(game.hand[index], handPos[index], 14);
 				ctx.globalAlpha = 1;
 			} else {
-				draw.card(game.hand[index], index, 14);
+				draw.card(game.hand[index], handPos[index], 14);
 			};
 		};
-		if (temp != -1) {
-			draw.card(game.hand[temp], temp, 14, true);
+		if (game.select[1] >= 0 && game.select[1] < game.hand.length) {
+			draw.card(game.hand[game.select[1]], handPos[game.select[1]], 14, true);
 		};
 		draw.rect("#0004", 0, 0, 400, 13);
 		draw.lore(200 - 2, 1, "Select a Card", {"color": "#fff", "text-align": DIR.CENTER});
@@ -1705,10 +1704,10 @@ const graphics = {
 		handPos = [];
 		for (let index = 0; index < choices; index++) {
 			handPos.push((199 - (choices * 68 / 2)) + 1 + (index * 68));
-			draw.card(new Card(game.room[5][index]), index, 50, false, NaN, true);
+			draw.card(new Card(game.room[5][index]), handPos[index], 50, false, true);
 		};
 		if (game.select[1] > -1 && game.select[1] < choices && focused) {
-			draw.card(new Card(game.room[5][game.select[1]]), game.select[1], 50, true, NaN, true);
+			draw.card(new Card(game.room[5][game.select[1]]), handPos[game.select[1]], 50, true, true);
 		};
 		if ((game.select[1] === -1 || game.select[1] === choices) && focused) draw.rect("#fff", x, y + height - 14, width, 14);
 		draw.box(x + 2, y + height - 12, width - 4, 10);
