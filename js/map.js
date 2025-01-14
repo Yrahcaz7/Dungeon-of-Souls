@@ -134,56 +134,87 @@ async function mapRow(row) {
 		};
 	};
 	if (row % 10 == 9) return [false, false, await mapPiece(row, 0, MAP_PIECE.BOSS), false, false, false];
-	let arr = [await mapPiece(row, 0), await mapPiece(row, 1), await mapPiece(row, 2), await mapPiece(row, 3), await mapPiece(row, 4), await mapPiece(row, 5)];
-	if (row % 10 > 0) {
-		game.map.push(arr);
-		graphics.map(true, get.area(row + 1));
-		if (row % 10 > 1) {
-			let available = [0, 1, 2, 3, 4, 5];
-			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-			while (true) {
-				if (arr[rand] && !pathHasTypes([row, rand], [ROOM.TREASURE, ROOM.PRIME])) {
-					arr[rand] = await mapPiece(row, rand, MAP_PIECE.TREASURE);
-					break;
-				} else if (available.length) {
-					rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-				} else {
-					break;
+	return [await mapPiece(row, 0), await mapPiece(row, 1), await mapPiece(row, 2), await mapPiece(row, 3), await mapPiece(row, 4), await mapPiece(row, 5)];
+};
+
+/**
+ * Calculates the paths of a map region.
+ * @param {number} xMin - the inclusive start of the map region to calculate paths for. Defaults to `0`.
+ * @param {number} xMax - the exclusive end of the map region to calculate paths for. Defaults to `Infinity`.
+ */
+function calculateMapPaths(xMin = 0, xMax = Infinity) {
+	// calculate connections
+	let store = [];
+	for (let x = xMin; x < xMax && x < game.map.length; x++) {
+		for (let y = 0; y < game.map[x].length; y++) {
+			if (!game.map[x][y]) continue;
+			if (x % 10 != 9 && game.map[x + 1]) {
+				for (num = 0; num < game.map[x + 1].length; num++) {
+					if (game.map[x + 1][y - num]) {
+						store.push([x, y, x + 1, y - num]);
+						break;
+					} else if (game.map[x + 1][y + num]) {
+						store.push([x, y, x + 1, y + num]);
+						break;
+					};
+				};
+			};
+			if (x % 10 != 0) {
+				for (num = 0; num < game.map[x - 1].length; num++) {
+					if (game.map[x - 1][y - num]) {
+						store.push([x, y, x - 1, y - num]);
+						break;
+					} else if (game.map[x - 1][y + num]) {
+						store.push([x, y, x - 1, y + num]);
+						break;
+					};
 				};
 			};
 		};
-		if (row % 10 >= 3 && death_zones < 2) {
-			let available = [0, 1, 2, 3, 4, 5];
-			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-			while (true) {
-				if (arr[rand] && arr[rand][0] !== ROOM.TREASURE && !pathHasTypes([row, rand], [ROOM.TREASURE, ROOM.PRIME])) {
-					arr[rand] = await mapPiece(row, rand, MAP_PIECE.PRIME);
-					death_zones++;
-					break;
-				} else if (available.length) {
-					rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-				} else {
-					break;
-				};
-			};
-		};
-		if (row % 2 == eventShift && row % 10 < 7) {
-			let available = [0, 1, 2, 3, 4, 5];
-			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-			while (true) {
-				if (arr[rand] && arr[rand][0] !== ROOM.TREASURE && arr[rand][0] !== ROOM.PRIME && !pathHasTypes([row, rand], [ROOM.EVENT])) {
-					arr[rand] = await mapPiece(row, rand, MAP_PIECE.EVENT);
-					break;
-				} else if (available.length) {
-					rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-				} else {
-					break;
-				};
-			};
-		};
-		game.map.pop();
 	};
-	return arr;
+	// create paths
+	for (let index = 0; index < store.length; index++) {
+		const coords = store[index];
+		if (coords[2] > coords[0]) {
+			if (!paths[coords[0]]) paths[coords[0]] = {};
+			if (!paths[coords[0]][coords[1]]) paths[coords[0]][coords[1]] = [];
+			if (!paths[coords[0]][coords[1]].some(location => location[0] === coords[2] && location[1] === coords[3])) {
+				paths[coords[0]][coords[1]].push([coords[2], coords[3]]);
+			};
+		} else if (coords[0] > coords[2]) {
+			if (!paths[coords[2]]) paths[coords[2]] = {};
+			if (!paths[coords[2]][coords[3]]) paths[coords[2]][coords[3]] = [];
+			if (!paths[coords[2]][coords[3]].some(location => location[0] === coords[0] && location[1] === coords[1])) {
+				paths[coords[2]][coords[3]].push([coords[0], coords[1]]);
+			};
+		};
+		if (coords[0] === 0) {
+			if (!paths[-1]) paths[-1] = [];
+			if (!paths[-1].some(location => location[0] === coords[0] && location[1] === coords[1])) {
+				paths[-1].push([coords[0], coords[1]]);
+			};
+		} else if (coords[0] === 10) {
+			if (!paths[9]) paths[9] = {};
+			if (!paths[9][2]) paths[9][2] = [];
+			if (!paths[9][2].some(location => location[0] === coords[0] && location[1] === coords[1])) {
+				paths[9][2].push([coords[0], coords[1]]);
+			};
+		};
+	};
+	// sort paths
+	for (const x in paths) {
+		if (paths.hasOwnProperty(x)) {
+			if (x == -1) {
+				paths[x].sort();
+			} else {
+				for (const y in paths[x]) {
+					if (paths[x].hasOwnProperty(y)) {
+						paths[x][y].sort();
+					};
+				};
+			};
+		};
+	};
 };
 
 /**
@@ -194,7 +225,55 @@ async function generateArea(num) {
 	death_zones = 0;
 	eventShift = randomInt(0, 1);
 	for (let index = 0; index < 10; index++) {
-		game.map.push(await mapRow(index + num * 10));
+		let rowNum = index + num * 10;
+		game.map.push(await mapRow(rowNum));
+		calculateMapPaths(Math.max(rowNum - 1, 0));
+		if (rowNum % 10 > 0 && rowNum % 10 < 8) {
+			let newRow = game.map[rowNum];
+			if (rowNum % 10 > 1) {
+				let available = [0, 1, 2, 3, 4, 5];
+				let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+				while (true) {
+					if (newRow[rand] && !pathHasTypes([rowNum, rand], [ROOM.TREASURE, ROOM.PRIME])) {
+						newRow[rand] = await mapPiece(rowNum, rand, MAP_PIECE.TREASURE);
+						break;
+					} else if (available.length) {
+						rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+					} else {
+						break;
+					};
+				};
+			};
+			if (rowNum % 10 >= 3 && death_zones < 2) {
+				let available = [0, 1, 2, 3, 4, 5];
+				let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+				while (true) {
+					if (newRow[rand] && newRow[rand][0] !== ROOM.TREASURE && !pathHasTypes([rowNum, rand], [ROOM.TREASURE, ROOM.PRIME])) {
+						newRow[rand] = await mapPiece(rowNum, rand, MAP_PIECE.PRIME);
+						death_zones++;
+						break;
+					} else if (available.length) {
+						rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+					} else {
+						break;
+					};
+				};
+			};
+			if (rowNum % 2 == eventShift && rowNum % 10 < 7) {
+				let available = [0, 1, 2, 3, 4, 5];
+				let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+				while (true) {
+					if (newRow[rand] && newRow[rand][0] !== ROOM.TREASURE && newRow[rand][0] !== ROOM.PRIME && !pathHasTypes([rowNum, rand], [ROOM.EVENT])) {
+						newRow[rand] = await mapPiece(rowNum, rand, MAP_PIECE.EVENT);
+						break;
+					} else if (available.length) {
+						rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+					} else {
+						break;
+					};
+				};
+			};
+		};
 	};
 	let row = 3 + num * 10;
 	while (death_zones === 0) {
@@ -265,7 +344,6 @@ async function generateMap() {
 	await generateArea(0);
 	await generateArea(1);
 	addScribbles();
-	graphics.map(true);
 	changeMusic();
 	loaded = true;
 };

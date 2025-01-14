@@ -102,7 +102,7 @@ window.onload = async function() {
 	if (game.map.length === 0) {
 		await generateMap();
 	} else {
-		graphics.map(true);
+		calculateMapPaths();
 		changeMusic();
 		loaded = true;
 	};
