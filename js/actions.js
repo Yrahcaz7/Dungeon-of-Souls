@@ -99,25 +99,26 @@ function selection() {
 		return;
 	};
 	// map
-	if (game.select[0] === S.MAP && game.state === STATE.EVENT_FIN && paths[game.location]) {
+	let availableLocations = getAvailibleLocations();
+	if (game.select[0] === S.MAP && game.state === STATE.EVENT_FIN && availableLocations.length) {
 		if (action === DIR.UP) {
 			if (game.mapSelect == -1) {
-				game.mapSelect = paths[game.location].length - 1;
+				game.mapSelect = availableLocations.length - 1;
 				actionTimer = 1;
 				return;
 			} else if (game.mapSelect == 0) {
-				game.mapSelect = paths[game.location].length;
+				game.mapSelect = availableLocations.length;
 				actionTimer = 1;
 				return;
-			} else if (game.mapSelect < paths[game.location].length) {
+			} else if (game.mapSelect < availableLocations.length) {
 				game.mapSelect = game.mapSelect - 1;
 				actionTimer = 1;
 				return;
 			};
-		} else if (action === DIR.DOWN && game.mapSelect != -1 && (game.mapSelect != paths[game.location].length || game.select[1] == 0)) {
-			if (game.mapSelect < paths[game.location].length - 1) {
+		} else if (action === DIR.DOWN && game.mapSelect != -1 && (game.mapSelect != availableLocations.length || game.select[1] == 0)) {
+			if (game.mapSelect < availableLocations.length - 1) {
 				game.mapSelect = game.mapSelect + 1;
-			} else if (game.mapSelect == paths[game.location].length) {
+			} else if (game.mapSelect == availableLocations.length) {
 				game.mapSelect = 0;
 			} else {
 				game.mapSelect = -1;
@@ -126,11 +127,10 @@ function selection() {
 			return;
 		};
 	} else if (game.select[0] === S.MAP) {
-		const len = (paths[game.location] || []).length;
-		if (action === DIR.UP) {
-			if (game.mapSelect == -1) game.mapSelect = len;
-		} else if (action === DIR.DOWN && (game.mapSelect != len || game.select[1] == 0)) {
-			if (game.mapSelect == len) game.mapSelect = -1;
+		if (action === DIR.UP && game.mapSelect == -1) {
+			game.mapSelect = availableLocations.length;
+		} else if (action === DIR.DOWN && game.mapSelect == availableLocations.length && game.select[1] == 0) {
+			game.mapSelect = -1;
 		};
 	};
 	// event
@@ -618,6 +618,7 @@ function performAction() {
 		return;
 	};
 	// confirmation
+	let availableLocations = getAvailibleLocations();
 	if (game.select[0] === S.CONF_END) {
 		if (!game.select[1]) {
 			endTurn();
@@ -645,10 +646,9 @@ function performAction() {
 		if (game.select[1] == 2) {
 			game.select = [S.MAP, 0];
 		} else {
-			game.location = paths[game.location][game.mapSelect];
-			let coor = game.location.split(", ");
+			game.location = availableLocations[game.mapSelect];
 			if (game.select[1] == 0) game.artifacts.push(202);
-			game.room = game.map[coor[0]][coor[1]];
+			game.room = game.map[game.location[0]][game.location[1]];
 			game.select = [-1, 0];
 			game.mapSelect = -1;
 			game.state = STATE.ENTER;
@@ -770,14 +770,13 @@ function performAction() {
 		return;
 	};
 	// map
-	if (game.select[0] === S.MAP && game.state === STATE.EVENT_FIN && paths[game.location] && paths[game.location][game.mapSelect]) {
+	if (game.select[0] === S.MAP && game.state === STATE.EVENT_FIN && availableLocations[game.mapSelect]) {
 		const now = new Date();
 		if (game.floor == 9 && game.difficulty === 1 && ((now.getHours() % 12 == 11 && now.getMinutes() >= 59) || (now.getHours() % 12 == 0 && now.getMinutes() <= 1))) {
 			game.select = [S.CONF_HAND_ALIGN, 2];
 		} else {
-			game.location = paths[game.location][game.mapSelect];
-			let coor = game.location.split(", ");
-			game.room = game.map[coor[0]][coor[1]];
+			game.location = availableLocations[game.mapSelect];
+			game.room = game.map[game.location[0]][game.location[1]];
 			game.select = [-1, 0];
 			game.mapSelect = -1;
 			game.state = STATE.ENTER;
@@ -855,7 +854,7 @@ function performAction() {
 		game.select = [S.ARTIFACTS, 0];
 		actionTimer = 2;
 		return;
-	} else if (game.select[0] === S.MAP && game.mapSelect == (paths[game.location] || []).length) {
+	} else if (game.select[0] === S.MAP && game.mapSelect == availableLocations.length) {
 		if (game.select[1] == 0) game.select[1] = 1;
 		else game.select[1] = 0;
 		actionTimer = 2;

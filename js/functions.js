@@ -114,6 +114,16 @@ function areAnyCardsPlayable() {
 	});
 };
 
+/**
+ * Returns an array of locations that the player can move to from their current one.
+ * @param {number[]} location - The player's location. Defaults to `game.location`.
+ * @returns {number[][]}
+ */
+function getAvailibleLocations(location = game.location) {
+	if (location.length >= 2) return paths[location[0]][location[1]] || [];
+	return paths[location[0]] || [];
+};
+
 const get = {
 	/**
 	 * Gets the current area number based on the floor.

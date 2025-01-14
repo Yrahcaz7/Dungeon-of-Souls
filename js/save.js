@@ -65,6 +65,12 @@ function fixSave(version) {
 		// game.cardSelect is now a number
 		game.cardSelect = 0;
 	};
+	// version 2.1.4
+	if (version < 2_001_004) {
+		// game.location is now an array of numbers
+		if (game.location == "-1") game.location = [-1];
+		else game.location = game.location.split(", ").map(Number);
+	};
 };
 
 /**

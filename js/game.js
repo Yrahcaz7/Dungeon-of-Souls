@@ -29,7 +29,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_001_002,
+	version: 2_001_004,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -38,7 +38,7 @@ let global = {
 	energy: 3,
 	floor: 0,
 	gold: 0,
-	location: "-1",
+	location: [-1],
 	rewards: [],
 	state: STATE.ENTER,
 	turn: -1,
@@ -320,12 +320,11 @@ function loadRoom() {
 		game.void = [];
 		game.eff = {};
 		// enter room
-		const place = game.location.split(", ");
-		const type = (game.location == "-1" ? ROOM.BATTLE : game.map[place[0]][place[1]][0]);
+		const type = (game.location == -1 ? ROOM.BATTLE : game.map[game.location[0]][game.location[1]][0]);
 		if (type === ROOM.BATTLE || type === ROOM.PRIME || type === ROOM.BOSS) {
 			primeAnim = 0;
-			if (game.location == "-1") game.room = game.firstRoom;
-			else game.traveled.push(+place[1]);
+			if (game.location == -1) game.room = game.firstRoom;
+			else game.traveled.push(game.location[1]);
 			for (let index = 0; index < game.room[3].length; index++) {
 				const enemy = game.room[3][index];
 				if (typeof enemy == "string") {
@@ -338,8 +337,8 @@ function loadRoom() {
 			if (type === ROOM.BOSS || (game.floor > 10 && game.floor % 10 == 1)) fadeMusic();
 			enterBattle();
 		} else if (type === ROOM.TREASURE) {
-			game.traveled.push(+place[1]);
-			game.map[place[0]][place[1]][3] = true;
+			game.traveled.push(game.location[1]);
+			game.map[game.location[0]][game.location[1]][3] = true;
 			game.select = [S.REWARDS, 0];
 			game.state = STATE.EVENT_FIN;
 			game.rewards = [];
@@ -348,7 +347,7 @@ function loadRoom() {
 			game.rewards.push("finish");
 			activateArtifacts(FUNC.FLOOR_CLEAR);
 		} else if (type === ROOM.ORB) {
-			game.traveled.push(+place[1]);
+			game.traveled.push(game.location[1]);
 			game.select = [S.REWARDS, 0];
 			game.state = STATE.EVENT_FIN;
 			game.rewards = [Math.floor(get.maxHealth() * 0.5) + " health", "1 purifier"];
@@ -356,7 +355,7 @@ function loadRoom() {
 			game.rewards.push("finish");
 			activateArtifacts(FUNC.FLOOR_CLEAR);
 		} else if (type === ROOM.EVENT) {
-			game.traveled.push(+place[1]);
+			game.traveled.push(game.location[1]);
 			game.select = [S.CONF_EVENT, -1];
 			game.state = STATE.EVENT;
 			game.rewards = [];

@@ -1675,8 +1675,7 @@ const graphics = {
 	 */
 	rewards(focused = true) {
 		draw.box(145, 20, 110, 160, {"background-color": "#aaa"});
-		const place = game.location.split(", ");
-		const type = (game.location == "-1" ? ROOM.BATTLE : game.map[place[0]][place[1]][0]);
+		const type = (game.location == -1 ? ROOM.BATTLE : game.map[game.location[0]][game.location[1]][0]);
 		if (type === ROOM.BATTLE) draw.lore(200 - 2, 21, "Battle Loot!", {"text-align": DIR.CENTER});
 		else if (type === ROOM.TREASURE) draw.lore(200 - 2, 21, "Treasure!", {"text-align": DIR.CENTER});
 		else if (type === ROOM.ORB) draw.lore(200 - 2, 21, "Healing!", {"text-align": DIR.CENTER});
@@ -1763,7 +1762,7 @@ const graphics = {
 				};
 			};
 			draw.image(I.extra.deck, 22, 16);
-			if (game.select[0] === S.MAP && game.mapSelect == (paths[game.location] || []).length) draw.image(I.select.deck, 21, 15);
+			if (game.select[0] === S.MAP && game.mapSelect == getAvailibleLocations().length) draw.image(I.select.deck, 21, 15);
 			draw.image(I.extra.end, 22, 179);
 			if (game.select[0] === S.MAP && game.mapSelect == -1) draw.image(I.select.round, 21, 178);
 			draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
@@ -1779,7 +1778,7 @@ const graphics = {
 				};
 			};
 		};
-		// calculate nodes
+		// calculate nodes and draw paths
 		let store = [];
 		for (let x = area * 10; x < (area + 1) * 10 && x < game.map.length; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
@@ -1861,9 +1860,9 @@ const graphics = {
 		};
 		// draw nodes
 		if (render) {
-			const str = paths[game.location] ? paths[game.location][game.mapSelect] : undefined;
-			const coordSel = str ? str.split(", ") : [];
-			const coordOn = game.location.split(", ");
+			let availableLocations = getAvailibleLocations();
+			const coordSel = availableLocations[game.mapSelect] ? availableLocations[game.mapSelect] : [];
+			const coordOn = game.location ? game.location : [];
 			for (let x = area * 10; x < (area + 1) * 10; x++) {
 				for (let y = 0; y < game.map[x].length; y++) {
 					if (typeof game.map[x][y] != "object") continue;
@@ -1872,59 +1871,80 @@ const graphics = {
 					if (game.map[x][y][0] === ROOM.BATTLE) {
 						draw.image(I.map.node.battle, drawX, drawY);
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.battle, drawX - 1, drawY - 1);
-						if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.battle, drawX - 1, drawY - 1);
+						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.battle, drawX - 1, drawY - 1);
 					} else if (game.map[x][y][0] === ROOM.PRIME) {
 						draw.image(I.map.node.death_zone, drawX, drawY);
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.death_zone, drawX - 1, drawY - 1);
-						if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.death_zone, drawX - 1, drawY - 1);
+						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.death_zone, drawX - 1, drawY - 1);
 					} else if (game.map[x][y][0] === ROOM.TREASURE) {
 						if (game.map[x][y][3]) {
 							draw.image(I.map.node.treasure_open, drawX, drawY);
-							if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.treasure_open, drawX - 1, drawY - 1);
+							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.treasure_open, drawX - 1, drawY - 1);
+							else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.treasure_open, drawX - 1, drawY - 1);
 						} else {
 							draw.image(I.map.node.treasure, drawX, drawY);
 							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.treasure, drawX - 1, drawY - 1);
-							if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.treasure, drawX - 1, drawY - 1);
+							else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.treasure, drawX - 1, drawY - 1);
 						};
 					} else if (game.map[x][y][0] === ROOM.ORB) {
 						draw.image(I.map.node.orb, drawX, drawY);
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.orb, drawX - 1, drawY - 1);
-						if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.orb, drawX - 1, drawY - 1);
+						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.orb, drawX - 1, drawY - 1);
 					} else if (game.map[x][y][0] === ROOM.BOSS) {
 						drawX += 10;
 						draw.image(I.map.node.boss, drawX, 90);
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.boss, drawX - 1, 90 - 1);
-						if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.boss, drawX - 1, 90 - 1);
+						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.boss, drawX - 1, 90 - 1);
 					} else if (game.map[x][y][0] === ROOM.EVENT) {
 						draw.image(I.map.node.event, drawX, drawY);
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.event, drawX - 1, drawY - 1);
-						if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.event, drawX - 1, drawY - 1);
+						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.event, drawX - 1, drawY - 1);
 					};
 				};
 			};
 		};
 		// create paths
 		paths = {};
-		for (let num = 0; num < store.length; num++) {
-			if (store[num][2] > store[num][0]) {
-				if (!(paths["" + store[num][0] + ", " + store[num][1]])) paths["" + store[num][0] + ", " + store[num][1]] = [];
-				if (!(paths["" + store[num][0] + ", " + store[num][1]].includes("" + store[num][2] + ", " + store[num][3]))) paths["" + store[num][0] + ", " + store[num][1]].push("" + store[num][2] + ", " + store[num][3]);
-			} else if (store[num][0] > store[num][2]) {
-				if (!(paths["" + store[num][2] + ", " + store[num][3]])) paths["" + store[num][2] + ", " + store[num][3]] = [];
-				if (!(paths["" + store[num][2] + ", " + store[num][3]].includes("" + store[num][0] + ", " + store[num][1]))) paths["" + store[num][2] + ", " + store[num][3]].push("" + store[num][0] + ", " + store[num][1]);
+		for (let index = 0; index < store.length; index++) {
+			const coords = store[index];
+			if (coords[2] > coords[0]) {
+				if (!paths[coords[0]]) paths[coords[0]] = {};
+				if (!paths[coords[0]][coords[1]]) paths[coords[0]][coords[1]] = [];
+				if (!paths[coords[0]][coords[1]].some(location => location[0] === coords[2] && location[1] === coords[3])) {
+					paths[coords[0]][coords[1]].push([coords[2], coords[3]]);
+				};
+			} else if (coords[0] > coords[2]) {
+				if (!paths[coords[2]]) paths[coords[2]] = {};
+				if (!paths[coords[2]][coords[3]]) paths[coords[2]][coords[3]] = [];
+				if (!paths[coords[2]][coords[3]].some(location => location[0] === coords[0] && location[1] === coords[1])) {
+					paths[coords[2]][coords[3]].push([coords[0], coords[1]]);
+				};
 			};
-			if (store[num][0] === 0) {
-				if (!paths["-1"]) paths["-1"] = [];
-				if (!paths["-1"].includes("" + store[num][0] + ", " + store[num][1])) paths["-1"].push("" + store[num][0] + ", " + store[num][1]);
-			} else if (store[num][0] === 10) {
-				if (!paths["9, 2"]) paths["9, 2"] = [];
-				if (!paths["9, 2"].includes("" + store[num][0] + ", " + store[num][1])) paths["9, 2"].push("" + store[num][0] + ", " + store[num][1]);
+			if (coords[0] === 0) {
+				if (!paths[-1]) paths[-1] = [];
+				if (!paths[-1].some(location => location[0] === coords[0] && location[1] === coords[1])) {
+					paths[-1].push([coords[0], coords[1]]);
+				};
+			} else if (coords[0] === 10) {
+				if (!paths[9]) paths[9] = {};
+				if (!paths[9][2]) paths[9][2] = [];
+				if (!paths[9][2].includes([coords[0], coords[1]])) {
+					paths[9][2].push([coords[0], coords[1]]);
+				};
 			};
 		};
 		// sort paths
-		for (const item in paths) {
-			if (paths.hasOwnProperty(item)) {
-				paths[item].sort();
+		for (const x in paths) {
+			if (paths.hasOwnProperty(x)) {
+				if (x == -1) {
+					paths[x].sort();
+				} else {
+					for (const y in paths[x]) {
+						if (paths[x].hasOwnProperty(y)) {
+							paths[x][y].sort();
+						};
+					};
+				};
 			};
 		};
 	},
