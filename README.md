@@ -26,9 +26,9 @@ Press enter or the space bar to perform an action.
 
 Press tab to enter full screen, and escape to exit it.
 
-There are also shortcut keys, like the E key, which ends your turn.
+There are also some hotkeys, like the E key, which ends your turn.
 
-Others are 1; 2; and 3, which view your deck; discard; and void, respectively.
+The 1, 2, 3, and 0 keys view your deck, discard, void, and owned cards, respectively.
 
 ## How to play
 
