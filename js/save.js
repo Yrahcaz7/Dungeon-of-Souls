@@ -71,8 +71,8 @@ function fixSave(version) {
 		if (game.location == "-1") game.location = [-1];
 		else game.location = game.location.split(", ").map(Number);
 	};
-	// version 2.1.10
-	if (version < 2_001_010) {
+	// version 2.1.13
+	if (version < 2_001_013) {
 		// cards screen is now its own screen
 		if (game.select[0] === S.MAP && game.select[1]) game.select = [S.CARDS, 0];
 		else if (game.select[2] && game.select[2][0] === S.MAP && game.select[2][1]) game.select[2] = [S.CARDS, 0];
@@ -82,6 +82,8 @@ function fixSave(version) {
 			delete game.mapSelect;
 		} else if (game.select[2] && game.select[2][0] === S.MAP) {
 			game.select[2][1] = game.mapSelect;
+			delete game.mapSelect;
+		} else {
 			delete game.mapSelect;
 		};
 	};

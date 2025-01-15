@@ -29,7 +29,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_001_011,
+	version: 2_001_013,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -45,7 +45,6 @@ let global = {
 	select: [S.WELCOME, 0],
 	prevCard: -1,
 	cardSelect: 0,
-	mapSelect: -1,
 	kills: {},
 	enemies: [],
 	enemyNum: -1,
