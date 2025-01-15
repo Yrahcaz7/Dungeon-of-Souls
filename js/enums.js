@@ -15,8 +15,8 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-// map piece generation attributes
-const MAP_PIECE = {FIRST: 0, TREASURE: 1, PRIME: 2, ORB: 3, BOSS: 4, EVENT: 5};
+// map node generation attributes
+const MAP_NODE = {FIRST: 0, TREASURE: 1, PRIME: 2, ORB: 3, BOSS: 4, EVENT: 5};
 
 // map room types
 const ROOM = {BATTLE: 100, TREASURE: 101, PRIME: 102, ORB: 103, BOSS: 104, EVENT: 105};
