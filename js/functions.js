@@ -57,14 +57,14 @@ function randomize(str) {
  * Returns a boolean indicating whether the middleground layers are hidden.
  */
 function hidden() {
-	return !!((game.select[0] === S.LOOKER || game.select[0] === S.HELP || game.select[0] === S.OPTIONS || game.select[0] === S.DECK || game.select[0] === S.VOID || game.select[0] === S.DISCARD) && game.select[1]) || game.select[0] === S.MAP || game.select[0] === S.CONF_RESTART;
+	return !!((game.select[0] === S.LOOKER || game.select[0] === S.HELP || game.select[0] === S.OPTIONS || game.select[0] === S.DECK || game.select[0] === S.DISCARD || game.select[0] === S.VOID) && game.select[1]) || game.select[0] === S.MAP || game.select[0] === S.CARDS || game.select[0] === S.CONF_RESTART;
 };
 
 /**
  * Returns a boolean indicating whether a deck outside battle is being viewed.
  */
 function inOutsideDeck() {
-	return ((game.select[0] === S.MAP && game.select[1]) || game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY || game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE);
+	return (game.select[0] === S.CARDS || game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY || game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE);
 };
 
 /**
@@ -82,7 +82,7 @@ function currentDeck() {
 	if (game.select[0] === S.DECK && game.select[1]) return game.deckLocal.slice().cardSort();
 	if (game.select[0] === S.DISCARD && game.select[1]) return game.discard;
 	if (game.select[0] === S.VOID && game.select[1]) return game.void;
-	if (game.select[0] === S.MAP && game.select[1]) return game.deck;
+	if (game.select[0] === S.CARDS) return game.deck;
 	if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY) return game.deck;
 	if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) return refinableDeck;
 	return [];
@@ -120,7 +120,7 @@ function areAnyCardsPlayable() {
  * @returns {number[][]}
  */
 function getAvailibleLocations(location = game.location) {
-	if (location.length >= 2) return paths[location[0]][location[1]] || [];
+	if (location.length >= 2) return (paths[location[0]] || {})[location[1]] || [];
 	return paths[location[0]] || [];
 };
 

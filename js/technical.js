@@ -93,7 +93,7 @@ window.onload = async function() {
 	seed = internalSeed(game.seed);
 	canvasData();
 	// set things
-	if (game.select[0] == S.GAME_WON) game.select[1] = 0;
+	if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) game.select[1] = 0;
 	if (global.options[OPTION.PERFECT_SCREEN]) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
 	else document.getElementById("canvas").style = "";
 	// fix things
@@ -187,6 +187,16 @@ document.addEventListener("keydown", event => {
 		} else {
 			if (game.select[2]) game.select = [S.VOID, 1, game.select[2]];
 			else game.select = [S.VOID, 1, game.select];
+		};
+		action = -1;
+		actionTimer = 2;
+	} else if (key == "0" && !event.repeat && actionTimer == -1) {
+		if (game.select[0] === S.CARDS) {
+			if (game.select[2]) game.select = game.select[2];
+			else game.select = [S.MAP, getAvailibleLocations().length];
+		} else {
+			if (game.select[2]) game.select = [S.CARDS, 1, game.select[2]];
+			else game.select = [S.CARDS, 1, game.select];
 		};
 		action = -1;
 		actionTimer = 2;

@@ -1451,7 +1451,7 @@ const graphics = {
 		if (game.select[0] === S.DECK) draw.lore(200 - 2, 1, "Deck", {"color": "#fff", "text-align": DIR.CENTER});
 		else if (game.select[0] === S.DISCARD) draw.lore(200 - 2, 1, "Discard", {"color": "#fff", "text-align": DIR.CENTER});
 		else if (game.select[0] === S.VOID) draw.lore(200 - 2, 1, "Void", {"color": "#fff", "text-align": DIR.CENTER});
-		else if (game.select[0] === S.MAP) draw.lore(200 - 2, 1, "Cards", {"color": "#fff", "text-align": DIR.CENTER});
+		else if (game.select[0] === S.CARDS) draw.lore(200 - 2, 1, "Cards", {"color": "#fff", "text-align": DIR.CENTER});
 		else if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY) draw.lore(200 - 2, 1, "Purifier: Pick a Card to Destroy", {"color": "#fff", "text-align": DIR.CENTER});
 		else if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) draw.lore(200 - 2, 1, "Refiner: Pick a Card to Improve", {"color": "#fff", "text-align": DIR.CENTER});
 		draw.rect("#fff", 1, 12, 398, 1);
@@ -1731,11 +1731,12 @@ const graphics = {
 	},
 	/**
 	 * Draws the map on the canvas.
-	 * @param {number} area - overrides the area of the map being drawn.
+	 * @param {boolean} focused - whether the map layer is focused. Defaults to `true`.
 	 */
-	map(area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0))) {
+	map(focused = true) {
 		// setup
 		let availableLocations = getAvailibleLocations();
+		let area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0));
 		// draw map
 		draw.rect("#000");
 		draw.image(I.map.top, 3, 12);
@@ -1761,9 +1762,9 @@ const graphics = {
 			};
 		};
 		draw.image(I.extra.deck, 22, 16);
-		if (game.select[0] === S.MAP && game.mapSelect == availableLocations.length) draw.image(I.select.deck, 21, 15);
+		if (game.select[1] == availableLocations.length && focused) draw.image(I.select.deck, 21, 15);
 		draw.image(I.extra.end, 22, 179);
-		if (game.select[0] === S.MAP && game.mapSelect == -1) draw.image(I.select.round, 21, 178);
+		if (game.select[1] == -1 && focused) draw.image(I.select.round, 21, 178);
 		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
 		draw.lore(399, 1, "seed: " + game.seed, {"color": "#fff", "text-align": DIR.LEFT});
 		// draw scribbles
@@ -1851,7 +1852,7 @@ const graphics = {
 			};
 		};
 		// draw nodes
-		const coordSel = availableLocations[game.mapSelect] ? availableLocations[game.mapSelect] : [];
+		const coordSel = availableLocations[game.select[1]] ? availableLocations[game.select[1]] : [];
 		const coordOn = game.location ? game.location : [];
 		for (let x = area * 10; x < (area + 1) * 10; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {

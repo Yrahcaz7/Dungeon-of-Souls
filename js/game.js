@@ -29,7 +29,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_001_006,
+	version: 2_001_010,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -356,7 +356,7 @@ function loadRoom() {
 			activateArtifacts(FUNC.FLOOR_CLEAR);
 		} else if (type === ROOM.EVENT) {
 			game.traveled.push(game.location[1]);
-			game.select = [S.CONF_EVENT, -1];
+			game.select = [S.EVENT, -1];
 			game.state = STATE.EVENT;
 			game.rewards = [];
 			game.turn = 10000;
@@ -438,7 +438,7 @@ function updateVisuals() {
 	};
 	if (game.select[0] === S.MAP) {
 		graphics.map();
-	} else if (game.select[0] === S.CONF_EVENT) {
+	} else if (game.select[0] === S.EVENT) {
 		graphics.event();
 	} else if (game.select[0] === S.REWARDS) {
 		graphics.rewards();
@@ -451,13 +451,13 @@ function updateVisuals() {
 	} else if (game.select[0] === S.OPTIONS && game.select[1]) {
 		graphics.options();
 	} else if ((game.select[0] === S.DECK || game.select[0] === S.DISCARD || game.select[0] === S.VOID) && game.select[1]) {
-		if (game.select[2] && game.select[2][0] === S.MAP) graphics.map();
+		if (game.select[2] && (game.select[2][0] === S.MAP || game.select[2][0] === S.CARDS)) graphics.map(false);
 		graphics.deck();
 	} else if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY || game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) {
 		graphics.rewards(false);
 		graphics.deck(game.select[0] === S.PURIFIER || game.select[0] === S.REFINER);
-	};
-	if (game.select[0] === S.MAP && game.select[1]) {
+	} else if (game.select[0] === S.CARDS) {
+		if ((!game.select[1] && !game.select[2]) || (game.select[2] && game.select[2][0] === S.MAP)) graphics.map(false);
 		graphics.deck();
 	};
 	if (!hidden() && !inDeck()) {
@@ -499,7 +499,7 @@ function updateVisuals() {
 		draw.lore(x + 4, y + 16, "YES");
 		draw.lore(x + 26, y + 16, "NO");
 	} else if (game.select[0] === S.CONF_HAND_ALIGN) {
-		graphics.map();
+		graphics.map(false);
 		let x = 125, y = 83;
 		draw.rect("#0008");
 		draw.box(x + 1, y + 1, 148, 26);
@@ -548,7 +548,7 @@ function updateVisuals() {
 	if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) {
 		ctx.globalAlpha = game.select[1] / (game.select[0] === S.GAME_WON ? 50 : 64);
 		if (game.select[1] < 50) game.select[1]++;
-		draw.rect("#000");
+		draw.rect("#222");
 		if (game.select[0] === S.GAME_WON) {
 			draw.image(I.victorious, 168, 42 + Math.round(Math.abs(winAnim - 4) - 2), I.victorious.width * 2, I.victorious.height * 2);
 			winAnim += Math.random() * 0.05 + 0.05;

@@ -24,8 +24,40 @@ const ROOM = {BATTLE: 100, TREASURE: 101, PRIME: 102, ORB: 103, BOSS: 104, EVENT
 // player attack effects
 const ATT_EFF = {AURA_BLADE: 200};
 
-// normal selections
-const S = {HAND: 300, PLAYER: 301, ENEMY: 302, ATTACK: 303, LOOKER: 304, HELP: 305, END: 306, CONF_END: 307, DECK: 308, DISCARD: 309, MAP: 311, POPUPS: 312, REWARDS: 313, CARD_REWARD: 314, ARTIFACTS: 315, VOID: 316, CONF_EXIT: 317, OPTIONS: 318, GAME_OVER: 319, GAME_WON: 320, CONF_RESTART: 322, WELCOME: 323, ARTIFACT_REWARD: 324, CONF_HAND_ALIGN: 325, PURIFIER: 326, CONF_PURIFY: 327, CONF_EVENT: 328, REFINER: 329, CONF_REFINE: 330};
+// normal selections - used in game.select as [S, N] or [S, N, [S_PREV, N_PREV]]
+// N is an integer (which defaults to 0) and is defined differently for each following S:
+const S = {
+	HAND: 300, // N is the index of the selected card.
+	PLAYER: 301, // N does not indicate anything.
+	ENEMY: 302, // N is the index of the selected enemy.
+	ATTACK: 303, // N is the index of the selected enemy.
+	LOOKER: 304, // N indicates if the looker is active (1 if it is, 0 if not).
+	HELP: 305, // if N is 0, it indicates that no HELP menu is open; otherwise, it indicates which HELP menu is open.
+	END: 306, // N does not indicate anything.
+	CONF_END: 307, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
+	DECK: 308, // N indicates if the respective menu is open (1 if it is, 0 if not).
+	DISCARD: 309, // N indicates if the respective menu is open (1 if it is, 0 if not).
+	MAP: 311, // If N is 0, it indicates that the back button is selected; otherwise, it indicates the index of the selected node in the available locations array if it exists, and otherwise N indicates that the open cards menu button is selected.
+	POPUPS: 312, // N is the index of the selected popup.
+	REWARDS: 313, // N is the index of the selected reward.
+	CARD_REWARD: 314, // N is the index of the selected card reward if it exists and is obtainable; otherwise, N indicates that the back button is selected.
+	ARTIFACTS: 315, // N is the index of the selected artifact.
+	VOID: 316, // N indicates if the respective menu is open (1 if it is, 0 if not).
+	CONF_EXIT: 317, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
+	OPTIONS: 318, // if N is 0, it indicates that the OPTIONS menu is closed; otherwise, it indicates the position of the selection in the open OPTIONS menu.
+	GAME_OVER: 319, // N is the opacity of the GAME_OVER screen.
+	GAME_WON: 320, // N is the opacity of the GAME_WON screen.
+	CONF_RESTART: 322, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
+	WELCOME: 323, // N does not indicate anything.
+	ARTIFACT_REWARD: 324, // N is the index of the selected artifact reward if it exists; otherwise, N indicates that the back button is selected.
+	CONF_HAND_ALIGN: 325, // N indicates which button is selected (2 for the back button, 1 for the ignore button, 0 for the confirm button).
+	PURIFIER: 326, // N does not indicate anything.
+	CONF_PURIFY: 327, // N indicates which button is selected (2 for the back button, 1 for the reselect button, 0 for the confirm button).
+	EVENT: 328, // N indicates which event is occurring (while game.turn indicates where you are in the event).
+	REFINER: 329, // N does not indicate anything.
+	CONF_REFINE: 330, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
+	CARDS: 331, // N indicates if the CARDS menu is on top of the map (0 if it is, 1 if not).
+};
 
 // menu selections
 const MENU = {TITLE: 400, DIFFICULTY: 401};
