@@ -29,7 +29,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_001_013,
+	version: 2_001_015,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -326,9 +326,8 @@ function loadRoom() {
 			else game.traveled.push(game.location[1]);
 			for (let index = 0; index < game.room[3].length; index++) {
 				const enemy = game.room[3][index];
-				if (typeof enemy == "string") {
-					const item = enemy.split(", ");
-					game.enemies.push(new Enemy(+item[0], +item[1]));
+				if (enemy instanceof Array) {
+					game.enemies.push(new Enemy(+enemy[0], +enemy[1]));
 				} else {
 					game.enemies.push(new Enemy(+enemy));
 				};

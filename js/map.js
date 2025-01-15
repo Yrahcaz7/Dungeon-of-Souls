@@ -95,6 +95,11 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 	};
 };
 
+const bigEnemies = [SLIME.BIG, SENTRY.BIG];
+const smallEnemies = [SLIME.SMALL, SENTRY.SMALL];
+const primeEnemies = [SLIME.PRIME, SENTRY.PRIME];
+const bossEnemies = [FRAGMENT, SINGULARITY];
+
 /**
  * Generates a map and saves it.
  */
@@ -107,7 +112,7 @@ const generateMap = (() => {
 	 */
 	function getWeakerSmallEnemy(row) {
 		let area = get.area(row + 1);
-		return [SLIME.SMALL, SENTRY.SMALL][area] + ", " + (Math.round(((row - game.difficulty * 5 + (1 - area) * 10) * 0.05) * 100) / 100);
+		return [smallEnemies[area], Math.round(((row - game.difficulty * 5 + (1 - area) * 10) * 0.05) * 100) / 100];
 	};
 
 	/**
@@ -137,9 +142,9 @@ const generateMap = (() => {
 	 */
 	async function getMapNode(row, num, attribute = -1) {
 		let area = get.area(row + 1);
-		if (attribute === MAP_NODE.FIRST) return [ROOM.BATTLE, 0, 0, [[SLIME.SMALL, SENTRY.SMALL][area]], getGoldReward(row), randomCardSet(5)];
+		if (attribute === MAP_NODE.FIRST) return [ROOM.BATTLE, 0, 0, [smallEnemies[area]], getGoldReward(row), randomCardSet(5)];
 		if (attribute === MAP_NODE.TREASURE) return [ROOM.TREASURE, randomInt(-5, 5), randomInt(-5, 5), false, getGoldReward(row) * 2, randomCardSet(5, 4/10)];
-		if (attribute === MAP_NODE.PRIME) return [ROOM.PRIME, randomInt(-5, 5), randomInt(-5, 5), [getWeakerSmallEnemy(row), [SLIME.PRIME, SENTRY.PRIME][area], getWeakerSmallEnemy(row)], getGoldReward(row) * 2, randomCardSet(5, 9/10), randomArtifactSet(3)];
+		if (attribute === MAP_NODE.PRIME) return [ROOM.PRIME, randomInt(-5, 5), randomInt(-5, 5), [getWeakerSmallEnemy(row), primeEnemies[area], getWeakerSmallEnemy(row)], getGoldReward(row) * 2, randomCardSet(5, 9/10), randomArtifactSet(3)];
 		if (attribute === MAP_NODE.EVENT) {
 			let index = randomInt(0, EVENTS.any.length + EVENTS[area].length - 1);
 			if (index >= EVENTS.any.length) index += 100 - EVENTS.any.length;
@@ -147,7 +152,7 @@ const generateMap = (() => {
 		};
 		await updateMapProg();
 		if (attribute === MAP_NODE.ORB) return [ROOM.ORB, randomInt(-5, 5), randomInt(-5, 5)];
-		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, 0, 0, [[FRAGMENT, SINGULARITY][area]], getGoldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
+		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, 0, 0, [bossEnemies[area]], getGoldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
 		let type = chance(3/5) ? ROOM.BATTLE : false;
 		if (rowFalses >= 3 || (row % 10 == 0 && rowFalses >= 2) || (num == 2 && rowFalses == 2)) type = ROOM.BATTLE;
 		if (type) rowNodes++;
@@ -155,8 +160,8 @@ const generateMap = (() => {
 		if (!type || rowNodes == 6) return false;
 		let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
 		if (type === ROOM.BATTLE) {
-			if (row % 10 >= 5) result.push(chance(1/3) ? [[SLIME.BIG, SENTRY.BIG][area]] : (chance(2/3) ? [[SLIME.BIG, SENTRY.BIG][area], getWeakerSmallEnemy(row)] : [[SLIME.SMALL, SENTRY.SMALL][area], [SLIME.SMALL, SENTRY.SMALL][area]]));
-			else result.push(chance() ? [[SLIME.BIG, SENTRY.BIG][area]] : [[SLIME.SMALL, SENTRY.SMALL][area], getWeakerSmallEnemy(row)]);
+			if (row % 10 >= 5) result.push(chance(1/3) ? [bigEnemies[area]] : (chance(2/3) ? [bigEnemies[area], getWeakerSmallEnemy(row)] : [smallEnemies[area], smallEnemies[area]]));
+			else result.push(chance() ? [bigEnemies[area]] : [smallEnemies[area], getWeakerSmallEnemy(row)]);
 			result.push(getGoldReward(row), randomCardSet(5));
 		};
 		return result;

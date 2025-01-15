@@ -87,6 +87,25 @@ function fixSave(version) {
 			delete game.mapSelect;
 		};
 	};
+	// version 2.1.15
+	if (version < 2_001_015) {
+		// enemies with custom power are now arrays
+		const fixEnemyArray = arr => {
+			if (!(arr instanceof Array)) return;
+			for (let index = 0; index < arr.length; index++) {
+				if (typeof arr[index] == "string") {
+					arr[index] = arr[index].split(", ").map(Number);
+				};
+			};
+		};
+		for (let x = 0; x < game.map.length; x++) {
+			for (let y = 0; y < game.map[x].length; y++) {
+				if (!(game.map[x][y] instanceof Array)) continue;
+				fixEnemyArray(game.map[x][y][3]);
+			};
+		};
+		fixEnemyArray(game.room[3]);
+	};
 };
 
 /**

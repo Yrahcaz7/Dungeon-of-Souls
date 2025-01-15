@@ -121,7 +121,7 @@ function randomArtifact(notInclude = []) {
 		};
 		if (bool) return 0;
 	};
-	let result;
+	let result = 0;
 	while (!result || notInclude.includes(result)) {
 		result = artifactIDs[randomInt(0, artifactIDs.length - 1)];
 	};
