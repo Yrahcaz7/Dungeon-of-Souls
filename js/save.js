@@ -29,7 +29,7 @@ function save() {
  * Resets everything. Use carefully!
  */
 function hardReset() {
-	for (let index = 0; index < localStorage.length; index++) {
+	for (let index = localStorage.length - 1; index >= 0; index--) {
 		const key = localStorage.key(index);
 		if (key.startsWith(ID)) localStorage.removeItem(key);
 	};
@@ -42,7 +42,7 @@ function hardReset() {
  * Restarts the current run.
  */
 function restartRun() {
-	localStorage.setItem(ID + "/0", btoa(JSON.stringify({difficulty: game.difficulty})));
+	localStorage.setItem(ID + "/0", btoa(JSON.stringify({difficulty: game.difficulty, newSave: true})));
 	game = null;
 	location.reload();
 };
@@ -137,25 +137,32 @@ function load() {
 		get = localStorage.getItem(ID + "/0");
 		if (get && atob(get) && JSON.parse(atob(get))) {
 			let obj = JSON.parse(atob(get));
-			for (let index = 0; index < obj.enemies?.length; index++) {
-				obj.enemies[index] = classifyEnemy(obj.enemies[index]);
+			if (obj.newSave) {
+				game.difficulty = obj.difficulty;
+			} else {
+				for (let index = 0; index < obj.enemies?.length; index++) {
+					obj.enemies[index] = classifyEnemy(obj.enemies[index]);
+				};
+				for (let index = 0; index < obj.deck?.length; index++) {
+					obj.deck[index] = classifyCard(obj.deck[index]);
+				};
+				for (let index = 0; index < obj.deckLocal?.length; index++) {
+					obj.deckLocal[index] = classifyCard(obj.deckLocal[index]);
+				};
+				for (let index = 0; index < obj.hand?.length; index++) {
+					obj.hand[index] = classifyCard(obj.hand[index]);
+				};
+				for (let index = 0; index < obj.discard?.length; index++) {
+					obj.discard[index] = classifyCard(obj.discard[index]);
+				};
+				for (let index = 0; index < obj.void?.length; index++) {
+					obj.void[index] = classifyCard(obj.void[index]);
+				};
+				let runVersion = obj.version;
+				Object.assign(game, obj);
+				if (!runVersion) delete game.version;
+				else game.version = runVersion;
 			};
-			for (let index = 0; index < obj.deck?.length; index++) {
-				obj.deck[index] = classifyCard(obj.deck[index]);
-			};
-			for (let index = 0; index < obj.deckLocal?.length; index++) {
-				obj.deckLocal[index] = classifyCard(obj.deckLocal[index]);
-			};
-			for (let index = 0; index < obj.hand?.length; index++) {
-				obj.hand[index] = classifyCard(obj.hand[index]);
-			};
-			for (let index = 0; index < obj.discard?.length; index++) {
-				obj.discard[index] = classifyCard(obj.discard[index]);
-			};
-			for (let index = 0; index < obj.void?.length; index++) {
-				obj.void[index] = classifyCard(obj.void[index]);
-			};
-			Object.assign(game, obj);
 		} else {
 			console.log("no local save found. creating new save...");
 		};

@@ -114,7 +114,7 @@ const generateMap = (() => {
 	 */
 	function getWeakerSmallEnemy(row) {
 		let area = get.area(row + 1);
-		return [smallEnemies[area], Math.round(((row - game.difficulty * 5 + (1 - area) * 10) * 0.05) * 100) / 100];
+		return [smallEnemies[area], Math.round(((row - game.difficulty * 12 + (1 - area) * 10) * 0.05) * 100) / 100];
 	};
 
 	/**

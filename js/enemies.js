@@ -22,9 +22,9 @@ class Enemy {
 	 * @param {number} power - the enemy's power. Defaults to `1`.
 	 */
 	constructor(type, power = 1) {
-		if (type === SLIME.SMALL || type === SENTRY.SMALL) power--;
-		else if (type === SLIME.PRIME || type === SENTRY.PRIME) power++;
-		else if (type === FRAGMENT || type === SINGULARITY) power += 2;
+		if (smallEnemies.includes(type)) power--;
+		else if (primeEnemies.includes(type)) power++;
+		else if (bossEnemies.includes(type)) power += 2;
 		power += game.difficulty + 2 + (game.floor * 0.05);
 		if (game.artifacts.includes(202)) power += 0.5;
 		this.type = +type;
@@ -137,7 +137,7 @@ class Enemy {
 				};
 			} else {
 				// SUMMON (summon a small enemy that gives no points when defeated)
-				game.enemies.push(new Enemy([SLIME.SMALL, SENTRY.SMALL][get.area()], -0.5));
+				game.enemies.push(new Enemy(smallEnemies[get.area()], -0.5));
 				game.enemies[game.enemies.length - 1].eff[ENEMY_EFF.SCRAP_HEAP] = 1;
 			};
 			this.finishAction();
