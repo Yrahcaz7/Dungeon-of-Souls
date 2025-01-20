@@ -179,7 +179,7 @@ const CARDS = {
 		effect(level = 0) {
 			startAnim.effect(I.effect.war_cry);
 			for (let index = 0; index < game.enemies.length; index++) {
-				if (!isEnemyBoss(index)) {
+				if (!game.enemies[index].isBoss()) {
 					game.enemies[index].intent = INTENT.DEFEND;
 					game.enemies[index].intentHistory.push(INTENT.DEFEND);
 				};
@@ -194,7 +194,7 @@ const CARDS = {
 		cost: 0,
 		attackEffects: false,
 		attack(level = 0) {
-			if (!isEnemyBoss(game.enemyAtt[1])) {
+			if (!game.enemies[game.enemyAtt[1]].isBoss()) {
 				takeDamage(Math.ceil(game.enemies[game.enemyAtt[1]].health / 2), false);
 				game.enemies[game.enemyAtt[1]].health = 0;
 			};
@@ -222,10 +222,10 @@ const CARDS = {
 		cost: [1, 0],
 		select: [SS.SELECT_HAND, -1],
 		effect(level = 0) {
-			if (game.hand[game.select[1]][CARD_EFF.RETENTION]) game.hand[game.select[1]][CARD_EFF.RETENTION]++;
-			else game.hand[game.select[1]][CARD_EFF.RETENTION] = 1;
-			if (game.hand[game.select[1]][CARD_EFF.COST_REDUCTION]) game.hand[game.select[1]][CARD_EFF.COST_REDUCTION]++;
-			else game.hand[game.select[1]][CARD_EFF.COST_REDUCTION] = 1;
+			if (game.hand[game.select[1]].eff[CARD_EFF.RETENTION]) game.hand[game.select[1]].eff[CARD_EFF.RETENTION]++;
+			else game.hand[game.select[1]].eff[CARD_EFF.RETENTION] = 1;
+			if (game.hand[game.select[1]].eff[CARD_EFF.COST_REDUCTION]) game.hand[game.select[1]].eff[CARD_EFF.COST_REDUCTION]++;
+			else game.hand[game.select[1]].eff[CARD_EFF.COST_REDUCTION] = 1;
 		},
 		can(level = 0) {return game.hand.length > 1},
 		cannotMessage: "no valid target",
@@ -246,25 +246,6 @@ const CARDS = {
 	},
 };
 
-/**
- * Returns a card's attribute.
- * @param {string} attr - the attribute to return.
- * @param {number} id - the card's id. Defaults to `0`.
- * @param {number} level - the card's level. Defaults to `0`.
- */
-function getCardAttr(attr, id = 0, level = 0) {
-	if (!CARDS[id] || CARDS[id][attr] === null || CARDS[id][attr] === undefined) return;
-	if (attr == "name") return title(CARDS[id].name) + "+".repeat(level);
-	if (typeof CARDS[id][attr] == "object") {
-		if (attr == "select") {
-			if (typeof CARDS[id][attr][level] == "object") return CARDS[id][attr][level];
-			return CARDS[id][attr];
-		};
-		return CARDS[id][attr][level];
-	};
-	return CARDS[id][attr];
-};
-
 const RARITY = ["starter", "common", "rare"];
 
 const CARD_TYPE = ["error", "attack", "defense", "skill", "magic"];
@@ -281,12 +262,16 @@ function loadCard(ref, desc) {
 	if (!ref.keywords) ref.keywords = [];
 	for (const eff in EFF) {
 		if (EFF.hasOwnProperty(eff)) {
-			if (!ref.keywords.includes(EFF[eff]) && new RegExp(EFF_NAME[EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) ref.keywords.push(EFF[eff]);
+			if (!ref.keywords.includes(EFF[eff]) && new RegExp(EFF_NAME[EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) {
+				ref.keywords.push(EFF[eff]);
+			};
 		};
 	};
 	for (const eff in CARD_EFF) {
 		if (CARD_EFF.hasOwnProperty(eff) && CARD_EFF[eff] !== CARD_EFF.COST_REDUCTION && CARD_EFF[eff] !== CARD_EFF.DESC) {
-			if (!ref.keywords.includes(CARD_EFF[eff]) && new RegExp(EFF_NAME[CARD_EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) ref.keywords.push(CARD_EFF[eff]);
+			if (!ref.keywords.includes(CARD_EFF[eff]) && new RegExp(EFF_NAME[CARD_EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) {
+				ref.keywords.push(CARD_EFF[eff]);
+			};
 		};
 	};
 	// extra info
@@ -310,6 +295,7 @@ for (const key in CARDS) {
 class Card {
 	id = 0;
 	level = 0;
+	eff = {};
 
 	/**
 	 * Returns a new card.
@@ -320,45 +306,60 @@ class Card {
 		this.id = id;
 		this.level = level;
 	};
-};
-
-/**
- * Returns an object as a card.
- * @param {object} object - the object to classify.
- */
-function classifyCard(object = {}) {
-	let instance = new Card(0);
-	for (const key in object) {
-		if (object.hasOwnProperty(key)) {
-			instance[key] = object[key];
+	/**
+	 * Returns an object as a card.
+	 * @param {object} obj - the object to classify.
+	 */
+	static classify(obj = {}) {
+		let instance = new Card();
+		for (const key in instance) {
+			if (instance.hasOwnProperty(key) && obj?.hasOwnProperty(key)) {
+				instance[key] = obj[key];
+			};
 		};
+		return instance;
 	};
-	return instance;
+	/**
+	 * Sorts an array of cards. This method mutates the array and returns a reference to the same array.
+	 * @param {Card[]} arr - the array of cards to sort.
+	 */
+	static sort(arr = []) {
+		return arr.sort((a, b) => {
+			// sort by type
+			if (Math.floor(a.id / 1000) < Math.floor(b.id / 1000)) return -1;
+			if (Math.floor(a.id / 1000) > Math.floor(b.id / 1000)) return 1;
+			// sort by rarity
+			if (CARDS[a.id].rarity > CARDS[b.id].rarity) return -1;
+			if (CARDS[a.id].rarity < CARDS[b.id].rarity) return 1;
+			// sort by name
+			if (CARDS[a.id].name < CARDS[b.id].name) return -1;
+			if (CARDS[a.id].name > CARDS[b.id].name) return 1;
+			// sort by level
+			if (a.level > b.level) return -1;
+			if (a.level < b.level) return 1;
+			// end sort
+			return 0;
+		});
+	};
+	/**
+	 * Returns an attribute of the card.
+	 * @param {string} attr - the attribute to return.
+	 */
+	getAttr(attr) {
+		if (!CARDS[this.id] || CARDS[this.id][attr] === null || CARDS[this.id][attr] === undefined) return;
+		if (attr == "name") return title(CARDS[this.id].name) + "+".repeat(this.level);
+		if (typeof CARDS[this.id][attr] == "object") {
+			if (attr == "select") {
+				if (typeof CARDS[this.id][attr][this.level] == "object") return CARDS[this.id][attr][this.level];
+				return CARDS[this.id][attr];
+			};
+			return CARDS[this.id][attr][this.level];
+		};
+		return CARDS[this.id][attr];
+	};
 };
 
-/**
- * Sorts an array of cards. This method mutates the array and returns a reference to the same array.
- */
-Array.prototype.cardSort = function() {
-	return this.sort((a, b) => {
-		// sort by type
-		if (Math.floor(a.id / 1000) < Math.floor(b.id / 1000)) return -1;
-		if (Math.floor(a.id / 1000) > Math.floor(b.id / 1000)) return 1;
-		// sort by rarity
-		if (CARDS[a.id].rarity > CARDS[b.id].rarity) return -1;
-		if (CARDS[a.id].rarity < CARDS[b.id].rarity) return 1;
-		// sort by name
-		if (CARDS[a.id].name < CARDS[b.id].name) return -1;
-		if (CARDS[a.id].name > CARDS[b.id].name) return 1;
-		// sort by level
-		if (a.level > b.level) return -1;
-		if (a.level < b.level) return 1;
-		// end sort
-		return 0;
-	});
-};
-
-const cardIDs = [[], [], []];
+const CARD_IDS = [[], [], []];
 
 /**
  * Returns a random card set.
@@ -373,7 +374,7 @@ function randomCardSet(length = 0, rareChance = 3/10) {
 		let card = 0;
 		while (!card || result.includes(card)) {
 			let rarity = (chance(rareChance) ? 2 : 1);
-			card = cardIDs[rarity][randomInt(0, cardIDs[rarity].length - 1)];
+			card = CARD_IDS[rarity][randomInt(0, CARD_IDS[rarity].length - 1)];
 		};
 		result.push(card);
 	};

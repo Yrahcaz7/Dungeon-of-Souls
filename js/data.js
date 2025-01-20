@@ -301,10 +301,11 @@ function updateData() {
 		endBattle();
 		loadRoom();
 	};
+	// sort cards
+	Card.sort(game.deck);
+	Card.sort(game.void);
+	Card.sort(game.discard);
 	// other
-	game.deck.cardSort();
-	game.void.cardSort();
-	game.discard.cardSort();
 	if (game.select[0] === S.HAND) {
 		if (game.hand.length) game.prevCard = game.select[1];
 		else game.select = [S.END, 0];

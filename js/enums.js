@@ -174,9 +174,10 @@ const EFF_NAME = {
 	[EFF.DEFUP]: "DEF+",
 	// card effects
 	[CARD_EFF.ONE_USE]: "one use",
-	[CARD_EFF.RETENTION]: "retention",
 	[CARD_EFF.UNIFORM]: "uniform",
 	[CARD_EFF.UNPLAYABLE]: "unplayable",
+	[CARD_EFF.COST_REDUCTION]: "cost reduction",
+	[CARD_EFF.RETENTION]: "retention",
 	// enemy effects
 	[ENEMY_EFF.COUNTDOWN]: "countdown",
 	[ENEMY_EFF.REWIND]: "rewind",

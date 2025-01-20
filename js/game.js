@@ -29,7 +29,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_001_018,
+	version: 2_001_023,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -234,8 +234,8 @@ function postCardActivation() {
 		if (game.enemyAtt[3]) {
 			const attCard = CARDS[game.enemyAtt[2].id];
 			if (attCard.target !== false && attCard.damage) {
-				if (CARDS[game.enemyAtt[2].id].keywords.includes(CARD_EFF.UNIFORM)) dealDamage(getCardAttr("damage", game.enemyAtt[2].id, game.enemyAtt[2].level), 0.5);
-				else dealDamage(getCardAttr("damage", game.enemyAtt[2].id, game.enemyAtt[2].level));
+				if (CARDS[game.enemyAtt[2].id].keywords.includes(CARD_EFF.UNIFORM)) dealDamage(game.enemyAtt[2].getAttr("damage"), 0.5);
+				else dealDamage(game.enemyAtt[2].getAttr("damage"));
 			};
 			if (typeof attCard.attack == "function") attCard.attack(game.enemyAtt[2].level);
 			game.enemyAtt = [-1, -1, new Card(), false];
@@ -315,7 +315,7 @@ function loadRoom() {
 		game.rewards = [];
 		game.enemies = [];
 		game.hand = [];
-		game.deckLocal = shuffle(game.deck.slice().map(obj => classifyCard(obj)));
+		game.deckLocal = shuffle(game.deck.slice().map(obj => Card.classify(obj)));
 		game.discard = [];
 		game.void = [];
 		game.eff = {};
@@ -517,7 +517,7 @@ function updateVisuals() {
 		draw.rect("#0008");
 		draw.box(x + 1, y + 1, 200, 26);
 		let cardObj = game.deck[game.cardSelect];
-		draw.lore(x + 2, y + 2, "Are you sure you want to destroy the card " + getCardAttr("name", cardObj.id, cardObj.level) + "?\nIf you have multiple, this will only destroy one copy of the card.", {"text-small": true});
+		draw.lore(x + 2, y + 2, "Are you sure you want to destroy the card " + cardObj.getAttr("name") + "?\nIf you have multiple, this will only destroy one copy of the card.", {"text-small": true});
 		if (game.select[1] == 0) draw.rect("#fff", x + 1, y + 13, 23, 14);
 		else if (game.select[1] == 1) draw.rect("#fff", x + 23, y + 13, 53, 14);
 		else draw.rect("#fff", x + 75, y + 13, 29, 14);
@@ -532,7 +532,7 @@ function updateVisuals() {
 		draw.rect("#0008");
 		draw.box(x + 1, y + 1, 200, 26);
 		let cardObj = refinableDeck[game.cardSelect];
-		draw.lore(x + 2, y + 2, "Are you sure you want to improve the card " + getCardAttr("name", cardObj.id, cardObj.level) + "?\nIf you have multiple, this will only improve one copy of the card.", {"text-small": true});
+		draw.lore(x + 2, y + 2, "Are you sure you want to improve the card " + cardObj.getAttr("name") + "?\nIf you have multiple, this will only improve one copy of the card.", {"text-small": true});
 		if (game.select[1] == 0) draw.rect("#fff", x + 1, y + 13, 23, 14);
 		else draw.rect("#fff", x + 23, y + 13, 29, 14);
 		draw.box(x + 3, y + 15, 19, 10);
@@ -618,7 +618,7 @@ function updateVisuals() {
 	if (game.artifacts.includes(202) && game.floor == 10 && transition < 100) transition++;
 };
 
-const gameLoop = setInterval(() => {
+const GAME_LOOP = setInterval(() => {
 	if (!loaded) return;
 	// gameplay
 	if (menuLocation === -1) manageGameplay();
@@ -641,7 +641,7 @@ const gameLoop = setInterval(() => {
 	save();
 }, 100);
 
-const musicLoop = setInterval(() => {
+const MUSIC_LOOP = setInterval(() => {
 	if (global.options[OPTION.MUSIC] && document.getElementById("music")?.src) {
 		let time = document.getElementById("music").currentTime;
 		if (time === 0 && menuLocation === -1) {

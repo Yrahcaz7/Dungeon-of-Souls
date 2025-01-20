@@ -554,8 +554,8 @@ function performAction() {
 				else notif = [game.select[1], 0, "unplayable", 0];
 				actionTimer = 1;
 			} else if (CARDS[id].can && !CARDS[id].can(selected.level)) {
-				if (CARDS[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, getCardAttr("cannotMessage", id, selected.level), -2];
-				else notif = [game.select[1], 0, getCardAttr("cannotMessage", id, selected.level), 0];
+				if (CARDS[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, selected.getAttr("cannotMessage"), -2];
+				else notif = [game.select[1], 0, selected.getAttr("cannotMessage"), 0];
 				actionTimer = 1;
 			} else if (game.energy >= getCardCost(selected)) {
 				if (CARDS[id].select instanceof Array) { // effects of cards that have a special selection
@@ -578,8 +578,6 @@ function performAction() {
 				} else if (CARDS[id].damage || CARDS[id].attack) { // effects of attack cards
 					if (CARDS[id].target === false) {
 						game.energy -= getCardCost(selected);
-						delete selected[CARD_EFF.COST_REDUCTION];
-						delete selected[CARD_EFF.RETENTION];
 						game.enemyAtt[2] = game.hand[game.select[1]];
 						activateAttackEffects(id);
 						game.enemyAtt[3] = true;

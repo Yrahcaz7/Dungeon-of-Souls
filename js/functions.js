@@ -79,7 +79,7 @@ function inDeck() {
  * @returns {Card[]}
  */
 function currentDeck() {
-	if (game.select[0] === S.DECK && game.select[1]) return game.deckLocal.slice().cardSort();
+	if (game.select[0] === S.DECK && game.select[1]) return Card.sort(game.deckLocal.slice());
 	if (game.select[0] === S.DISCARD && game.select[1]) return game.discard;
 	if (game.select[0] === S.VOID && game.select[1]) return game.void;
 	if (game.select[0] === S.CARDS) return game.deck;
@@ -320,8 +320,8 @@ function discardCard(cardObj, used = false) {
  */
 function discardHand() {
 	for (let index = 0; index < game.hand.length; ) {
-		if (game.hand[index][CARD_EFF.RETENTION]) {
-			game.hand[index][CARD_EFF.RETENTION]--;
+		if (game.hand[index].eff[CARD_EFF.RETENTION]) {
+			game.hand[index].eff[CARD_EFF.RETENTION]--;
 			index++;
 		} else {
 			discardCard(game.hand.splice(index, 1)[0]);
@@ -334,8 +334,8 @@ function discardHand() {
  * @param {Card} cardObj - the card object.
  */
 function getCardCost(cardObj) {
-	if (cardObj[CARD_EFF.COST_REDUCTION]) return Math.max(getCardAttr("cost", cardObj.id, cardObj.level) - cardObj[CARD_EFF.COST_REDUCTION], 0);
-	return +getCardAttr("cost", cardObj.id, cardObj.level);
+	if (cardObj.eff[CARD_EFF.COST_REDUCTION] > 0) return Math.max(cardObj.getAttr("cost") - cardObj.eff[CARD_EFF.COST_REDUCTION], 0);
+	return +cardObj.getAttr("cost");
 };
 
 /**

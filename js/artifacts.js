@@ -104,7 +104,7 @@ function activateArtifacts(type, ...params) {
 	};
 };
 
-const artifactIDs = [];
+const ARTIFACT_IDS = [];
 
 /**
  * Returns a random artifact's id.
@@ -113,8 +113,8 @@ const artifactIDs = [];
 function randomArtifact(notInclude = []) {
 	if (notInclude.length) {
 		let bool = true;
-		for (let index = 0; index < artifactIDs.length; index++) {
-			if (!notInclude.includes(artifactIDs[index])) {
+		for (let index = 0; index < ARTIFACT_IDS.length; index++) {
+			if (!notInclude.includes(ARTIFACT_IDS[index])) {
 				bool = false;
 				break;
 			};
@@ -123,7 +123,7 @@ function randomArtifact(notInclude = []) {
 	};
 	let result = 0;
 	while (!result || notInclude.includes(result)) {
-		result = artifactIDs[randomInt(0, artifactIDs.length - 1)];
+		result = ARTIFACT_IDS[randomInt(0, ARTIFACT_IDS.length - 1)];
 	};
 	return result;
 };

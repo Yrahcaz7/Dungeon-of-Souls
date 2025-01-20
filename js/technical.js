@@ -89,7 +89,6 @@ window.onload = async function() {
 	seed = internalSeed(game.seed);
 	canvasData();
 	// set things
-	if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) game.select[1] = 0;
 	if (global.options[OPTION.PERFECT_SCREEN]) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
 	else document.getElementById("canvas").style = "";
 	// fix things

@@ -422,11 +422,11 @@ const draw = {
 		if (img == I.card.error) draw.image(I.card.error, x + 2, y + 2);
 		else draw.image(img, x + 7, y + 7);
 		// card title
-		const name = getCardAttr("name", cardObj.id, cardObj.level);
+		const name = cardObj.getAttr("name");
 		if (CARDS[cardObj.id].name.length >= 10) draw.lore(x + 33, y + 44, name, {"text-align": DIR.CENTER, "text-small": true});
 		else draw.lore(x + 32, y + 42, name, {"text-align": DIR.CENTER});
 		// card description
-		let desc = getCardAttr("desc", cardObj.id, cardObj.level), exDamage = get.extraDamage(), mulDamage = get.dealDamageMult(), valueIsLess = false;
+		let desc = cardObj.getAttr("desc"), exDamage = get.extraDamage(), mulDamage = get.dealDamageMult(), valueIsLess = false;
 		if (CARDS[cardObj.id].attackEffects !== false && !outside) {
 			if (CARDS[cardObj.id].keywords.includes(CARD_EFF.UNIFORM)) exDamage = Math.floor(exDamage * 0.5);
 			if (game.select[0] === S.ATTACK) mulDamage = get.dealDamageMult(game.select[1]);
@@ -463,7 +463,7 @@ const draw = {
 		// card energy and rarity
 		if (rarity == 2) draw.image(I.card.rarity.rare, x - 1, y - 2);
 		if (!CARDS[cardObj.id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
-			let originalCost = getCardAttr("cost", cardObj.id, cardObj.level);
+			let originalCost = cardObj.getAttr("cost");
 			if (outside) {
 				draw.image(I.card.energy, x, y);
 				draw.lore(x + 4, y + 2, originalCost);
@@ -1532,8 +1532,8 @@ const graphics = {
 	 */
 	cardInfo(type, cardObj) {
 		let x = 0, y = 0;
-		if (cardObj[CARD_EFF.RETENTION]) {
-			y += info[type]("This has " + cardObj[CARD_EFF.RETENTION] + " <#666>retention</#666>.", x, y);
+		if (cardObj.eff[CARD_EFF.RETENTION]) {
+			y += info[type]("This has " + cardObj.eff[CARD_EFF.RETENTION] + " <#666>retention</#666>.", x, y);
 		};
 		const keywords = CARDS[cardObj.id]?.keywords;
 		if (keywords instanceof Array) {

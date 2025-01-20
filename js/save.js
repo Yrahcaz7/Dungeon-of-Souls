@@ -52,22 +52,17 @@ function restartRun() {
  * @param {number} version - The version the save is from.
  */
 function fixSave(version) {
-	// fix ANIM.PENDING enemy stage (all versions)
-	if (game.enemyStage === ANIM.PENDING) {
-		if (game.enemies[game.enemyNum].done) game.enemyStage = ANIM.ENDING;
-		else game.enemyStage = ANIM.STARTING;
-	};
 	// version 2.1.0
 	if (version < 2_001_000) {
-		// game.deckPos is renamed to game.deckScroll
+		// `game.deckPos` is now named `game.deckScroll`
 		game.deckScroll = game.deckPos;
 		delete game.deckPos;
-		// game.cardSelect is now a number
+		// `game.cardSelect` is now a number
 		game.cardSelect = 0;
 	};
 	// version 2.1.4
 	if (version < 2_001_004) {
-		// game.location is now an array of numbers
+		// `game.location` is now an array of numbers
 		if (game.location == "-1") game.location = [-1];
 		else game.location = game.location.split(", ").map(Number);
 	};
@@ -76,7 +71,7 @@ function fixSave(version) {
 		// cards screen is now its own screen
 		if (game.select[0] === S.MAP && game.select[1]) game.select = [S.CARDS, 0];
 		else if (game.select[2] && game.select[2][0] === S.MAP && game.select[2][1]) game.select[2] = [S.CARDS, 0];
-		// map select is now a select property
+		// `game.mapSelect` is now a part of `game.select`
 		if (game.select[0] === S.MAP) {
 			game.select[1] = game.mapSelect;
 			delete game.mapSelect;
@@ -89,7 +84,7 @@ function fixSave(version) {
 	};
 	// version 2.1.15
 	if (version < 2_001_015) {
-		// enemies with custom power are now arrays
+		// enemies in the map syntax with custom power are now arrays
 		const fixEnemyArray = arr => {
 			if (!(arr instanceof Array)) return;
 			for (let index = 0; index < arr.length; index++) {
@@ -106,6 +101,53 @@ function fixSave(version) {
 		};
 		fixEnemyArray(game.room[3]);
 	};
+	// version 2.1.23
+	if (version < 2_001_023) {
+		// card effects are now in the `Card.eff` property
+		const fixCard = obj => {
+			if (!obj.eff) obj.eff = {};
+			if (obj[CARD_EFF.COST_REDUCTION]) {
+				obj.eff[CARD_EFF.COST_REDUCTION] = obj[CARD_EFF.COST_REDUCTION];
+				delete obj[CARD_EFF.COST_REDUCTION];
+			};
+			if (obj[CARD_EFF.RETENTION]) {
+				obj.eff[CARD_EFF.RETENTION] = obj[CARD_EFF.RETENTION];
+				delete obj[CARD_EFF.RETENTION];
+			};
+		};
+		for (let index = 0; index < game.hand.length; index++) {
+			fixCard(game.hand[index]);
+		};
+		fixCard(game.enemyAtt[2]);
+	};
+	// reset GAME_OVER and GAME_WON screen fade-in (all versions)
+	if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) game.select[1] = 0;
+	// fix ANIM.PENDING enemy stage (all versions)
+	if (game.enemyStage === ANIM.PENDING) {
+		if (game.enemies[game.enemyNum].done) game.enemyStage = ANIM.ENDING;
+		else game.enemyStage = ANIM.STARTING;
+	};
+	// classify enemies (all versions)
+	for (let index = 0; index < game.enemies.length; index++) {
+		game.enemies[index] = Enemy.classify(game.enemies[index]);
+	};
+	// classify cards (all versions)
+	for (let index = 0; index < game.deck.length; index++) {
+		game.deck[index] = Card.classify(game.deck[index]);
+	};
+	for (let index = 0; index < game.deckLocal.length; index++) {
+		game.deckLocal[index] = Card.classify(game.deckLocal[index]);
+	};
+	for (let index = 0; index < game.hand.length; index++) {
+		game.hand[index] = Card.classify(game.hand[index]);
+	};
+	for (let index = 0; index < game.discard.length; index++) {
+		game.discard[index] = Card.classify(game.discard[index]);
+	};
+	for (let index = 0; index < game.void.length; index++) {
+		game.void[index] = Card.classify(game.void[index]);
+	};
+	game.enemyAtt[2] = Card.classify(game.enemyAtt[2]);
 };
 
 /**
@@ -140,24 +182,6 @@ function load() {
 			if (obj.newSave) {
 				game.difficulty = obj.difficulty;
 			} else {
-				for (let index = 0; index < obj.enemies?.length; index++) {
-					obj.enemies[index] = classifyEnemy(obj.enemies[index]);
-				};
-				for (let index = 0; index < obj.deck?.length; index++) {
-					obj.deck[index] = classifyCard(obj.deck[index]);
-				};
-				for (let index = 0; index < obj.deckLocal?.length; index++) {
-					obj.deckLocal[index] = classifyCard(obj.deckLocal[index]);
-				};
-				for (let index = 0; index < obj.hand?.length; index++) {
-					obj.hand[index] = classifyCard(obj.hand[index]);
-				};
-				for (let index = 0; index < obj.discard?.length; index++) {
-					obj.discard[index] = classifyCard(obj.discard[index]);
-				};
-				for (let index = 0; index < obj.void?.length; index++) {
-					obj.void[index] = classifyCard(obj.void[index]);
-				};
 				let runVersion = obj.version;
 				Object.assign(game, obj);
 				if (!runVersion) delete game.version;
@@ -171,13 +195,13 @@ function load() {
 	for (const id in CARDS) {
 		if (CARDS.hasOwnProperty(id) && CARDS[id].rarity >= 0) {
 			I.card[RARITY[CARDS[id].rarity]][id] = new Image;
-			cardIDs[CARDS[id].rarity].push(+id);
+			CARD_IDS[CARDS[id].rarity].push(+id);
 		};
 	};
 	for (const id in ARTIFACTS) {
 		if (ARTIFACTS.hasOwnProperty(id)) {
 			I.artifact[id] = new Image;
-			if (id >= 100 && id < 200) artifactIDs.push(+id);
+			if (id >= 100 && id < 200) ARTIFACT_IDS.push(+id);
 		};
 	};
 	for (const eff in EFF) {
@@ -201,6 +225,16 @@ function load() {
 	save();
 };
 
-window.onbeforeunload = () => {
-	if (loaded) save();
-};
+document.onvisibilitychange = (() => {
+	let musicPausedOnHide = false;
+
+	return () => {
+		if (document.hidden) {
+			musicPausedOnHide = !document.getElementById("music").paused;
+			document.getElementById("music").pause();
+			if (loaded) save();
+		} else if (musicPausedOnHide) {
+			document.getElementById("music").play();
+		};
+	};
+})();

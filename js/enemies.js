@@ -57,6 +57,25 @@ class Enemy {
 		if (game.artifacts.includes(107)) this.eff[EFF.BURN] = 1;
 	};
 	/**
+	 * Returns an object as an enemy.
+	 * @param {object} obj - the object to classify.
+	 */
+	static classify(obj = {}) {
+		let instance = new Enemy();
+		for (const key in instance) {
+			if (instance.hasOwnProperty(key) && obj?.hasOwnProperty(key)) {
+				instance[key] = obj[key];
+			};
+		};
+		return instance;
+	};
+	/**
+	 * Returns a boolean indicating if the enemy is a boss.
+	 */
+	isBoss() {
+		return BOSS_ENEMIES.includes(this.type);
+	};
+	/**
 	 * Gets the enemy's extra attack power.
 	 */
 	getExtraAttackPower() {
@@ -243,28 +262,6 @@ class Enemy {
 		};
 		return false;
 	};
-};
-
-/**
- * Returns an object as an enemy.
- * @param {object} object - the object to classify.
- */
-function classifyEnemy(object = {}) {
-	let instance = new Enemy();
-	for (const key in object) {
-		if (object.hasOwnProperty(key)) {
-			instance[key] = object[key];
-		};
-	};
-	return instance;
-};
-
-/**
- * Checks if an enemy is a boss.
- * @param {number} index - the index of the enemy.
- */
-function isEnemyBoss(index) {
-	return game.enemies[index].type === FRAGMENT || game.enemies[index].type === SINGULARITY;
 };
 
 /**
