@@ -109,7 +109,7 @@ function isCrouching(image) {
  */
 function areAnyCardsPlayable() {
 	return game.turn === TURN.PLAYER && game.hand.some(card => {
-		const cardInfo = cards[card.id];
+		const cardInfo = CARDS[card.id];
 		return getCardCost(card) <= game.energy && !cardInfo.keywords.includes(CARD_EFF.UNPLAYABLE) && (!cardInfo.can || cardInfo.can(card.level));
 	});
 };
@@ -311,7 +311,7 @@ function drawCards(num) {
  * @param {boolean} used - whether the card was used. Defaults to `false`.
  */
 function discardCard(cardObj, used = false) {
-	if (used && cards[cardObj.id].keywords.includes(CARD_EFF.ONE_USE)) game.void.push(new Card(cardObj.id, cardObj.level));
+	if (used && CARDS[cardObj.id].keywords.includes(CARD_EFF.ONE_USE)) game.void.push(new Card(cardObj.id, cardObj.level));
 	else game.discard.push(new Card(cardObj.id, cardObj.level));
 };
 
@@ -446,9 +446,9 @@ function gainEff(type, amt) {
  */
 function activateAttackEffects(id) {
 	// stop if effects are not allowed
-	if (cards[id].attackEffects === false) return;
+	if (CARDS[id].attackEffects === false) return;
 	// start player animation
-	startAnim.player(cards[id].attackAnim || I.player.attack);
+	startAnim.player(CARDS[id].attackAnim || I.player.attack);
 	// trigger aura blades
 	if (game.eff[EFF.AURA_BLADE]) {
 		game.eff[EFF.AURA_BLADE]--;

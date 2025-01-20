@@ -168,14 +168,14 @@ function load() {
 		};
 	};
 	// load images
-	for (const id in cards) {
-		if (cards.hasOwnProperty(id) && cards[id].rarity >= 0) {
-			I.card[RARITY[cards[id].rarity]][id] = new Image;
-			cardIDs[cards[id].rarity].push(+id);
+	for (const id in CARDS) {
+		if (CARDS.hasOwnProperty(id) && CARDS[id].rarity >= 0) {
+			I.card[RARITY[CARDS[id].rarity]][id] = new Image;
+			cardIDs[CARDS[id].rarity].push(+id);
 		};
 	};
-	for (const id in artifacts) {
-		if (artifacts.hasOwnProperty(id)) {
+	for (const id in ARTIFACTS) {
+		if (ARTIFACTS.hasOwnProperty(id)) {
 			I.artifact[id] = new Image;
 			if (id >= 100 && id < 200) artifactIDs.push(+id);
 		};

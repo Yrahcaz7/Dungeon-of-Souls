@@ -521,7 +521,7 @@ function performAction() {
 			else game.select = [S.HAND, 0];
 			actionTimer = 4;
 			updateData();
-			if (cards[id].attackEffects === false) postCardActivation();
+			if (CARDS[id].attackEffects === false) postCardActivation();
 			return;
 		};
 		// activate special selection effect
@@ -532,7 +532,7 @@ function performAction() {
 				actionTimer = 4;
 				return;
 			} else {
-				if (cards[game.enemyAtt[2].id].effect) cards[game.enemyAtt[2].id].effect(game.enemyAtt[2].level);
+				if (CARDS[game.enemyAtt[2].id].effect) CARDS[game.enemyAtt[2].id].effect(game.enemyAtt[2].level);
 				game.energy -= getCardCost(game.enemyAtt[2]);
 				discardCard(game.hand.splice(game.enemyAtt[0], 1)[0], true);
 				cardAnim.splice(game.enemyAtt[0], 1);
@@ -549,22 +549,22 @@ function performAction() {
 		// play card
 		if (game.select[0] === S.HAND) {
 			let selected = game.hand[game.select[1]], id = selected.id;
-			if (cards[id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
-				if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
+			if (CARDS[id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
+				if (CARDS[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
 				else notif = [game.select[1], 0, "unplayable", 0];
 				actionTimer = 1;
-			} else if (cards[id].can && !cards[id].can(selected.level)) {
-				if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, getCardAttr("cannotMessage", id, selected.level), -2];
+			} else if (CARDS[id].can && !CARDS[id].can(selected.level)) {
+				if (CARDS[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, getCardAttr("cannotMessage", id, selected.level), -2];
 				else notif = [game.select[1], 0, getCardAttr("cannotMessage", id, selected.level), 0];
 				actionTimer = 1;
 			} else if (game.energy >= getCardCost(selected)) {
-				if (cards[id].select instanceof Array) { // effects of cards that have a special selection
+				if (CARDS[id].select instanceof Array) { // effects of cards that have a special selection
 					game.enemyAtt[0] = game.select[1];
-					game.select = [cards[id].select[0], cards[id].select[1]];
+					game.select = [CARDS[id].select[0], CARDS[id].select[1]];
 					game.enemyAtt[2] = game.hand[game.enemyAtt[0]];
 					actionTimer = 4;
-				} else if (cards[id].effect) { // effects of cards that activate right away
-					cards[id].effect(selected.level);
+				} else if (CARDS[id].effect) { // effects of cards that activate right away
+					CARDS[id].effect(selected.level);
 					game.energy -= getCardCost(selected);
 					let cardObj = game.hand.splice(game.select[1], 1)[0];
 					discardCard(cardObj, true);
@@ -575,8 +575,8 @@ function performAction() {
 					actionTimer = 4;
 					updateData();
 					postCardActivation();
-				} else if (cards[id].damage || cards[id].attack) { // effects of attack cards
-					if (cards[id].target === false) {
+				} else if (CARDS[id].damage || CARDS[id].attack) { // effects of attack cards
+					if (CARDS[id].target === false) {
 						game.energy -= getCardCost(selected);
 						delete selected[CARD_EFF.COST_REDUCTION];
 						delete selected[CARD_EFF.RETENTION];
@@ -591,7 +591,7 @@ function performAction() {
 						else game.select = [S.HAND, 0];
 						actionTimer = 4;
 						updateData();
-						if (cards[id].attackEffects === false) postCardActivation();
+						if (CARDS[id].attackEffects === false) postCardActivation();
 					} else {
 						game.enemyAtt[0] = game.select[1];
 						game.select = [S.ATTACK, game.enemies.length - 1];
@@ -600,7 +600,7 @@ function performAction() {
 					};
 				};
 			} else {
-				if (cards[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "not enough energy", -2];
+				if (CARDS[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "not enough energy", -2];
 				else notif = [game.select[1], 0, "not enough energy", 0];
 				actionTimer = 1;
 			};
@@ -754,7 +754,7 @@ function performAction() {
 			};
 		} else {
 			const index = game.room[6][game.select[1]];
-			const func = artifacts[index][FUNC.PICKUP];
+			const func = ARTIFACTS[index][FUNC.PICKUP];
 			if (typeof func == "function") func();
 			game.artifacts.push(index);
 			for (let index = 0; index < game.rewards.length; index++) {

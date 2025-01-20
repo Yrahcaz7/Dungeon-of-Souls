@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const artifacts = {
+const ARTIFACTS = {
 	0: {
 		name: "error",
 		desc: "This artifact is clearly\nan error. It does\nabsolutely nothing.",
@@ -87,9 +87,9 @@ const artifacts = {
 	},
 };
 
-for (const key in artifacts) {
-	if (artifacts.hasOwnProperty(key)) {
-		artifacts[key].desc = color(artifacts[key].desc);
+for (const key in ARTIFACTS) {
+	if (ARTIFACTS.hasOwnProperty(key)) {
+		ARTIFACTS[key].desc = color(ARTIFACTS[key].desc);
 	};
 };
 
@@ -99,7 +99,7 @@ for (const key in artifacts) {
  */
 function activateArtifacts(type, ...params) {
 	for (let index = 0; index < game.artifacts.length; index++) {
-		const func = artifacts[game.artifacts[index]][type];
+		const func = ARTIFACTS[game.artifacts[index]][type];
 		if (typeof func == "function") func(...params);
 	};
 };

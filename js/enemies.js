@@ -16,18 +16,30 @@
  */
 
 class Enemy {
+	type = SLIME.SMALL;
+	maxHealth = 1;
+	health = 1;
+	maxShield = 1;
+	shield = 0;
+	attackPower = 1;
+	defendPower = 1;
+	intent = INTENT.ATTACK;
+	intentHistory = [INTENT.ATTACK];
+	eff = {};
+
 	/**
 	 * Returns a new enemy.
 	 * @param {number} type - the enemy's type.
 	 * @param {number} power - the enemy's power. Defaults to `1`.
 	 */
 	constructor(type, power = 1) {
-		if (smallEnemies.includes(type)) power--;
-		else if (primeEnemies.includes(type)) power++;
-		else if (bossEnemies.includes(type)) power += 2;
+		if (!type) return;
+		if (SMALL_ENEMIES.includes(type)) power--;
+		else if (PRIME_ENEMIES.includes(type)) power++;
+		else if (BOSS_ENEMIES.includes(type)) power += 2;
 		power += game.difficulty + 2 + (game.floor * 0.05);
 		if (game.artifacts.includes(202)) power += 0.5;
-		this.type = +type;
+		this.type = type;
 		if (type === SINGULARITY) this.maxHealth = (power * 10) * 1.25;
 		else if (type === FRAGMENT) this.maxHealth = (power * 10) * 1.05;
 		else this.maxHealth = (power * 10) * ((random() / 10) + 0.95);
@@ -35,12 +47,10 @@ class Enemy {
 		this.maxHealth = Math.max(Math.round(this.maxHealth), 1);
 		this.health = this.maxHealth;
 		this.maxShield = Math.max(Math.floor(this.maxHealth / 2), 1);
-		this.shield = 0;
 		this.attackPower = Math.max(Math.round(power * 2.5), 1);
 		this.defendPower = Math.max(Math.round(power * 3), 1);
 		this.intent = this.getIntent(true);
 		this.intentHistory = [this.intent];
-		this.eff = {};
 		if (type === FRAGMENT && game.artifacts.includes(202)) this.eff[ENEMY_EFF.REWIND] = 1;
 		if (type === SENTRY.BIG || type === SENTRY.SMALL || type === SENTRY.PRIME || type === SINGULARITY) this.eff[EFF.BLAZE] = 99;
 		if (type === SINGULARITY) this.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 3)]] = 1;
@@ -137,7 +147,7 @@ class Enemy {
 				};
 			} else {
 				// SUMMON (summon a small enemy that gives no points when defeated)
-				game.enemies.push(new Enemy(smallEnemies[get.area()], -0.5));
+				game.enemies.push(new Enemy(SMALL_ENEMIES[get.area()], -0.5));
 				game.enemies[game.enemies.length - 1].eff[ENEMY_EFF.SCRAP_HEAP] = 1;
 			};
 			this.finishAction();
@@ -240,7 +250,7 @@ class Enemy {
  * @param {object} object - the object to classify.
  */
 function classifyEnemy(object = {}) {
-	let instance = new Enemy("", NaN);
+	let instance = new Enemy();
 	for (const key in object) {
 		if (object.hasOwnProperty(key)) {
 			instance[key] = object[key];

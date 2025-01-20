@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const overview = ""
+const OVERVIEW = ""
 	+ "<b>Storyline:<s>"
 	+ "You have been trapped in this dungeon as long as you can remember.\n"
 	+ "You are determined to get out, so you pick up some armour and start climbing up the floors.\n"
@@ -40,8 +40,8 @@ const overview = ""
 	+ "When the hands align,\n"
 	+ "find the fragment of time.\n"
 	+ "Else, at the edge of the sky,\n"
-	+ "you shall eternally die.",
-gameplay = ""
+	+ "you shall eternally die.";
+const GAMEPLAY = ""
 	+ "<b>Cards and Effects<s>"
 	+ "You have a deck of cards, which you draw the top 5 from each turn.\n"
 	+ "Cards cost <#ff0>energy</#ff0> to play, which is the number in the big yellow circle.\n"
@@ -80,8 +80,8 @@ gameplay = ""
 	+ "<b>Losing the Game<s>"
 	+ "If you reach 0 <#f44>health</#f44>, you will <#f00>die</#f00> and lose your progress.\n"
 	+ "However, you earn <#ff0>XP</#ff0> (not implemented yet), and when you get enough you can unlock new cards.\n"
-	+ "Then, you can use your new knowledge and cards to reach higher heights next time.",
-changelog = ""
+	+ "Then, you can use your new knowledge and cards to reach higher heights next time.";
+const CHANGELOG = ""
 	+ "<b>Version 2.1 - Revolution<s>"
 	+ " - finally reworked the refiner screen!\n"
 	+ " - added two new options, including auto end turn!\n"

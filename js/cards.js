@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const cards = {
+const CARDS = {
 	0: {
 		name: "error",
 		desc: ["This card is\nclearly an error.\nUnplayable.", "Wow! An improved\nerror! Amazing! It\ndefinitely still\nisn't unplayable,\nright? That would\nbe ridiculous."],
@@ -253,16 +253,16 @@ const cards = {
  * @param {number} level - the card's level. Defaults to `0`.
  */
 function getCardAttr(attr, id = 0, level = 0) {
-	if (!cards[id] || cards[id][attr] === null) return;
-	if (attr == "name") return title(cards[id].name) + "+".repeat(level);
-	if (typeof cards[id][attr] == "object") {
+	if (!CARDS[id] || CARDS[id][attr] === null || CARDS[id][attr] === undefined) return;
+	if (attr == "name") return title(CARDS[id].name) + "+".repeat(level);
+	if (typeof CARDS[id][attr] == "object") {
 		if (attr == "select") {
-			if (typeof cards[id][attr][level] == "object") return cards[id][attr][level];
-			return cards[id][attr];
+			if (typeof CARDS[id][attr][level] == "object") return CARDS[id][attr][level];
+			return CARDS[id][attr];
 		};
-		return cards[id][attr][level];
+		return CARDS[id][attr][level];
 	};
-	return cards[id][attr];
+	return CARDS[id][attr];
 };
 
 const RARITY = ["starter", "common", "rare"];
@@ -295,14 +295,14 @@ function loadCard(ref, desc) {
 	return desc;
 };
 
-for (const key in cards) {
-	if (cards.hasOwnProperty(key)) {
-		if (cards[key].desc instanceof Array) {
-			for (let index = 0; index < cards[key].desc.length; index++) {
-				cards[key].desc[index] = loadCard(cards[key], cards[key].desc[index]);
+for (const key in CARDS) {
+	if (CARDS.hasOwnProperty(key)) {
+		if (CARDS[key].desc instanceof Array) {
+			for (let index = 0; index < CARDS[key].desc.length; index++) {
+				CARDS[key].desc[index] = loadCard(CARDS[key], CARDS[key].desc[index]);
 			};
 		} else {
-			cards[key].desc = loadCard(cards[key], cards[key].desc);
+			CARDS[key].desc = loadCard(CARDS[key], CARDS[key].desc);
 		};
 	};
 };
@@ -345,11 +345,11 @@ Array.prototype.cardSort = function() {
 		if (Math.floor(a.id / 1000) < Math.floor(b.id / 1000)) return -1;
 		if (Math.floor(a.id / 1000) > Math.floor(b.id / 1000)) return 1;
 		// sort by rarity
-		if (cards[a.id].rarity > cards[b.id].rarity) return -1;
-		if (cards[a.id].rarity < cards[b.id].rarity) return 1;
+		if (CARDS[a.id].rarity > CARDS[b.id].rarity) return -1;
+		if (CARDS[a.id].rarity < CARDS[b.id].rarity) return 1;
 		// sort by name
-		if (cards[a.id].name < cards[b.id].name) return -1;
-		if (cards[a.id].name > cards[b.id].name) return 1;
+		if (CARDS[a.id].name < CARDS[b.id].name) return -1;
+		if (CARDS[a.id].name > CARDS[b.id].name) return 1;
 		// sort by level
 		if (a.level > b.level) return -1;
 		if (a.level < b.level) return 1;

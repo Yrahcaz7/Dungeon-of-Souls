@@ -20,8 +20,9 @@
  * @param {string} str - the string to use.
  */
 function internalSeed(str) {
-	for (var k, i = 0, h = 2166136261 >>> 0; i < str.length; i++) {
-		k = Math.imul(str.charCodeAt(i), 3432918353);
+	let h = 2166136261 >>> 0;
+	for (let i = 0; i < str.length; i++) {
+		let k = Math.imul(str.charCodeAt(i), 3432918353);
 		k = k << 15 | k >>> 17;
 		h ^= Math.imul(k, 461845907);
 		h = h << 13 | h >>> 19;
@@ -41,29 +42,24 @@ function internalSeed(str) {
 /**
  * Returns a seed.
  */
-var seed = internalSeed(game.seed);
-
-/**
- * Returns a function that gives a random number in [0, 1) that is based on four seeds.
- * @param {number} a - the first seed.
- * @param {number} b - the second seed.
- * @param {number} c - the third seed.
- * @param {number} d - the fourth seed.
- */
-function internalRandom(a, b, c, d) {
-	return () => {
-		var t = b << 9, r = a * 5; r = (r << 7 | r >>> 25) * 9;
-		c ^= a; d ^= b;
-		b ^= c; a ^= d; c ^= t;
-		d = d << 11 | d >>> 21;
-		return (r >>> 0) / 4294967296;
-	};
-};
+let seed = internalSeed(game.seed);
 
 /**
  * Returns a seeded random number in [0, 1)
  */
-const random = internalRandom(seed(), seed(), seed(), seed());
+const random = (() => {
+	let a = seed(), b = seed(), c = seed(), d = seed();
+	return () => {
+		let t = b << 9, r = b * 5; r = (r << 7 | r >>> 25) * 9;
+		c ^= a;
+		d ^= b;
+		b ^= c;
+		a ^= d;
+		c ^= t;
+		d = d << 11 | d >>> 21;
+		return (r >>> 0) / 4294967296;
+	};
+})();
 
 /**
  * Returns a seeded random integer in [min, max]
@@ -85,7 +81,7 @@ function chance(chance = 1/2) {
 	return random() < chance;
 };
 
-var loaded = false;
+let loaded = false;
 
 window.onload = async function() {
 	// prep things
@@ -108,7 +104,7 @@ window.onload = async function() {
 	};
 };
 
-var canvas, scale, ctx, action = -1, lastAction = -1;
+let canvas, scale, ctx, action = -1, lastAction = -1;
 
 /**
  * Sets up the canvas.

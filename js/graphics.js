@@ -401,7 +401,7 @@ const draw = {
 		// setup
 		if (!(cardObj instanceof Object)) cardObj = new Card(cardObj);
 		let img = I.card.error;
-		const rarity = +cards[cardObj.id].rarity;
+		const rarity = +CARDS[cardObj.id].rarity;
 		if (rarity >= 0 && I.card[RARITY[rarity]]) img = I.card[RARITY[rarity]][cardObj.id];
 		// card back
 		if (cardObj.id !== 0) draw.image(I.card.back, x + 2, y + 2);
@@ -410,7 +410,7 @@ const draw = {
 		if (I.card.outline[type]) draw.image(I.card.outline[type], x + 3, y + 3);
 		// card selector
 		if (selected) {
-			if (cards[cardObj.id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
+			if (CARDS[cardObj.id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
 				if (rarity == 2) draw.image(I.select.card_rare_unplayable, x - 2, y - 3);
 				else draw.image(I.select.card_unplayable, x + 1, y + 1);
 			} else {
@@ -423,12 +423,12 @@ const draw = {
 		else draw.image(img, x + 7, y + 7);
 		// card title
 		const name = getCardAttr("name", cardObj.id, cardObj.level);
-		if (cards[cardObj.id].name.length >= 10) draw.lore(x + 33, y + 44, name, {"text-align": DIR.CENTER, "text-small": true});
+		if (CARDS[cardObj.id].name.length >= 10) draw.lore(x + 33, y + 44, name, {"text-align": DIR.CENTER, "text-small": true});
 		else draw.lore(x + 32, y + 42, name, {"text-align": DIR.CENTER});
 		// card description
 		let desc = getCardAttr("desc", cardObj.id, cardObj.level), exDamage = get.extraDamage(), mulDamage = get.dealDamageMult(), valueIsLess = false;
-		if (cards[cardObj.id].attackEffects !== false && !outside) {
-			if (cards[cardObj.id].keywords.includes(CARD_EFF.UNIFORM)) exDamage = Math.floor(exDamage * 0.5);
+		if (CARDS[cardObj.id].attackEffects !== false && !outside) {
+			if (CARDS[cardObj.id].keywords.includes(CARD_EFF.UNIFORM)) exDamage = Math.floor(exDamage * 0.5);
 			if (game.select[0] === S.ATTACK) mulDamage = get.dealDamageMult(game.select[1]);
 			if (exDamage || mulDamage !== 1) {
 				desc = desc.replace(/(deal\s)(\d+)(\s<#f44>damage<\/#f44>)/gi, (substring, pre, number, post) => {
@@ -462,7 +462,7 @@ const draw = {
 		draw.lore(x + 33, y + 89.5, (RARITY[rarity] || "error") + "|" + type, {"text-align": DIR.CENTER, "text-small": true});
 		// card energy and rarity
 		if (rarity == 2) draw.image(I.card.rarity.rare, x - 1, y - 2);
-		if (!cards[cardObj.id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
+		if (!CARDS[cardObj.id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
 			let originalCost = getCardAttr("cost", cardObj.id, cardObj.level);
 			if (outside) {
 				draw.image(I.card.energy, x, y);
@@ -552,7 +552,7 @@ const info = {
 	card(type, xPlus = 0, yPlus = 0) {
 		let x = handPos[game.prevCard] + 69 + xPlus, y = 147 - Math.floor(cardAnim[game.prevCard]) + yPlus;
 		if (x + 24 * 3 + 2 > 400) {
-			const ref = cards[game.hand[game.prevCard].id];
+			const ref = CARDS[game.hand[game.prevCard].id];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
 			else x -= 145;
 			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
@@ -569,7 +569,7 @@ const info = {
 	cardSelect(type, xPlus = 0, yPlus = 0) {
 		let x = handPos[game.select[1]] + 69 + xPlus, y = 15 + yPlus;
 		if (x + 24 * 3 + 2 > 400) {
-			const ref = cards[game.hand[game.select[1]].id];
+			const ref = CARDS[game.hand[game.select[1]].id];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
 			else x -= 145;
 			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
@@ -586,7 +586,7 @@ const info = {
 	reward(type, xPlus = 0, yPlus = 0) {
 		let x = handPos[game.select[1]] + xPlus;
 		if (game.select[1] == get.cardRewardChoices() - 1 && get.cardRewardChoices() >= 4) {
-			const ref = cards[game.room[5][game.select[1]]];
+			const ref = CARDS[game.room[5][game.select[1]]];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
 			else x -= 145;
 			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
@@ -609,7 +609,7 @@ const info = {
 		let x = (refining ? 72 : 71) + (selected[0] * (refining ? 68 : 66)) + xPlus;
 		let y = (refining ? 16 : 15) + (selected[1] * (refining ? 100 : 98)) - game.deckScroll + yPlus;
 		if (selected[0] >= (refining ? 2 : 4)) {
-			let ref = cards[deck[game.cardSelect].id];
+			let ref = CARDS[deck[game.cardSelect].id];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
 			else x -= 145;
 			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
@@ -672,7 +672,7 @@ const info = {
 	 */
 	artifact(type, xOveride = NaN, yOveride = NaN) {
 		let x = (xOveride === xOveride ? xOveride : 21 + (game.select[1] * 18)), y = (yOveride === yOveride ? yOveride : 13);
-		const obj = artifacts[type];
+		const obj = ARTIFACTS[type];
 		if (!obj) return;
 		if (obj.name.length <= 12) {
 			draw.textBox(x, y, 12, title(obj.name), {"text-align": DIR.CENTER});
@@ -1353,17 +1353,17 @@ const graphics = {
 			return lim;
 		};
 		if (game.select[1] == 3) {
-			infoLimit = limit(changelog);
+			infoLimit = limit(CHANGELOG);
 			draw.lore(1, 1 - infoPos, "Dungeon of Souls - Changelog", {"color": "#f44"});
-			draw.lore(1, 23 - infoPos, changelog, {"color": "#fff"});
+			draw.lore(1, 23 - infoPos, CHANGELOG, {"color": "#fff"});
 		} else if (game.select[1] == 2) {
-			infoLimit = limit(gameplay);
+			infoLimit = limit(GAMEPLAY);
 			draw.lore(1, 1 - infoPos, "Dungeon of Souls - How To Play", {"color": "#f44"});
-			draw.lore(1, 23 - infoPos, gameplay, {"color": "#fff"});
+			draw.lore(1, 23 - infoPos, GAMEPLAY, {"color": "#fff"});
 		} else {
-			infoLimit = limit(overview);
+			infoLimit = limit(OVERVIEW);
 			draw.lore(1, 1 - infoPos, "Dungeon of Souls - Overview", {"color": "#f44"});
-			draw.lore(1, 23 - infoPos, overview, {"color": "#fff"});
+			draw.lore(1, 23 - infoPos, OVERVIEW, {"color": "#fff"});
 		};
 		draw.lore(1, 12 - infoPos, 'Source can be found at "https://github.com/Yrahcaz7/Dungeon-of-Souls"', {"color": "#f44", "text-small": true});
 		if (infoLimit > 0) {
@@ -1535,7 +1535,7 @@ const graphics = {
 		if (cardObj[CARD_EFF.RETENTION]) {
 			y += info[type]("This has " + cardObj[CARD_EFF.RETENTION] + " <#666>retention</#666>.", x, y);
 		};
-		const keywords = cards[cardObj.id]?.keywords;
+		const keywords = CARDS[cardObj.id]?.keywords;
 		if (keywords instanceof Array) {
 			for (let index = 0; index < keywords.length; index++) {
 				y += info[type](keywords[index], x, y);
