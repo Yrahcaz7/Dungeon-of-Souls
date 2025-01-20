@@ -301,7 +301,7 @@ function selection() {
 		};
 	};
 	// deck selection
-	if (((game.select[0] === S.DECK || game.select[0] === S.DISCARD || game.select[0] === S.VOID || game.select[0] === S.CARDS) && game.select[1]) || game.select[0] === S.PURIFIER || game.select[0] === S.REFINER) {
+	if (((game.select[0] === S.DECK || game.select[0] === S.DISCARD || game.select[0] === S.VOID) && game.select[1]) || game.select[0] === S.CARDS || game.select[0] === S.PURIFIER || game.select[0] === S.REFINER) {
 		let len = currentDeck().length;
 		let cols = (game.select[0] === S.REFINER ? 3 : 6);
 		if (action === DIR.LEFT) {
