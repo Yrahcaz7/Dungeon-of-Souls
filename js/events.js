@@ -24,12 +24,12 @@ function startEventBattle(type, num = 1) {
 	primeAnim = 0;
 	if (type === BATTLE.CROWD) {
 		if (num > 6) num = 6;
-		let enemy = [SLIME.SMALL, SENTRY.SMALL][get.area()];
+		let enemy = SMALL_ENEMIES[get.area()];
 		for (let index = 0; index < num; index++) {
-			game.enemies.push(new Enemy(enemy, 1 - (index + num) / (5 - game.difficulty)));
+			game.enemies.push(new Enemy(enemy, 1 - (index + num) / (5 - game.difficulty * 2)));
 		};
 	} else if (type === BATTLE.AMBUSH) {
-		let enemy = [SLIME.BIG, SENTRY.BIG][get.area()];
+		let enemy = BIG_ENEMIES[get.area()];
 		game.enemies = [new Enemy(enemy, num)];
 	};
 	enterBattle();

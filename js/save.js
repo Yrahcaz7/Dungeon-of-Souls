@@ -120,6 +120,13 @@ function fixSave(version) {
 		};
 		fixCard(game.enemyAtt[2]);
 	};
+	// version 2.1.25
+	if (version < 2_001_025) {
+		// it is now impossible to get a card with applied effects in your non-local deck
+		for (let index = 0; index < game.deck.length; index++) {
+			game.deck[index].eff = {};
+		};
+	};
 	// reset GAME_OVER and GAME_WON screen fade-in (all versions)
 	if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) game.select[1] = 0;
 	// fix ANIM.PENDING enemy stage (all versions)
