@@ -1416,15 +1416,15 @@ const graphics = {
 			};
 			draw.rect("#fff", 207, 14, 1, 185);
 		};
-		let deck = currentDeck();
-		let len = deck.length;
-		let refining = (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE);
-		let cols = (refining ? 3 : 6);
-		let scrollPadding = (refining ? 14 : 11);
-		let startX = (refining ? 3 : 2);
-		let startY = (refining ? 15 : 14);
-		let spaceX = (refining ? 68 : 66);
-		let spaceY = (refining ? 100 : 98);
+		const deck = currentDeck();
+		const len = deck.length;
+		const refining = (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE);
+		const cols = (refining ? 3 : 6);
+		const scrollPadding = (refining ? 14 : 11);
+		const startX = (refining ? 3 : 2);
+		const startY = (refining ? 15 : 14);
+		const spaceX = (refining ? 68 : 66);
+		const spaceY = (refining ? 100 : 98);
 		if (len > 0) {
 			if (game.cardSelect > len - 1) game.cardSelect = len - 1;
 			let maxScroll = Math.max(spaceY * (Math.floor((len - 1) / cols) - 1) + scrollPadding, 0);
@@ -1829,35 +1829,49 @@ const graphics = {
 				};
 				if (game.map[x][y][0] === ROOM.BATTLE) {
 					draw.image(I.map.node.battle, drawX, drawY);
-					if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.battle, drawX - 1, drawY - 1);
-					else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.battle, drawX - 1, drawY - 1);
+					if (focused) {
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.battle, drawX - 1, drawY - 1);
+						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.battle, drawX - 1, drawY - 1);
+					};
 				} else if (game.map[x][y][0] === ROOM.PRIME) {
 					draw.image(I.map.node.death_zone, drawX, drawY);
-					if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.death_zone, drawX - 1, drawY - 1);
-					else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.death_zone, drawX - 1, drawY - 1);
+					if (focused) {
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.death_zone, drawX - 1, drawY - 1);
+						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.death_zone, drawX - 1, drawY - 1);
+					};
 				} else if (game.map[x][y][0] === ROOM.TREASURE) {
 					if (game.map[x][y][3]) {
 						draw.image(I.map.node.treasure_open, drawX, drawY);
-						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.treasure_open, drawX - 1, drawY - 1);
-						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.treasure_open, drawX - 1, drawY - 1);
+						if (focused) {
+							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.treasure_open, drawX - 1, drawY - 1);
+							else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.treasure_open, drawX - 1, drawY - 1);
+						};
 					} else {
 						draw.image(I.map.node.treasure, drawX, drawY);
-						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.treasure, drawX - 1, drawY - 1);
-						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.treasure, drawX - 1, drawY - 1);
+						if (focused) {
+							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.treasure, drawX - 1, drawY - 1);
+							else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.treasure, drawX - 1, drawY - 1);
+						};
 					};
 				} else if (game.map[x][y][0] === ROOM.ORB) {
 					draw.image(I.map.node.orb, drawX, drawY);
-					if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.orb, drawX - 1, drawY - 1);
-					else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.orb, drawX - 1, drawY - 1);
+					if (focused) {
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.orb, drawX - 1, drawY - 1);
+						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.orb, drawX - 1, drawY - 1);
+					};
 				} else if (game.map[x][y][0] === ROOM.BOSS) {
 					drawX += 10;
 					draw.image(I.map.node.boss, drawX, 90);
-					if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.boss, drawX - 1, 90 - 1);
-					else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.boss, drawX - 1, 90 - 1);
+					if (focused) {
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.boss, drawX - 1, 90 - 1);
+						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.boss, drawX - 1, 90 - 1);
+					};
 				} else if (game.map[x][y][0] === ROOM.EVENT) {
 					draw.image(I.map.node.event, drawX, drawY);
-					if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.event, drawX - 1, drawY - 1);
-					else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.event, drawX - 1, drawY - 1);
+					if (focused) {
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.event, drawX - 1, drawY - 1);
+						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.event, drawX - 1, drawY - 1);
+					};
 				};
 			};
 		};
@@ -1895,15 +1909,82 @@ const graphics = {
 		};
 		let text = "";
 		for (let index = 0; index < MAIN_MENU_OPTIONS.length; index++) {
-			if (index == menuSelect[1] && focused) {
-				if (index == 2 && game.artifacts.includes(202)) text += " <#ff0>\></#ff0> <#f84>" + MAIN_MENU_OPTIONS[index] + "</#f84>\n";
-				else text += " <#ff0>\> " + MAIN_MENU_OPTIONS[index] + "</#ff0>\n";
-			} else {
-				if (index == 2 && game.artifacts.includes(202)) text += "   <#f44>" + MAIN_MENU_OPTIONS[index] + "</#f44>\n"; // adjust red color for Act 2
-				else text += "   " + MAIN_MENU_OPTIONS[index] + "\n";
-			};
+			if (index == menuSelect[1] && focused) text += " <#ff0>\> " + MAIN_MENU_OPTIONS[index] + "</#ff0>\n";
+			else text += "   " + MAIN_MENU_OPTIONS[index] + "\n";
 		};
 		draw.lore(1, 84, text, {"color": "#fff"});
+	},
+	/**
+	 * Draws the confirmation layer on the canvas.
+	 * @param {boolean} focused - whether the confirmation layer is focused. Defaults to `true`.
+	 */
+	conf(focused = true) {
+		let text = "";
+		let width = 0;
+		let height = 26; // 20 for one line of text, 26 for two.
+		if (menuSelect[0] === MENU.NEW_RUN || game.select[0] === S.CONF_RESTART) {
+			text = "Are you sure you want to restart your current run?\nThe map will also be different next time.";
+			width = 152;
+		} else if (menuSelect[0] === MENU.DIFFICULTY) {
+			if (game.difficulty === 0) text = "Are you sure you want to change the difficulty to hard?\nThis will also reset your current run.";
+			else text = "Are you sure you want to change the difficulty to easy?\nThis will also reset your current run.";
+			width = 166;
+		} else if (game.select[0] === S.CONF_END) {
+			text = "Are you sure you want to end your turn?";
+			width = 118;
+			height = 20;
+		} else if (game.select[0] === S.CONF_EXIT) {
+			text = "Are you sure you want to finish collecting rewards?\nThere are still rewards left unclaimed.";
+			width = 154;
+		} else if (game.select[0] === S.CONF_HAND_ALIGN) {
+			text = "Are you sure you want to align the hands of time?\nYou will regret it. There is no going back.";
+			width = 148;
+		} else if (game.select[0] === S.CONF_PURIFY) {
+			text = "Are you sure you want to destroy the card " + game.deck[game.cardSelect].getAttr("name") + "?\nIf you have multiple, this will only destroy one copy of the card.";
+			width = 200;
+		} else if (game.select[0] === S.CONF_REFINE) {
+			text = "Are you sure you want to improve the card " + refinableDeck[game.cardSelect].getAttr("name") + "?\nIf you have multiple, this will only improve one copy of the card.";
+			width = 200;
+		};
+		const x = (400 - width) / 2;
+		const y = (game.select[0] === S.CONF_REFINE ? 20 : (200 - height) / 2);
+		draw.rect("#0008");
+		draw.box(x, y, width, height);
+		draw.lore(x + 1, y + 1, text, {"text-small": true});
+		if (focused) {
+			const select = (menuSelect[0] == -1 ? game.select[1] : menuSelect[1]);
+			if (select == 0) {
+				draw.rect("#fff", x, y + height - 14, 23, 14);
+			} else if (select == 1) {
+				if (game.select[0] === S.CONF_PURIFY) draw.rect("#fff", x + 22, y + height - 14, 53, 14);
+				else if (game.select[0] === S.CONF_REFINE) draw.rect("#fff", x + 22, y + height - 14, 29, 14);
+				else draw.rect("#fff", x + 22, y + height - 14, 17, 14);
+			} else {
+				if (game.select[0] === S.CONF_HAND_ALIGN) draw.rect("#fff", x + 38, y + height - 14, 29, 14);
+				else if (game.select[0] === S.CONF_PURIFY) draw.rect("#fff", x + 74, y + height - 14, 29, 14);
+			};
+		};
+		draw.box(x + 2, y + height - 12, 19, 10);
+		draw.lore(x + 3, y + height - 11, "YES");
+		if (game.select[0] === S.CONF_PURIFY) {
+			draw.box(x + 24, y + height - 12, 49, 10);
+			draw.lore(x + 25, y + height - 11, "RESELECT");
+			draw.box(x + 76, y + height - 12, 25, 10);
+			draw.lore(x + 77, y + height - 11, "BACK");
+		} else if (game.select[0] === S.CONF_REFINE) {
+			draw.box(x + 24, y + height - 12, 25, 10);
+			draw.lore(x + 25, y + height - 11, "BACK");
+			draw.card(refinableDeck[game.cardSelect], 100, 51, true, true);
+			draw.card(new Card(refinableDeck[game.cardSelect].id, 1), 234, 51, true, true);
+			draw.image(I.card.refine, 200 - I.card.refine.width / 2, 95);
+		} else {
+			draw.box(x + 24, y + height - 12, 13, 10);
+			draw.lore(x + 25, y + height - 11, "NO");
+		};
+		if (game.select[0] === S.CONF_HAND_ALIGN) {
+			draw.box(x + 40, y + height - 12, 25, 10);
+			draw.lore(x + 41, y + height - 11, "BACK");
+		};
 	},
 };
 

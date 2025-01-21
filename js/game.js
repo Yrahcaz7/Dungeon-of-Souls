@@ -29,7 +29,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_001_028,
+	version: 2_001_029,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -403,29 +403,8 @@ function updateVisuals() {
 			draw.box(80 + 2, 83, 240 - 4, 34);
 			if (game.difficulty === 0) draw.lore(200 - 1, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
 			else draw.lore(200 - 1, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start much stronger from the beginning.\nAnd by much stronger, I mean <#f00>MUCH STRONGER</#f00>.\nOtherwise, it is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
-		} else if (menuSelect[0] === MENU.NEW_RUN) {
-			let x = 123, y = 83;
-			draw.rect("#0008");
-			draw.box(x + 1, y + 1, 152, 26);
-			draw.lore(x + 2, y + 2, "Are you sure you want to restart your current run?\nThe map will also be different next time.", {"text-small": true});
-			if (!menuSelect[1]) draw.rect("#fff", x + 1, y + 13, 23, 14);
-			else draw.rect("#fff", x + 23, y + 13, 17, 14);
-			draw.box(x + 3, y + 15, 19, 10);
-			draw.box(x + 25, y + 15, 13, 10);
-			draw.lore(x + 4, y + 16, "YES");
-			draw.lore(x + 26, y + 16, "NO");
-		} else if (menuSelect[0] === MENU.DIFFICULTY) {
-			let x = 116, y = 83;
-			draw.rect("#0008");
-			draw.box(x + 1, y + 1, 166, 26);
-			if (game.difficulty === 0) draw.lore(x + 2, y + 2, "Are you sure you want to change the difficulty to hard?\nThis will also reset your current run.", {"text-small": true});
-			else draw.lore(x + 2, y + 2, "Are you sure you want to change the difficulty to easy?\nThis will also reset your current run.", {"text-small": true});
-			if (!menuSelect[1]) draw.rect("#fff", x + 1, y + 13, 23, 14);
-			else draw.rect("#fff", x + 23, y + 13, 17, 14);
-			draw.box(x + 3, y + 15, 19, 10);
-			draw.box(x + 25, y + 15, 13, 10);
-			draw.lore(x + 4, y + 16, "YES");
-			draw.lore(x + 26, y + 16, "NO");
+		} else if (menuSelect[0] === MENU.NEW_RUN || menuSelect[0] === MENU.DIFFICULTY) {
+			graphics.conf();
 		};
 		if (game.artifacts.includes(202) && game.floor == 10 && transition < 100) transition++;
 		return;
@@ -468,86 +447,17 @@ function updateVisuals() {
 	if (!hidden() && !inDeck()) {
 		graphics.target();
 	};
-	if (game.select[0] === S.CONF_END) {
-		let x = 140, y = 86;
-		draw.rect("#0008");
-		draw.box(x + 1, y + 1, 118, 20);
-		draw.lore(x + 2, y + 2, "Are you sure you want to end your turn?", {"text-small": true});
-		if (!game.select[1]) draw.rect("#fff", x + 1, y + 7, 23, 14);
-		else draw.rect("#fff", x + 23, y + 7, 17, 14);
-		draw.box(x + 3, y + 9, 19, 10);
-		draw.box(x + 25, y + 9, 13, 10);
-		draw.lore(x + 4, y + 10, "YES");
-		draw.lore(x + 26, y + 10, "NO");
+	if (game.select[0] === S.CONF_END || game.select[0] === S.CONF_PURIFY || game.select[0] === S.CONF_REFINE) {
+		graphics.conf();
 	} else if (game.select[0] === S.CONF_EXIT) {
 		graphics.rewards(false);
-		let x = 122, y = 83;
-		draw.rect("#0008");
-		draw.box(x + 1, y + 1, 154, 26);
-		draw.lore(x + 2, y + 2, "Are you sure you want to finish collecting rewards?\nThere are still rewards left unclaimed.", {"text-small": true});
-		if (!game.select[1]) draw.rect("#fff", x + 1, y + 13, 23, 14);
-		else draw.rect("#fff", x + 23, y + 13, 17, 14);
-		draw.box(x + 3, y + 15, 19, 10);
-		draw.box(x + 25, y + 15, 13, 10);
-		draw.lore(x + 4, y + 16, "YES");
-		draw.lore(x + 26, y + 16, "NO");
+		graphics.conf();
 	} else if (game.select[0] === S.CONF_RESTART) {
 		graphics.options(false);
-		let x = 123, y = 83;
-		draw.rect("#0008");
-		draw.box(x + 1, y + 1, 152, 26);
-		draw.lore(x + 2, y + 2, "Are you sure you want to restart your current run?\nThe map will also be different next time.", {"text-small": true});
-		if (!game.select[1]) draw.rect("#fff", x + 1, y + 13, 23, 14);
-		else draw.rect("#fff", x + 23, y + 13, 17, 14);
-		draw.box(x + 3, y + 15, 19, 10);
-		draw.box(x + 25, y + 15, 13, 10);
-		draw.lore(x + 4, y + 16, "YES");
-		draw.lore(x + 26, y + 16, "NO");
+		graphics.conf();
 	} else if (game.select[0] === S.CONF_HAND_ALIGN) {
 		graphics.map(false);
-		let x = 125, y = 83;
-		draw.rect("#0008");
-		draw.box(x + 1, y + 1, 148, 26);
-		draw.lore(x + 2, y + 2, "Are you sure you want to align the hands of time?\nYou will regret it. There is no going back.", {"text-small": true});
-		if (game.select[1] == 0) draw.rect("#fff", x + 1, y + 13, 23, 14);
-		else if (game.select[1] == 1) draw.rect("#fff", x + 23, y + 13, 17, 14);
-		else draw.rect("#fff", x + 39, y + 13, 29, 14);
-		draw.box(x + 3, y + 15, 19, 10);
-		draw.box(x + 25, y + 15, 13, 10);
-		draw.box(x + 41, y + 15, 25, 10);
-		draw.lore(x + 4, y + 16, "YES");
-		draw.lore(x + 26, y + 16, "NO");
-		draw.lore(x + 42, y + 16, "BACK");
-	} else if (game.select[0] === S.CONF_PURIFY) {
-		let x = 99, y = 83;
-		draw.rect("#0008");
-		draw.box(x + 1, y + 1, 200, 26);
-		let cardObj = game.deck[game.cardSelect];
-		draw.lore(x + 2, y + 2, "Are you sure you want to destroy the card " + cardObj.getAttr("name") + "?\nIf you have multiple, this will only destroy one copy of the card.", {"text-small": true});
-		if (game.select[1] == 0) draw.rect("#fff", x + 1, y + 13, 23, 14);
-		else if (game.select[1] == 1) draw.rect("#fff", x + 23, y + 13, 53, 14);
-		else draw.rect("#fff", x + 75, y + 13, 29, 14);
-		draw.box(x + 3, y + 15, 19, 10);
-		draw.box(x + 25, y + 15, 49, 10);
-		draw.box(x + 77, y + 15, 25, 10);
-		draw.lore(x + 4, y + 16, "YES");
-		draw.lore(x + 26, y + 16, "RESELECT");
-		draw.lore(x + 78, y + 16, "BACK");
-	} else if (game.select[0] === S.CONF_REFINE) {
-		let x = 99, y = 20;
-		draw.rect("#0008");
-		draw.box(x + 1, y + 1, 200, 26);
-		let cardObj = refinableDeck[game.cardSelect];
-		draw.lore(x + 2, y + 2, "Are you sure you want to improve the card " + cardObj.getAttr("name") + "?\nIf you have multiple, this will only improve one copy of the card.", {"text-small": true});
-		if (game.select[1] == 0) draw.rect("#fff", x + 1, y + 13, 23, 14);
-		else draw.rect("#fff", x + 23, y + 13, 29, 14);
-		draw.box(x + 3, y + 15, 19, 10);
-		draw.box(x + 25, y + 15, 25, 10);
-		draw.lore(x + 4, y + 16, "YES");
-		draw.lore(x + 26, y + 16, "BACK");
-		draw.card(cardObj, 100, 51, true, true);
-		draw.card(new Card(cardObj.id, 1), 234, 51, true, true);
-		draw.image(I.card.refine, (200 - I.card.refine.width / 2), 95);
+		graphics.conf();
 	};
 	graphics.popups();
 	if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) {

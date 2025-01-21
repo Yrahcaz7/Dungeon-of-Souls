@@ -153,10 +153,11 @@ window.onresize = () => {
 document.addEventListener("keydown", event => {
 	if (!loaded) return;
 	const key = event.key;
-	if ((key == "E" || key == "e") && game.turn === TURN.PLAYER && game.select[0] !== S.CONF_END) {
-		endTurnConfirm();
+	if ((key == "E" || key == "e") && !event.repeat && menuSelect[0] == -1 && game.turn === TURN.PLAYER && actionTimer == -1) {
+		if (game.select[0] === S.CONF_END) game.select = [S.HAND, game.prevCard];
+		else endTurnConfirm();
 		action = -1;
-	} else if (key == "1" && !event.repeat && actionTimer == -1) {
+	} else if (key == "1" && !event.repeat && menuSelect[0] == -1 && actionTimer == -1) {
 		if (game.select[0] === S.DECK && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [S.DECK, 0];
@@ -166,7 +167,7 @@ document.addEventListener("keydown", event => {
 		};
 		action = -1;
 		actionTimer = 2;
-	} else if (key == "2" && !event.repeat && actionTimer == -1) {
+	} else if (key == "2" && !event.repeat && menuSelect[0] == -1 && actionTimer == -1) {
 		if (game.select[0] === S.DISCARD && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [S.DISCARD, 0];
@@ -176,7 +177,7 @@ document.addEventListener("keydown", event => {
 		};
 		action = -1;
 		actionTimer = 2;
-	} else if (key == "3" && !event.repeat && game.void.length && actionTimer == -1) {
+	} else if (key == "3" && !event.repeat && menuSelect[0] == -1 && game.void.length && actionTimer == -1) {
 		if (game.select[0] === S.VOID && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [S.VOID, 0];
@@ -186,7 +187,7 @@ document.addEventListener("keydown", event => {
 		};
 		action = -1;
 		actionTimer = 2;
-	} else if (key == "0" && !event.repeat && actionTimer == -1) {
+	} else if (key == "0" && !event.repeat && menuSelect[0] == -1 && actionTimer == -1) {
 		if (game.select[0] === S.CARDS) {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [S.MAP, getAvailibleLocations().length];
@@ -196,7 +197,7 @@ document.addEventListener("keydown", event => {
 		};
 		action = -1;
 		actionTimer = 2;
-	} else if ((key == "B" || key == "b") && !event.repeat && game.select[0] === S.REFINER && actionTimer == -1) {
+	} else if ((key == "B" || key == "b") && !event.repeat && menuSelect[0] == -1 && game.select[0] === S.REFINER && actionTimer == -1) {
 		for (let index = 0; index < game.rewards.length; index++) {
 			if (game.rewards[index] == "1 refiner") {
 				game.select = [S.REWARDS, index];

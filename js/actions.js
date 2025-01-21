@@ -50,7 +50,7 @@ function selection() {
 		return;
 	};
 	// confirmation
-	if (game.select[0] === S.CONF_END || game.select[0] === S.CONF_EXIT || game.select[0] === S.CONF_RESTART) {
+	if (game.select[0] === S.CONF_END || game.select[0] === S.CONF_EXIT || game.select[0] === S.CONF_RESTART || game.select[0] === S.CONF_REFINE) {
 		if (action === DIR.LEFT && game.select[1]) {
 			game.select[1] = 0;
 			actionTimer = 1;
@@ -59,7 +59,7 @@ function selection() {
 			actionTimer = 1;
 		};
 		return;
-	} else if (game.select[0] === S.CONF_HAND_ALIGN || game.select[0] === S.CONF_PURIFY || game.select[0] === S.CONF_REFINE) {
+	} else if (game.select[0] === S.CONF_HAND_ALIGN || game.select[0] === S.CONF_PURIFY) {
 		if (action === DIR.LEFT && game.select[1] > 0) {
 			game.select[1]--;
 			actionTimer = 1;
@@ -495,9 +495,7 @@ function performAction() {
 		} else if (menuSelect[1] == 1) {
 			menuSelect = [MENU.NEW_RUN, 1];
 		} else if (menuSelect[1] == 2) {
-			if (!game.artifacts.includes(202)) {
-				menuSelect = [MENU.DIFFICULTY, 1];
-			};
+			menuSelect = [MENU.DIFFICULTY, 1];
 		};
 		actionTimer = 2;
 		return;
