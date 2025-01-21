@@ -1885,13 +1885,11 @@ const graphics = {
 		const event = getCurrentEvent();
 		if (!event[1]) return;
 		draw.lore(200 - 2, 50, (typeof event[1] == "function" ? event[1]() : event[1]), {"color": "#fff", "text-align": DIR.CENTER});
-		if (game.select[1] !== -1) {
-			let len = event[game.select[1] + 2][0].length * 6 + 2;
-			draw.box(200 - len / 2, 99 + (game.select[1] + 2) * 20, len, 12, {"background-color": "#0000", "border-color": "#fff"});
-		};
 		for (let index = 2; index < event.length; index++) {
 			let text = event[index][0];
-			draw.lore(200 - 2, 100 + index * 20, (typeof text == "function" ? text() : text), {"color": "#fff", "text-align": DIR.CENTER});
+			text = (typeof text == "function" ? text() : text);
+			if (index == game.select[1] + 2) draw.lore(200 - 2, 100 + index * 20, "<#ff0>\> " + text + "  </#ff0>", {"color": "#fff", "text-align": DIR.CENTER});
+			else  draw.lore(200 - 2, 100 + index * 20, text, {"color": "#fff", "text-align": DIR.CENTER});
 		};
 	},
 	/**

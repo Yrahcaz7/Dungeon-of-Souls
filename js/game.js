@@ -415,7 +415,9 @@ function updateVisuals() {
 		graphics.effect();
 	};
 	graphics.middleLayer();
-	graphics.foregrounds();
+	if (game.select[0] !== S.EVENT) {
+		graphics.foregrounds();
+	};
 	if (!hidden()) {
 		if (game.select[0] === SS.SELECT_HAND) graphics.handSelect();
 		else graphics.hand();
