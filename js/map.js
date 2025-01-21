@@ -27,13 +27,13 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 	let store = [];
 	for (let x = xMin; x < xMax && x < game.map.length; x++) {
 		for (let y = 0; y < game.map[x].length; y++) {
-			if (!game.map[x][y]) continue;
+			if (!(typeof game.map[x][y] == "object")) continue;
 			if (x % 10 != 9 && game.map[x + 1]) {
 				for (num = 0; num < game.map[x + 1].length; num++) {
-					if (game.map[x + 1][y - num]) {
+					if (typeof game.map[x + 1][y - num] == "object") {
 						store.push([x, y, x + 1, y - num]);
 						break;
-					} else if (game.map[x + 1][y + num]) {
+					} else if (typeof game.map[x + 1][y + num] == "object") {
 						store.push([x, y, x + 1, y + num]);
 						break;
 					};
@@ -41,10 +41,10 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 			};
 			if (x % 10 != 0) {
 				for (num = 0; num < game.map[x - 1].length; num++) {
-					if (game.map[x - 1][y - num]) {
+					if (typeof game.map[x - 1][y - num] == "object") {
 						store.push([x, y, x - 1, y - num]);
 						break;
-					} else if (game.map[x - 1][y + num]) {
+					} else if (typeof game.map[x - 1][y + num] == "object") {
 						store.push([x, y, x - 1, y + num]);
 						break;
 					};
@@ -96,6 +96,148 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 		};
 	};
 };
+
+let mapPathPoints = [];
+
+const generateMapPathPoints = (() => {
+	const MAP_PATH_SUBDIVISIONS = 32;
+
+	/**
+	 * Returns an array of points that represent the subdivided path of `points`.
+	 * @param {number[][]} points - an array of points that represents a path.
+	 */
+	function getSubdividedPath(points = []) {
+		const t = [];
+		const t_square = [];
+		const t_cube = [];
+		const increment = 1 / (MAP_PATH_SUBDIVISIONS + 1);
+		for (let sub = 0; sub < MAP_PATH_SUBDIVISIONS; sub++) {
+			t[sub] = (sub + 1) * increment;
+			t_square[sub] = t[sub] * t[sub];
+			t_cube[sub] = t_square[sub] * t[sub];
+		};
+		let pathPoints = [points[0]];
+		for (let index = 1; index < points.length - 2; index++) {
+			const subdivisionIndex = 1 + (index - 1) * (MAP_PATH_SUBDIVISIONS + 1);
+			pathPoints[subdivisionIndex] = points[index];
+			const p0 = points[index - 1];
+			const p1 = points[index];
+			const p2 = points[index + 1];
+			const p3 = points[index + 2];
+			let ax = -p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0];
+			let ay = -p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1];
+			let bx = 2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0];
+			let by = 2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1];
+			let cx = -p0[0] + p2[0];
+			let cy = -p0[1] + p2[1];
+			let dx = 2 * p1[0];
+			let dy = 2 * p1[1];
+			for (let sub = 0; sub < MAP_PATH_SUBDIVISIONS; sub++) {
+				pathPoints[subdivisionIndex + sub + 1] = [];
+				pathPoints[subdivisionIndex + sub + 1][0] = 0.5 * (ax * t_cube[sub] + bx * t_square[sub] + cx * t[sub] + dx);
+				pathPoints[subdivisionIndex + sub + 1][1] = 0.5 * (ay * t_cube[sub] + by * t_square[sub] + cy * t[sub] + dy);
+			};
+		};
+		pathPoints.push(points[points.length - 2]);
+		pathPoints.push(points[points.length - 1]);
+		return pathPoints;
+	};
+
+	/**
+	 * Gets the visual map paths of an area.
+	 * @param {number} area - the area to get the visual map paths of.
+	 */
+	async function getVisualMapPaths(area = get.area()) {
+		const areaStartTime = Date.now();
+		// start the generation of paths from the start of the area.
+		const start = (area > 0 ? paths[area * 10 - 1][2] : paths[-1]);
+		let arr = [];
+		for (let index = 0; index < start.length; index++) {
+			arr.push([[start[index][0], start[index][1]], [start[index][0], start[index][1]]]);
+		};
+		// iterate through the area, generating all of the possible paths.
+		for (let iteration = 0; iteration < 9; iteration++) {
+			let nextArr = [];
+			for (let path = 0; path < arr.length; path++) {
+				const lastNode = arr[path][arr[path].length - 1];
+				for (let index = 0; index < paths[lastNode[0]][lastNode[1]].length; index++) {
+					const node = paths[lastNode[0]][lastNode[1]][index];
+					let innerArr = arr[path].slice();
+					innerArr.push([node[0], node[1]]);
+					nextArr.push(innerArr);
+				};
+			};
+			arr = nextArr;
+		};
+		// calculate all possible visual paths for each node pair and log them in `nodePaths`.
+		for (let path = 0; path < arr.length; path++) {
+			let visualArr = [];
+			for (let index = 0; index < arr[path].length; index++) {
+				const x = arr[path][index][0];
+				const y = arr[path][index][1];
+				if (game.map[x][y][0] === ROOM.BOSS) {
+					visualArr.push([25 + 10 + 8 + ((x - area * 10) * 32) + 8, 90 + 8]);
+					visualArr.push([arr[path][index][0] + 300, arr[path][index][1]]);
+					visualArr.push([arr[path][index][0] + 600, arr[path][index][1]]);
+					break;
+				} else if (index == 0) {
+					visualArr.push([18, 18 + (y * 32) + 8 + game.map[x][y][2]]);
+				} else {
+					visualArr.push([25 + ((x - area * 10) * 32) + 8 + game.map[x][y][1], 18 + (y * 32) + 8 + game.map[x][y][2]]);
+				};
+			};
+			let pathPoints = getSubdividedPath(visualArr);
+			for (let index = 1; index < visualArr.length - 3; index++) {
+				const subdivisionIndex = 1 + (index - 1) * (MAP_PATH_SUBDIVISIONS + 1);
+				if (!mapPathPoints[arr[path][index][0]]) mapPathPoints[arr[path][index][0]] = {};
+				if (!mapPathPoints[arr[path][index][0]][arr[path][index][1]]) mapPathPoints[arr[path][index][0]][arr[path][index][1]] = {};
+				const firstNode = mapPathPoints[arr[path][index][0]][arr[path][index][1]];
+				if (!firstNode[arr[path][index + 1][0]]) firstNode[arr[path][index + 1][0]] = {};
+				if (!firstNode[arr[path][index + 1][0]][arr[path][index + 1][1]]) firstNode[arr[path][index + 1][0]][arr[path][index + 1][1]] = [];
+				const nodePair = firstNode[arr[path][index + 1][0]][arr[path][index + 1][1]];
+				for (let sub = 0; sub < MAP_PATH_SUBDIVISIONS + 2; sub++) {
+					if (!nodePair[sub]) nodePair[sub] = [];
+					nodePair[sub].push(pathPoints[subdivisionIndex + sub]);
+				};
+			};
+		};
+		// average the points in `nodePaths` for each subdivision for each node pair.
+		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
+			for (const node1 in mapPathPoints[row1]) {
+				if (mapPathPoints[row1].hasOwnProperty(node1)) {
+					for (const row2 in mapPathPoints[row1][node1]) {
+						if (mapPathPoints[row1][node1].hasOwnProperty(row2)) {
+							for (const node2 in mapPathPoints[row1][node1][row2]) {
+								if (mapPathPoints[row1][node1][row2].hasOwnProperty(node2)) {
+									const nodePair = mapPathPoints[row1][node1][row2][node2];
+									let averagePath = [];
+									for (let sub = 0; sub < nodePair.length; sub++) {
+										let total = [0, 0];
+										for (let index = 0; index < nodePair[sub].length; index++) {
+											total[0] += nodePair[sub][index][0];
+											total[1] += nodePair[sub][index][1];
+										};
+										averagePath.push([total[0] / nodePair[sub].length, total[1] / nodePair[sub].length]);
+									};
+									mapPathPoints[row1][node1][row2][node2] = averagePath;
+								};
+							};
+						};
+					};
+				};
+			};
+		};
+		console.log("> area " + area + " generated in " + (Date.now() - areaStartTime) + "ms");
+	};
+
+	return async () => {
+		const mapStartTime = Date.now();
+		mapPathPoints = [];
+		await getVisualMapPaths(0);
+		await getVisualMapPaths(1);
+		console.log("[map visuals generated in " + (Date.now() - mapStartTime) + "ms]");
+	};
+})();
 
 const BIG_ENEMIES = [SLIME.BIG, SENTRY.BIG];
 const SMALL_ENEMIES = [SLIME.SMALL, SENTRY.SMALL];
@@ -257,11 +399,11 @@ const generateMap = (() => {
 	 * @param {number} area - the area number.
 	 */
 	async function generateArea(area) {
-		let areaStartTime = Date.now();
+		const areaStartTime = Date.now();
 		deathZones = 0;
 		eventShift = randomInt(0, 1);
 		for (let index = 0; index < 10; index++) {
-			let rowStartTime = Date.now();
+			const rowStartTime = Date.now();
 			let rowNum = index + area * 10;
 			game.map.push(await getMapRow(rowNum));
 			calculateMapPaths(Math.max(rowNum - 1, 0));
@@ -383,7 +525,7 @@ const generateMap = (() => {
 	};
 
 	return async () => {
-		let mapStartTime = Date.now();
+		const mapStartTime = Date.now();
 		await updateMapProg();
 		game.firstRoom = await getMapNode(0, MAP_NODE.FIRST);
 		console.log("first battle generated in " + (Date.now() - mapStartTime) + "ms");
@@ -391,8 +533,6 @@ const generateMap = (() => {
 		await generateArea(0);
 		await generateArea(1);
 		addScribbles();
-		changeMusic();
-		loaded = true;
-		console.log("[map generated in " + (Date.now() - mapStartTime) + "ms]");
+		console.log("[map data generated in " + (Date.now() - mapStartTime) + "ms]");
 	};
 })();

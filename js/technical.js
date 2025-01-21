@@ -94,13 +94,14 @@ window.onload = async function() {
 	// fix things
 	fixCanvas();
 	// calculate things
-	if (game.map.length === 0) {
-		await generateMap();
-	} else {
+	if (game.map.length > 0) {
 		calculateMapPaths();
-		changeMusic();
-		loaded = true;
+	} else {
+		await generateMap();
 	};
+	await generateMapPathPoints();
+	changeMusic();
+	loaded = true;
 };
 
 let canvas, scale, ctx, action = -1, lastAction = -1;

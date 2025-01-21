@@ -21,6 +21,8 @@ let backAnim = [0, 1.5, 3, 0], enemyAnim = [0, 1.5, 3, 0.5, 2, 3.5], enemyAnimSy
 
 let enemyActionAnimData = [], infoPos = 0, infoLimit = 0;
 
+const NO_ANTIALIASING_FILTER = `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="discrete" tableValues="0 1"/></feComponentTransfer></filter></svg>#filter')`;
+
 const draw = {
 	/**
 	 * Draws an image on the canvas.
@@ -130,7 +132,7 @@ const draw = {
 	 * @param {number} offsetM - the offset of the minute hand. Defaults to `0`.
 	 */
 	clock(x, y, hours = 0, minutes = 0, offsetH = 0, offsetM = 0) {
-		ctx.filter = `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="discrete" tableValues="0 1"/></feComponentTransfer></filter></svg>#filter')`;
+		ctx.filter = NO_ANTIALIASING_FILTER;
 		let coords = [(x + 30) * scale, (y + 30) * scale];
 		if (hours >= 0) {
 			ctx.save();
@@ -1775,82 +1777,43 @@ const graphics = {
 				draw.imageSector(I.map.scribbles, game.map[x][y] * 64, 0, 64, 70, 25 + ((x - area * 10) * 32) + 8, 18 + (y * 32) + 8 - 3, 64 / 2, 70 / 2);
 			};
 		};
-		// calculate nodes and draw paths
-		for (let x = area * 10; x < (area + 1) * 10 && x < game.map.length; x++) {
-			for (let y = 0; y < game.map[x].length; y++) {
-				if (typeof game.map[x][y] != "object") continue;
-				let drawX = 25 + ((x - area * 10) * 32) + game.map[x][y][1];
-				let drawY = 18 + (y * 32) + game.map[x][y][2];
-				if (game.map[x][y][0] === ROOM.BOSS) {
-					drawX = 25 + 10 + 8 + ((x - area * 10) * 32);
-					drawY = 90 + 8;
-				};
-				if (x % 10 == 0) {
-					if (game.traveled[x] === y) draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#842", 3);
-					else draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#b84", 3);
-				};
-				let posX, posY, connectNode = [];
-				const calcNode = (nodeX, nodeY) => {
-					connectNode = [nodeX - x, nodeY];
-					if (game.map[nodeX][nodeY][0] === ROOM.BOSS) {
-						posX = 25 + 10 + 8 + ((nodeX - area * 10) * 32);
-						posY = 90 + 8;
-					} else {
-						posX = 25 + ((nodeX - area * 10) * 32) + game.map[nodeX][nodeY][1];
-						posY = 18 + (nodeY * 32) + game.map[nodeX][nodeY][2];
-					};
-				};
-				if (x % 10 != 9 && game.map[x + 1]) {
-					for (num = 0; num < 7; num++) {
-						if (typeof game.map[x + 1][y - num] == "object") {
-							calcNode(x + 1, y - num);
-							break;
-						} else if (typeof game.map[x + 1][y + num] == "object") {
-							calcNode(x + 1, y + num);
-							break;
+		// draw paths
+		ctx.filter = NO_ANTIALIASING_FILTER;
+		ctx.strokeStyle = "#b84";
+		ctx.lineWidth = 3 * scale;
+		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
+			for (const node1 in mapPathPoints[row1]) {
+				if (mapPathPoints[row1].hasOwnProperty(node1)) {
+					for (const row2 in mapPathPoints[row1][node1]) {
+						if (mapPathPoints[row1][node1].hasOwnProperty(row2)) {
+							for (const node2 in mapPathPoints[row1][node1][row2]) {
+								if (mapPathPoints[row1][node1][row2].hasOwnProperty(node2)) {
+									if (game.traveled[row1] == node1 && game.traveled[row2] == node2) continue;
+									const nodePair = mapPathPoints[row1][node1][row2][node2];
+									ctx.beginPath();
+									ctx.moveTo(nodePair[0][0] * scale, nodePair[0][1] * scale);
+									for (let i2 = 1; i2 < nodePair.length; i2++) {
+										ctx.lineTo(nodePair[i2][0] * scale, nodePair[i2][1] * scale);
+									};
+									ctx.stroke();
+								};
+							};
 						};
-					};
-					if (!(game.traveled[x] === y && game.traveled[x + connectNode[0]] === connectNode[1])) {
-						draw.curvedLine(drawX + 8, drawY + 8, (drawX + posX) / 2 + 8, (x % 2 == 0 ? drawY : posY) + 8, posX + 8, posY + 8, "#b84", 3);
-					};
-				};
-				if (x % 10 != 0) {
-					for (num = 0; num < 7; num++) {
-						if (typeof game.map[x - 1][y - num] == "object") {
-							calcNode(x - 1, y - num);
-							break;
-						} else if (typeof game.map[x - 1][y + num] == "object") {
-							calcNode(x - 1, y + num);
-							break;
-						};
-					};
-					if (!(game.traveled[x] === y && game.traveled[x + connectNode[0]] === connectNode[1])) {
-						draw.curvedLine(drawX + 8, drawY + 8, (drawX + posX) / 2 + 8, (x % 2 == 0 ? drawY : posY) + 8, posX + 8, posY + 8, "#b84", 3);
 					};
 				};
 			};
 		};
-		// draw traveled path
-		let drawX, drawY;
-		for (let x = area * 10; x < game.traveled.length && x < (area + 1) * 10; x++) {
-			let y = game.traveled[x];
-			if (game.map[x][y]) {
-				if (drawX && drawY) {
-					let posX = 25 + ((x - area * 10) * 32) + game.map[x][y][1];
-					let posY = 18 + (y * 32) + game.map[x][y][2];
-					if (game.map[x][y][0] === ROOM.BOSS) {
-						posX = 25 + 10 + 8 + ((x - area * 10) * 32);
-						posY = 90 + 8;
-					};
-					draw.curvedLine(drawX + 8, drawY + 8, (drawX + posX) / 2 + 8, (x % 2 == 1 ? drawY : posY) + 8, posX + 8, posY + 8, "#842", 3);
-					drawX = posX;
-					drawY = posY;
-				} else {
-					drawX = 25 + ((x - area * 10) * 32) + game.map[x][y][1];
-					drawY = 18 + (y * 32) + game.map[x][y][2];
-				};
+		ctx.strokeStyle = "#842";
+		for (let index = 0; index < game.traveled.length - 1; index++) {
+			const nodePair = mapPathPoints[index][game.traveled[index]][index + 1][game.traveled[index + 1]];
+			ctx.beginPath();
+			ctx.moveTo(nodePair[0][0] * scale, nodePair[0][1] * scale);
+			for (let i2 = 1; i2 < nodePair.length; i2++) {
+				ctx.lineTo(nodePair[i2][0] * scale, nodePair[i2][1] * scale);
 			};
+			ctx.stroke();
 		};
+		ctx.filter = "none";
 		// draw nodes
 		const coordSel = availableLocations[game.select[1]] ? availableLocations[game.select[1]] : [];
 		const coordOn = game.location ? game.location : [];
@@ -1859,6 +1822,10 @@ const graphics = {
 				if (typeof game.map[x][y] != "object") continue;
 				let drawX = 25 + ((x - area * 10) * 32) + game.map[x][y][1];
 				let drawY = 18 + (y * 32) + game.map[x][y][2];
+				if (x % 10 == 0) {
+					if (game.traveled[x] === y) draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#842", 3);
+					else draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#b84", 3);
+				};
 				if (game.map[x][y][0] === ROOM.BATTLE) {
 					draw.image(I.map.node.battle, drawX, drawY);
 					if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.battle, drawX - 1, drawY - 1);
