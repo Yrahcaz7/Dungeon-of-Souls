@@ -1383,14 +1383,14 @@ const graphics = {
 		for (let index = 0; index < options.length; index++) {
 			let option = global.options[options[index]];
 			if (typeof option == "boolean") {
-				if (game.select[1] - 2 === index && focused) text += "<#ff0>" + OPTION_NAMES[options[index]] + ": " + (option ? "ON" : "OFF") + "</#ff0>\n";
-				else text += OPTION_NAMES[options[index]] + ": " + (option ? "ON" : "OFF") + "\n";
+				if (game.select[1] - 2 === index && focused) text += "<#ff0>" + OPTION_NAME[options[index]] + ": " + (option ? "ON" : "OFF") + "</#ff0>\n";
+				else text += OPTION_NAME[options[index]] + ": " + (option ? "ON" : "OFF") + "\n";
 			} else if (typeof option == "number") {
-				if (game.select[1] - 2 === index && focused) text += "<#ff0>" + OPTION_NAMES[options[index]] + ": " + option + "x</#ff0>\n";
-				else text += OPTION_NAMES[options[index]] + ": " + option + "x\n";
+				if (game.select[1] - 2 === index && focused) text += "<#ff0>" + OPTION_NAME[options[index]] + ": " + option + "x</#ff0>\n";
+				else text += OPTION_NAME[options[index]] + ": " + option + "x\n";
 			} else {
-				if (game.select[1] - 2 === index && focused) text += "<#ff0>" + OPTION_NAMES[options[index]] + ": " + option + "</#ff0>\n";
-				else text += OPTION_NAMES[options[index]] + ": " + option + "\n";
+				if (game.select[1] - 2 === index && focused) text += "<#ff0>" + OPTION_NAME[options[index]] + ": " + option + "</#ff0>\n";
+				else text += OPTION_NAME[options[index]] + ": " + option + "\n";
 			};
 		};
 		if (game.select[1] - 2 === options.length && focused) text += "\n<#ff0>RESTART RUN</#ff0>";

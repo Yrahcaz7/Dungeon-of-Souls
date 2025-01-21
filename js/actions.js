@@ -30,21 +30,20 @@ function selection() {
 	// menus
 	if (game.select[0] === S.WELCOME) {
 		return;
-	} else if (menuLocation === MENU.TITLE) {
+	} else if (menuSelect[0] === MENU.TITLE) {
 		if (!game.artifacts.includes(202)) {
 			if ((action === DIR.LEFT && game.difficulty === 1) || (action === DIR.RIGHT && game.difficulty === 0)) {
-				menuLocation = MENU.DIFFICULTY;
-				menuSelect = 1;
+				menuSelect = [MENU.DIFFICULTY, 1];
 				actionTimer = 2;
 			};
 		};
 		return;
-	} else if (menuLocation === MENU.DIFFICULTY) {
-		if (action === DIR.LEFT && menuSelect) {
-			menuSelect = 0;
+	} else if (menuSelect[0] === MENU.DIFFICULTY) {
+		if (action === DIR.LEFT && menuSelect[1]) {
+			menuSelect[1] = 0;
 			actionTimer = 1;
-		} else if (action === DIR.RIGHT && !menuSelect) {
-			menuSelect = 1;
+		} else if (action === DIR.RIGHT && !menuSelect[1]) {
+			menuSelect[1] = 1;
 			actionTimer = 1;
 		};
 		return;
@@ -489,16 +488,18 @@ function performAction() {
 		game.select = [-1, 0];
 		actionTimer = 2;
 		return;
-	} else if (menuLocation === MENU.TITLE) {
-		menuLocation = -1;
+	} else if (menuSelect[0] === MENU.TITLE) {
+		menuSelect = [-1, 0];
 		actionTimer = 2;
 		return;
-	} else if (menuLocation === MENU.DIFFICULTY) {
-		if (!menuSelect) {
+	} else if (menuSelect[0] === MENU.DIFFICULTY) {
+		if (!menuSelect[1]) {
 			if (game.difficulty === 0) game.difficulty++;
 			else game.difficulty--;
 			restartRun();
-		} else menuLocation = MENU.TITLE;
+		} else {
+			menuSelect = [MENU.TITLE, 0];
+		};
 		actionTimer = 2;
 		return;
 	};

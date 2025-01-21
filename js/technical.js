@@ -216,7 +216,7 @@ document.addEventListener("keydown", event => {
 	if (key == "Escape") fullscreen(true);
 	else if (key == "Tab") fullscreen();
 	if (!event.repeat && lastAction === action && global.options[OPTION.FAST_MOVEMENT]) {
-		if (menuLocation === -1) manageGameplay();
+		if (menuSelect[0] === -1) manageGameplay();
 		selection();
 		updateVisuals();
 	};

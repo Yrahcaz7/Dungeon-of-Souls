@@ -65,7 +65,7 @@ let global = {
 	traveled: [],
 	seed: randomize((Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase()),
 	version: global.version,
-}, popups = [], notif = [-1, 0, "", 0], menuLocation = MENU.TITLE, menuSelect = 0, refinableDeck = [], winAnim = 0;
+}, popups = [], notif = [-1, 0, "", 0], menuSelect = [MENU.TITLE, 0], refinableDeck = [], winAnim = 0;
 
 /**
  * Checks if there is any active popups.
@@ -385,7 +385,7 @@ function updateVisuals() {
 	updateData();
 	// visuals
 	graphics.backgrounds();
-	if (menuLocation !== -1) {
+	if (menuSelect[0] !== -1) {
 		graphics.middleLayer();
 		draw.image(I.title, (400 - I.title.width) / 2, 0);
 		let version = {
@@ -411,13 +411,13 @@ function updateVisuals() {
 			draw.box(80, 83, 240, 34);
 			if (game.difficulty === 0) draw.lore(200 - 2, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
 			else draw.lore(200 - 2, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start much stronger from the beginning.\nAnd by much stronger, I mean <#f00>MUCH STRONGER</#f00>.\nOtherwise, it is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
-		} else if (menuLocation === MENU.DIFFICULTY) {
+		} else if (menuSelect[0] === MENU.DIFFICULTY) {
 			let x = 116, y = 83;
 			draw.rect("#0008");
 			draw.box(x + 1, y + 1, 166, 26);
 			if (game.difficulty === 0) draw.lore(x + 2, y + 2, "Are you sure you want to change the difficulty to hard?\nThis will also reset your current run.", {"text-small": true});
 			else draw.lore(x + 2, y + 2, "Are you sure you want to change the difficulty to easy?\nThis will also reset your current run.", {"text-small": true});
-			if (!menuSelect) draw.rect("#fff", x + 1, y + 13, 23, 14);
+			if (!menuSelect[1]) draw.rect("#fff", x + 1, y + 13, 23, 14);
 			else draw.rect("#fff", x + 23, y + 13, 17, 14);
 			draw.box(x + 3, y + 15, 19, 10);
 			draw.box(x + 25, y + 15, 13, 10);
@@ -624,7 +624,7 @@ function updateVisuals() {
 const GAME_LOOP = setInterval(() => {
 	if (!loaded) return;
 	// gameplay
-	if (menuLocation === -1) manageGameplay();
+	if (menuSelect[0] === -1) manageGameplay();
 	// selection
 	selection();
 	// visuals
@@ -647,7 +647,7 @@ const GAME_LOOP = setInterval(() => {
 const MUSIC_LOOP = setInterval(() => {
 	if (global.options[OPTION.MUSIC] && document.getElementById("music")?.src) {
 		let time = document.getElementById("music").currentTime;
-		if (time === 0 && menuLocation === -1) {
+		if (time === 0 && menuSelect[0] === -1) {
 			document.getElementById("music").play();
 		} else if (time > document.getElementById("music").duration - 1.005) {
 			document.getElementById("music").currentTime = 0;

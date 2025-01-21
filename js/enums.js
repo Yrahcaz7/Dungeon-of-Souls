@@ -24,7 +24,7 @@ const ROOM = {BATTLE: 100, TREASURE: 101, PRIME: 102, ORB: 103, BOSS: 104, EVENT
 // player attack effects
 const ATT_EFF = {AURA_BLADE: 200};
 
-// normal selections - used in game.select as [S, N] or [S, N, [S_PREV, N_PREV]]
+// normal selections - used in `game.select` as [S, N] or [S, N, [S_PREV, N_PREV]]
 // N is an integer (which defaults to 0) and is defined differently for each following S:
 const S = {
 	HAND: 300, // N is the index of the selected card.
@@ -59,8 +59,18 @@ const S = {
 	CARDS: 331, // N indicates if the CARDS menu is on top of the map (0 if it is, 1 if not).
 };
 
-// menu selections
-const MENU = {TITLE: 400, DIFFICULTY: 401};
+// menu selections - used in `menuSelect` as [S, N]
+// N is an integer (which defaults to 0) and is defined differently for each following S:
+const MENU = {
+	TITLE: 400, // N does not indicate anything.
+	DIFFICULTY: 401, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
+};
+
+// special selects from card effects - used in `game.select` as [S, N] or [S, N, [S_PREV, N_PREV]]
+// N is an integer (which defaults to 0) and is defined differently for each following S:
+const SS = {
+	SELECT_HAND: 1200, // N is the index of the selected card in hand if it exists; otherwise, N indicates that the back button is selected.
+};
 
 // directions
 const DIR = {UP: 501, LEFT: 502, CENTER: 503, RIGHT: 504, DOWN: 505};
@@ -134,9 +144,6 @@ const STATE = {ENTER: 1000, BATTLE: 1001, EVENT_FIN: 1002, GAME_END: 1003, EVENT
 // battle turns
 const TURN = {PLAYER: 1100, ENEMY: 1101};
 
-// special selects from card effects
-const SS = {SELECT_HAND: 1200};
-
 // event battle types
 const BATTLE = {CROWD: 1300, AMBUSH: 1301};
 
@@ -150,7 +157,7 @@ const TRANSITION = {SHIELD: 1500};
 const OPTION = {MUSIC: 1600, SCREEN_SHAKE: 1601, STICKY_CARDS: 1602, PERFECT_SCREEN: 1603, PERFECT_SIZE: 1604, FAST_MOVEMENT: 1605, AUTO_END_TURN: 1606, END_TURN_CONFIRM: 1607, MUSIC_TRACK: 1699};
 
 // names of options
-const OPTION_NAMES = {[OPTION.MUSIC]: "Music", [OPTION.SCREEN_SHAKE]: "Screen shake", [OPTION.STICKY_CARDS]: "Sticky cards", [OPTION.PERFECT_SCREEN]: "Pixel perfect screen", [OPTION.PERFECT_SIZE]: "Pixel perfect size", [OPTION.FAST_MOVEMENT]: "Allow fast movement", [OPTION.AUTO_END_TURN]: "Automatically end turn", [OPTION.END_TURN_CONFIRM]: "End turn confirmation", [OPTION.MUSIC_TRACK]: "Music track"};
+const OPTION_NAME = {[OPTION.MUSIC]: "Music", [OPTION.SCREEN_SHAKE]: "Screen shake", [OPTION.STICKY_CARDS]: "Sticky cards", [OPTION.PERFECT_SCREEN]: "Pixel perfect screen", [OPTION.PERFECT_SIZE]: "Pixel perfect size", [OPTION.FAST_MOVEMENT]: "Allow fast movement", [OPTION.AUTO_END_TURN]: "Automatically end turn", [OPTION.END_TURN_CONFIRM]: "End turn confirmation", [OPTION.MUSIC_TRACK]: "Music track"};
 
 // general effects
 const EFF = {AURA_BLADE: 1700, BURN: 1701, REINFORCE: 1702, RESILIENCE: 1703, WEAKNESS: 1704, BLAZE: 1705, ATKUP: 1706, DEFUP: 1707};
