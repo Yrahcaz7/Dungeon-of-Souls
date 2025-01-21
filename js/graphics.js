@@ -1803,6 +1803,7 @@ const graphics = {
 				};
 			};
 		};
+		// draw traveled path
 		ctx.strokeStyle = "#842";
 		for (let index = 0; index < game.traveled.length - 1; index++) {
 			const nodePair = mapPathPoints[index][game.traveled[index]][index + 1][game.traveled[index + 1]];
@@ -1878,6 +1879,31 @@ const graphics = {
 			let text = event[index][0];
 			draw.lore(200 - 2, 100 + index * 20, (typeof text == "function" ? text() : text), {"color": "#fff", "text-align": DIR.CENTER});
 		};
+	},
+	/**
+	 * Draws the main menu layer on the canvas.
+	 * @param {boolean} focused - whether the main menu layer is focused. Defaults to `true`.
+	 */
+	menu(focused = true) {
+		draw.imageSector(I.difficulty, 0, game.difficulty * 16, 64, 16, 168, 146);
+		if (game.artifacts.includes(202)) {
+			if (game.floor == 10 && transition < 100) {
+				ctx.globalAlpha = transition / 100;
+			};
+			draw.imageSector(I.difficulty, 0, 2 * 16, 64, 16, 168, 146);
+			ctx.globalAlpha = 1;
+		};
+		let text = "";
+		for (let index = 0; index < MAIN_MENU_OPTIONS.length; index++) {
+			if (index == menuSelect[1] && focused) {
+				if (index == 2 && game.artifacts.includes(202)) text += " <#ff0>\></#ff0> <#f84>" + MAIN_MENU_OPTIONS[index] + "</#f84>\n";
+				else text += " <#ff0>\> " + MAIN_MENU_OPTIONS[index] + "</#ff0>\n";
+			} else {
+				if (index == 2 && game.artifacts.includes(202)) text += "   <#f44>" + MAIN_MENU_OPTIONS[index] + "</#f44>\n"; // adjust red color for Act 2
+				else text += "   " + MAIN_MENU_OPTIONS[index] + "\n";
+			};
+		};
+		draw.lore(1, 84, text, {"color": "#fff"});
 	},
 };
 

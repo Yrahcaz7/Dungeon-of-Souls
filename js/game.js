@@ -29,7 +29,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_001_027,
+	version: 2_001_028,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -65,7 +65,7 @@ let global = {
 	traveled: [],
 	seed: randomize((Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase()),
 	version: global.version,
-}, popups = [], notif = [-1, 0, "", 0], menuSelect = [MENU.TITLE, 0], refinableDeck = [], winAnim = 0;
+}, popups = [], notif = [-1, 0, "", 0], menuSelect = [MENU.MAIN, 0], refinableDeck = [], winAnim = 0;
 
 /**
  * Checks if there is any active popups.
@@ -398,19 +398,22 @@ function updateVisuals() {
 		if (game.artifacts.includes(202) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": DIR.CENTER});
 		else if (get.area() == 1) draw.lore(200 - 2, 53, "Act 2: The Color of the Soul", {"color": "#fff", "text-align": DIR.CENTER});
 		else draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": DIR.CENTER});
-		if (get.area() == 0 && new Date().getTime() % 1500 >= 700) draw.lore(200 - 2, 131, "PRESS START", {"color": "#fff", "text-align": DIR.CENTER});
-		draw.imageSector(I.difficulty, 0, game.difficulty * 16, 64, 16, 168, 146);
-		if (game.artifacts.includes(202)) {
-			if (game.floor == 10 && transition < 100) {
-				ctx.globalAlpha = transition / 100;
-			};
-			draw.imageSector(I.difficulty, 0, 2 * 16, 64, 16, 168, 146);
-			ctx.globalAlpha = 1;
-		};
+		graphics.menu(menuSelect[0] === MENU.MAIN);
 		if (game.select[0] === S.WELCOME) {
-			draw.box(80, 83, 240, 34);
-			if (game.difficulty === 0) draw.lore(200 - 2, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
-			else draw.lore(200 - 2, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start much stronger from the beginning.\nAnd by much stronger, I mean <#f00>MUCH STRONGER</#f00>.\nOtherwise, it is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
+			draw.box(80 + 2, 83, 240 - 4, 34);
+			if (game.difficulty === 0) draw.lore(200 - 1, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
+			else draw.lore(200 - 1, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start much stronger from the beginning.\nAnd by much stronger, I mean <#f00>MUCH STRONGER</#f00>.\nOtherwise, it is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
+		} else if (menuSelect[0] === MENU.NEW_RUN) {
+			let x = 123, y = 83;
+			draw.rect("#0008");
+			draw.box(x + 1, y + 1, 152, 26);
+			draw.lore(x + 2, y + 2, "Are you sure you want to restart your current run?\nThe map will also be different next time.", {"text-small": true});
+			if (!menuSelect[1]) draw.rect("#fff", x + 1, y + 13, 23, 14);
+			else draw.rect("#fff", x + 23, y + 13, 17, 14);
+			draw.box(x + 3, y + 15, 19, 10);
+			draw.box(x + 25, y + 15, 13, 10);
+			draw.lore(x + 4, y + 16, "YES");
+			draw.lore(x + 26, y + 16, "NO");
 		} else if (menuSelect[0] === MENU.DIFFICULTY) {
 			let x = 116, y = 83;
 			draw.rect("#0008");
