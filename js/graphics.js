@@ -33,7 +33,7 @@ const draw = {
 	 * @param {number} height - the height of the image. Defaults to `image.height`.
 	 */
 	image(image, x = 0, y = 0, width = image.width, height = image.height) {
-		ctx.drawImage(image, x * scale, y * scale, width * scale, height * scale);
+		ctx.drawImage(image, (x ?? 0) * scale, (y ?? 0) * scale, (width ?? image.width) * scale, (height ?? image.height) * scale);
 	},
 	/**
 	 * Draws an image sector on the canvas.
@@ -48,7 +48,7 @@ const draw = {
 	 * @param {number} dh - the height of the image. Defaults to `sh`.
 	 */
 	imageSector(image, sx, sy, sw, sh, dx = 0, dy = 0, dw = sw, dh = sh) {
-		ctx.drawImage(image, sx, sy, sw, sh, dx * scale, dy * scale, dw * scale, dh * scale);
+		ctx.drawImage(image, sx, sy, sw, sh, (dx ?? 0) * scale, (dy ?? 0) * scale, (dw ?? sw) * scale, (dh ?? sh) * scale);
 	},
 	/**
 	 * Draws a rectangle on the canvas.
@@ -60,7 +60,7 @@ const draw = {
 	 */
 	rect(color, x = 0, y = 0, width = canvas.width / scale, height = canvas.height / scale) {
 		ctx.fillStyle = color;
-		ctx.fillRect(x * scale, y * scale, width * scale, height * scale);
+		ctx.fillRect((x ?? 0) * scale, (y ?? 0) * scale, (width ?? canvas.width / scale) * scale, (height ?? canvas.height / scale) * scale);
 	},
 	/**
 	 * Draws a line on the canvas.
@@ -73,10 +73,8 @@ const draw = {
 	 */
 	line(x1, y1, x2, y2, color = "#000", width = 1) {
 		ctx.beginPath();
-		if (color) ctx.strokeStyle = color;
-		else ctx.strokeStyle = "#000";
-		if (width) ctx.lineWidth = width * scale;
-		else ctx.lineWidth = 1 * scale;
+		ctx.strokeStyle = color ?? "#000";
+		ctx.lineWidth = (width ?? 1) * scale;
 		ctx.moveTo(x1 * scale, y1 * scale);
 		ctx.lineTo(x2 * scale, y2 * scale);
 		ctx.stroke();
@@ -89,34 +87,45 @@ const draw = {
 	 * @param {number} y2 - the y-coordinate of the control point.
 	 * @param {number} x3 - the x-coordinate to end drawing at.
 	 * @param {number} y3 - the y-coordinate to end drawing at.
-	 * @param {string} color - the color of the line. Defaults to `#000`.
-	 * @param {number} width - the width of the line. Defaults to `1`.
+	 * @param {string} color - the color of the curved line. Defaults to `#000`.
+	 * @param {number} width - the width of the curved line. Defaults to `1`.
 	 */
 	curvedLine(x1, y1, x2, y2, x3, y3, color = "#000", width = 1) {
 		ctx.beginPath();
-		if (color) ctx.strokeStyle = color;
-		else ctx.strokeStyle = "#000";
-		if (width) ctx.lineWidth = width * scale;
-		else ctx.lineWidth = 1 * scale;
+		ctx.strokeStyle = color ?? "#000";
+		ctx.lineWidth = (width ?? 1) * scale;
 		ctx.moveTo(x1 * scale, y1 * scale);
 		ctx.quadraticCurveTo(x2 * scale, y2 * scale, x3 * scale, y3 * scale);
 		ctx.stroke();
 	},
 	/**
+	 * Draws a polyline on the canvas.
+	 * @param {number[][]} points - the coordinates of the polyline's points.
+	 * @param {string} color - the color of the polyline. Defaults to `#000`.
+	 * @param {number} width - the width of the polyline. Defaults to `1`.
+	 */
+	polyline(points, color = "#000", width = 1) {
+		ctx.beginPath();
+		ctx.strokeStyle = color ?? "#000";
+		ctx.lineWidth = (width ?? 1) * scale;
+		for (let index = 0; index < points.length; index++) {
+			ctx.lineTo(points[index][0] * scale, points[index][1] * scale);
+		};
+		ctx.stroke();
+	},
+	/**
 	 * Draws a polygon on the canvas.
-	 * @param {number[]} points - the coordinates of the polygon's points.
+	 * @param {number[][]} points - the coordinates of the polygon's points.
 	 * @param style - the polygon's style object.
 	 */
 	polygon(points, style = {"background-color": "#000", "border-width": 0, "border-color": "#000"}) {
-		if (!style["background-color"]) style["background-color"] = "#000";
-		if (!style["border-width"]) style["border-width"] = 0;
-		if (!style["border-color"]) style["border-color"] = "#000";
+		style = Object.assign({"background-color": "#000", "border-width": 0, "border-color": "#000"}, style);
 		ctx.beginPath();
 		ctx.fillStyle = style["background-color"];
 		ctx.strokeStyle = style["border-color"];
 		ctx.lineWidth = style["border-width"] * scale;
-		for (let index = 0; index + 1 < points.length; index += 2) {
-			ctx.lineTo(points[index] * scale, points[index + 1] * scale);
+		for (let index = 0; index < points.length; index++) {
+			ctx.lineTo(points[index][0] * scale, points[index][1] * scale);
 		};
 		ctx.closePath();
 		ctx.fill();
@@ -138,10 +147,10 @@ const draw = {
 			ctx.save();
 			ctx.translate(coords[0], coords[1]);
 			ctx.rotate(hours / 6 * Math.PI);
-			let points = [-1, -3, -1, -9, -3, -9, -3, -10, 0, -13, 3, -10, 3, -9, 1, -9, 1, -3];
+			let points = [[-1, -3], [-1, -9], [-3, -9], [-3, -10], [0, -13], [3, -10], [3, -9], [1, -9], [1, -3]];
 			if (offsetH) {
-				for (let index = 0; index + 1 < points.length; index += 2) {
-					points[index + 1] = Math.max(points[index + 1] - offsetH, -30);
+				for (let index = 0; index < points.length; index++) {
+					points[index][1] = Math.max(points[index][1] - offsetH, -30);
 				};
 			};
 			draw.polygon(points, {"background-color": "#f07000"});
@@ -151,10 +160,10 @@ const draw = {
 			ctx.save();
 			ctx.translate(coords[0], coords[1]);
 			ctx.rotate(minutes / 30 * Math.PI);
-			let points = [-1, -3, -1, -12, -3, -12, -3, -13, 0, -16, 3, -13, 3, -12, 1, -12, 1, -3];
+			let points = [[-1, -3], [-1, -12], [-3, -12], [-3, -13], [0, -16], [3, -13], [3, -12], [1, -12], [1, -3]];
 			if (offsetM) {
-				for (let index = 0; index + 1 < points.length; index += 2) {
-					points[index + 1] = Math.max(points[index + 1] - offsetM, -30);
+				for (let index = 0; index < points.length; index++) {
+					points[index][1] = Math.max(points[index][1] - offsetM, -30);
 				};
 			};
 			draw.polygon(points, {"background-color": "#f0e000"});
@@ -171,20 +180,18 @@ const draw = {
 	 * @param style - the character's style object.
 	 */
 	char(char, x, y, style = {"color": "#000", "highlight-color": "", "text-small": false}) {
-		// defualt values
-		if (!style["color"]) style["color"] = "#000";
-		if (!style["text-small"]) style["text-small"] = false;
+		style = Object.assign({"color": "#000", "highlight-color": "", "text-small": false}, style);
 		// highlight
 		if (style["highlight-color"] && char.charCodeAt() >= 32) {
 			if (style["text-small"]) draw.rect(style["highlight-color"], x - 0.5, y - 0.5, 3.5, 5.5);
 			else draw.rect(style["highlight-color"], x - 1, y - 1, 7, 11);
 		};
 		// draw char
-		if (characters[char]) {
+		if (CHARACTERS[char]) {
 			ctx.fillStyle = style["color"];
-			for (let row = 0; row < characters[char].length; row++) {
-				for (let index = 0; index < characters[char][row].length; index++) {
-					if (characters[char][row][index]) {
+			for (let row = 0; row < CHARACTERS[char].length; row++) {
+				for (let index = 0; index < CHARACTERS[char][row].length; index++) {
+					if (CHARACTERS[char][row][index]) {
 						if (style["text-small"]) ctx.fillRect(x * scale + index, y * scale + row, 1, 1);
 						else ctx.fillRect((x + index) * scale, (y + row) * scale, scale, scale);
 					};
@@ -200,13 +207,9 @@ const draw = {
 	 * @param style - the lore's style object.
 	 */
 	lore(x, y, str, style = {"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false}) {
-		str = "" + str;
-		if (!style["color"]) style["color"] = "#000";
-		if (!style["highlight-color"]) style["highlight-color"] = "#222";
-		if (!style["text-align"]) style["text-align"] = DIR.RIGHT;
-		if (!style["text-small"]) style["text-small"] = false;
+		style = Object.assign({"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false}, style);
 		let color = style["color"], highlight = "", position = style["text-align"], small = style["text-small"];
-		str = str.replace(/<br>/g, "\n");
+		str = ("" + str).replace(/<br>/g, "\n");
 		x = Math.round(x * 2) / 2;
 		y = Math.round(y * 2) / 2;
 		let enters = 0, enterIndex = 0, len = str.replace(/<.*?>/g, "").length;
@@ -345,9 +348,7 @@ const draw = {
 	 * @param style - the box's style object.
 	 */
 	box(x, y, width, height, style = {"background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
-		if (!style["background-color"]) style["background-color"] = "#ccc";
-		if (!style["border-width"]) style["border-width"] = 1;
-		if (!style["border-color"]) style["border-color"] = "#000";
+		style = Object.assign({"background-color": "#ccc", "border-width": 1, "border-color": "#000"}, style);
 		draw.rect(style["background-color"], x, y, width, height);
 		let val = style["border-width"];
 		if (val) {
@@ -487,13 +488,7 @@ const draw = {
 	 * @param style - the textbox's style object.
 	 */
 	textBox(x, y, width, str, style = {"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
-		if (!style["color"]) style["color"] = "#000";
-		if (!style["highlight-color"]) style["highlight-color"] = "#222";
-		if (!style["text-align"]) style["text-align"] = DIR.RIGHT;
-		if (!style["text-small"]) style["text-small"] = false;
-		if (!style["background-color"]) style["background-color"] = "#ccc";
-		if (!style["border-width"]) style["border-width"] = 1;
-		if (!style["border-color"]) style["border-color"] = "#000";
+		style = Object.assign({"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}, style);
 		let small = style["text-small"];
 		let position = style["text-align"];
 		let lines = (("" + str).match(/\n/g) || []).length, height = small ? 7 : 12;
@@ -1779,8 +1774,6 @@ const graphics = {
 		};
 		// draw paths
 		ctx.filter = NO_ANTIALIASING_FILTER;
-		ctx.strokeStyle = "#b84";
-		ctx.lineWidth = 3 * scale;
 		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
 			for (const node1 in mapPathPoints[row1]) {
 				if (mapPathPoints[row1].hasOwnProperty(node1)) {
@@ -1789,13 +1782,7 @@ const graphics = {
 							for (const node2 in mapPathPoints[row1][node1][row2]) {
 								if (mapPathPoints[row1][node1][row2].hasOwnProperty(node2)) {
 									if (game.traveled[row1] == node1 && game.traveled[row2] == node2) continue;
-									const nodePair = mapPathPoints[row1][node1][row2][node2];
-									ctx.beginPath();
-									ctx.moveTo(nodePair[0][0] * scale, nodePair[0][1] * scale);
-									for (let i2 = 1; i2 < nodePair.length; i2++) {
-										ctx.lineTo(nodePair[i2][0] * scale, nodePair[i2][1] * scale);
-									};
-									ctx.stroke();
+									draw.polyline(mapPathPoints[row1][node1][row2][node2], "#b84", 3);
 								};
 							};
 						};
@@ -1804,15 +1791,8 @@ const graphics = {
 			};
 		};
 		// draw traveled path
-		ctx.strokeStyle = "#842";
 		for (let index = 0; index < game.traveled.length - 1; index++) {
-			const nodePair = mapPathPoints[index][game.traveled[index]][index + 1][game.traveled[index + 1]];
-			ctx.beginPath();
-			ctx.moveTo(nodePair[0][0] * scale, nodePair[0][1] * scale);
-			for (let i2 = 1; i2 < nodePair.length; i2++) {
-				ctx.lineTo(nodePair[i2][0] * scale, nodePair[i2][1] * scale);
-			};
-			ctx.stroke();
+			draw.polyline(mapPathPoints[index][game.traveled[index]][index + 1][game.traveled[index + 1]], "#842", 3);
 		};
 		ctx.filter = "none";
 		// draw nodes
