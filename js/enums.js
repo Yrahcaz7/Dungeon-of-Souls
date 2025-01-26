@@ -243,3 +243,6 @@ for (const key in EFF_DESC) {
 
 // event log types
 const EVENT_LOG = {DAMAGE: 2000};
+
+// game result types
+const GAME_RESULT = {LOSS: 2100, WIN: 2101, SURRENDER: 2102};

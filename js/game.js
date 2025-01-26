@@ -26,10 +26,11 @@ let global = {
 		[OPTION.AUTO_END_TURN]: false,
 		[OPTION.END_TURN_CONFIRM]: true,
 	},
+	prevGames: [],
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_001_032,
+	version: 2_002_001,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -52,8 +53,8 @@ let global = {
 	enemyAtt: [-1, 0, new Card(), false],
 	attackEffects: [],
 	artifacts: [200, 201],
-	deck: [new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000), new Card(2001), new Card(4000)],
-	deckLocal: [],
+	cards: [new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000), new Card(2001), new Card(4000)],
+	deck: [],
 	deckScroll: 0,
 	hand: [],
 	discard: [],
@@ -323,7 +324,7 @@ function loadRoom() {
 		game.rewards = [];
 		game.enemies = [];
 		game.hand = [];
-		game.deckLocal = shuffle(game.deck.slice().map(obj => Card.classify(obj)));
+		game.deck = shuffle(game.cards.map(obj => Card.classify(obj)));
 		game.discard = [];
 		game.void = [];
 		game.eff = {};

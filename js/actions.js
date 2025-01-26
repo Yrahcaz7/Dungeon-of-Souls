@@ -670,7 +670,7 @@ function performAction() {
 		if (game.select[1] == 1) {
 			game.select = [S.PURIFIER, 0];
 		} else {
-			if (game.select[1] == 0) game.deck.splice(game.cardSelect, 1);
+			if (game.select[1] == 0) game.cards.splice(game.cardSelect, 1);
 			for (let index = 0; index < game.rewards.length; index++) {
 				if (game.rewards[index] == "1 purifier") {
 					if (game.select[1] == 0) game.rewards[index] += " - claimed";
@@ -752,7 +752,7 @@ function performAction() {
 				};
 			};
 		} else {
-			game.deck.push(new Card(game.room[5][game.select[1]]));
+			game.cards.push(new Card(game.room[5][game.select[1]]));
 			for (let index = 0; index < game.rewards.length; index++) {
 				if (game.rewards[index] == "1 card") {
 					game.rewards[index] += " - claimed";

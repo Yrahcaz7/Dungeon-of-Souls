@@ -80,11 +80,11 @@ function inDeck() {
  * @returns {Card[]}
  */
 function currentDeck() {
-	if (game.select[0] === S.DECK && game.select[1]) return Card.sort(game.deckLocal.slice());
+	if (game.select[0] === S.DECK && game.select[1]) return Card.sort(game.deck.slice());
 	if (game.select[0] === S.DISCARD && game.select[1]) return game.discard;
 	if (game.select[0] === S.VOID && game.select[1]) return game.void;
-	if (game.select[0] === S.CARDS) return game.deck;
-	if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY) return game.deck;
+	if (game.select[0] === S.CARDS) return game.cards;
+	if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY) return game.cards;
 	if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) return refinableDeck;
 	return [];
 };
@@ -293,16 +293,16 @@ function shuffle(deck) {
  * @param {number} num - the number of cards to draw.
  */
 function drawCards(num) {
-	if (game.deckLocal.length) {
-		for (; num > 0 && game.deckLocal.length > 0; num--) {
-			game.hand.push(game.deckLocal.shift());
+	if (game.deck.length) {
+		for (; num > 0 && game.deck.length > 0; num--) {
+			game.hand.push(game.deck.shift());
 		};
 	};
 	if (num > 0) {
-		game.deckLocal = shuffle(game.discard.slice());
+		game.deck = shuffle(game.discard.slice());
 		game.discard = [];
-		for (; num > 0 && game.deckLocal.length > 0; num--) {
-			game.hand.push(game.deckLocal.shift());
+		for (; num > 0 && game.deck.length > 0; num--) {
+			game.hand.push(game.deck.shift());
 		};
 	};
 };

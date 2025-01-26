@@ -1413,7 +1413,7 @@ const graphics = {
 		draw.rect("#000c");
 		if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) {
 			if (refinableDeck.length == 0) {
-				refinableDeck = game.deck.filter(card => card.level == 0);
+				refinableDeck = game.cards.filter(card => card.level == 0);
 				if (refinableDeck.length == 0) refinableDeck = [new Card()];
 			};
 			draw.rect("#fff", 207, 14, 1, 185);
@@ -1925,7 +1925,7 @@ const graphics = {
 			text = "Are you sure you want to align the hands of time?\nYou will regret it. There is no going back.";
 			width = 148;
 		} else if (game.select[0] === S.CONF_PURIFY) {
-			text = "Are you sure you want to destroy the card " + game.deck[game.cardSelect].getAttr("name") + "?\nIf you have multiple, this will only destroy one copy of the card.";
+			text = "Are you sure you want to destroy the card " + game.cards[game.cardSelect].getAttr("name") + "?\nIf you have multiple, this will only destroy one copy of the card.";
 			width = 200;
 		} else if (game.select[0] === S.CONF_REFINE) {
 			text = "Are you sure you want to improve the card " + refinableDeck[game.cardSelect].getAttr("name") + "?\nIf you have multiple, this will only improve one copy of the card.";

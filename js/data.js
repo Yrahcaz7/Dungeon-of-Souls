@@ -304,7 +304,7 @@ function updateData() {
 		loadRoom();
 	};
 	// sort cards
-	Card.sort(game.deck);
+	Card.sort(game.cards);
 	Card.sort(game.void);
 	Card.sort(game.discard);
 	// other

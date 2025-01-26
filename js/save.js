@@ -39,9 +39,26 @@ function hardReset() {
 };
 
 /**
- * Restarts the current run.
+ * Restarts (and records) the current run.
  */
 function restartRun() {
+	let prevGame = {};
+	prevGame.character = game.character;
+	prevGame.difficulty = game.difficulty;
+	prevGame.health = game.health;
+	prevGame.floor = game.floor;
+	prevGame.gold = game.gold;
+	if (game.select[0] === S.GAME_OVER) prevGame.result = GAME_RESULT.LOSS;
+	else if (game.select[0] === S.GAME_WON) prevGame.result = GAME_RESULT.WIN;
+	else prevGame.result = GAME_RESULT.SURRENDER;
+	prevGame.kills = game.kills;
+	prevGame.artifacts = game.artifacts;
+	prevGame.cards = game.cards;
+	prevGame.seed = game.seed;
+	prevGame.startVersion = game.version;
+	prevGame.endVersion = global.version;
+	prevGame.score = get.totalScore();
+	global.prevGames.push(prevGame);
 	localStorage.setItem(ID + "/0", btoa(JSON.stringify({difficulty: game.difficulty, newSave: true})));
 	game = null;
 	location.reload();
@@ -122,10 +139,19 @@ function fixSave(version) {
 	};
 	// version 2.1.25
 	if (version < 2_001_025) {
-		// it is now impossible to get a card with applied effects in your non-local deck
+		// it is now impossible to get a card with applied effects in your non-local deck (now called cards as of v2.2.1)
 		for (let index = 0; index < game.deck.length; index++) {
 			game.deck[index].eff = {};
 		};
+	};
+	// version 2.2.1
+	if (version < 2_002_001) {
+		// `game.deck` is now named `game.cards`
+		game.cards = game.deck;
+		delete game.deck;
+		// `game.deckLocal` is now named `game.deck`
+		game.deck = game.deckLocal;
+		delete game.deckLocal;
 	};
 	// reset GAME_OVER and GAME_WON screen fade-in (all versions)
 	if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) game.select[1] = 0;
@@ -135,26 +161,18 @@ function fixSave(version) {
 		else game.enemyStage = ANIM.STARTING;
 	};
 	// classify enemies (all versions)
-	for (let index = 0; index < game.enemies.length; index++) {
-		game.enemies[index] = Enemy.classify(game.enemies[index]);
-	};
+	game.enemies = game.enemies.map(enemy => Enemy.classify(enemy));
 	// classify cards (all versions)
-	for (let index = 0; index < game.deck.length; index++) {
-		game.deck[index] = Card.classify(game.deck[index]);
-	};
-	for (let index = 0; index < game.deckLocal.length; index++) {
-		game.deckLocal[index] = Card.classify(game.deckLocal[index]);
-	};
-	for (let index = 0; index < game.hand.length; index++) {
-		game.hand[index] = Card.classify(game.hand[index]);
-	};
-	for (let index = 0; index < game.discard.length; index++) {
-		game.discard[index] = Card.classify(game.discard[index]);
-	};
-	for (let index = 0; index < game.void.length; index++) {
-		game.void[index] = Card.classify(game.void[index]);
-	};
+	game.cards = game.cards.map(card => Card.classify(card));
+	game.deck = game.deck.map(card => Card.classify(card));
+	game.hand = game.hand.map(card => Card.classify(card));
+	game.discard = game.discard.map(card => Card.classify(card));
+	game.void = game.void.map(card => Card.classify(card));
 	game.enemyAtt[2] = Card.classify(game.enemyAtt[2]);
+	global.prevGames = global.prevGames.map(prevGame => {
+		prevGame.cards = prevGame.cards.map(card => Card.classify(card));
+		return prevGame;
+	});
 };
 
 /**
