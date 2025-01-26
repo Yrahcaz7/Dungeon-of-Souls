@@ -83,7 +83,11 @@ const ARTIFACTS = {
 	},
 	203: {
 		name: "warped essence",
-		desc: "You have 1 more max energy,\nbut you take 25% more\ndamage, rounded up.",
+		desc: "You have 1 more max energy,\nbut you take 25% more\ncombat damage, rounded up.",
+	},
+	204: {
+		name: "shrouded pearl",
+		desc: "Non-boss enemies cannot\nattack on their first turn.",
 	},
 };
 

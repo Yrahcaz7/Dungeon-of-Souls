@@ -29,7 +29,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_001_030,
+	version: 2_001_031,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -58,6 +58,7 @@ let global = {
 	hand: [],
 	discard: [],
 	void: [],
+	eventLog: {},
 	eff: {},
 	room: [],
 	firstRoom: [],
@@ -155,6 +156,7 @@ function fadeMusic() {
  * @param {boolean} firstTurn - if true, it is the player's first turn.
  */
 function startTurn(firstTurn = false) {
+	let toSelect = [];
 	// end of enemy turn effects
 	if (!firstTurn) {
 		for (let index = 0; index < game.enemies.length; index++) {
@@ -168,7 +170,12 @@ function startTurn(firstTurn = false) {
 			if (game.enemies[index].eff[EFF.BLAZE]) game.enemies[index].eff[EFF.BLAZE]--;
 			if (game.enemies[index].eff[EFF.ATKUP]) game.enemies[index].eff[EFF.ATKUP]--;
 			if (game.enemies[index].eff[EFF.DEFUP]) game.enemies[index].eff[EFF.DEFUP]--;
-			if (game.enemies[index].eff[ENEMY_EFF.SHROUD]) game.enemies[index].eff[ENEMY_EFF.SHROUD]--;
+			if (game.enemies[index].eff[ENEMY_EFF.SHROUD]) {
+				game.enemies[index].eff[ENEMY_EFF.SHROUD]--;
+				if (!game.enemies[index].eff[ENEMY_EFF.SHROUD] && !game.artifacts.includes(204)) {
+					toSelect = [S.CONF_PEARL, 0];
+				};
+			};
 		};
 	};
 	// start of your turn effects
@@ -178,7 +185,8 @@ function startTurn(firstTurn = false) {
 	else game.shield = 0;
 	if (game.eff[EFF.RESILIENCE]) game.eff[EFF.RESILIENCE]--;
 	game.energy = get.maxEnergy();
-	game.select = [S.HAND, 0];
+	if (toSelect.length) game.select = toSelect;
+	else game.select = [S.HAND, 0];
 	if (playerAnim[1] !== I.player.idle && playerAnim[1] !== I.player.hit) startAnim.player(I.player.idle);
 };
 
@@ -449,7 +457,7 @@ function updateVisuals() {
 	if (!hidden() && !inDeck()) {
 		graphics.target();
 	};
-	if (game.select[0] === S.CONF_END || game.select[0] === S.CONF_PURIFY || game.select[0] === S.CONF_REFINE) {
+	if (game.select[0] === S.CONF_END || game.select[0] === S.CONF_PURIFY || game.select[0] === S.CONF_REFINE || game.select[0] === S.CONF_PEARL) {
 		graphics.conf();
 	} else if (game.select[0] === S.CONF_EXIT) {
 		graphics.rewards(false);

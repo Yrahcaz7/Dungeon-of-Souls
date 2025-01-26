@@ -50,7 +50,7 @@ function selection() {
 		return;
 	};
 	// confirmation
-	if (game.select[0] === S.CONF_END || game.select[0] === S.CONF_EXIT || game.select[0] === S.CONF_RESTART || game.select[0] === S.CONF_REFINE) {
+	if (game.select[0] === S.CONF_END || game.select[0] === S.CONF_EXIT || game.select[0] === S.CONF_RESTART || game.select[0] === S.CONF_REFINE || game.select[0] === S.CONF_PEARL) {
 		if (action === DIR.LEFT && game.select[1]) {
 			game.select[1] = 0;
 			actionTimer = 1;
@@ -695,6 +695,14 @@ function performAction() {
 				};
 			};
 		};
+		actionTimer = 2;
+		return;
+	} else if (game.select[0] === S.CONF_PEARL) {
+		if (!game.select[1]) {
+			game.energy -= 2;
+			game.artifacts.push(204); // give player artifact "Shrouded Pearl"
+		};
+		game.select = [S.HAND, 0];
 		actionTimer = 2;
 		return;
 	};

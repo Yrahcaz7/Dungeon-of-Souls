@@ -16,6 +16,37 @@
  */
 
 /**
+ * Makes the player take damage.
+ * @param {number} amount - the amount of damage to take.
+ * @param {boolean} attack - whether the damage is considered an attack. Defaults to `false`.
+ */
+function logEventDamage(amount, attack = false) {
+	if (isNaN(amount)) return;
+	// multiply damage
+	if (attack) amount = Math.ceil(amount * get.takeDamageMult(-1));
+	// take damage
+	if (amount < game.shield) {
+		game.shield -= amount;
+		game.eventLog[EVENT_LOG.DAMAGE] = 0;
+	} else {
+		amount -= game.shield;
+		game.shield = 0;
+		game.health -= amount;
+		game.eventLog[EVENT_LOG.DAMAGE] = amount;
+	};
+};
+
+/**
+ * Returns a logged event value.
+ * @param {number} type - the type of logged event to return.
+ * @param {number} defaultValue - the value to return if the event is not logged.
+ */
+function getLoggedEvent(type, defaultValue = 0) {
+	if (game.eventLog[type] === undefined) return defaultValue;
+	return game.eventLog[type];
+};
+
+/**
  * Starts a battle from an event.
  * @param {number} type - the type of battle.
  * @param {number} num - the number of enemies of a crowd, or the power of an ambush.
@@ -48,9 +79,9 @@ function finishEvent() {
 const EVENTS = {
 	any: [{
 		0: [() => {}, "You see a crowd of enemies up ahead.\nNone of the enemies seem to have noticed you.\nHow will you get past them?", ["Charge through", () => chance() ? 20 : 10], ["Sneak past", () => chance(1/4) ? 40 : 30], ["Fight them fairly", 50]],
-		10: [() => {takeDamage(8)}, "You tried to charge through as fast as you could,\nbut the enemies hit you for 8 damage!\nAlso, one enemy was particularly agile.\nYou will have to fight it off.", ["Battle Start!", 11]],
+		10: [() => {logEventDamage(8, true)}, () => "You tried to charge through as fast as you could,\nbut the enemies hit you for " + getLoggedEvent(EVENT_LOG.DAMAGE, 8) + " damage!\nAlso, one enemy was particularly agile.\nYou will have to fight it off.", ["Battle Start!", 11]],
 		11: [() => {startEventBattle(BATTLE.CROWD, 1)}],
-		20: [() => {takeDamage(4)}, "You successfully got past the enemies!\nHowever, you took 4 damage while doing so.", ["Get a move on", 21]],
+		20: [() => {logEventDamage(4, true)}, () => "You successfully got past the enemies!\nHowever, you took " + getLoggedEvent(EVENT_LOG.DAMAGE, 4) + " damage while doing so.", ["Get a move on", 21]],
 		21: [() => {finishEvent()}],
 		30: [() => {gainEff(EFF.WEAKNESS, 1)}, "You tried to sneak past as best as you could,\nbut the enemies still spotted you!\nYou also have hard time getting up.\nYou were crawling around for a while, after all...", ["Battle Start!", 31]],
 		31: [() => {
@@ -66,9 +97,9 @@ const EVENTS = {
 		111: [() => {startEventBattle(BATTLE.AMBUSH)}],
 		120: [() => {}, "You are back at the front of the chasm. What will you do?", ["Jump across the chasm", 200], ["Climb down the side", 300]],
 		200: [() => {
-			takeDamage(5, false);
+			logEventDamage(5);
 			screenShake = 20;
-		}, "You fail and fall into the chasm.\nLuckily, the chasm is not that deep.\nYou only took 5 damage.\nWhat do you do now?", ["Look around", 400], ["Climb up", 500]],
+		}, () => "You fail and fall into the chasm.\nLuckily, the chasm is not that deep.\nYou only took " + getLoggedEvent(EVENT_LOG.DAMAGE, 5) + " damage.\nWhat do you do now?", ["Look around", 400], ["Climb up", 500]],
 		300: [() => {}, "You climb down into the chasm unexpectedly easily.\nHowever, going back up will be harder.\nWhat will you do?", ["Look around", 400], ["Climb up", 500]],
 		400: [() => {}, "You find a platform with two giant cups on it.\nThe left cup is filled with purple ooze.\nThe right cup is filled with glowing water.\nClearly one is all you can drink.\nYou would vomit if you had both.", ["Look closer at left cup", 410], ["Look closer at right cup", 420], ["Forget this, climb back up", 500]],
 		410: [() => {}, "There is an engraving on the cup.\nIt says: ENVIGORATING BUT DANGEROUS.\nCONSUME AT YOUR OWN RISK.", ["Drink from the left cup", 411], ["Look closer at right cup", 420], ["Forget this, climb back up", 500]],
@@ -88,18 +119,19 @@ const EVENTS = {
 		501: [() => {finishEvent()}],
 	}, {
 		0: [() => {}, "You find a very ominous altar.\nIt is pitch black except some dried blood stains.\nThere is some engraved text on the base.\nWhat do you do?", ["Read the text", 100], ["Push it over", 200], ["Ignore it", 300]],
-		100: [() => {}, "The engraved text reads:\nOFFER YOUR BLOOD, AND YOU SHALL BE BLESSED\nDENY HOLINESS AND EMBRACE THE DARKNESS\nWill you offer your blood?", ["Offer 8 health", 110], ["Offer 25 health", () => game.artifacts.includes(101) ? 130 : 120], ["Cancel", 0]],
-		110: [() => {takeDamage(8, false)}, "You cut yourself and bleed onto the altar.\nYou see an enemy in the distance flee.", ["Get a move on", 111]],
+		100: [() => {}, "The engraved text reads:\nOFFER YOUR BLOOD, AND YOU SHALL BE BLESSED\nDENY HOLINESS AND EMBRACE THE DARKNESS\nWill you offer your blood?", ["Offer 6 health", 110], ["Offer 25 health", () => game.artifacts.includes(101) ? 130 : 120], ["Cancel", 0]],
+		110: [() => {logEventDamage(6)}, "You cut yourself and bleed onto the altar.\nYou see an enemy in the distance flee.", ["Get a move on", 111]],
 		111: [() => {finishEvent()}],
-		120: [() => {takeDamage(25, false)}, "You brutally stab yourself and bleed onto the altar.\nSeemingly in response, a compartment in the altar opens.\nInside is a brilliant red gem.\nJust holding it makes you feel stronger.", ["Take the gem", 121]],
+		120: [() => {logEventDamage(25)}, "You brutally stab yourself and bleed onto the altar.\nSeemingly in response, a compartment in the altar opens.\nInside is a brilliant red gem.\nJust holding it makes you feel stronger.", ["Take the gem", 121]],
 		121: [() => {game.artifacts.push(101)}, "You pocket the gem.\nYou then stumble around lightheadedly for a bit.\nMaybe you should be a bit more careful with your blood.", ["Get a move on", 111]],
 		130: [() => {game.health += 6}, "You brutally stab yourself and bleed onto the altar.\nYour Gem of Rage glows ever brighter...\nSuddenly, your blood starts to trickle back into your wound.\nThe blood stains become liquid again and enter as well.\nYou heal 6 health, but you feel rather queasy...", ["Get a move on", 111]],
 		200: [() => {}, "You have a bad feeling about this...", ["Do it anyway", 201], ["Cancel", 0]],
 		201: [() => {}, "You topple the altar, and a dark cloud spreads...\nYou feel sluggish, and you can't see ahead of you.", ["Run out of the cloud", 202]],
 		202: [() => {}, "Blindly running ahead, you smack into an enemy.", ["Battle Start!", 203]],
 		203: [() => {
+			gainEff(EFF.WEAKNESS, 2);
 			startEventBattle(BATTLE.AMBUSH);
-			game.enemies[0].eff[ENEMY_EFF.SHROUD] = 10;
+			game.enemies[0].eff[ENEMY_EFF.SHROUD] = 6;
 		}],
 		300: [() => {}, "You decide to ignore the altar and continue on.\nHowever, an enemy blocks your path.", ["Battle Start!", 301]],
 		301: [() => {startEventBattle(BATTLE.AMBUSH)}],
@@ -123,9 +155,9 @@ const EVENTS = {
 		111: [() => {startEventBattle(BATTLE.AMBUSH, 1.1)}],
 		120: [() => {}, 'There seems to be something written on the ground...\nBut you can only make out the word "until".\nThe rest is completely unreadable.\nYou also see gold coins lying around.', ["Leave the ruins", 110], ["Pocket the coins", 121]],
 		121: [() => {
-			game.gold += 20;
-			takeDamage(10);
-		}, "You greedily pocket all 20 gold coins.\nSuddenly, an enemy hits you from behind!\nYou took a staggering 10 damage!", ["Battle Start!", 111]],
+			game.gold += 30;
+			logEventDamage(10, true);
+		}, () => "You greedily pocket all 30 gold coins.\nSuddenly, an enemy hits you from behind!\nYou took a staggering " + getLoggedEvent(EVENT_LOG.DAMAGE, 10) + " damage!", ["Battle Start!", 111]],
 		200: [() => {}, "You decide not to waste time here.\nAs such, you start walking around the ruins.\nYou then see an enemy in the distance.", ["Fight the enemy", 210], ["Avoid the enemy", 220]],
 		210: [() => {
 			playerGainShield(10, 0);

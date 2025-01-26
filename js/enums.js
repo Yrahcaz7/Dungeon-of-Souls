@@ -57,6 +57,7 @@ const S = {
 	REFINER: 329, // N does not indicate anything.
 	CONF_REFINE: 330, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 	CARDS: 331, // N indicates if the CARDS menu is on top of the map (0 if it is, 1 if not).
+	CONF_PEARL: 332, // N indicates which button is selected (1 for the decline button, 0 for the accept button).
 };
 
 // menu selections - used in `menuSelect` as [S, N]
@@ -239,3 +240,6 @@ for (const key in EFF_DESC) {
 		EFF_DESC[key] = color(EFF_DESC[key]);
 	};
 };
+
+// event log types
+const EVENT_LOG = {DAMAGE: 2000};

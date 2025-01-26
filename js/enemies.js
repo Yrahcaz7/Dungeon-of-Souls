@@ -237,6 +237,7 @@ class Enemy {
 				return chance(2/3) ? INTENT.BUFF : INTENT.DEFEND;
 			};
 		};
+		if (first && game.artifacts.includes(204)) return INTENT.DEFEND;
 		return chance(3/5) ? INTENT.ATTACK : INTENT.DEFEND;
 	};
 	/**

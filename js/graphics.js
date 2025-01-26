@@ -1923,6 +1923,9 @@ const graphics = {
 		} else if (game.select[0] === S.CONF_REFINE) {
 			text = "Are you sure you want to improve the card " + refinableDeck[game.cardSelect].getAttr("name") + "?\nIf you have multiple, this will only improve one copy of the card.";
 			width = 200;
+		} else if (game.select[0] === S.CONF_PEARL) {
+			text = "As the dark cloud clears, you see a strange pearl resting on the ground.\nWill you pick it up? This will consume 2 energy.";
+			width = 217;
 		};
 		const x = (400 - width) / 2;
 		const y = (game.select[0] === S.CONF_REFINE ? 20 : (200 - height) / 2);
