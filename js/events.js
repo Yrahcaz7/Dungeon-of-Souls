@@ -70,9 +70,9 @@ function startEventBattle(type, num = 1) {
  * Finishes an event with no battle or rewards.
  */
 function finishEvent() {
-	activateArtifacts(FUNC.FLOOR_CLEAR);
 	game.select = [S.ARTIFACTS, 0];
 	game.state = STATE.EVENT_FIN;
+	activateArtifacts(FUNC.FLOOR_CLEAR);
 	mapPopup();
 };
 
@@ -102,8 +102,8 @@ const EVENTS = {
 		}, () => "You fail and fall into the chasm.\nLuckily, the chasm is not that deep.\nYou only took " + getLoggedEvent(EVENT_LOG.DAMAGE, 5) + " damage.\nWhat do you do now?", ["Look around", 400], ["Climb up", 500]],
 		300: [() => {}, "You climb down into the chasm unexpectedly easily.\nHowever, going back up will be harder.\nWhat will you do?", ["Look around", 400], ["Climb up", 500]],
 		400: [() => {}, "You find a platform with two giant cups on it.\nThe left cup is filled with purple ooze.\nThe right cup is filled with glowing water.\nClearly one is all you can drink.\nYou would vomit if you had both.", ["Look closer at left cup", 410], ["Look closer at right cup", 420], ["Forget this, climb back up", 500]],
-		410: [() => {}, "There is an engraving on the cup.\nIt says: ENVIGORATING BUT DANGEROUS.\nCONSUME AT YOUR OWN RISK.", ["Drink from the left cup", 411], ["Look closer at right cup", 420], ["Forget this, climb back up", 500]],
-		411: [() => {if (!game.artifacts.includes(103)) game.artifacts.push(103)}, "A foul energy courses through your veins.\nYou can now wield Corrosion.", ["Get out of this chasm already", 412]],
+		410: [() => {}, "There is an engraving on the cup.\nIt says: ENVIGORATING BUT DANGEROUS.\nCONSUME AT YOUR OWN RISK.", ["Drink from the left cup", () => hasArtifact(103) ? 430 : 411], ["Look closer at right cup", 420], ["Forget this, climb back up", 500]],
+		411: [() => {game.artifacts.push(103)}, "A foul energy courses through your veins.\nYou can now wield Corrosion.", ["Get out of this chasm already", 412]],
 		412: [() => {}, "Just as you start to climb out,\nyou spot something very shiny.\nYou can't seem to resist its allure...", ["Pocket the shiny thing", 413]],
 		413: [() => {game.gold += 10}, "You pocket the strange lump of gold.\nIt's probably worth around 10 gold coins.\nYou see another shiny thing nearby...", ["Go get the shiny thing", 414], ["Really, get out of here already!", 500]],
 		414: [() => {game.gold = 0}, "As you reach out to grab the shining rock,\na foul energy erupts from within you.\nDark tendrils spread outwards,\ngreedily devouring all of your gold.\nYou hear an ominous crackle emerge from yourself.\nJust what exactly did you drink?", ["GET OUT OF HERE!", 500]],
@@ -114,17 +114,22 @@ const EVENTS = {
 			game.state = STATE.EVENT_FIN;
 			game.rewards = ["1 purifier", "finish"];
 			activateArtifacts(FUNC.FLOOR_CLEAR);
-		}, ""],
+		}],
+		430: [() => {
+			for (let index = 0; index < game.artifacts.length; index++) {
+				if (game.artifacts[index] == 103) game.artifacts[index] = 205;
+			};
+		}, "A foul energy courses through your veins.\nYou feel the Corrosion within you grow...", ["Get out of this chasm already", 412]],
 		500: [() => {}, "After some time, you manage to climb out.\nYou set off again towards your destination.", ["Get a move on", 501]],
 		501: [() => {finishEvent()}],
 	}, {
 		0: [() => {}, "You find a very ominous altar.\nIt is pitch black except some dried blood stains.\nThere is some engraved text on the base.\nWhat do you do?", ["Read the text", 100], ["Push it over", 200], ["Ignore it", 300]],
-		100: [() => {}, "The engraved text reads:\nOFFER YOUR BLOOD, AND YOU SHALL BE BLESSED\nDENY HOLINESS AND EMBRACE THE DARKNESS\nWill you offer your blood?", ["Offer 6 health", 110], ["Offer 25 health", () => game.artifacts.includes(101) ? 130 : 120], ["Cancel", 0]],
+		100: [() => {}, "The engraved text reads:\nOFFER YOUR BLOOD, AND YOU SHALL BE BLESSED\nDENY HOLINESS AND EMBRACE THE DARKNESS\nWill you offer your blood?", ["Offer 6 health", 110], ["Offer 25 health", () => hasArtifact(101) ? 130 : 120], ["Cancel", 0]],
 		110: [() => {logEventDamage(6)}, "You cut yourself and bleed onto the altar.\nYou see an enemy in the distance flee.", ["Get a move on", 111]],
 		111: [() => {finishEvent()}],
 		120: [() => {logEventDamage(25)}, "You brutally stab yourself and bleed onto the altar.\nSeemingly in response, a compartment in the altar opens.\nInside is a brilliant red gem.\nJust holding it makes you feel stronger.", ["Take the gem", 121]],
 		121: [() => {game.artifacts.push(101)}, "You pocket the gem.\nYou then stumble around lightheadedly for a bit.\nMaybe you should be a bit more careful with your blood.", ["Get a move on", 111]],
-		130: [() => {game.health += 6}, "You brutally stab yourself and bleed onto the altar.\nYour Gem of Rage glows ever brighter...\nSuddenly, your blood starts to trickle back into your wound.\nThe blood stains become liquid again and enter as well.\nYou heal 6 health, but you feel rather queasy...", ["Get a move on", 111]],
+		130: [() => {game.health += 6}, "You brutally stab yourself and bleed onto the altar.\nYour Gem of Rage glows ever brighter...\nSuddenly, your blood starts to trickle back into your wound.\nThe blood stains become liquid again and enter as well.\nYou gain 6 health, but you feel rather queasy...", ["Get a move on", 111]],
 		200: [() => {}, "You have a bad feeling about this...", ["Do it anyway", 201], ["Cancel", 0]],
 		201: [() => {}, "You topple the altar, and a dark cloud spreads...\nYou feel sluggish, and you can't see ahead of you.", ["Run out of the cloud", 202]],
 		202: [() => {}, "Blindly running ahead, you smack into an enemy.", ["Battle Start!", 203]],

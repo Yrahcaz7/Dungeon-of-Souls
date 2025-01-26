@@ -37,6 +37,7 @@ function color(text) {
 	text = text.replace(/(extra\sshield|shield|defend|defense)/gi, "<#58f>$1</#58f>");
 	text = text.replace(/(cost\sreduction|one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
 	text = text.replace(/(magic)(\stype)/gi, "<#f0f>$1</#f0f>$2");
+	text = text.replace(/(\[decay\]|decay)/gi, "<#80f>$1</#80f>");
 	return text;
 };
 
@@ -138,7 +139,8 @@ const get = {
 	 */
 	handSize() {
 		let size = 5;
-		if (game.artifacts.includes(104)) size--;
+		if (hasArtifact(104)) size--;
+		if (hasArtifact(205)) size++;
 		return size;
 	},
 	/**
@@ -146,7 +148,7 @@ const get = {
 	 */
 	cardRewardChoices() {
 		let choices = 3;
-		if (game.artifacts.includes(104)) choices++;
+		if (hasArtifact(104)) choices++;
 		return choices;
 	},
 	/**
@@ -154,8 +156,8 @@ const get = {
 	 */
 	maxHealth() {
 		let max = 60;
-		if (game.artifacts.includes(102)) max -= 15;
-		if (game.artifacts.includes(105)) max += 15;
+		if (hasArtifact(102)) max -= 15;
+		if (hasArtifact(105)) max += 15;
 		return max;
 	},
 	/**
@@ -170,8 +172,8 @@ const get = {
 	 */
 	maxEnergy() {
 		let max = 3;
-		if (game.artifacts.includes(103)) max++;
-		if (game.artifacts.includes(203)) max++;
+		if (hasArtifact(103)) max++;
+		if (hasArtifact(203)) max++;
 		return max;
 	},
 	/**
@@ -185,7 +187,7 @@ const get = {
 		} else if (game.eff[EFF.AURA_BLADE] && !attacking) {
 			extra += 5 + game.eff[EFF.AURA_BLADE];
 		};
-		if (game.artifacts.includes(101)) extra += 2;
+		if (hasArtifact(101)) extra += 2;
 		return extra;
 	},
 	/**
@@ -208,7 +210,7 @@ const get = {
 		if (game.enemies[index]?.eff[EFF.WEAKNESS]) mult -= 0.25;
 		if (game.enemies[index]?.eff[EFF.ATKUP]) mult += 0.25;
 		if (game.eff[EFF.RESILIENCE]) mult -= 0.25;
-		if (game.artifacts.includes(203)) mult += 0.25;
+		if (hasArtifact(203)) mult += 0.25;
 		return mult;
 	},
 	/**
@@ -216,7 +218,7 @@ const get = {
 	 */
 	extraShield() {
 		let extra = 0;
-		if (game.artifacts.includes(100)) extra += 2;
+		if (hasArtifact(100)) extra += 2;
 		return extra;
 	},
 	/**
@@ -265,7 +267,7 @@ const get = {
 		score += Math.floor(game.gold / 5);
 		if (game.health > 0) score += game.health * 5;
 		if (game.difficulty) {
-			if (game.artifacts.includes(202) && game.kills[FRAGMENT]) score *= 3;
+			if (hasArtifact(202) && game.kills[FRAGMENT]) score *= 3;
 			else score *= 2;
 		};
 		return score;

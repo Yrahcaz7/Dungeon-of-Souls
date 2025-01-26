@@ -38,7 +38,7 @@ class Enemy {
 		else if (PRIME_ENEMIES.includes(type)) power++;
 		else if (BOSS_ENEMIES.includes(type)) power += 2;
 		power += game.difficulty + 2 + (game.floor * 0.05);
-		if (game.artifacts.includes(202)) power += 0.5;
+		if (hasArtifact(202)) power += 0.5;
 		this.type = type;
 		if (type === SINGULARITY) this.maxHealth = (power * 10) * 1.25;
 		else if (type === FRAGMENT) this.maxHealth = (power * 10) * 1.05;
@@ -51,10 +51,10 @@ class Enemy {
 		this.defendPower = Math.max(Math.round(power * 3), 1);
 		this.intent = this.getIntent(true);
 		this.intentHistory = [this.intent];
-		if (type === FRAGMENT && game.artifacts.includes(202)) this.eff[ENEMY_EFF.REWIND] = 1;
+		if (type === FRAGMENT && hasArtifact(202)) this.eff[ENEMY_EFF.REWIND] = 1;
 		if (type === SENTRY.BIG || type === SENTRY.SMALL || type === SENTRY.PRIME || type === SINGULARITY) this.eff[EFF.BLAZE] = 99;
 		if (type === SINGULARITY) this.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 3)]] = 1;
-		if (game.artifacts.includes(107)) this.eff[EFF.BURN] = 1;
+		if (hasArtifact(107)) this.eff[EFF.BURN] = 1;
 	};
 	/**
 	 * Returns an object as an enemy.
@@ -161,7 +161,7 @@ class Enemy {
 				takeDamage(damage);
 				if (game.health < prevHealth) startAnim.player(I.player.hit);
 				// If the player survives the ritual, they get the easter egg "Warped Essence"
-				if (game.health > 0 && !game.artifacts.includes(203)) {
+				if (game.health > 0 && !hasArtifact(203)) {
 					game.artifacts.push(203);
 				};
 			} else {
@@ -237,7 +237,7 @@ class Enemy {
 				return chance(2/3) ? INTENT.BUFF : INTENT.DEFEND;
 			};
 		};
-		if (first && game.artifacts.includes(204)) return INTENT.DEFEND;
+		if (first && hasArtifact(204)) return INTENT.DEFEND;
 		return chance(3/5) ? INTENT.ATTACK : INTENT.DEFEND;
 	};
 	/**

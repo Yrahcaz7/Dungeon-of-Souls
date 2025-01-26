@@ -89,12 +89,29 @@ const ARTIFACTS = {
 		name: "shrouded pearl",
 		desc: "Non-boss enemies cannot\nattack on their first turn.",
 	},
+	205: {
+		name: "corrosion [stage 2]",
+		desc: "You have 1 more max energy, but you\ntake <#0f0 highlight>5</#0f0> combat damage [decay] at the\nend of each of your turns.\nSTAGE 2: Your hand size is 1 larger,\nbut decay damage is increased by 1.",
+		big: true,
+		[FUNC.PLAYER_TURN_END]() {
+			takeDamage(5, true, -1);
+		},
+	},
 };
 
 for (const key in ARTIFACTS) {
 	if (ARTIFACTS.hasOwnProperty(key)) {
 		ARTIFACTS[key].desc = color(ARTIFACTS[key].desc);
 	};
+};
+
+/**
+ * Returns a boolean indicating whether the player has an artifact.
+ * @param {number} id - the artifact's id.
+ */
+function hasArtifact(id) {
+	if (id == 103) return game.artifacts.includes(103) || game.artifacts.includes(205); // make "Corrosion [stage 2]" count as "Corrosion"
+	return game.artifacts.includes(id);
 };
 
 /**

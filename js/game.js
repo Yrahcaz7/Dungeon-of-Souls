@@ -29,7 +29,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_001_031,
+	version: 2_001_032,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -162,7 +162,7 @@ function startTurn(firstTurn = false) {
 		for (let index = 0; index < game.enemies.length; index++) {
 			if (game.enemies[index].eff[EFF.BURN]) {
 				let damage = game.enemies[index].eff[EFF.BURN];
-				if (game.artifacts.includes(107)) damage += 3;
+				if (hasArtifact(107)) damage += 3;
 				dealDamage(damage, 0, index, false);
 				game.enemies[index].eff[EFF.BURN]--;
 			};
@@ -172,7 +172,7 @@ function startTurn(firstTurn = false) {
 			if (game.enemies[index].eff[EFF.DEFUP]) game.enemies[index].eff[EFF.DEFUP]--;
 			if (game.enemies[index].eff[ENEMY_EFF.SHROUD]) {
 				game.enemies[index].eff[ENEMY_EFF.SHROUD]--;
-				if (!game.enemies[index].eff[ENEMY_EFF.SHROUD] && !game.artifacts.includes(204)) {
+				if (!game.enemies[index].eff[ENEMY_EFF.SHROUD] && !hasArtifact(204)) {
 					toSelect = [S.CONF_PEARL, 0];
 				};
 			};
@@ -300,7 +300,7 @@ function endBattle() {
 		if (game.room[0] === ROOM.PRIME || game.room[0] === ROOM.BOSS) {
 			if (game.room[6]) {
 				for (let index = 0; index < game.room[6].length; index++) {
-					if (game.artifacts.includes(game.room[6][index])) {
+					if (hasArtifact(game.room[6][index])) {
 						game.room[6][index] = randomArtifact(game.artifacts.concat(game.room[6]));
 					};
 				};
@@ -403,7 +403,7 @@ function updateVisuals() {
 		};
 		if (global.version) draw.lore(390, 51, "Version " + version.major + "." + version.minor + "." + version.build, {"color": "#f00", "text-align": DIR.LEFT, "text-small": true});
 		if (global.highScore > 0) draw.lore(1, 1, "HIGH SCORE: " + global.highScore + " points", {"color": "#fff", "text-small": true});
-		if (game.artifacts.includes(202) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": DIR.CENTER});
+		if (hasArtifact(202) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": DIR.CENTER});
 		else if (get.area() == 1) draw.lore(200 - 2, 53, "Act 2: The Color of the Soul", {"color": "#fff", "text-align": DIR.CENTER});
 		else draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": DIR.CENTER});
 		graphics.menu(menuSelect[0] === MENU.MAIN);
@@ -414,7 +414,7 @@ function updateVisuals() {
 		} else if (menuSelect[0] === MENU.NEW_RUN || menuSelect[0] === MENU.DIFFICULTY) {
 			graphics.conf();
 		};
-		if (game.artifacts.includes(202) && game.floor == 10 && transition < 100) transition++;
+		if (hasArtifact(202) && game.floor == 10 && transition < 100) transition++;
 		return;
 	};
 	if (!hidden()) {
@@ -484,13 +484,13 @@ function updateVisuals() {
 		let text = "";
 		if (game.select[0] === S.GAME_WON) {
 			text += "YOU BEAT THE GAME ";
-			if (game.artifacts.includes(202)) text += "<#fcf050>WITH DETERMINATION</#fcf050>";
+			if (hasArtifact(202)) text += "<#fcf050>WITH DETERMINATION</#fcf050>";
 			else if (game.difficulty) text += "ON <#f00>HARD MODE!</#f00>";
 			else text += "ON EASY MODE!";
 			text += "\n\nThank you for playing!\n\nMore content is coming soon!";
 		} else {
 			text += "GAME OVER\n\nDIFFICULTY: ";
-			if (game.artifacts.includes(202)) text += "<#fcf050>DETERMINATION</#fcf050>";
+			if (hasArtifact(202)) text += "<#fcf050>DETERMINATION</#fcf050>";
 			else if (game.difficulty) text += "HARD";
 			else text += "EASY";
 			text += "\n\nTOP FLOOR: " + game.floor;
@@ -524,7 +524,7 @@ function updateVisuals() {
 		};
 		if (game.difficulty) {
 			text += "\n" + totalScore + " points";
-			if (game.artifacts.includes(202) && game.kills[FRAGMENT]) {
+			if (hasArtifact(202) && game.kills[FRAGMENT]) {
 				text += "\n\n" + totalScore + "<#fcf050>x3</#fcf050>";
 				totalScore *= 3;
 			} else {
@@ -541,7 +541,7 @@ function updateVisuals() {
 		};
 		ctx.globalAlpha = 1;
 	};
-	if (game.artifacts.includes(202) && game.floor == 10 && transition < 100) transition++;
+	if (hasArtifact(202) && game.floor == 10 && transition < 100) transition++;
 };
 
 const GAME_LOOP = setInterval(() => {

@@ -741,7 +741,7 @@ const graphics = {
 				draw.image(I.background.floating_arch, 136, 35 - Math.abs(Math.round(backAnim[0]) - 2));
 				draw.image(I.background.debris, 151, 93 - Math.abs(Math.round(backAnim[1]) - 2));
 			};
-			if (game.artifacts.includes(202) && game.floor == 10) {
+			if (hasArtifact(202) && game.floor == 10) {
 				if (transition < 100) {
 					ctx.globalAlpha = transition / 100;
 				};
@@ -769,7 +769,7 @@ const graphics = {
 	 * Draws the middle layer on the canvas.
 	 */
 	middleLayer() {
-		if (game.artifacts.includes(202) && game.floor == 10) {
+		if (hasArtifact(202) && game.floor == 10) {
 			if (extraAnim.length == 0) {
 				for (let index = 0; index < 9; index++) {
 					extraAnim[index] = [Math.random() * 180 + 6, index * 50 - Math.random() * 10, Math.floor(Math.random() * 20 + index) % 20];
@@ -842,10 +842,17 @@ const graphics = {
 		draw.image(I.extra.deck, 4, 182);
 		if (game.void.length) draw.image(I.extra.void, 381, 163);
 		draw.image(I.extra.discard, 382, 182);
-		// artifacts
+		// big artifacts
 		for (let index = 0; index < game.artifacts.length; index++) {
-			draw.image(I.artifact[game.artifacts[index]], 2 + (index * 18), 13);
-			if (game.select[0] === S.ARTIFACTS && game.select[1] === index) draw.image(I.artifact.select[game.artifacts[index]], 1 + (index * 18), 12);
+			if (!ARTIFACTS[game.artifacts[index]].big) continue;
+			draw.image(I.artifact[game.artifacts[index]], (index * 18) - 6, 5);
+			if (game.select[0] === S.ARTIFACTS && game.select[1] === index) draw.image(I.artifact.select[game.artifacts[index]], (index * 18) - 7, 4);
+		};
+		// small artifacts
+		for (let index = 0; index < game.artifacts.length; index++) {
+			if (ARTIFACTS[game.artifacts[index]].big) continue;
+			draw.image(I.artifact[game.artifacts[index]], (index * 18) + 2, 13);
+			if (game.select[0] === S.ARTIFACTS && game.select[1] === index) draw.image(I.artifact.select[game.artifacts[index]], (index * 18) + 1, 12);
 		};
 		// selected
 		if (game.select[0] === S.LOOKER) draw.image(I.select.round, 342, 2);
@@ -1878,7 +1885,7 @@ const graphics = {
 	 */
 	menu(focused = true) {
 		draw.imageSector(I.difficulty, 0, game.difficulty * 16, 64, 16, 168, 146);
-		if (game.artifacts.includes(202)) {
+		if (hasArtifact(202)) {
 			if (game.floor == 10 && transition < 100) {
 				ctx.globalAlpha = transition / 100;
 			};
