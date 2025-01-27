@@ -460,11 +460,11 @@ function gainEff(type, amt) {
 function activateAttackEffects(id) {
 	// stop if effects are not allowed
 	if (CARDS[id].attackEffects === false) return;
-	// start player animation
-	startAnim.player(CARDS[id].attackAnim || I.player.attack);
-	// trigger aura blades
+	// trigger aura blade effect
 	if (game.eff[EFF.AURA_BLADE]) {
 		game.eff[EFF.AURA_BLADE]--;
 		game.attackEffects.push(ATT_EFF.AURA_BLADE);
 	};
+	// start player animation
+	startAnim.player(CARDS[id].attackAnim || I.player.attack);
 };

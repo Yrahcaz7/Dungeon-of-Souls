@@ -160,7 +160,9 @@ function fixSave(version) {
 	};
 	// reset GAME_OVER and GAME_WON screen fade-in (all versions)
 	if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) game.select[1] = 0;
-	// fix ANIM.PENDING enemy stage (all versions)
+	// fix in-progress player attack (all versions)
+	if (game.enemyAtt[3]) startAnim.player(CARDS[game.enemyAtt[2].id].attackAnim || I.player.attack);
+	// fix in-progress enemy attack (all versions)
 	if (game.enemyStage === ANIM.PENDING) {
 		if (game.enemies[game.enemyNum].done) game.enemyStage = ANIM.ENDING;
 		else game.enemyStage = ANIM.STARTING;

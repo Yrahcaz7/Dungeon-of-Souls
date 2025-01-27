@@ -49,11 +49,17 @@ function selection() {
 		};
 		return;
 	} else if (menuSelect[0] === MENU.PREV_GAMES) {
-		if (action === DIR.UP && menuSelect[1] > 0) {
+		if (action === DIR.LEFT && menuSelect[1] > 0) {
 			menuSelect[1]--;
 			actionTimer = 1;
-		} else if (action === DIR.DOWN && menuSelect[1] < global.prevGames.length - 1) {
+		} else if (action === DIR.RIGHT && menuSelect[1] < global.prevGames.length * 3 - 1) {
 			menuSelect[1]++;
+			actionTimer = 1;
+		} else if (action === DIR.UP && menuSelect[1] > 0) {
+			menuSelect[1] = Math.max(menuSelect[1] - 3, 0);
+			actionTimer = 1;
+		} else if (action === DIR.DOWN && menuSelect[1] < global.prevGames.length * 3 - 1) {
+			menuSelect[1] = Math.min(menuSelect[1] + 3, global.prevGames.length * 3 - 1);
 			actionTimer = 1;
 		};
 		return;

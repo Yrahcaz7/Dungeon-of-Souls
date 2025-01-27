@@ -2010,16 +2010,19 @@ const graphics = {
 			draw.lore(x, y, "Seed: " + prevGame.seed, {"color": "#fff"});
 			x += 6 * 14;
 			if (prevGame.startVersion == prevGame.endVersion) {
-				draw.lore(x, y, "Version: " + get.versionDisplay(prevGame.endVersion), {"color": "#fff"});
+				if (prevGame.endVersion == global.version) draw.lore(x, y, "Version: <#0f0>" + get.versionDisplay(prevGame.endVersion) + "</#0f0>", {"color": "#fff"});
+				else draw.lore(x, y, "Version: " + get.versionDisplay(prevGame.endVersion), {"color": "#fff"});
 			} else {
-				draw.lore(x, y, "Version: " + get.versionDisplay(prevGame.startVersion) + " to " + get.versionDisplay(prevGame.endVersion), {"color": "#fff"});
+				if (prevGame.endVersion == global.version) draw.lore(x, y, "Version: " + get.versionDisplay(prevGame.startVersion) + " to <#0f0>" + get.versionDisplay(prevGame.endVersion) + "</#0f0>", {"color": "#fff"});
+				else draw.lore(x, y, "Version: " + get.versionDisplay(prevGame.startVersion) + " to " + get.versionDisplay(prevGame.endVersion), {"color": "#fff"});
 			};
 			x = 5;
 			y += 11;
-			if (index == menuSelect[1]) draw.lore(x, y, "> Cards: " + prevGame.cards.length, {"color": "#ff0"});
+			if (index * 3 == menuSelect[1]) draw.lore(x, y, "> Cards: " + prevGame.cards.length, {"color": "#ff0"});
 			else draw.lore(x, y, "  Cards: " + prevGame.cards.length, {"color": "#fff"});
-			x += 6 * 15;
-			draw.lore(x, y, "Artifacts: " + prevGame.artifacts.length, {"color": "#fff"});
+			x += 6 * 13;
+			if (index * 3 + 1 == menuSelect[1]) draw.lore(x, y, "> Artifacts: " + prevGame.artifacts.length, {"color": "#ff0"});
+			else draw.lore(x, y, "  Artifacts: " + prevGame.artifacts.length, {"color": "#fff"});
 			x += 6 * 16;
 			let kills = 0;
 			for (const key in prevGame.kills) {
@@ -2027,8 +2030,9 @@ const graphics = {
 					kills += prevGame.kills[key];
 				};
 			};
-			if (kills > 0) draw.lore(x, y, "Enemies killed: <#0f0>" + kills + "</#0f0>", {"color": "#fff"});
-			else draw.lore(x, y, "Enemies killed: 0", {"color": "#fff"});
+			if (index * 3 + 2 == menuSelect[1]) draw.lore(x, y, "> Enemies killed: " + kills, {"color": "#ff0"});
+			else if (kills > 0) draw.lore(x, y, "  Enemies killed: <#0f0>" + kills + "</#0f0>", {"color": "#fff"});
+			else draw.lore(x, y, "  Enemies killed: 0", {"color": "#fff"});
 		};
 		draw.rect("#0004", 0, 0, 400, 13);
 		draw.lore(200 - 2, 1, "Previous Games", {"color": "#fff", "text-align": DIR.CENTER});
@@ -2044,7 +2048,7 @@ const startAnim = {
 	 */
 	player(image) {
 		if (!(image instanceof HTMLImageElement) || playerAnim[1] === I.player.death) return;
-		if (game.eff[EFF.AURA_BLADE]) {
+		if (game.attackEffects.includes(ATT_EFF.AURA_BLADE)) {
 			if (image == I.player.attack) image = I.player.attack_aura;
 			else if (image == I.player.attack_2) image = I.player.attack_2_aura;
 		};
