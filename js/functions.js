@@ -277,9 +277,10 @@ const get = {
 	 * @param {number} version - the version to display. Defaults to `global.version`.
 	 */
 	versionDisplay(version = global.version) {
-		const major = Math.floor(version / 1000000) % 1000;
-		const minor = Math.floor(version / 1000) % 1000;
-		const build = Math.floor(version) % 1000;
+		if (version < 2_000_000) return "?.?.?";
+		const major = Math.floor(version / 1_000_000) % 1_000;
+		const minor = Math.floor(version / 1_000) % 1_000;
+		const build = Math.floor(version) % 1_000;
 		return major + "." + minor + "." + build;
 	},
 };

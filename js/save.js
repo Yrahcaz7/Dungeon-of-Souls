@@ -216,8 +216,7 @@ function load() {
 			} else {
 				let runVersion = obj.version;
 				Object.assign(game, obj);
-				if (!runVersion) delete game.version;
-				else game.version = runVersion;
+				game.version = runVersion ?? 0;
 			};
 		} else {
 			console.log("no local save found. creating new save...");

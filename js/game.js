@@ -31,7 +31,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_002_004,
+	version: 2_002_005,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -68,7 +68,7 @@ let global = {
 	traveled: [],
 	seed: randomize((Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase()),
 	version: global.version,
-}, popups = [], notif = [-1, 0, "", 0], menuSelect = [MENU.MAIN, 0], refinableDeck = [], winAnim = 0;
+}, popups = [], notif = [-1, 0, "", 0], menuSelect = [MENU.MAIN, 0], menuScroll = 0, refinableDeck = [], winAnim = 0;
 
 /**
  * Checks if there is any active popups.
@@ -406,7 +406,7 @@ function updateVisuals() {
 		graphics.menu(menuSelect[0] === MENU.MAIN);
 		if (game.select[0] === S.WELCOME) {
 			draw.box(80 + 2, 83, 240 - 4, 34);
-			if (game.difficulty === 0) draw.lore(200 - 1, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the '?' at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
+			if (game.difficulty === 0) draw.lore(200 - 1, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the \"?\" at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
 			else draw.lore(200 - 1, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start much stronger from the beginning.\nAnd by much stronger, I mean <#f00>MUCH STRONGER</#f00>.\nOtherwise, it is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
 		} else if (menuSelect[0] === MENU.NEW_RUN || menuSelect[0] === MENU.DIFFICULTY) {
 			graphics.conf();

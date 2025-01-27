@@ -1974,14 +1974,16 @@ const graphics = {
 	},
 	/**
 	 * Draws the previous games layer on the canvas.
+	 * @param {boolean} focused - whether the previous games layer is focused. Defaults to `true`.
 	 */
-	prevGames() {
+	prevGames(focused = true) {
 		draw.rect("#000c");
 		draw.rect("#fff", 327, 14, 1, 185);
+		const spaceY = 49;
 		for (let index = 0; index < global.prevGames.length; index++) {
 			const prevGame = global.prevGames[index];
 			let x = 5;
-			let y = 18 + (index * 49);
+			let y = 18 + (index * spaceY) - menuScroll;
 			draw.box(x - 2, y - 2, 321, 45, {"background-color": "#0004", "border-color": "#fff"});
 			draw.lore(x, y, "<#000 highlight>Game #" + (index + 1) + "</#000>", {"color": "#000", "highlight-color": "#fff"});
 			x += 6 * 10;
@@ -2018,10 +2020,10 @@ const graphics = {
 			};
 			x = 5;
 			y += 11;
-			if (index * 3 == menuSelect[1]) draw.lore(x, y, "> Cards: " + prevGame.cards.length, {"color": "#ff0"});
+			if (index * 3 == menuSelect[1] && focused) draw.lore(x, y, "> Cards: " + prevGame.cards.length, {"color": "#ff0"});
 			else draw.lore(x, y, "  Cards: " + prevGame.cards.length, {"color": "#fff"});
 			x += 6 * 13;
-			if (index * 3 + 1 == menuSelect[1]) draw.lore(x, y, "> Artifacts: " + prevGame.artifacts.length, {"color": "#ff0"});
+			if (index * 3 + 1 == menuSelect[1] && focused) draw.lore(x, y, "> Artifacts: " + prevGame.artifacts.length, {"color": "#ff0"});
 			else draw.lore(x, y, "  Artifacts: " + prevGame.artifacts.length, {"color": "#fff"});
 			x += 6 * 16;
 			let kills = 0;
@@ -2030,9 +2032,21 @@ const graphics = {
 					kills += prevGame.kills[key];
 				};
 			};
-			if (index * 3 + 2 == menuSelect[1]) draw.lore(x, y, "> Enemies killed: " + kills, {"color": "#ff0"});
+			if (index * 3 + 2 == menuSelect[1] && focused) draw.lore(x, y, "> Enemies killed: " + kills, {"color": "#ff0"});
 			else if (kills > 0) draw.lore(x, y, "  Enemies killed: <#0f0>" + kills + "</#0f0>", {"color": "#fff"});
 			else draw.lore(x, y, "  Enemies killed: 0", {"color": "#fff"});
+		};
+		if (focused) {
+			const scrollPadding = 11;
+			const selected = Math.floor(menuSelect[1] / 3);
+			if (menuScroll >= spaceY * selected) {
+				menuScroll -= Math.min(1000, Math.abs(menuScroll - (spaceY * selected)));
+			} else if (menuScroll <= (spaceY * (selected - 3)) + scrollPadding) {
+				menuScroll += Math.min(10, Math.abs(menuScroll - ((spaceY * (selected - 3)) + scrollPadding)));
+			};
+			const maxScroll = Math.max(spaceY * (global.prevGames.length - 3) + scrollPadding, 0);
+			if (menuScroll > maxScroll) menuScroll = maxScroll;
+			else if (menuScroll < 0) menuScroll = 0;
 		};
 		draw.rect("#0004", 0, 0, 400, 13);
 		draw.lore(200 - 2, 1, "Previous Games", {"color": "#fff", "text-align": DIR.CENTER});
