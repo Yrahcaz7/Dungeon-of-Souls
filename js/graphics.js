@@ -1742,7 +1742,7 @@ const graphics = {
 		// draw map
 		draw.rect("#000");
 		draw.image(I.map.top, 3, 12);
-		draw.image(I.map.row, 16, 19, I.map.row.width, 174);
+		draw.rect("#f0c060", 18, 19, 364, 174);
 		draw.image(I.map.bottom, 16, 184);
 		if (game.state === STATE.EVENT_FIN) {
 			if (game.floor % 10 == 9) {
@@ -1796,8 +1796,8 @@ const graphics = {
 			};
 		};
 		// draw traveled path
-		for (let index = 0; index < game.traveled.length - 1; index++) {
-			draw.polyline(mapPathPoints[index][game.traveled[index]][index + 1][game.traveled[index + 1]], "#842", 3);
+		for (let index = 0; index < game.traveled.length; index++) {
+			draw.polyline(mapPathPoints[Math.max(index - 1, 0)][game.traveled[Math.max(index - 1, 0)]][index][game.traveled[index]], "#842", 3);
 		};
 		ctx.filter = "none";
 		// draw nodes
@@ -1808,10 +1808,6 @@ const graphics = {
 				if (typeof game.map[x][y] != "object") continue;
 				let drawX = 25 + ((x - area * 10) * 32) + game.map[x][y][1];
 				let drawY = 18 + (y * 32) + game.map[x][y][2];
-				if (x % 10 == 0) {
-					if (game.traveled[x] === y) draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#842", 3);
-					else draw.line(drawX + 8, drawY + 8, 18, drawY + 8, "#b84", 3);
-				};
 				if (game.map[x][y][0] === ROOM.BATTLE) {
 					draw.image(I.map.node.battle, drawX, drawY);
 					if (focused) {
@@ -1860,6 +1856,9 @@ const graphics = {
 				};
 			};
 		};
+		// draw map edges
+		draw.rect("#530", 16, 19, 2, 174);
+		draw.rect("#530", 382, 19, 2, 174);
 	},
 	/**
 	 * Draws the current event on the canvas.

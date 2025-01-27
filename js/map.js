@@ -181,7 +181,8 @@ const generateMapPathPoints = (() => {
 					visualArr.push([arr[path][index][0] + 600, arr[path][index][1]]);
 					break;
 				} else if (index == 0) {
-					visualArr.push([18, 18 + (y * 32) + 8 + game.map[x][y][2]]);
+					visualArr.push([16, 18 + (y * 32) + 8 + game.map[x][y][2]]);
+					visualArr.push([17, 18 + (y * 32) + 8 + game.map[x][y][2]]);
 				} else {
 					visualArr.push([25 + ((x - area * 10) * 32) + 8 + game.map[x][y][1], 18 + (y * 32) + 8 + game.map[x][y][2]]);
 				};
@@ -189,12 +190,12 @@ const generateMapPathPoints = (() => {
 			let pathPoints = getSubdividedPath(visualArr);
 			for (let index = 1; index < visualArr.length - 3; index++) {
 				const subdivisionIndex = 1 + (index - 1) * (MAP_PATH_SUBDIVISIONS + 1);
-				if (!mapPathPoints[arr[path][index][0]]) mapPathPoints[arr[path][index][0]] = {};
-				if (!mapPathPoints[arr[path][index][0]][arr[path][index][1]]) mapPathPoints[arr[path][index][0]][arr[path][index][1]] = {};
-				const firstNode = mapPathPoints[arr[path][index][0]][arr[path][index][1]];
-				if (!firstNode[arr[path][index + 1][0]]) firstNode[arr[path][index + 1][0]] = {};
-				if (!firstNode[arr[path][index + 1][0]][arr[path][index + 1][1]]) firstNode[arr[path][index + 1][0]][arr[path][index + 1][1]] = [];
-				const nodePair = firstNode[arr[path][index + 1][0]][arr[path][index + 1][1]];
+				if (!mapPathPoints[arr[path][index - 1][0]]) mapPathPoints[arr[path][index - 1][0]] = {};
+				if (!mapPathPoints[arr[path][index - 1][0]][arr[path][index - 1][1]]) mapPathPoints[arr[path][index - 1][0]][arr[path][index - 1][1]] = {};
+				const firstNode = mapPathPoints[arr[path][index - 1][0]][arr[path][index - 1][1]];
+				if (!firstNode[arr[path][index][0]]) firstNode[arr[path][index][0]] = {};
+				if (!firstNode[arr[path][index][0]][arr[path][index][1]]) firstNode[arr[path][index][0]][arr[path][index][1]] = [];
+				const nodePair = firstNode[arr[path][index][0]][arr[path][index][1]];
 				for (let sub = 0; sub < MAP_PATH_SUBDIVISIONS + 2; sub++) {
 					if (!nodePair[sub]) nodePair[sub] = [];
 					nodePair[sub].push(pathPoints[subdivisionIndex + sub]);

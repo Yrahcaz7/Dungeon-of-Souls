@@ -153,7 +153,6 @@ const I = {
 		go: new Image,
 	}, map: {
 		top: new Image,
-		row: new Image,
 		bottom: new Image,
 		select: new Image,
 		select_first: new Image,
