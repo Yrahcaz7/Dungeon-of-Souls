@@ -40,8 +40,9 @@ function hardReset() {
 
 /**
  * Restarts (and records) the current run.
+ * @param {number} newDifficulty - The difficulty of the next run. Defaults to `game.difficulty`.
  */
-function restartRun() {
+function restartRun(newDifficulty = game.difficulty) {
 	let prevGame = {};
 	prevGame.character = game.character;
 	prevGame.difficulty = game.difficulty;
@@ -58,8 +59,12 @@ function restartRun() {
 	prevGame.startVersion = game.version;
 	prevGame.endVersion = global.version;
 	prevGame.score = get.totalScore();
+	if (prevGame.score > global.highScore) {
+		global.highScore = prevGame.score;
+		prevGame.newHighScore = true;
+	};
 	global.prevGames.push(prevGame);
-	localStorage.setItem(ID + "/0", btoa(JSON.stringify({difficulty: game.difficulty, newSave: true})));
+	localStorage.setItem(ID + "/0", btoa(JSON.stringify({difficulty: newDifficulty, newSave: true})));
 	game = null;
 	location.reload();
 };

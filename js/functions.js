@@ -251,7 +251,7 @@ const get = {
 			};
 		};
 		factors.push(["Saved " + game.gold + " gold", 1, Math.floor(game.gold / 5)]);
-		if (game.health > 0) factors.push(["Saved " + game.health + " health", 5, game.health]);
+		if (game.select[0] === S.GAME_WON) factors.push(["Saved " + game.health + " health", 5, game.health]);
 		return factors;
 	},
 	/**
@@ -265,12 +265,22 @@ const get = {
 			};
 		};
 		score += Math.floor(game.gold / 5);
-		if (game.health > 0) score += game.health * 5;
+		if (game.select[0] === S.GAME_WON) score += game.health * 5;
 		if (game.difficulty) {
 			if (hasArtifact(202) && game.kills[FRAGMENT]) score *= 3;
 			else score *= 2;
 		};
 		return score;
+	},
+	/**
+	 * Gets the version display.
+	 * @param {number} version - the version to display. Defaults to `global.version`.
+	 */
+	versionDisplay(version = global.version) {
+		const major = Math.floor(version / 1000000) % 1000;
+		const minor = Math.floor(version / 1000) % 1000;
+		const build = Math.floor(version) % 1000;
+		return major + "." + minor + "." + build;
 	},
 };
 

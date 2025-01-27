@@ -48,6 +48,15 @@ function selection() {
 			actionTimer = 1;
 		};
 		return;
+	} else if (menuSelect[0] === MENU.PREV_GAMES) {
+		if (action === DIR.UP && menuSelect[1] > 0) {
+			menuSelect[1]--;
+			actionTimer = 1;
+		} else if (action === DIR.DOWN && menuSelect[1] < global.prevGames.length - 1) {
+			menuSelect[1]++;
+			actionTimer = 1;
+		};
+		return;
 	};
 	// confirmation
 	if (game.select[0] === S.CONF_END || game.select[0] === S.CONF_EXIT || game.select[0] === S.CONF_RESTART || game.select[0] === S.CONF_REFINE || game.select[0] === S.CONF_PEARL) {
@@ -496,6 +505,8 @@ function performAction() {
 			menuSelect = [MENU.NEW_RUN, 1];
 		} else if (menuSelect[1] == 2) {
 			menuSelect = [MENU.DIFFICULTY, 1];
+		} else if (menuSelect[1] == 3) {
+			menuSelect = [MENU.PREV_GAMES, 0];
 		};
 		actionTimer = 2;
 		return;
@@ -506,14 +517,15 @@ function performAction() {
 		return;
 	} else if (menuSelect[0] === MENU.DIFFICULTY) {
 		if (!menuSelect[1]) {
-			if (game.difficulty === 0) game.difficulty++;
-			else game.difficulty--;
-			restartRun();
+			if (game.difficulty === 0) restartRun(1);
+			else restartRun(0);
 		} else {
 			menuSelect = [MENU.MAIN, 2];
 		};
 		actionTimer = 2;
 		return;
+	} else if (menuSelect[0] === MENU.PREV_GAMES) {
+		// view details of selected previous game
 	};
 	// player turn
 	if (game.turn === TURN.PLAYER) {
@@ -620,10 +632,6 @@ function performAction() {
 	};
 	// game end
 	if ((game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) && game.select[1] == 50) {
-		let score = get.totalScore();
-		if (!global.highScore || score > global.highScore) {
-			global.highScore = score;
-		};
 		restartRun();
 		actionTimer = 2;
 		return;

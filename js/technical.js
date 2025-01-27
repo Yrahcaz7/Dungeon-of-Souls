@@ -197,13 +197,19 @@ document.addEventListener("keydown", event => {
 		};
 		action = -1;
 		actionTimer = 2;
-	} else if ((key == "B" || key == "b") && !event.repeat && menuSelect[0] == -1 && game.select[0] === S.REFINER && actionTimer == -1) {
-		for (let index = 0; index < game.rewards.length; index++) {
-			if (game.rewards[index] == "1 refiner") {
-				game.select = [S.REWARDS, index];
-				action = -1;
-				actionTimer = 2;
-				break;
+	} else if ((key == "B" || key == "b") && !event.repeat && actionTimer == -1) {
+		if (menuSelect[0] === MENU.PREV_GAMES) {
+			menuSelect = [MENU.MAIN, 3];
+			action = -1;
+			actionTimer = 2;
+		} else if (menuSelect[0] == -1 && game.select[0] === S.REFINER) {
+			for (let index = 0; index < game.rewards.length; index++) {
+				if (game.rewards[index] == "1 refiner") {
+					game.select = [S.REWARDS, index];
+					action = -1;
+					actionTimer = 2;
+					break;
+				};
 			};
 		};
 	} else if ((key == " " || key == "Enter") && !event.repeat && actionTimer == -1) {

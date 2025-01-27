@@ -349,7 +349,7 @@ const draw = {
 	 */
 	box(x, y, width, height, style = {"background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
 		style = Object.assign({"background-color": "#ccc", "border-width": 1, "border-color": "#000"}, style);
-		draw.rect(style["background-color"], x, y, width, height);
+		if (style["background-color"]) draw.rect(style["background-color"], x, y, width, height);
 		let val = style["border-width"];
 		if (val) {
 			let col = style["border-color"];
@@ -489,10 +489,8 @@ const draw = {
 	 */
 	textBox(x, y, width, str, style = {"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
 		style = Object.assign({"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}, style);
-		let small = style["text-small"];
-		let position = style["text-align"];
-		let lines = (("" + str).match(/\n/g) || []).length, height = small ? 7 : 12;
-		if (small) {
+		let lines = (("" + str).match(/\n/g) || []).length, height = style["text-small"] ? 7 : 12;
+		if (style["text-small"]) {
 			width = Math.ceil(width * 3 + 0.5);
 			height = Math.ceil(lines * 5.5 + 7);
 		} else {
@@ -500,13 +498,13 @@ const draw = {
 			height = lines * 11 + 12;
 		};
 		draw.box(x, y, width, height, style);
-		if (position === DIR.CENTER) {
+		if (style["text-align"] === DIR.CENTER) {
 			x += width / 2;
-			if (small) x -= 1.5;
+			if (style["text-small"]) x -= 1.5;
 			else x -= 2.5;
-		} else if (position === DIR.LEFT) {
+		} else if (style["text-align"] === DIR.LEFT) {
 			x += width;
-			if (small) x -= 4;
+			if (style["text-small"]) x -= 4;
 			else x -= 7;
 		};
 		draw.lore(x + 1, y + 1, str, style);
@@ -863,7 +861,7 @@ const graphics = {
 		else if (game.select[0] === S.VOID) draw.image(I.select.round, 380, 162);
 		else if (game.select[0] === S.DISCARD) draw.image(I.select.discard, 381, 181);
 		// info
-		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": (get.area() == 1 ? "#000" : "#f44")});
+		draw.lore(1, 1, "Floor " + game.floor + " - " + game.gold + " gold", {"color": (get.area() == 1 ? "#000" : "#f44")});
 		// intents
 		if (!hidden() && !(game.select[0] === S.LOOKER || game.select[0] === S.HELP || game.select[0] === S.OPTIONS)) {
 			for (let index = 0; index < game.enemies.length; index++) {
@@ -1769,8 +1767,8 @@ const graphics = {
 		if (game.select[1] == availableLocations.length && focused) draw.image(I.select.deck, 21, 15);
 		draw.image(I.extra.end, 22, 179);
 		if (game.select[1] == -1 && focused) draw.image(I.select.round, 21, 178);
-		draw.lore(1, 1, "floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
-		draw.lore(399, 1, "seed: " + game.seed, {"color": "#fff", "text-align": DIR.LEFT});
+		draw.lore(1, 1, "Floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
+		draw.lore(399, 1, "Seed: " + game.seed, {"color": "#fff", "text-align": DIR.LEFT});
 		// draw scribbles
 		for (let x = area * 10; x < (area + 1) * 10; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
@@ -1973,6 +1971,69 @@ const graphics = {
 			draw.box(x + 40, y + height - 12, 25, 10);
 			draw.lore(x + 41, y + height - 11, "BACK");
 		};
+	},
+	/**
+	 * Draws the previous games layer on the canvas.
+	 */
+	prevGames() {
+		draw.rect("#000c");
+		draw.rect("#fff", 327, 14, 1, 185);
+		for (let index = 0; index < global.prevGames.length; index++) {
+			const prevGame = global.prevGames[index];
+			let x = 5;
+			let y = 18 + (index * 49);
+			draw.box(x - 2, y - 2, 321, 45, {"background-color": "#0004", "border-color": "#fff"});
+			draw.lore(x, y, "<#000 highlight>Game #" + (index + 1) + "</#000>", {"color": "#000", "highlight-color": "#fff"});
+			x += 6 * 10;
+			if (prevGame.result === GAME_RESULT.LOSS) draw.lore(x, y, "Result: <#f00>Loss</#f00>", {"color": "#fff"});
+			else if (prevGame.result === GAME_RESULT.WIN) draw.lore(x, y, "Result: <#0f0>Win</#0f0>", {"color": "#fff"});
+			else draw.lore(x, y, "Result: <#f00>Surrender</#f00>", {"color": "#fff"});
+			x += 6 * 18;
+			if (prevGame.artifacts.includes(202)) draw.lore(x, y, "Difficulty: <#fcf050>Determination</#fcf050>", {"color": "#fff"});
+			else if (prevGame.difficulty) draw.lore(x, y, "Difficulty: <#f00>Hard</#f00>", {"color": "#fff"});
+			else draw.lore(x, y, "Difficulty: <#0f0>Easy</#0f0>", {"color": "#fff"});
+			x = 5;
+			y += 11;
+			draw.lore(x, y, "Floor: " + prevGame.floor, {"color": "#fff"});
+			x += 6 * 11;
+			if (prevGame.result === GAME_RESULT.WIN) draw.lore(x, y, "Remaining health: <#0f0>" + prevGame.health + "</#0f0>", {"color": "#fff"});
+			else if (prevGame.health > 0) draw.lore(x, y, "Remaining health: <#f00>" + prevGame.health + "</#f00>", {"color": "#fff"});
+			else draw.lore(x, y, "Remaining health: 0", {"color": "#fff"});
+			x += 6 * 22;
+			if (prevGame.gold > 0) draw.lore(x, y, "Remaining gold: <#0f0>" + prevGame.gold + "</#0f0>", {"color": "#fff"});
+			else draw.lore(x, y, "Remaining gold: 0", {"color": "#fff"});
+			x = 5;
+			y += 11;
+			if (prevGame.newHighScore) draw.lore(x, y, "Score: <#0f0>" + prevGame.score + "</#0f0>", {"color": "#fff"});
+			else draw.lore(x, y, "Score: " + prevGame.score, {"color": "#fff"});
+			x += 6 * 13;
+			draw.lore(x, y, "Seed: " + prevGame.seed, {"color": "#fff"});
+			x += 6 * 14;
+			if (prevGame.startVersion == prevGame.endVersion) {
+				draw.lore(x, y, "Version: " + get.versionDisplay(prevGame.endVersion), {"color": "#fff"});
+			} else {
+				draw.lore(x, y, "Version: " + get.versionDisplay(prevGame.startVersion) + " to " + get.versionDisplay(prevGame.endVersion), {"color": "#fff"});
+			};
+			x = 5;
+			y += 11;
+			if (index == menuSelect[1]) draw.lore(x, y, "> Cards: " + prevGame.cards.length, {"color": "#ff0"});
+			else draw.lore(x, y, "  Cards: " + prevGame.cards.length, {"color": "#fff"});
+			x += 6 * 15;
+			draw.lore(x, y, "Artifacts: " + prevGame.artifacts.length, {"color": "#fff"});
+			x += 6 * 16;
+			let kills = 0;
+			for (const key in prevGame.kills) {
+				if (prevGame.kills.hasOwnProperty(key)) {
+					kills += prevGame.kills[key];
+				};
+			};
+			if (kills > 0) draw.lore(x, y, "Enemies killed: <#0f0>" + kills + "</#0f0>", {"color": "#fff"});
+			else draw.lore(x, y, "Enemies killed: 0", {"color": "#fff"});
+		};
+		draw.rect("#0004", 0, 0, 400, 13);
+		draw.lore(200 - 2, 1, "Previous Games", {"color": "#fff", "text-align": DIR.CENTER});
+		draw.rect("#fff", 1, 12, 398, 1);
+		draw.lore(333, 18, "Press B to go back\nto the main menu.\n\nPress space or enter\nto view the details\nof the selected\naspect of a game.", {"color": "#fff", "text-small": true});
 	},
 };
 

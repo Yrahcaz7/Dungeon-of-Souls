@@ -66,10 +66,11 @@ const MENU = {
 	MAIN: 400, // N is the index of the selected main menu option.
 	DIFFICULTY: 401, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 	NEW_RUN: 402, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
+	PREV_GAMES: 403, // N is the index of the selected past run in the current sort.
 };
 
 // main menu options
-const MAIN_MENU_OPTIONS = ["Resume run", "Start new run", "Change difficulty"];
+const MAIN_MENU_OPTIONS = ["Resume run", "Start new run", "Change difficulty", "View past runs"];
 
 // special selects from card effects - used in `game.select` as [S, N] or [S, N, [S_PREV, N_PREV]]
 // N is an integer (which defaults to 0) and is defined differently for each following S:

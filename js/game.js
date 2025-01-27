@@ -26,11 +26,12 @@ let global = {
 		[OPTION.AUTO_END_TURN]: false,
 		[OPTION.END_TURN_CONFIRM]: true,
 	},
+	highScore: 0,
 	prevGames: [],
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_002_001,
+	version: 2_002_002,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -397,13 +398,8 @@ function updateVisuals() {
 	if (menuSelect[0] !== -1) {
 		graphics.middleLayer();
 		draw.image(I.title, (400 - I.title.width) / 2, 0);
-		let version = {
-			major: Math.floor(global.version / 1000000) % 1000,
-			minor: Math.floor(global.version / 1000) % 1000,
-			build: Math.floor(global.version) % 1000,
-		};
-		if (global.version) draw.lore(390, 51, "Version " + version.major + "." + version.minor + "." + version.build, {"color": "#f00", "text-align": DIR.LEFT, "text-small": true});
-		if (global.highScore > 0) draw.lore(1, 1, "HIGH SCORE: " + global.highScore + " points", {"color": "#fff", "text-small": true});
+		draw.lore(390, 51, "Version " + get.versionDisplay(), {"color": "#f00", "text-align": DIR.LEFT, "text-small": true});
+		draw.lore(1, 1, "HIGH SCORE: " + global.highScore + " points", {"color": "#fff", "text-small": true});
 		if (hasArtifact(202) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": DIR.CENTER});
 		else if (get.area() == 1) draw.lore(200 - 2, 53, "Act 2: The Color of the Soul", {"color": "#fff", "text-align": DIR.CENTER});
 		else draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": DIR.CENTER});
@@ -414,6 +410,8 @@ function updateVisuals() {
 			else draw.lore(200 - 1, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start much stronger from the beginning.\nAnd by much stronger, I mean <#f00>MUCH STRONGER</#f00>.\nOtherwise, it is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
 		} else if (menuSelect[0] === MENU.NEW_RUN || menuSelect[0] === MENU.DIFFICULTY) {
 			graphics.conf();
+		} else if (menuSelect[0] === MENU.PREV_GAMES) {
+			graphics.prevGames();
 		};
 		if (hasArtifact(202) && game.floor == 10 && transition < 100) transition++;
 		return;
@@ -455,7 +453,7 @@ function updateVisuals() {
 		if ((!game.select[1] && !game.select[2]) || (game.select[2] && game.select[2][0] === S.MAP)) graphics.map(false);
 		graphics.deck();
 	};
-	if (!hidden() && !inDeck()) {
+	if (!inDeck()) {
 		graphics.target();
 	};
 	if (game.select[0] === S.CONF_END || game.select[0] === S.CONF_PURIFY || game.select[0] === S.CONF_REFINE || game.select[0] === S.CONF_PEARL) {
