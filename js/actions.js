@@ -20,6 +20,41 @@ const PIXEL_SIZES = [1, 2, 0.5], MUSIC_TRACKS = ["default", "Ruins of Caelum", "
 let actionTimer = -1, secret = false;
 
 /**
+ * Handles deck selection.
+ * @returns {boolean} Whether the action was handled.
+ */
+function deckSelection() {
+	const len = currentDeck().length;
+	const cols = (menuSelect[0] === -1 && game.select[0] === S.REFINER ? 3 : 6);
+	if (action === DIR.LEFT) {
+		if (game.cardSelect > 0) {
+			game.cardSelect--;
+		};
+		actionTimer = 1;
+		return true;
+	} else if (action === DIR.RIGHT) {
+		if (game.cardSelect < len - 1) {
+			game.cardSelect++;
+		};
+		actionTimer = 1;
+		return true;
+	} else if (action === DIR.UP) {
+		if (game.cardSelect > 0) {
+			game.cardSelect = Math.max(game.cardSelect - cols, 0);
+		};
+		actionTimer = 1;
+		return true;
+	} else if (action === DIR.DOWN) {
+		if (game.cardSelect < len - 1) {
+			game.cardSelect = Math.min(game.cardSelect + cols, len - 1);
+		};
+		actionTimer = 1;
+		return true;
+	};
+	return false;
+};
+
+/**
  * Handles selection actions.
  */
 function selection() {
@@ -28,9 +63,7 @@ function selection() {
 	if (actionTimer > -1) return;
 	if (!actionTimer || actionTimer < -1) actionTimer = -1;
 	// menus
-	if (game.select[0] === S.WELCOME) {
-		return;
-	} else if (menuSelect[0] === MENU.MAIN) {
+	if (menuSelect[0] === MENU.MAIN) {
 		if (action === DIR.UP && menuSelect[1] > 0) {
 			menuSelect[1]--;
 			actionTimer = 1;
@@ -38,7 +71,6 @@ function selection() {
 			menuSelect[1]++;
 			actionTimer = 1;
 		};
-		return;
 	} else if (menuSelect[0] === MENU.NEW_RUN || menuSelect[0] === MENU.DIFFICULTY) {
 		if (action === DIR.LEFT && menuSelect[1]) {
 			menuSelect[1] = 0;
@@ -47,7 +79,6 @@ function selection() {
 			menuSelect[1] = 1;
 			actionTimer = 1;
 		};
-		return;
 	} else if (menuSelect[0] === MENU.PREV_GAMES) {
 		if (action === DIR.LEFT && menuSelect[1] > 0) {
 			menuSelect[1]--;
@@ -62,8 +93,10 @@ function selection() {
 			menuSelect[1] = Math.min(menuSelect[1] + 3, global.prevGames.length * 3 - 1);
 			actionTimer = 1;
 		};
-		return;
+	} else if (menuSelect[0] === MENU.PREV_GAME_INFO) {
+		deckSelection();
 	};
+	if (menuSelect[0] !== -1) return;
 	// confirmation
 	if (game.select[0] === S.CONF_END || game.select[0] === S.CONF_EXIT || game.select[0] === S.CONF_RESTART || game.select[0] === S.CONF_REFINE || game.select[0] === S.CONF_PEARL) {
 		if (action === DIR.LEFT && game.select[1]) {
@@ -317,33 +350,8 @@ function selection() {
 	};
 	// deck selection
 	if (((game.select[0] === S.DECK || game.select[0] === S.DISCARD || game.select[0] === S.VOID) && game.select[1]) || game.select[0] === S.CARDS || game.select[0] === S.PURIFIER || game.select[0] === S.REFINER) {
-		let len = currentDeck().length;
-		let cols = (game.select[0] === S.REFINER ? 3 : 6);
-		if (action === DIR.LEFT) {
-			if (game.cardSelect > 0) {
-				game.cardSelect--;
-			};
-			actionTimer = 1;
-			return;
-		} else if (action === DIR.RIGHT) {
-			if (game.cardSelect < len - 1) {
-				game.cardSelect++;
-			};
-			actionTimer = 1;
-			return;
-		} else if (action === DIR.UP) {
-			if (game.cardSelect > 0) {
-				game.cardSelect = Math.max(game.cardSelect - cols, 0);
-			};
-			actionTimer = 1;
-			return;
-		} else if (action === DIR.DOWN) {
-			if (game.cardSelect < len - 1) {
-				game.cardSelect = Math.min(game.cardSelect + cols, len - 1);
-			};
-			actionTimer = 1;
-			return;
-		};
+		const handled = deckSelection();
+		if (handled) return;
 	};
 	// scrolling
 	if (action === DIR.UP && game.select[0] === S.HELP && infoPos > 0 && infoLimit > 0) infoPos -= 11;
@@ -503,7 +511,6 @@ function performAction() {
 	if (game.select[0] === S.WELCOME) {
 		game.select = [-1, 0];
 		actionTimer = 2;
-		return;
 	} else if (menuSelect[0] === MENU.MAIN) {
 		if (menuSelect[1] == 0) {
 			menuSelect = [-1, 0];
@@ -515,12 +522,11 @@ function performAction() {
 			menuSelect = [MENU.PREV_GAMES, 0];
 		};
 		actionTimer = 2;
-		return;
+		return; // to prevent a double action when resuming a run
 	} else if (menuSelect[0] === MENU.NEW_RUN) {
 		if (!menuSelect[1]) restartRun();
 		else menuSelect = [MENU.MAIN, 1];
 		actionTimer = 2;
-		return;
 	} else if (menuSelect[0] === MENU.DIFFICULTY) {
 		if (!menuSelect[1]) {
 			if (game.difficulty === 0) restartRun(1);
@@ -529,10 +535,14 @@ function performAction() {
 			menuSelect = [MENU.MAIN, 2];
 		};
 		actionTimer = 2;
-		return;
 	} else if (menuSelect[0] === MENU.PREV_GAMES) {
-		// view details of selected previous game
+		menuSelect[0] = MENU.PREV_GAME_INFO;
+		actionTimer = 2;
+	} else if (menuSelect[0] === MENU.PREV_GAME_INFO) {
+		menuSelect[0] = MENU.PREV_GAMES;
+		actionTimer = 2;
 	};
+	if (menuSelect[0] !== -1) return;
 	// player turn
 	if (game.turn === TURN.PLAYER) {
 		// only one card can be active

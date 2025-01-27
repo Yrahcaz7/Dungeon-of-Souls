@@ -66,7 +66,8 @@ const MENU = {
 	MAIN: 400, // N is the index of the selected main menu option.
 	DIFFICULTY: 401, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 	NEW_RUN: 402, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
-	PREV_GAMES: 403, // N is the index of the selected past run in the current sort.
+	PREV_GAMES: 403, // N is three times the index of the selected past run in the current sort plus the index of the selected aspect (0 is cards, 1 is artifacts, and 2 is enemies killed).
+	PREV_GAME_INFO: 404, // N is three times the index of the selected past run in the current sort plus the index of the selected aspect (0 is cards, 1 is artifacts, and 2 is enemies killed).
 };
 
 // main menu options

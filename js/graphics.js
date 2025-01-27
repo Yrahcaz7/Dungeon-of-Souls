@@ -1450,7 +1450,8 @@ const graphics = {
 			};
 		};
 		draw.rect("#0004", 0, 0, 400, 13);
-		if (game.select[0] === S.DECK) draw.lore(200 - 2, 1, "Deck", {"color": "#fff", "text-align": DIR.CENTER});
+		if (menuSelect[0] === MENU.PREV_GAME_INFO) draw.lore(200 - 2, 1, "Cards From Game #" + (Math.floor(menuSelect[1] / 3) + 1), {"color": "#fff", "text-align": DIR.CENTER});
+		else if (game.select[0] === S.DECK) draw.lore(200 - 2, 1, "Deck", {"color": "#fff", "text-align": DIR.CENTER});
 		else if (game.select[0] === S.DISCARD) draw.lore(200 - 2, 1, "Discard", {"color": "#fff", "text-align": DIR.CENTER});
 		else if (game.select[0] === S.VOID) draw.lore(200 - 2, 1, "Void", {"color": "#fff", "text-align": DIR.CENTER});
 		else if (game.select[0] === S.CARDS) draw.lore(200 - 2, 1, "Cards", {"color": "#fff", "text-align": DIR.CENTER});
@@ -2039,7 +2040,7 @@ const graphics = {
 			const scrollPadding = 11;
 			const selected = Math.floor(menuSelect[1] / 3);
 			if (menuScroll >= spaceY * selected) {
-				menuScroll -= Math.min(1000, Math.abs(menuScroll - (spaceY * selected)));
+				menuScroll -= Math.min(10, Math.abs(menuScroll - (spaceY * selected)));
 			} else if (menuScroll <= (spaceY * (selected - 3)) + scrollPadding) {
 				menuScroll += Math.min(10, Math.abs(menuScroll - ((spaceY * (selected - 3)) + scrollPadding)));
 			};

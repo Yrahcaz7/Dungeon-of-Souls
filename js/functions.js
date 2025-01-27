@@ -65,7 +65,7 @@ function hidden() {
  * Returns a boolean indicating whether a deck outside battle is being viewed.
  */
 function inOutsideDeck() {
-	return (game.select[0] === S.CARDS || game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY || game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE);
+	return menuSelect[0] === MENU.PREV_GAME_INFO || game.select[0] === S.CARDS || game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY || game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE;
 };
 
 /**
@@ -80,6 +80,7 @@ function inDeck() {
  * @returns {Card[]}
  */
 function currentDeck() {
+	if (menuSelect[0] === MENU.PREV_GAME_INFO) return global.prevGames[Math.floor(menuSelect[1] / 3)].cards;
 	if (game.select[0] === S.DECK && game.select[1]) return Card.sort(game.deck.slice());
 	if (game.select[0] === S.DISCARD && game.select[1]) return game.discard;
 	if (game.select[0] === S.VOID && game.select[1]) return game.void;

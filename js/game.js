@@ -31,7 +31,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_002_006,
+	version: 2_002_007,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -410,8 +410,11 @@ function updateVisuals() {
 			else draw.lore(200 - 1, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start much stronger from the beginning.\nAnd by much stronger, I mean <#f00>MUCH STRONGER</#f00>.\nOtherwise, it is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
 		} else if (menuSelect[0] === MENU.NEW_RUN || menuSelect[0] === MENU.DIFFICULTY) {
 			graphics.conf();
-		} else if (menuSelect[0] === MENU.PREV_GAMES) {
-			graphics.prevGames();
+		} else if (menuSelect[0] === MENU.PREV_GAMES || menuSelect[0] === MENU.PREV_GAME_INFO) {
+			graphics.prevGames(menuSelect[0] === MENU.PREV_GAMES);
+		};
+		if (menuSelect[0] === MENU.PREV_GAME_INFO) {
+			if (menuSelect[1] % 3 === 0) graphics.deck();
 		};
 		if (hasArtifact(202) && game.floor == 10 && transition < 100) transition++;
 		return;
