@@ -2053,6 +2053,53 @@ const graphics = {
 		draw.rect("#fff", 1, 12, 398, 1);
 		draw.lore(333, 18, "Press B to go back\nto the main menu.\n\nPress space or enter\nto view the details\nof the selected\naspect of a game.", {"color": "#fff", "text-small": true});
 	},
+	/**
+	 * Draws the previous game artifact layer on the canvas.
+	 * @param {boolean} focused - whether the previous game artifact layer is focused. Defaults to `true`.
+	 */
+	prevGameArtifacts(focused = true) {
+		draw.rect("#000c");
+		const artifacts = global.prevGames[Math.floor(menuSelect[1] / 3)].artifacts;
+		if (menuArtifactSelect > artifacts.length - 1) menuArtifactSelect = artifacts.length - 1;
+		// big artifacts
+		for (let index = 0; index < artifacts.length; index++) {
+			if (!ARTIFACTS[artifacts[index]].big) continue;
+			draw.image(I.artifact[artifacts[index]], (index * 26) + 3, 16);
+			if (index == menuArtifactSelect && focused) draw.image(I.artifact.select[artifacts[index]], (index * 26) + 2, 15);
+		};
+		// small artifacts
+		for (let index = 0; index < artifacts.length; index++) {
+			if (ARTIFACTS[artifacts[index]].big) continue;
+			draw.image(I.artifact[artifacts[index]], (index * 26) + 11, 24);
+			if (index == menuArtifactSelect && focused) draw.image(I.artifact.select[artifacts[index]], (index * 26) + 10, 23);
+		};
+		info.artifact(artifacts[menuArtifactSelect], menuArtifactSelect * 26 + 30, 24);
+		draw.rect("#0004", 0, 0, 400, 13);
+		draw.lore(200 - 2, 1, "Artifacts From Game #" + (Math.floor(menuSelect[1] / 3) + 1), {"color": "#fff", "text-align": DIR.CENTER});
+		draw.rect("#fff", 1, 12, 398, 1);
+	},
+	/**
+	 * Draws the previous game kills layer on the canvas.
+	 * @param {boolean} focused - whether the previous game kills layer is focused. Defaults to `true`.
+	 */
+	prevGameKills(focused = true) {
+		draw.rect("#000c");
+		let text = "";
+		const kills = global.prevGames[Math.floor(menuSelect[1] / 3)].kills;
+		let totalKills = 0;
+		for (const key in kills) {
+			if (kills.hasOwnProperty(key)) {
+				if (+key === FRAGMENT || +key === SINGULARITY) text += "\nKilled " + ENEMY_NAME[+key];
+				else text += "\nKilled " + kills[key] + " " + (kills[key] > 1 ? PLURAL_ENEMY_NAME : ENEMY_NAME)[+key];
+				totalKills += kills[key];
+			};
+		};
+		text += "\n\nTotal kills: " + totalKills;
+		draw.lore(200 - 1, 15, (totalKills > 0 ? "\n" : "") + text, {"color": "#fff", "text-align": DIR.CENTER});
+		draw.rect("#0004", 0, 0, 400, 13);
+		draw.lore(200 - 2, 1, "Enemies Killed From Game #" + (Math.floor(menuSelect[1] / 3) + 1), {"color": "#fff", "text-align": DIR.CENTER});
+		draw.rect("#fff", 1, 12, 398, 1);
+	},
 };
 
 const startAnim = {

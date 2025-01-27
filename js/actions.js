@@ -93,8 +93,17 @@ function selection() {
 			menuSelect[1] = Math.min(menuSelect[1] + 3, global.prevGames.length * 3 - 1);
 			actionTimer = 1;
 		};
-	} else if (menuSelect[0] === MENU.PREV_GAME_INFO) {
+	} else if (menuSelect[0] === MENU.PREV_GAME_INFO && menuSelect[1] == 0) {
 		deckSelection();
+	} else if (menuSelect[0] === MENU.PREV_GAME_INFO && menuSelect[1] == 1) {
+		const len = global.prevGames[Math.floor(menuSelect[1] / 3)].artifacts.length;
+		if (action === DIR.LEFT && menuArtifactSelect > 0) {
+			menuArtifactSelect--;
+			actionTimer = 1;
+		} else if (action === DIR.RIGHT && menuArtifactSelect < len - 1) {
+			menuArtifactSelect++;
+			actionTimer = 1;
+		};
 	};
 	if (menuSelect[0] !== -1) return;
 	// confirmation

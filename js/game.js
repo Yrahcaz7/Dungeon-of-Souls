@@ -31,7 +31,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_002_007,
+	version: 2_002_008,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -68,7 +68,7 @@ let global = {
 	traveled: [],
 	seed: randomize((Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase()),
 	version: global.version,
-}, popups = [], notif = [-1, 0, "", 0], menuSelect = [MENU.MAIN, 0], menuScroll = 0, refinableDeck = [], winAnim = 0;
+}, popups = [], notif = [-1, 0, "", 0], menuSelect = [MENU.MAIN, 0], menuScroll = 0, menuArtifactSelect = 0, refinableDeck = [], winAnim = 0;
 
 /**
  * Checks if there is any active popups.
@@ -414,7 +414,9 @@ function updateVisuals() {
 			graphics.prevGames(menuSelect[0] === MENU.PREV_GAMES);
 		};
 		if (menuSelect[0] === MENU.PREV_GAME_INFO) {
-			if (menuSelect[1] % 3 === 0) graphics.deck();
+			if (menuSelect[1] % 3 == 0) graphics.deck();
+			else if (menuSelect[1] % 3 == 1) graphics.prevGameArtifacts();
+			else if (menuSelect[1] % 3 == 2) graphics.prevGameKills();
 		};
 		if (hasArtifact(202) && game.floor == 10 && transition < 100) transition++;
 		return;
