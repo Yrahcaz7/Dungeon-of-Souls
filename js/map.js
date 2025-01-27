@@ -148,7 +148,7 @@ const generateMapPathPoints = (() => {
 	 * @param {number} area - the area to get the visual map paths of.
 	 */
 	async function getVisualMapPaths(area = get.area()) {
-		const areaStartTime = Date.now();
+		const startTime = Date.now();
 		// start the generation of paths from the start of the area.
 		const start = (area > 0 ? paths[area * 10 - 1][2] : paths[-1]);
 		let arr = [];
@@ -228,15 +228,15 @@ const generateMapPathPoints = (() => {
 				};
 			};
 		};
-		console.log("> area " + area + " generated in " + (Date.now() - areaStartTime) + "ms");
+		console.log("area " + area + " generated in " + (Date.now() - startTime) + "ms");
 	};
 
 	return async () => {
-		const mapStartTime = Date.now();
+		const startTime = Date.now();
 		mapPathPoints = [];
 		await getVisualMapPaths(0);
 		await getVisualMapPaths(1);
-		console.log("[map visuals generated in " + (Date.now() - mapStartTime) + "ms]");
+		console.log("> map visuals generated in " + (Date.now() - startTime) + "ms");
 	};
 })();
 
@@ -276,7 +276,7 @@ const generateMap = (() => {
 		if (mapProg === mapTotal) draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\nrunning final checks...", {"color": "#fff", "text-align": DIR.CENTER});
 		else draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\n" + (mapProg / mapTotal * 100).toFixed(0) + "%", {"color": "#fff", "text-align": DIR.CENTER});
 		mapProg++;
-		await new Promise(r => setTimeout(r));
+		await new Promise(resolve => setTimeout(resolve));
 	};
 
 	/**
@@ -526,14 +526,14 @@ const generateMap = (() => {
 	};
 
 	return async () => {
-		const mapStartTime = Date.now();
+		const startTime = Date.now();
 		await updateMapProg();
 		game.firstRoom = await getMapNode(0, MAP_NODE.FIRST);
-		console.log("first battle generated in " + (Date.now() - mapStartTime) + "ms");
+		console.log("first battle generated in " + (Date.now() - startTime) + "ms");
 		game.map = [];
 		await generateArea(0);
 		await generateArea(1);
 		addScribbles();
-		console.log("[map data generated in " + (Date.now() - mapStartTime) + "ms]");
+		console.log("[map data generated in " + (Date.now() - startTime) + "ms]");
 	};
 })();

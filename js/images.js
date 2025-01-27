@@ -184,38 +184,87 @@ const I = {
 };
 
 /**
- * Loads an image or all images in a folder.
- * @param {object} ref - a reference to the containing folder.
- * @param {string} name - the name of the image to load.
- * @param {string} path - the path of the containing folder.
- * @param {boolean} select - if true, loads the select image as well.
- * @param {boolean} blue - if true, loads the blue select image as well.
+ * Loads all images.
  */
-function loadImage(ref, name, path, select = false, blue = false) {
-	if (ref[name] instanceof Image) {
-		ref[name].src = path + name + ".png";
-		if (select) {
-			ref.select[name] = new Image;
-			ref.select[name].src = path + "select/" + name + ".png";
-		};
-		if (blue) {
-			ref.select_blue[name] = new Image;
-			ref.select_blue[name].src = path + "select_blue/" + name + ".png";
-		};
-	} else if (ref[name] instanceof Number) {
-		let num = +ref[name];
-		ref[name] = [];
-		for (let index = 0; index < num; index++) {
-			ref[name].push(new Image);
-			loadImage(ref[name], index, path + name + "/");
-		};
-	} else {
-		select = ref[name].select && !(ref[name].select instanceof Image);
-		blue = ref[name].select_blue && !(ref[name].select_blue instanceof Image);
-		for (const folder in ref[name]) {
-			if (ref[name].hasOwnProperty(folder)) {
-				loadImage(ref[name], folder, path + name + "/", select, blue);
+const loadImages = (() => {
+	/**
+	 * Loads an image or all images in a folder.
+	 * @param {object} ref - a reference to the containing folder.
+	 * @param {string} name - the name of the image to load.
+	 * @param {string} path - the path of the containing folder.
+	 * @param {boolean} select - if true, loads the select image as well.
+	 * @param {boolean} blue - if true, loads the blue select image as well.
+	 */
+	async function loadImage(ref, name, path, select = false, blue = false) {
+		if (ref[name] instanceof Image) {
+			const promises = [];
+			ref[name].src = path + name + ".png";
+			promises.push(new Promise(resolve => ref[name].onload = resolve));
+			if (select) {
+				ref.select[name] = new Image;
+				ref.select[name].src = path + "select/" + name + ".png";
+				promises.push(new Promise(resolve => ref.select[name].onload = resolve));
+			};
+			if (blue) {
+				ref.select_blue[name] = new Image;
+				ref.select_blue[name].src = path + "select_blue/" + name + ".png";
+				promises.push(new Promise(resolve => ref.select_blue[name].onload = resolve));
+			};
+			await Promise.all(promises);
+		} else if (ref[name] instanceof Number) {
+			let num = +ref[name];
+			ref[name] = [];
+			for (let index = 0; index < num; index++) {
+				ref[name].push(new Image);
+				await loadImage(ref[name], index, path + name + "/");
+			};
+		} else {
+			select = ref[name].select && !(ref[name].select instanceof Image);
+			blue = ref[name].select_blue && !(ref[name].select_blue instanceof Image);
+			for (const folder in ref[name]) {
+				if (ref[name].hasOwnProperty(folder)) {
+					await loadImage(ref[name], folder, path + name + "/", select, blue);
+				};
 			};
 		};
 	};
-};
+
+	return async () => {
+		const loadStartTime = Date.now();
+		// setup cards
+		for (const id in CARDS) {
+			if (CARDS.hasOwnProperty(id) && CARDS[id].rarity >= 0) {
+				I.card[RARITY[CARDS[id].rarity]][id] = new Image;
+				CARD_IDS[CARDS[id].rarity].push(+id);
+			};
+		};
+		// setup artifacts
+		for (const id in ARTIFACTS) {
+			if (ARTIFACTS.hasOwnProperty(id)) {
+				I.artifact[id] = new Image;
+				if (id >= 100 && id < 200) ARTIFACT_IDS.push(+id);
+			};
+		};
+		// setup effect icons
+		for (const eff in EFF) {
+			if (EFF.hasOwnProperty(eff)) {
+				I.icon[EFF[eff]] = new Image;
+			};
+		};
+		// setup enemy effect icons
+		for (const eff in ENEMY_EFF) {
+			if (ENEMY_EFF.hasOwnProperty(eff)) {
+				I.icon[ENEMY_EFF[eff]] = new Image;
+			};
+		};
+		// load images
+		for (const folder in I) {
+			if (I.hasOwnProperty(folder)) {
+				const folderStartTime = Date.now();
+				await loadImage(I, folder, "images/");
+				console.log("I." + folder + " loaded in " + (Date.now() - folderStartTime) + "ms");
+			};
+		};
+		console.log("> I (images) loaded in " + (Date.now() - loadStartTime) + "ms");
+	};
+})();

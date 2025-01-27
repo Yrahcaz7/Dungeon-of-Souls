@@ -222,34 +222,6 @@ function load() {
 			console.log("no local save found. creating new save...");
 		};
 	};
-	// load images
-	for (const id in CARDS) {
-		if (CARDS.hasOwnProperty(id) && CARDS[id].rarity >= 0) {
-			I.card[RARITY[CARDS[id].rarity]][id] = new Image;
-			CARD_IDS[CARDS[id].rarity].push(+id);
-		};
-	};
-	for (const id in ARTIFACTS) {
-		if (ARTIFACTS.hasOwnProperty(id)) {
-			I.artifact[id] = new Image;
-			if (id >= 100 && id < 200) ARTIFACT_IDS.push(+id);
-		};
-	};
-	for (const eff in EFF) {
-		if (EFF.hasOwnProperty(eff)) {
-			I.icon[EFF[eff]] = new Image;
-		};
-	};
-	for (const eff in ENEMY_EFF) {
-		if (ENEMY_EFF.hasOwnProperty(eff)) {
-			I.icon[ENEMY_EFF[eff]] = new Image;
-		};
-	};
-	for (const folder in I) {
-		if (I.hasOwnProperty(folder)) {
-			loadImage(I, folder, "images/");
-		};
-	};
 	// fix old save
 	if (oldVersion) fixSave(oldVersion);
 	// save fixed save

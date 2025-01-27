@@ -2041,7 +2041,7 @@ const graphics = {
 			else if (kills > 0) draw.lore(x, y, "  Enemies killed: <#0f0>" + kills + "</#0f0>", {"color": "#fff"});
 			else draw.lore(x, y, "  Enemies killed: 0", {"color": "#fff"});
 			// player character icon
-			draw.image(I.player.head, 314, y - 1);
+			draw.image(I.player.head, 323 - I.player.head.width, y - 1);
 		};
 		// scrolling
 		if (focused) {

@@ -84,14 +84,15 @@ function chance(chance = 1/2) {
 let loaded = false;
 
 window.onload = async function() {
+	const loadStartTime = Date.now();
 	// prep things
 	load();
+	console.log("[save loaded in " + (Date.now() - loadStartTime) + "ms]");
 	seed = internalSeed(game.seed);
 	canvasData();
-	// set things
+	// fix canvas position and size
 	if (global.options[OPTION.PERFECT_SCREEN]) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
 	else document.getElementById("canvas").style = "";
-	// fix things
 	fixCanvas();
 	// calculate things
 	if (game.map.length > 0) {
@@ -99,9 +100,15 @@ window.onload = async function() {
 	} else {
 		await generateMap();
 	};
+	const graphicsStartTime = Date.now();
+	clearCanvas();
+	draw.lore(200 - 2, 100 - 5.5 * 1, "Loading graphics...", {"color": "#fff", "text-align": DIR.CENTER});
 	await generateMapPathPoints();
+	await loadImages();
+	console.log("[graphics loaded in " + (Date.now() - graphicsStartTime) + "ms]");
 	changeMusic();
 	loaded = true;
+	console.log("TOTAL LOAD TIME: " + (Date.now() - loadStartTime) + "ms");
 };
 
 let canvas, scale, ctx, action = -1, lastAction = -1;
