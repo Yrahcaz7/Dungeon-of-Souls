@@ -28,6 +28,7 @@ const I = {
 		crouch_shield_reinforced: new Image,
 		hit: new Image,
 		death: new Image,
+		head: new Image,
 	}, card: {
 		energy: new Image,
 		green_energy: new Image,

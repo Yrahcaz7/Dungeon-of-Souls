@@ -1980,7 +1980,9 @@ const graphics = {
 		draw.rect("#000c");
 		draw.rect("#fff", 327, 14, 1, 185);
 		const spaceY = 49;
+		// draw previous games
 		for (let index = 0; index < global.prevGames.length; index++) {
+			// first row
 			const prevGame = global.prevGames[index];
 			let x = 5;
 			let y = 18 + (index * spaceY) - menuScroll;
@@ -1994,6 +1996,7 @@ const graphics = {
 			if (prevGame.artifacts.includes(202)) draw.lore(x, y, "Difficulty: <#fcf050>Determination</#fcf050>", {"color": "#fff"});
 			else if (prevGame.difficulty) draw.lore(x, y, "Difficulty: <#f00>Hard</#f00>", {"color": "#fff"});
 			else draw.lore(x, y, "Difficulty: <#0f0>Easy</#0f0>", {"color": "#fff"});
+			// second row
 			x = 5;
 			y += 11;
 			draw.lore(x, y, "Floor: " + prevGame.floor, {"color": "#fff"});
@@ -2004,6 +2007,7 @@ const graphics = {
 			x += 6 * 22;
 			if (prevGame.gold > 0) draw.lore(x, y, "Remaining gold: <#0f0>" + prevGame.gold + "</#0f0>", {"color": "#fff"});
 			else draw.lore(x, y, "Remaining gold: 0", {"color": "#fff"});
+			// third row
 			x = 5;
 			y += 11;
 			if (prevGame.newHighScore) draw.lore(x, y, "Score: <#0f0>" + prevGame.score + "</#0f0>", {"color": "#fff"});
@@ -2018,6 +2022,7 @@ const graphics = {
 				if (prevGame.endVersion == global.version) draw.lore(x, y, "Version: " + get.versionDisplay(prevGame.startVersion) + " to <#0f0>" + get.versionDisplay(prevGame.endVersion) + "</#0f0>", {"color": "#fff"});
 				else draw.lore(x, y, "Version: " + get.versionDisplay(prevGame.startVersion) + " to " + get.versionDisplay(prevGame.endVersion), {"color": "#fff"});
 			};
+			// fourth row (interactable row)
 			x = 5;
 			y += 11;
 			if (index * 3 == menuSelect[1] && focused) draw.lore(x, y, "> Cards: " + prevGame.cards.length, {"color": "#ff0"});
@@ -2035,7 +2040,10 @@ const graphics = {
 			if (index * 3 + 2 == menuSelect[1] && focused) draw.lore(x, y, "> Enemies killed: " + kills, {"color": "#ff0"});
 			else if (kills > 0) draw.lore(x, y, "  Enemies killed: <#0f0>" + kills + "</#0f0>", {"color": "#fff"});
 			else draw.lore(x, y, "  Enemies killed: 0", {"color": "#fff"});
+			// player character icon
+			draw.image(I.player.head, 314, y - 1);
 		};
+		// scrolling
 		if (focused) {
 			const scrollPadding = 11;
 			const selected = Math.floor(menuSelect[1] / 3);
@@ -2048,6 +2056,7 @@ const graphics = {
 			if (menuScroll > maxScroll) menuScroll = maxScroll;
 			else if (menuScroll < 0) menuScroll = 0;
 		};
+		// draw top and right bars
 		draw.rect("#0004", 0, 0, 400, 13);
 		draw.lore(200 - 2, 1, "Previous Games", {"color": "#fff", "text-align": DIR.CENTER});
 		draw.rect("#fff", 1, 12, 398, 1);
@@ -2080,9 +2089,8 @@ const graphics = {
 	},
 	/**
 	 * Draws the previous game kills layer on the canvas.
-	 * @param {boolean} focused - whether the previous game kills layer is focused. Defaults to `true`.
 	 */
-	prevGameKills(focused = true) {
+	prevGameKills() {
 		draw.rect("#000c");
 		let text = "";
 		const kills = global.prevGames[Math.floor(menuSelect[1] / 3)].kills;
