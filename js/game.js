@@ -31,7 +31,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_002_003,
+	version: 2_002_004,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,

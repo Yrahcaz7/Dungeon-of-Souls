@@ -36,7 +36,7 @@ You have a deck of cards, which you draw the top 5 from each turn.
 
 You can play the cards in your hand for the effect(s) they say.
 
-After each battle, you will get rewards, and you can get better cards.
+After each battle, you will get rewards, including better cards.
 
 Try to get a good synergy between the cards in your deck.
 
@@ -44,7 +44,7 @@ If you reach 0 health, you die and lose your progress.
 
 However, you can use your new knowledge to reach higher heights next time.
 
-Note: go to the '?' (top-right of the screen) in-game for more details.
+Note: go to the "?" at the top-right of the screen in-game for more details.
 
 ## Credits
 
