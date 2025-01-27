@@ -1370,7 +1370,7 @@ const graphics = {
 		draw.lore(1, 12 - infoPos, 'Source can be found at "https://github.com/Yrahcaz7/Dungeon-of-Souls"', {"color": "#f44", "text-small": true});
 		if (infoLimit > 0) {
 			draw.lore(366, 26, "Scrollable", {"color": "#fff", "text-align": DIR.LEFT});
-			draw.image(I.arrows, 367, 22);
+			draw.image(I.extra.arrows, 367, 22);
 		};
 	},
 	/**
@@ -1882,12 +1882,12 @@ const graphics = {
 	 * @param {boolean} focused - whether the main menu layer is focused. Defaults to `true`.
 	 */
 	menu(focused = true) {
-		draw.imageSector(I.difficulty, 0, game.difficulty * 16, 64, 16, 168, 146);
+		draw.imageSector(I.background.difficulty, 0, game.difficulty * 16, 64, 16, 168, 146);
 		if (hasArtifact(202)) {
 			if (game.floor == 10 && transition < 100) {
 				ctx.globalAlpha = transition / 100;
 			};
-			draw.imageSector(I.difficulty, 0, 2 * 16, 64, 16, 168, 146);
+			draw.imageSector(I.background.difficulty, 0, 2 * 16, 64, 16, 168, 146);
 			ctx.globalAlpha = 1;
 		};
 		let text = "";
@@ -1989,11 +1989,11 @@ const graphics = {
 			draw.box(x - 2, y - 2, 321, 45, {"background-color": "#0004", "border-color": "#fff"});
 			draw.lore(x, y, "<#000 highlight>Game #" + (index + 1) + "</#000>", {"color": "#000", "highlight-color": "#fff"});
 			x += 6 * 10;
-			if (prevGame.result === GAME_RESULT.LOSS) draw.lore(x, y, "Result: <#f00>Loss</#f00>", {"color": "#fff"});
-			else if (prevGame.result === GAME_RESULT.WIN) draw.lore(x, y, "Result: <#0f0>Win</#0f0>", {"color": "#fff"});
+			if (prevGame.result === GAME_RESULT.DEFEAT) draw.lore(x, y, "Result: <#f00>Defeat</#f00>", {"color": "#fff"});
+			else if (prevGame.result === GAME_RESULT.VICTORY) draw.lore(x, y, "Result: <#0f0>Victory</#0f0>", {"color": "#fff"});
 			else draw.lore(x, y, "Result: <#f00>Surrender</#f00>", {"color": "#fff"});
 			x += 6 * 18;
-			if (prevGame.artifacts.includes(202)) draw.lore(x, y, "Difficulty: <#fcf050>Determination</#fcf050>", {"color": "#fff"});
+			if (prevGame.artifacts.includes(202)) draw.lore(x, y, "Difficulty: <#0f0>Easy</#0f0> <#f00>+ Hard</#f00>", {"color": "#fff"});
 			else if (prevGame.difficulty) draw.lore(x, y, "Difficulty: <#f00>Hard</#f00>", {"color": "#fff"});
 			else draw.lore(x, y, "Difficulty: <#0f0>Easy</#0f0>", {"color": "#fff"});
 			// second row
@@ -2001,7 +2001,7 @@ const graphics = {
 			y += 11;
 			draw.lore(x, y, "Floor: " + prevGame.floor, {"color": "#fff"});
 			x += 6 * 11;
-			if (prevGame.result === GAME_RESULT.WIN) draw.lore(x, y, "Remaining health: <#0f0>" + prevGame.health + "</#0f0>", {"color": "#fff"});
+			if (prevGame.result === GAME_RESULT.VICTORY) draw.lore(x, y, "Remaining health: <#0f0>" + prevGame.health + "</#0f0>", {"color": "#fff"});
 			else if (prevGame.health > 0) draw.lore(x, y, "Remaining health: <#f00>" + prevGame.health + "</#f00>", {"color": "#fff"});
 			else draw.lore(x, y, "Remaining health: 0", {"color": "#fff"});
 			x += 6 * 22;
@@ -2010,7 +2010,8 @@ const graphics = {
 			// third row
 			x = 5;
 			y += 11;
-			if (prevGame.newHighScore) draw.lore(x, y, "Score: <#0f0>" + prevGame.score + "</#0f0>", {"color": "#fff"});
+			if (prevGame.cheat) draw.lore(x, y, "Score: <#f00>" + prevGame.score + "</#f00>", {"color": "#fff"});
+			else if (prevGame.newHighScore) draw.lore(x, y, "Score: <#0f0>" + prevGame.score + "</#0f0>", {"color": "#fff"});
 			else draw.lore(x, y, "Score: " + prevGame.score, {"color": "#fff"});
 			x += 6 * 13;
 			draw.lore(x, y, "Seed: " + prevGame.seed, {"color": "#fff"});
@@ -2040,8 +2041,14 @@ const graphics = {
 			if (index * 3 + 2 == menuSelect[1] && focused) draw.lore(x, y, "> Enemies killed: " + kills, {"color": "#ff0"});
 			else if (kills > 0) draw.lore(x, y, "  Enemies killed: <#0f0>" + kills + "</#0f0>", {"color": "#fff"});
 			else draw.lore(x, y, "  Enemies killed: 0", {"color": "#fff"});
-			// player character icon
-			draw.image(I.player.head, 323 - I.player.head.width, y - 1);
+			// icons
+			x = 323;
+			if (prevGame.cheat) {
+				x -= I.x.width;
+				draw.image(I.x, x, y - 1);
+			};
+			x -= I.player.head.width;
+			draw.image(I.player.head, x, y - 1);
 		};
 		// scrolling
 		if (focused) {

@@ -89,6 +89,7 @@ const I = {
 			defend: new Image,
 		},
 	}, background: {
+		difficulty: new Image,
 		cave: new Image,
 		temple: new Image,
 		floating_arch: new Image,
@@ -101,6 +102,7 @@ const I = {
 		panel: new Image,
 		panel_cover: new Image,
 		tiles: new Image,
+		victorious: new Image,
 	}, bar: {
 		health_empty: new Image,
 		health_full: new Image,
@@ -126,6 +128,7 @@ const I = {
 	}, extra: {
 		options: new Image,
 		help: new Image,
+		arrows: new Image,
 		looker: new Image,
 		end: new Image,
 		deck: new Image,
@@ -176,11 +179,9 @@ const I = {
 	}, effect: {
 		war_cry: new Image,
 	},
-	title: new Image,
-	difficulty: new Image,
-	victorious: new Image,
-	arrows: new Image,
+	x: new Image,
 	aura_blade: new Image,
+	title: new Image,
 };
 
 /**

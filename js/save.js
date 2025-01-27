@@ -49,8 +49,8 @@ function restartRun(newDifficulty = game.difficulty) {
 	prevGame.health = game.health;
 	prevGame.floor = game.floor;
 	prevGame.gold = game.gold;
-	if (game.select[0] === S.GAME_OVER) prevGame.result = GAME_RESULT.LOSS;
-	else if (game.select[0] === S.GAME_WON) prevGame.result = GAME_RESULT.WIN;
+	if (game.select[0] === S.GAME_OVER) prevGame.result = GAME_RESULT.DEFEAT;
+	else if (game.select[0] === S.GAME_WON) prevGame.result = GAME_RESULT.VICTORY;
 	else prevGame.result = GAME_RESULT.SURRENDER;
 	prevGame.kills = game.kills;
 	prevGame.artifacts = game.artifacts;

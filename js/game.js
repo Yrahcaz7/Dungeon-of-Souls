@@ -31,7 +31,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_002_009,
+	version: 2_002_010,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -479,7 +479,7 @@ function updateVisuals() {
 		if (game.select[1] < 50) game.select[1]++;
 		draw.rect("#222");
 		if (game.select[0] === S.GAME_WON) {
-			draw.image(I.victorious, 168, 42 + Math.round(Math.abs(winAnim - 4) - 2), I.victorious.width * 2, I.victorious.height * 2);
+			draw.image(I.background.victorious, 168, 42 + Math.round(Math.abs(winAnim - 4) - 2), I.background.victorious.width * 2, I.background.victorious.height * 2);
 			winAnim += Math.random() * 0.05 + 0.05;
 			if (winAnim >= 8) winAnim -= 8;
 			draw.rect("#0004");
