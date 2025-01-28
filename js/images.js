@@ -87,6 +87,7 @@ const I = {
 			attack: new Image,
 			attack_overlay: new Image,
 			defend: new Image,
+			shield: new Image,
 		},
 	}, background: {
 		difficulty: new Image,

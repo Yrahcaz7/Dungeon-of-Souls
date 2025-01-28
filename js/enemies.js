@@ -275,7 +275,7 @@ function isEnemyVisible(index) {
 	const type = game.enemies[index].type;
 	const intent = game.enemies[index].intent;
 	if (intent === INTENT.ATTACK) return !(type === SLIME.SMALL || type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && enemyAnim.prime[index] == -1));
-	if (intent === INTENT.DEFEND) return !(type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && enemyAnim.prime[index] == -1));
+	if (intent === INTENT.DEFEND) return !(type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && enemyAnim.prime[index] == -1) || type === SINGULARITY);
 	return true;
 };
 

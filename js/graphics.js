@@ -40,16 +40,19 @@ const NO_ANTIALIASING_FILTER = `url('data:image/svg+xml,<svg xmlns="http://www.w
 /**
  * Progresses the animations of the enemies.
  * @param {{idle: number[], prime: number[], sync: number}} animSource - the enemy animation object. Defaults to `enemyAnim`.
+ * @param {(Enemy | number)[]} enemyArray - the array of enemies. Defaults to `game.enemies`.
  */
-function progressEnemyAnimations(animSource = enemyAnim) {
-	for (let index = 0; index < game.enemies.length; index++) {
-		const enemy = game.enemies[index];
+function progressEnemyAnimations(animSource = enemyAnim, enemyArray = game.enemies) {
+	for (let index = 0; index < enemyArray.length; index++) {
+		let enemy = enemyArray[index];
+		if (!(enemy instanceof Object)) enemy = new Enemy(enemy, NaN);
 		animSource.idle[index] += (Math.random() + 0.5) * 0.1;
 		if (animSource.idle[index] >= 4) animSource.idle[index] -= 4;
 		if (animSource.prime[index] != -1) {
 			let limit = 0;
 			if (enemy.type === SLIME.PRIME) {
-				animSource.prime[index] += (Math.random() + 0.5) * 0.1;
+				if (animSource.prime[index] >= 4) animSource.prime[index] += (Math.random() + 0.5) * 0.2;
+				else animSource.prime[index] += (Math.random() + 0.5) * 0.1;
 				limit = 12;
 			} else if (enemy.type === FRAGMENT) {
 				limit = 25;
@@ -64,7 +67,7 @@ function progressEnemyAnimations(animSource = enemyAnim) {
 				if ((enemy.shield > 0) || (enemy.transition && enemy.transition[1] === TRANSITION.SHIELD)) {
 					animSource.prime[index] = -1;
 				} else {
-					animSource.prime[index] += (Math.random() + 0.5) * 0.1;
+					animSource.prime[index] += (Math.random() + 0.5) * 0.2;
 				};
 			};
 			if (animSource.prime[index] >= limit) {
@@ -665,6 +668,7 @@ const draw = {
 			if (enemy.shield > 0) draw.image(I.enemy.singularity.defend, x, y);
 			else draw.image(I.enemy.singularity.idle, x, y);
 			draw.imageSector(I.enemy.singularity.orbs, Math.floor(animSource.sync % 24) * 64, 0, 64, 64, x, y);
+			if (enemy.shield > 0 && index != game.enemyNum) draw.image(I.enemy.singularity.shield, x, y);
 		};
 	},
 };
@@ -1196,7 +1200,7 @@ const graphics = {
 						(isDefending(playerAnim[1]) ? 92 : 72),
 						(isDefending(playerAnim[1]) ? 87 : 82),
 					];
-					draw.imageSector(I.enemy.sentry.big_attack, Math.floor(enemyAnim.action[0]) * 88, 0, 88, 70, pos[0] - 12, pos[1] - 1, 88, 70);
+					draw.imageSector(I.enemy.sentry.big_attack, Math.floor(enemyAnim.action[0]) * 92, 0, 92, 70, pos[0] - 14, pos[1] - 1);
 					if (enemyAnim.action[0] >= 4) {
 						const start = [pos[0] + 17, pos[1] + 16];
 						const end = enemyAnim.actionData;
@@ -1305,8 +1309,8 @@ const graphics = {
 				};
 			} else if (intent === INTENT.DEFEND) {
 				if (type === SLIME.BIG || type === SLIME.SMALL || type === SLIME.PRIME || type === SINGULARITY) {
-					ctx.globalAlpha = enemyAnim.action[0] / 15;
 					if (type === SLIME.PRIME) {
+						ctx.globalAlpha = enemyAnim.action[0] / 15;
 						if (enemyAnim.prime[game.enemyNum] == -1) {
 							draw.imageSector(I.enemy.slime.prime_defend, Math.floor(enemyAnim.idle[game.enemyNum]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
 						} else {
@@ -1316,8 +1320,13 @@ const graphics = {
 						let y = pos[1];
 						if (Math.floor(enemyAnim.idle[game.enemyNum]) == 1) y++;
 						else if (Math.floor(enemyAnim.idle[game.enemyNum]) == 3) y--;
+						draw.image(I.enemy.singularity.idle, pos[0], y);
+						ctx.globalAlpha = enemyAnim.action[0] / 15;
 						draw.image(I.enemy.singularity.defend, pos[0], y);
+						draw.imageSector(I.enemy.singularity.orbs, Math.floor(enemyAnim.sync % 24) * 64, 0, 64, 64, pos[0], y);
+						draw.image(I.enemy.singularity.shield, pos[0], y);
 					} else {
+						ctx.globalAlpha = enemyAnim.action[0] / 15;
 						let img = I.enemy.slime.big_defend;
 						if (type === SLIME.SMALL) img = I.enemy.slime.small_defend;
 						draw.imageSector(img, Math.floor(enemyAnim.idle[game.enemyNum]) * 64, 0, 64, 64, pos[0], pos[1]);
@@ -2143,13 +2152,15 @@ const graphics = {
 		const spaceY = 76;
 		let x = 3, y = 16;
 		const categories = [SMALL_ENEMIES, BIG_ENEMIES, PRIME_ENEMIES, BOSS_ENEMIES];
+		let enemies = [];
 		for (let category = 0; category < categories.length; category++) {
 			const spaceX = (categories[category] === BOSS_ENEMIES ? 400 - x + 1 : 90);
 			for (let index = 0; index < categories[category].length; index++) {
 				const type = categories[category][index];
+				enemies.push(type);
 				if (!kills[type]) continue;
 				draw.box(x, y, spaceX - 4, spaceY - 4, {"background-color": "#0004", "border-color": "#fff"});
-				draw.enemy(type, x + (spaceX - 4) / 2 - 32, y + 1, 0, menuEnemyAnim, true);
+				draw.enemy(type, x + (spaceX - 4) / 2 - 32, y + 1, category * categories[category].length + index, menuEnemyAnim);
 				draw.rect("#fff", x, y + 66, spaceX - 4, 6);
 				let text = "Killed ";
 				if (categories[category] === BOSS_ENEMIES) text += ENEMY_NAME[type];
@@ -2163,7 +2174,7 @@ const graphics = {
 		draw.rect("#0004", 0, 0, 400, 13);
 		draw.lore(200 - 2, 1, "Enemies Killed From Game #" + (Math.floor(menuSelect[1] / 3) + 1), {"color": "#fff", "text-align": DIR.CENTER});
 		draw.rect("#fff", 1, 12, 398, 1);
-		progressEnemyAnimations(menuEnemyAnim);
+		progressEnemyAnimations(menuEnemyAnim, enemies);
 	},
 };
 
