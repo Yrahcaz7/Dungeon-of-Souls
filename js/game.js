@@ -31,7 +31,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_002_011,
+	version: 2_002_012,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -261,7 +261,7 @@ function postCardActivation() {
  * Enters the battle.
  */
 function enterBattle() {
-	primeAnim = 0;
+	enemyAnim.prime = 0;
 	game.state = STATE.BATTLE;
 	startTurn(true);
 };
