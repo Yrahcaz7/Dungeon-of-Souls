@@ -31,7 +31,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_002_010,
+	version: 2_002_011,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -261,6 +261,7 @@ function postCardActivation() {
  * Enters the battle.
  */
 function enterBattle() {
+	primeAnim = 0;
 	game.state = STATE.BATTLE;
 	startTurn(true);
 };
@@ -332,7 +333,6 @@ function loadRoom() {
 		// enter room
 		const type = (game.location == -1 ? ROOM.BATTLE : game.map[game.location[0]][game.location[1]][0]);
 		if (type === ROOM.BATTLE || type === ROOM.PRIME || type === ROOM.BOSS) {
-			primeAnim = 0;
 			if (game.location == -1) game.room = game.firstRoom;
 			else game.traveled.push(game.location[1]);
 			for (let index = 0; index < game.room[3].length; index++) {

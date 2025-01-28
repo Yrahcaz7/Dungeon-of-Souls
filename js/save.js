@@ -63,6 +63,7 @@ function restartRun(newDifficulty = game.difficulty) {
 		global.highScore = prevGame.score;
 		prevGame.newHighScore = true;
 	};
+	if (game.cheat) prevGame.cheat = game.cheat;
 	global.prevGames.push(prevGame);
 	localStorage.setItem(ID + "/0", btoa(JSON.stringify({difficulty: newDifficulty, newSave: true})));
 	game = null;

@@ -247,7 +247,7 @@ const get = {
 		for (const key in game.kills) {
 			if (game.kills.hasOwnProperty(key)) {
 				const amt = game.kills[key];
-				if (+key === FRAGMENT || +key === SINGULARITY) factors.push(["Killed " + ENEMY_NAME[+key], ENEMY_WORTH[+key], amt]);
+				if (BOSS_ENEMIES.includes(+key)) factors.push(["Killed " + ENEMY_NAME[+key], ENEMY_WORTH[+key], amt]);
 				else factors.push(["Killed " + amt + " " + (amt > 1 ? PLURAL_ENEMY_NAME : ENEMY_NAME)[+key], ENEMY_WORTH[+key], amt]);
 			};
 		};
