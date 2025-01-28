@@ -249,6 +249,7 @@ function updateData() {
 	};
 	// enemy plans
 	for (let index = 0; index < game.enemies.length; index++) {
+		if (index == game.enemyNum) continue;
 		let enemy = game.enemies[index];
 		if (enemy.eff[ENEMY_EFF.PLAN_ATTACK]) {
 			if (enemy.intent === INTENT.ATTACK && game.shield >= Math.ceil(enemy.getTotalAttackPower() * get.takeDamageMult(index))) {

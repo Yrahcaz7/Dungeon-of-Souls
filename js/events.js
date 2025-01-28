@@ -52,7 +52,7 @@ function getLoggedEvent(type, defaultValue = 0) {
  * @param {number} num - the number of enemies of a crowd, or the power of an ambush.
  */
 function startEventBattle(type, num = 1) {
-	enemyAnim.prime = 0;
+	enemyAnim.prime = [0, 0, 0, 0, 0, 0];
 	if (type === BATTLE.CROWD) {
 		if (num > 6) num = 6;
 		let enemy = SMALL_ENEMIES[get.area()];

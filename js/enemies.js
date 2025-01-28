@@ -114,7 +114,7 @@ class Enemy {
 			};
 			startAnim.enemy();
 		} else if (this.intent === INTENT.DEFEND) {
-			if (this.type === FRAGMENT || this.type === SINGULARITY || (this.type === SLIME.PRIME && enemyAnim.prime != -1)) {
+			if (this.type === FRAGMENT) {
 				this.middleAction();
 			} else {
 				startAnim.enemy();
@@ -137,7 +137,7 @@ class Enemy {
 			};
 		} else if (this.intent === INTENT.DEFEND) {
 			enemyGainShield(this.getTotalDefendPower());
-			if (this.type === FRAGMENT || this.type === SINGULARITY || (this.type === SLIME.PRIME && enemyAnim.prime != -1)) {
+			if (this.type === FRAGMENT) {
 				this.finishAction();
 			};
 		} else if (this.intent === INTENT.BUFF) {
@@ -274,8 +274,8 @@ function isEnemyVisible(index) {
 	if (index !== game.enemyNum || game.enemies[index].transition) return true;
 	const type = game.enemies[index].type;
 	const intent = game.enemies[index].intent;
-	if (intent === INTENT.ATTACK) return !(type === SLIME.SMALL || type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && enemyAnim.prime == -1));
-	if (intent === INTENT.DEFEND) return !(type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && enemyAnim.prime == -1));
+	if (intent === INTENT.ATTACK) return !(type === SLIME.SMALL || type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && enemyAnim.prime[index] == -1));
+	if (intent === INTENT.DEFEND) return !(type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && enemyAnim.prime[index] == -1));
 	return true;
 };
 
@@ -292,10 +292,10 @@ function getEnemyIntentPos(index, moving = false) {
 	} else if (type === SLIME.SMALL) {
 		y -= 7;
 	} else if (type === SLIME.PRIME) {
-		if (enemyAnim.prime == -1 || enemyAnim.prime >= 5) y -= 37;
-		else y -= 17;
+		if (enemyAnim.prime[index] == -1) y -= 37;
+		else y -= 17 + Math.max(enemyAnim.prime[index] - 4, 0) * 2.5;
 	} else if (type === FRAGMENT) {
-		if (enemyAnim.prime == -1 || enemyAnim.prime > 18) y -= 36;
+		if (enemyAnim.prime[index] == -1 || enemyAnim.prime[index] > 18) y -= 36;
 		else y = NaN;
 	} else if (type === SENTRY.BIG) {
 		y -= 40;
