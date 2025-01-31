@@ -18,6 +18,7 @@
 let auraBladePos = [[65, 10], [80, 25], [42, 0], [28, 35]], enemyPos = [], handPos = [];
 
 let enemyAnim = {
+	enemies: () => game.enemies,
 	idle: [0, 1.5, 3, 0.5, 2, 3.5],
 	prime: [0, 0, 0, 0, 0, 0],
 	sync: 0,
@@ -26,6 +27,7 @@ let enemyAnim = {
 };
 
 let menuEnemyAnim = {
+	enemies: [...SMALL_ENEMIES, ...BIG_ENEMIES, ...PRIME_ENEMIES, ...BOSS_ENEMIES],
 	idle: [0, 1.5, 3, 0.5, 2, 3.5, 1, 2.5],
 	prime: [0, 0, 0, 0, 0, 0, 0, 0],
 	sync: 0,
@@ -40,11 +42,11 @@ const NO_ANTIALIASING_FILTER = `url('data:image/svg+xml,<svg xmlns="http://www.w
 /**
  * Progresses the animations of the enemies.
  * @param {{idle: number[], prime: number[], sync: number}} animSource - the enemy animation object. Defaults to `enemyAnim`.
- * @param {(Enemy | number)[]} enemyArray - the array of enemies. Defaults to `game.enemies`.
  */
-function progressEnemyAnimations(animSource = enemyAnim, enemyArray = game.enemies) {
-	for (let index = 0; index < enemyArray.length; index++) {
-		let enemy = enemyArray[index];
+function progressEnemyAnimations(animSource = enemyAnim) {
+	let enemies = (typeof animSource.enemies == "function" ? animSource.enemies() : animSource.enemies);
+	for (let index = 0; index < enemies.length; index++) {
+		let enemy = enemies[index];
 		if (!(enemy instanceof Object)) enemy = new Enemy(enemy, NaN);
 		animSource.idle[index] += (Math.random() + 0.5) * 0.1;
 		if (animSource.idle[index] >= 4) animSource.idle[index] -= 4;
@@ -2152,12 +2154,10 @@ const graphics = {
 		const spaceY = 76;
 		let x = 3, y = 16;
 		const categories = [SMALL_ENEMIES, BIG_ENEMIES, PRIME_ENEMIES, BOSS_ENEMIES];
-		let enemies = [];
 		for (let category = 0; category < categories.length; category++) {
 			const spaceX = (categories[category] === BOSS_ENEMIES ? 400 - x + 1 : 90);
 			for (let index = 0; index < categories[category].length; index++) {
 				const type = categories[category][index];
-				enemies.push(type);
 				if (!kills[type]) continue;
 				draw.box(x, y, spaceX - 4, spaceY - 4, {"background-color": "#0004", "border-color": "#fff"});
 				draw.enemy(type, x + (spaceX - 4) / 2 - 32, y + 1, category * categories[category].length + index, menuEnemyAnim);
@@ -2174,7 +2174,7 @@ const graphics = {
 		draw.rect("#0004", 0, 0, 400, 13);
 		draw.lore(200 - 2, 1, "Enemies Killed From Game #" + (Math.floor(menuSelect[1] / 3) + 1), {"color": "#fff", "text-align": DIR.CENTER});
 		draw.rect("#fff", 1, 12, 398, 1);
-		progressEnemyAnimations(menuEnemyAnim, enemies);
+		progressEnemyAnimations(menuEnemyAnim);
 	},
 };
 
