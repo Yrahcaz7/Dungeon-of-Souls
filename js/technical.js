@@ -90,6 +90,8 @@ window.onload = async function() {
 	console.log("[save loaded in " + (Date.now() - loadStartTime) + "ms]");
 	seed = internalSeed(game.seed);
 	setupCanvas();
+	// load images
+	draw.lore(200 - 2, 100 - 5.5 * 1, "Loading graphics...", {"color": "#fff", "text-align": DIR.CENTER});
 	await loadImages();
 	// fix canvas position and size
 	if (global.options[OPTION.PERFECT_SCREEN]) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
@@ -101,8 +103,6 @@ window.onload = async function() {
 	} else {
 		await generateMap();
 	};
-	clearCanvas();
-	draw.lore(200 - 2, 100 - 5.5 * 1, "Loading graphics...", {"color": "#fff", "text-align": DIR.CENTER});
 	await generateMapPathPoints();
 	changeMusic();
 	loaded = true;
@@ -230,13 +230,38 @@ document.addEventListener("keydown", event => {
 	} else if ((key == " " || key == "Enter") && !event.repeat && actionTimer == -1) {
 		action = -1;
 		performAction();
-	} else if (key == "W" || key == "w" || key == "ArrowUp") action = DIR.UP;
-	else if (key == "A" || key == "a" || key == "ArrowLeft") action = DIR.LEFT;
-	else if (key == "S" || key == "s" || key == "ArrowDown") action = DIR.DOWN;
-	else if (key == "D" || key == "d" || key == "ArrowRight") action = DIR.RIGHT;
-	else action = -1;
-	if (key == "Escape") fullscreen(true);
-	else if (key == "Tab") fullscreen();
+	} else if (key == "W" || key == "w" || key == "ArrowUp") {
+		action = DIR.UP;
+	} else if (key == "A" || key == "a" || key == "ArrowLeft") {
+		action = DIR.LEFT;
+	} else if (key == "S" || key == "s" || key == "ArrowDown") {
+		action = DIR.DOWN;
+	} else if (key == "D" || key == "d" || key == "ArrowRight") {
+		action = DIR.RIGHT;
+	} else {
+		action = -1;
+	};
+	if (key == "Escape") { // exits fullscreen
+		if (document.body.exitFullscreen) {
+			document.body.exitFullscreen();
+		} else if (document.body.webkitExitFullscreen) {
+			document.body.webkitExitFullscreen();
+		} else if (document.body.mozExitFullScreen) {
+			document.body.mozExitFullScreen();
+		} else if (document.body.msExitFullscreen) {
+			document.body.msExitFullscreen();
+		};
+	} else if (key == "Tab") { // enters fullscreen
+		if (document.body.requestFullscreen) {
+			document.body.requestFullscreen();
+		} else if (document.body.webkitRequestFullscreen) {
+			document.body.webkitRequestFullscreen();
+		} else if (document.body.mozRequestFullScreen) {
+			document.body.mozRequestFullScreen();
+		} else if (document.body.msRequestFullscreen) {
+			document.body.msRequestFullscreen();
+		};
+	};
 	if (!event.repeat && lastAction === action && global.options[OPTION.FAST_MOVEMENT]) {
 		if (menuSelect[0] === -1) manageGameplay();
 		selection();
@@ -249,31 +274,3 @@ document.addEventListener("keyup", event => {
 	const key = event.key;
 	if (key == "W" || key == "w" || key == "ArrowUp" || key == "A" || key == "a" || key == "ArrowLeft" || key == "S" || key == "s" || key == "ArrowDown" || key == "D" || key == "d" || key == "ArrowRight") action = -1;
 });
-
-/**
- * Enters fullsceen mode.
- * @param {boolean} exit - whether to exit fullscreen mode instead of entering it.
- */
-function fullscreen(exit = false) {
-	if (exit) {
-		if (document.body.exitFullscreen) {
-			document.body.exitFullscreen();
-		} else if (document.body.webkitExitFullscreen) {
-			document.body.webkitExitFullscreen();
-		} else if (document.body.mozExitFullScreen) {
-			document.body.mozExitFullScreen();
-		} else if (document.body.msExitFullscreen) {
-			document.body.msExitFullscreen();
-		};
-	} else {
-		if (document.body.requestFullscreen) {
-			document.body.requestFullscreen();
-		} else if (document.body.webkitRequestFullscreen) {
-			document.body.webkitRequestFullscreen();
-		} else if (document.body.mozRequestFullScreen) {
-			document.body.mozRequestFullScreen();
-		} else if (document.body.msRequestFullscreen) {
-			document.body.msRequestFullscreen();
-		};
-	};
-};
