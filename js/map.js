@@ -236,7 +236,7 @@ const generateMapPathPoints = (() => {
 		mapPathPoints = [];
 		await getVisualMapPaths(0);
 		await getVisualMapPaths(1);
-		console.log("> map visuals generated in " + (Date.now() - startTime) + "ms");
+		console.log("[map visuals generated in " + (Date.now() - startTime) + "ms]");
 	};
 })();
 

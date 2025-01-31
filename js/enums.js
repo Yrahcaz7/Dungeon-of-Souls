@@ -69,10 +69,12 @@ const MENU = {
 	PREV_GAMES: 403, // N is three times the index of the selected past run in the current sort plus the index of the selected aspect (0 is cards, 1 is artifacts, and 2 is enemies killed).
 	PREV_GAME_INFO: 404, // N is three times the index of the selected past run in the current sort plus the index of the selected aspect (0 is cards, 1 is artifacts, and 2 is enemies killed).
 	PREV_GAME_SORT: 405, // N indicates which PREV_GAME_SORT menu is open.
+	NEW_CUSTOM_RUN: 406, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
+	ENTER_SEED: 407, // N does not indicate anything.
 };
 
 // main menu options
-const MAIN_MENU_OPTIONS = ["Resume run", "Start new run", "Change difficulty", "View past runs"];
+const MAIN_MENU_OPTIONS = ["Resume run", "Start new run", "Start new custom run", "Change difficulty", "View past runs"];
 
 // previous game sort options
 const PREV_GAMES_SORT_NAMES = ["Game number", "Result type", "Difficulty", "Highest floor", "Remaining health", "Remaining gold", "Total score", "Seed string", "Number of cards", "Number of artifacts", "Number of enemies killed"];

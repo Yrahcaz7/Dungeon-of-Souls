@@ -59,13 +59,20 @@ function restartRun(newDifficulty = game.difficulty) {
 	prevGame.startVersion = game.version;
 	prevGame.endVersion = global.version;
 	prevGame.score = get.totalScore();
-	if (prevGame.score > global.highScore) {
+	if (prevGame.score > global.highScore && !game.cheat) {
 		global.highScore = prevGame.score;
 		prevGame.newHighScore = true;
 	};
 	if (game.cheat) prevGame.cheat = game.cheat;
 	global.prevGames.push(prevGame);
-	localStorage.setItem(ID + "/0", btoa(JSON.stringify({difficulty: newDifficulty, newSave: true})));
+	let nextGame = {};
+	nextGame.difficulty = newDifficulty;
+	if (newSeed) {
+		nextGame.seed = newSeed;
+		nextGame.cheat = true;
+	};
+	nextGame.newSave = true;
+	localStorage.setItem(ID + "/0", btoa(JSON.stringify(nextGame)));
 	game = null;
 	location.reload();
 };
@@ -214,6 +221,8 @@ function load() {
 			let obj = JSON.parse(atob(get));
 			if (obj.newSave) {
 				game.difficulty = obj.difficulty;
+				if (obj.seed) game.seed = obj.seed;
+				if (obj.cheat) game.cheat = obj.cheat;
 			} else {
 				let runVersion = obj.version;
 				Object.assign(game, obj);

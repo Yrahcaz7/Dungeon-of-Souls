@@ -71,7 +71,7 @@ function selection() {
 			menuSelect[1]++;
 			actionTimer = 1;
 		};
-	} else if (menuSelect[0] === MENU.NEW_RUN || menuSelect[0] === MENU.DIFFICULTY) {
+	} else if (menuSelect[0] === MENU.NEW_RUN || menuSelect[0] === MENU.NEW_CUSTOM_RUN || menuSelect[0] === MENU.DIFFICULTY) {
 		if (action === DIR.LEFT && menuSelect[1]) {
 			menuSelect[1] = 0;
 			actionTimer = 1;
@@ -580,8 +580,10 @@ function performAction() {
 		} else if (menuSelect[1] == 1) {
 			menuSelect = [MENU.NEW_RUN, 1];
 		} else if (menuSelect[1] == 2) {
-			menuSelect = [MENU.DIFFICULTY, 1];
+			menuSelect = [MENU.NEW_CUSTOM_RUN, 1];
 		} else if (menuSelect[1] == 3) {
+			menuSelect = [MENU.DIFFICULTY, 1];
+		} else if (menuSelect[1] == 4) {
 			menuSelect = [MENU.PREV_GAMES, 0];
 		};
 		actionTimer = 2;
@@ -590,12 +592,20 @@ function performAction() {
 		if (!menuSelect[1]) restartRun();
 		else menuSelect = [MENU.MAIN, 1];
 		actionTimer = 2;
+	} else if (menuSelect[0] === MENU.NEW_CUSTOM_RUN) {
+		if (!menuSelect[1]) menuSelect = [MENU.ENTER_SEED, 0];
+		else menuSelect = [MENU.MAIN, 2];
+		actionTimer = 2;
+	} else if (menuSelect[0] === MENU.ENTER_SEED) {
+		if (newSeed) restartRun();
+		else menuSelect = [MENU.NEW_CUSTOM_RUN, 0];
+		actionTimer = 2;
 	} else if (menuSelect[0] === MENU.DIFFICULTY) {
 		if (!menuSelect[1]) {
 			if (game.difficulty === 0) restartRun(1);
 			else restartRun(0);
 		} else {
-			menuSelect = [MENU.MAIN, 2];
+			menuSelect = [MENU.MAIN, 3];
 		};
 		actionTimer = 2;
 	} else if (menuSelect[0] === MENU.PREV_GAMES) {

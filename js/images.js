@@ -267,6 +267,6 @@ const loadImages = (() => {
 				console.log("I." + folder + " loaded in " + (Date.now() - folderStartTime) + "ms");
 			};
 		};
-		console.log("> I (images) loaded in " + (Date.now() - loadStartTime) + "ms");
+		console.log("[all images loaded in " + (Date.now() - loadStartTime) + "ms]");
 	};
 })();

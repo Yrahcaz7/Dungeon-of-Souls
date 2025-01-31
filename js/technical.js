@@ -89,7 +89,8 @@ window.onload = async function() {
 	load();
 	console.log("[save loaded in " + (Date.now() - loadStartTime) + "ms]");
 	seed = internalSeed(game.seed);
-	canvasData();
+	setupCanvas();
+	await loadImages();
 	// fix canvas position and size
 	if (global.options[OPTION.PERFECT_SCREEN]) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
 	else document.getElementById("canvas").style = "";
@@ -100,12 +101,9 @@ window.onload = async function() {
 	} else {
 		await generateMap();
 	};
-	const graphicsStartTime = Date.now();
 	clearCanvas();
 	draw.lore(200 - 2, 100 - 5.5 * 1, "Loading graphics...", {"color": "#fff", "text-align": DIR.CENTER});
 	await generateMapPathPoints();
-	await loadImages();
-	console.log("[graphics loaded in " + (Date.now() - graphicsStartTime) + "ms]");
 	changeMusic();
 	loaded = true;
 	console.log("TOTAL LOAD TIME: " + (Date.now() - loadStartTime) + "ms");
@@ -116,7 +114,7 @@ let canvas, scale, ctx, action = -1, lastAction = -1;
 /**
  * Sets up the canvas.
  */
-function canvasData() {
+function setupCanvas() {
 	let canv = document.getElementById("canvas");
 	scale = canv.width / 400;
 	canv.height = canv.width / 2;
@@ -160,7 +158,13 @@ window.onresize = () => {
 document.addEventListener("keydown", event => {
 	if (!loaded) return;
 	const key = event.key;
-	if ((key == "E" || key == "e") && !event.repeat && menuSelect[0] == -1 && game.turn === TURN.PLAYER && actionTimer == -1) {
+	if (key.length == 1 && /[0-9a-f]/i.test(key) && !event.repeat && menuSelect[0] === MENU.ENTER_SEED && newSeed.length < 6 && actionTimer == -1) {
+		newSeed += key.toUpperCase();
+	} else if (key == "Backspace" && !event.repeat && menuSelect[0] === MENU.ENTER_SEED && actionTimer == -1) {
+		newSeed = newSeed.slice(0, -1);
+	} else if (key == "Clear" && !event.repeat && menuSelect[0] === MENU.ENTER_SEED && actionTimer == -1) {
+		newSeed = "";
+	} else if ((key == "E" || key == "e") && !event.repeat && menuSelect[0] == -1 && game.turn === TURN.PLAYER && actionTimer == -1) {
 		if (game.select[0] === S.CONF_END) game.select = [S.HAND, game.prevCard];
 		else endTurnConfirm();
 		action = -1;
@@ -206,7 +210,7 @@ document.addEventListener("keydown", event => {
 		actionTimer = 2;
 	} else if ((key == "B" || key == "b") && !event.repeat && actionTimer == -1) {
 		if (menuSelect[0] === MENU.PREV_GAMES) {
-			menuSelect = [MENU.MAIN, 3];
+			menuSelect = [MENU.MAIN, 4];
 			action = -1;
 			actionTimer = 2;
 		} else if (menuSelect[0] == -1 && game.select[0] === S.REFINER) {

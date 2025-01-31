@@ -1467,7 +1467,10 @@ const graphics = {
 	 * Draws the selector and the info it targets on the canvas.
 	 */
 	target() {
-		if (game.select[0] === S.ATTACK || game.select[0] === S.ENEMY) {
+		if (inDeck()) {
+			let cardObj = currentDeck()[game.cardSelect];
+			if (cardObj) graphics.cardInfo("deck", cardObj);
+		} else if (game.select[0] === S.ATTACK || game.select[0] === S.ENEMY) {
 			const enemy = game.enemies[game.select[1]];
 			const type = enemy.type;
 			const pos = enemyPos[game.select[1]];
@@ -1551,9 +1554,6 @@ const graphics = {
 			info.artifact(game.room[6][game.select[1]], 179 + (game.select[1] * 32), 90);
 		} else if (game.select[0] === S.CARD_REWARD && game.select[1] > -1 && game.select[1] < get.cardRewardChoices()) {
 			graphics.cardInfo("reward", new Card(game.room[5][game.select[1]]));
-		} else if (inDeck()) {
-			let cardObj = currentDeck()[game.cardSelect];
-			if (cardObj) graphics.cardInfo("deck", cardObj);
 		};
 		if ((game.select[0] === S.HAND || (game.select[0] != S.ATTACK && game.select[0] != S.ENEMY && !hidden() && global.options[OPTION.STICKY_CARDS])) && game.hand.length && game.prevCard < game.hand.length) {
 			graphics.cardInfo("card", game.hand[game.prevCard]);
@@ -1820,25 +1820,28 @@ const graphics = {
 	 */
 	conf(focused = true) {
 		let text = "";
-		let width = 0;
+		let width = 39;
 		let height = 26; // 20 for one line of text, 26 for two.
 		if (menuSelect[0] === MENU.NEW_RUN || game.select[0] === S.CONF_RESTART) {
 			text = "Are you sure you want to restart your current run?\nThe map will also be different next time.";
 			width = 152;
+		} else if (menuSelect[0] === MENU.NEW_CUSTOM_RUN || menuSelect[0] === MENU.ENTER_SEED) {
+			text = "Are you sure you want to start a new custom run?\nThe run will not count towards your high score.";
+			width = 146;
 		} else if (menuSelect[0] === MENU.DIFFICULTY) {
 			if (game.difficulty === 0) text = "Are you sure you want to change the difficulty to hard?\nThis will also reset your current run.";
 			else text = "Are you sure you want to change the difficulty to easy?\nThis will also reset your current run.";
-			width = 166;
+			width = 167;
 		} else if (game.select[0] === S.CONF_END) {
 			text = "Are you sure you want to end your turn?";
-			width = 118;
+			width = 119;
 			height = 20;
 		} else if (game.select[0] === S.CONF_EXIT) {
 			text = "Are you sure you want to finish collecting rewards?\nThere are still rewards left unclaimed.";
-			width = 154;
+			width = 155;
 		} else if (game.select[0] === S.CONF_HAND_ALIGN) {
 			text = "Are you sure you want to align the hands of time?\nYou will regret it. There is no going back.";
-			width = 148;
+			width = 149;
 		} else if (game.select[0] === S.CONF_PURIFY) {
 			text = "Are you sure you want to destroy the card " + game.cards[game.cardSelect].getAttr("name") + "?\nIf you have multiple, this will only destroy one copy of the card.";
 			width = 200;
@@ -1847,7 +1850,7 @@ const graphics = {
 			width = 200;
 		} else if (game.select[0] === S.CONF_PEARL) {
 			text = "As the dark cloud clears, you see a strange pearl resting on the ground.\nWill you pick it up? This will consume 2 energy.";
-			width = 217;
+			width = 218;
 		};
 		const x = (400 - width) / 2;
 		const y = (game.select[0] === S.CONF_REFINE ? 20 : (200 - height) / 2);
