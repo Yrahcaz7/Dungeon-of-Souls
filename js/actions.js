@@ -104,6 +104,22 @@ function selection() {
 			menuArtifactSelect++;
 			actionTimer = 1;
 		};
+	} else if (menuSelect[0] === MENU.PREV_GAME_SORT && menuSelect[1] == 0) {
+		if (action === DIR.UP && prevGamesSort[0] > 0) {
+			prevGamesSort[0]--;
+			actionTimer = 1;
+		} else if (action === DIR.DOWN && prevGamesSort[0] < PREV_GAMES_SORT_NAMES.length - 1) {
+			prevGamesSort[0]++;
+			actionTimer = 1;
+		};
+	} else if (menuSelect[0] === MENU.PREV_GAME_SORT && menuSelect[1] == 1) {
+		if (action === DIR.UP && prevGamesSort[1]) {
+			prevGamesSort[1] = false;
+			actionTimer = 1;
+		} else if (action === DIR.DOWN && !prevGamesSort[1]) {
+			prevGamesSort[1] = true;
+			actionTimer = 1;
+		};
 	};
 	if (menuSelect[0] !== -1) return;
 	// confirmation
@@ -549,6 +565,28 @@ function performAction() {
 		actionTimer = 2;
 	} else if (menuSelect[0] === MENU.PREV_GAME_INFO) {
 		menuSelect[0] = MENU.PREV_GAMES;
+		actionTimer = 2;
+	} else if (menuSelect[0] === MENU.PREV_GAME_SORT) {
+		if (menuSelect[1]) {
+			menuSelect = [MENU.PREV_GAMES, 0];
+			menuScroll = 0;
+			sortedPrevGames = [];
+			while (sortedPrevGames.length < global.prevGames.length) {
+				let pending = -1;
+				for (let index = 0; index < global.prevGames.length; index++) {
+					if (sortedPrevGames.includes(index)) continue;
+					if (pending == -1 || (prevGamesSort[1] ?
+						PREV_GAMES_SORT_VALUES[prevGamesSort[0]](global.prevGames[index]) >= PREV_GAMES_SORT_VALUES[prevGamesSort[0]](global.prevGames[pending])
+						: PREV_GAMES_SORT_VALUES[prevGamesSort[0]](global.prevGames[index]) < PREV_GAMES_SORT_VALUES[prevGamesSort[0]](global.prevGames[pending])
+					)) {
+						pending = index;
+					};
+				};
+				sortedPrevGames.push(pending);
+			};
+		} else {
+			menuSelect[1]++;
+		};
 		actionTimer = 2;
 	};
 	if (menuSelect[0] !== -1) return;

@@ -1897,14 +1897,20 @@ const graphics = {
 		draw.rect("#000c");
 		draw.rect("#fff", 327, 14, 1, 185);
 		const spaceY = 49;
+		// initialize sorted previous games
+		if (!sortedPrevGames.length) {
+			for (let index = 0; index < global.prevGames.length; index++) {
+				sortedPrevGames.push(index);
+			};
+		};
 		// draw previous games
-		for (let index = 0; index < global.prevGames.length; index++) {
+		for (let index = 0; index < sortedPrevGames.length; index++) {
 			// first row
-			const prevGame = global.prevGames[index];
+			const prevGame = global.prevGames[sortedPrevGames[index]];
 			let x = 5;
 			let y = 18 + (index * spaceY) - menuScroll;
 			draw.box(x - 2, y - 2, 321, 45, {"background-color": "#0004", "border-color": "#fff"});
-			draw.lore(x, y, "<#000 highlight>Game #" + (index + 1) + "</#000>", {"color": "#000", "highlight-color": "#fff"});
+			draw.lore(x, y, "<#000 highlight>Game #" + (sortedPrevGames[index] + 1) + "</#000>", {"color": "#000", "highlight-color": "#fff"});
 			x += 6 * 10;
 			if (prevGame.result === GAME_RESULT.DEFEAT) draw.lore(x, y, "Result: <#f00>Defeat</#f00>", {"color": "#fff"});
 			else if (prevGame.result === GAME_RESULT.VICTORY) draw.lore(x, y, "Result: <#0f0>Victory</#0f0>", {"color": "#fff"});
@@ -1984,7 +1990,7 @@ const graphics = {
 		draw.rect("#0004", 0, 0, 400, 13);
 		draw.lore(200 - 2, 1, "Previous Games", {"color": "#fff", "text-align": DIR.CENTER});
 		draw.rect("#fff", 1, 12, 398, 1);
-		draw.lore(333, 18, "Press B to go back\nto the main menu.\n\nPress space or enter\nto view the details\nof the selected\naspect of a game.", {"color": "#fff", "text-small": true});
+		draw.lore(333, 18, "Press B to go back\nto the main menu.\n\nPress space or enter\nto view the details\nof the selected\naspect of a game.\n\nPress C to change the\nsorting of the list.", {"color": "#fff", "text-small": true});
 	},
 	/**
 	 * Draws the previous game artifact layer on the canvas.
@@ -1992,7 +1998,7 @@ const graphics = {
 	 */
 	prevGameArtifacts(focused = true) {
 		draw.rect("#000c");
-		const artifacts = global.prevGames[Math.floor(menuSelect[1] / 3)].artifacts;
+		const artifacts = global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].artifacts;
 		if (menuArtifactSelect > artifacts.length - 1) menuArtifactSelect = artifacts.length - 1;
 		// big artifacts
 		for (let index = 0; index < artifacts.length; index++) {
@@ -2008,7 +2014,7 @@ const graphics = {
 		};
 		info.artifact(artifacts[menuArtifactSelect], menuArtifactSelect * 26 + 30, 24);
 		draw.rect("#0004", 0, 0, 400, 13);
-		draw.lore(200 - 2, 1, "Artifacts From Game #" + (Math.floor(menuSelect[1] / 3) + 1), {"color": "#fff", "text-align": DIR.CENTER});
+		draw.lore(200 - 2, 1, "Artifacts From Game #" + (sortedPrevGames[Math.floor(menuSelect[1] / 3)] + 1), {"color": "#fff", "text-align": DIR.CENTER});
 		draw.rect("#fff", 1, 12, 398, 1);
 	},
 	/**
@@ -2016,7 +2022,7 @@ const graphics = {
 	 */
 	prevGameKills() {
 		draw.rect("#000c");
-		const kills = global.prevGames[Math.floor(menuSelect[1] / 3)].kills;
+		const kills = global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].kills;
 		const spaceY = 76;
 		let x = 3, y = 16;
 		const categories = [SMALL_ENEMIES, BIG_ENEMIES, PRIME_ENEMIES, BOSS_ENEMIES];
@@ -2026,7 +2032,7 @@ const graphics = {
 				const type = categories[category][index];
 				if (!kills[type]) continue;
 				draw.box(x, y, spaceX - 4, spaceY - 4, {"background-color": "#0004", "border-color": "#fff"});
-				menuEnemyAnim.drawEnemy(x + (spaceX - 4) / 2 - 32, y + 1, category * categories[category].length + index);
+				menuEnemyAnim.drawEnemy(x + (spaceX - 4) / 2 - 32, y + 1, category * categories[category].length + index, true);
 				draw.rect("#fff", x, y + 66, spaceX - 4, 6);
 				let text = "Killed ";
 				if (categories[category] === BOSS_ENEMIES) text += ENEMY_NAME[type];
@@ -2038,9 +2044,29 @@ const graphics = {
 			x += spaceX;
 		};
 		draw.rect("#0004", 0, 0, 400, 13);
-		draw.lore(200 - 2, 1, "Enemies Killed From Game #" + (Math.floor(menuSelect[1] / 3) + 1), {"color": "#fff", "text-align": DIR.CENTER});
+		draw.lore(200 - 2, 1, "Enemies Killed From Game #" + (sortedPrevGames[Math.floor(menuSelect[1] / 3)] + 1), {"color": "#fff", "text-align": DIR.CENTER});
 		draw.rect("#fff", 1, 12, 398, 1);
 		menuEnemyAnim.progressAnimations();
+	},
+	/**
+	 * Draws the previous game sort layer on the canvas.
+	 */
+	prevGameSort() {
+		draw.rect("#000c");
+		let text = "";
+		if (menuSelect[1]) {
+			if (prevGamesSort[1]) text = "   Ascending order\n<#ff0> \> Descending order</#ff0>";
+			else text = "<#ff0> \> Ascending order</#ff0>\n   Descending order";
+		} else {
+			for (let index = 0; index < PREV_GAMES_SORT_NAMES.length; index++) {
+				if (index == prevGamesSort[0]) text += "<#ff0> \> " + PREV_GAMES_SORT_NAMES[index] + "</#ff0>\n";
+				else text += "   " + PREV_GAMES_SORT_NAMES[index] + "\n";
+			};
+		};
+		draw.lore(2, 15, text, {"color": "#fff"});
+		draw.rect("#0004", 0, 0, 400, 13);
+		draw.lore(200 - 2, 1, "Sort by...", {"color": "#fff", "text-align": DIR.CENTER});
+		draw.rect("#fff", 1, 12, 398, 1);
 	},
 };
 

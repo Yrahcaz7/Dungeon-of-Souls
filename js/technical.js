@@ -219,6 +219,10 @@ document.addEventListener("keydown", event => {
 				};
 			};
 		};
+	} else if ((key == "C" || key == "c") && !event.repeat && menuSelect[0] === MENU.PREV_GAMES && actionTimer == -1) {
+		menuSelect = [MENU.PREV_GAME_SORT, 0];
+		action = -1;
+		actionTimer = 2;
 	} else if ((key == " " || key == "Enter") && !event.repeat && actionTimer == -1) {
 		action = -1;
 		performAction();
