@@ -17,21 +17,9 @@
 
 let auraBladePos = [[65, 10], [80, 25], [42, 0], [28, 35]], enemyPos = [], handPos = [];
 
-let enemyAnim = {
-	enemies: () => game.enemies,
-	idle: [0, 1.5, 3, 0.5, 2, 3.5],
-	prime: [0, 0, 0, 0, 0, 0],
-	sync: 0,
-	action: [0, ANIM.STARTING],
-	actionData: [],
-};
+let enemyAnim = new EnemyAnimationSource(6, () => game.enemies);
 
-let menuEnemyAnim = {
-	enemies: [...SMALL_ENEMIES, ...BIG_ENEMIES, ...PRIME_ENEMIES, ...BOSS_ENEMIES],
-	idle: [0, 1.5, 3, 0.5, 2, 3.5, 1, 2.5],
-	prime: [0, 0, 0, 0, 0, 0, 0, 0],
-	sync: 0,
-};
+let menuEnemyAnim = new EnemyAnimationSource(8, [...SMALL_ENEMIES, ...BIG_ENEMIES, ...PRIME_ENEMIES, ...BOSS_ENEMIES]);
 
 let backAnim = [0, 1.5, 3, 0], intentAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], effAnim = [0, null], playerAnim = [0, I.player.idle], extraAnim = [], transition = 0, screenShake = 0, auraBladeAnim = [0, 3, 6, 1];
 
@@ -41,7 +29,7 @@ const NO_ANTIALIASING_FILTER = `url('data:image/svg+xml,<svg xmlns="http://www.w
 
 /**
  * Progresses the animations of the enemies.
- * @param {{idle: number[], prime: number[], sync: number}} animSource - the enemy animation object. Defaults to `enemyAnim`.
+ * @param {EnemyAnimationSource} animSource - the enemy animation object. Defaults to `enemyAnim`.
  */
 function progressEnemyAnimations(animSource = enemyAnim) {
 	let enemies = (typeof animSource.enemies == "function" ? animSource.enemies() : animSource.enemies);
@@ -599,7 +587,7 @@ const draw = {
 	 * @param {number} x - the x-coordinate to draw the enemy at.
 	 * @param {number} y - the y-coordinate to draw the enemy at.
 	 * @param {number} index - the index of the enemy.
-	 * @param {{idle: number[], prime: number[], sync: number}} animSource - the enemy animation object. Defaults to `enemyAnim`.
+	 * @param {EnemyAnimationSource} animSource - the enemy animation object. Defaults to `enemyAnim`.
 	 * @param {boolean} noPrimeAnim - whether to skip the prime animation. Defaults to `false`.
 	 */
 	enemy(enemy, x, y, index, animSource = enemyAnim, noPrimeAnim = false) {
