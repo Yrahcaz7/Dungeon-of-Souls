@@ -27,48 +27,6 @@ let infoPos = 0, infoLimit = 0;
 
 const NO_ANTIALIASING_FILTER = `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="discrete" tableValues="0 1"/></feComponentTransfer></filter></svg>#filter')`;
 
-/**
- * Progresses the animations of the enemies.
- * @param {EnemyAnimationSource} animSource - the enemy animation object. Defaults to `enemyAnim`.
- */
-function progressEnemyAnimations(animSource = enemyAnim) {
-	let enemies = (typeof animSource.enemies == "function" ? animSource.enemies() : animSource.enemies);
-	for (let index = 0; index < enemies.length; index++) {
-		let enemy = enemies[index];
-		if (!(enemy instanceof Object)) enemy = new Enemy(enemy, NaN);
-		animSource.idle[index] += (Math.random() + 0.5) * 0.1;
-		if (animSource.idle[index] >= 4) animSource.idle[index] -= 4;
-		if (animSource.prime[index] != -1) {
-			let limit = 0;
-			if (enemy.type === SLIME.PRIME) {
-				if (animSource.prime[index] >= 4) animSource.prime[index] += (Math.random() + 0.5) * 0.2;
-				else animSource.prime[index] += (Math.random() + 0.5) * 0.1;
-				limit = 12;
-			} else if (enemy.type === FRAGMENT) {
-				limit = 25;
-				if (animSource.prime[index] >= 18) {
-					animSource.prime[index] += 0.5;
-					animSource.prime[index] = Math.round(animSource.prime[index] * 1e12) / 1e12;
-				} else {
-					animSource.prime[index]++;
-				};
-			} else if (enemy.type === SENTRY.PRIME) {
-				limit = 9;
-				if ((enemy.shield > 0) || (enemy.transition && enemy.transition[1] === TRANSITION.SHIELD)) {
-					animSource.prime[index] = -1;
-				} else {
-					animSource.prime[index] += (Math.random() + 0.5) * 0.2;
-				};
-			};
-			if (animSource.prime[index] >= limit) {
-				animSource.prime[index] = -1;
-				animSource.idle[index] = 0;
-			};
-		};
-	};
-	animSource.sync++;
-};
-
 const draw = {
 	/**
 	 * Draws an image on the canvas.
@@ -581,86 +539,6 @@ const draw = {
 			};
 		};
 	},
-	/**
-	 * Draws an enemy on the canvas.
-	 * @param {Enemy | number} enemy - the enemy object or enemy type.
-	 * @param {number} x - the x-coordinate to draw the enemy at.
-	 * @param {number} y - the y-coordinate to draw the enemy at.
-	 * @param {number} index - the index of the enemy.
-	 * @param {EnemyAnimationSource} animSource - the enemy animation object. Defaults to `enemyAnim`.
-	 * @param {boolean} noPrimeAnim - whether to skip the prime animation. Defaults to `false`.
-	 */
-	enemy(enemy, x, y, index, animSource = enemyAnim, noPrimeAnim = false) {
-		if (!(enemy instanceof Object)) enemy = new Enemy(enemy, NaN);
-		if (enemy.type === SLIME.BIG) {
-			if (enemy.shield > 0) draw.imageSector(I.enemy.slime.big_defend, Math.floor(animSource.idle[index]) * 64, 0, 64, 64, x, y);
-			else draw.imageSector(I.enemy.slime.big, Math.floor(animSource.idle[index]) * 64, 0, 64, 64, x, y);
-		} else if (enemy.type === SLIME.SMALL) {
-			if (enemy.shield > 0) draw.imageSector(I.enemy.slime.small_defend, Math.floor(animSource.idle[index]) * 64, 0, 64, 64, x, y);
-			else draw.imageSector(I.enemy.slime.small, Math.floor(animSource.idle[index]) * 64, 0, 64, 64, x, y);
-		} else if (enemy.type === SLIME.PRIME) {
-			if (animSource.prime[index] == -1 || noPrimeAnim) {
-				if (enemy.shield > 0) draw.imageSector(I.enemy.slime.prime_defend, Math.floor(animSource.idle[index]) * 64, 0, 64, 64, x, y + 1);
-				else draw.imageSector(I.enemy.slime.prime, Math.floor(animSource.idle[index]) * 64, 0, 64, 64, x, y + 1);
-			} else {
-				if (enemy.shield > 0) draw.imageSector(I.enemy.slime.to_prime_defend, Math.floor(animSource.prime[index]) * 64, 0, 64, 64, x, y + 1);
-				else draw.imageSector(I.enemy.slime.to_prime, Math.floor(animSource.prime[index]) * 64, 0, 64, 64, x, y + 1);
-			};
-		} else if (enemy.type === FRAGMENT) {
-			if (animSource.prime[index] == -1 || noPrimeAnim) {
-				draw.imageSector(I.enemy.fragment.idle, Math.floor(animSource.idle[index]) * 64, 0, 64, 64, x, y + 1);
-				if (index !== game.enemyNum || enemy.intent !== INTENT.ATTACK) {
-					draw.clock(x + 2, y + 5, -1, 2 - Math.abs(Math.floor(animSource.idle[index]) - 2));
-				};
-			} else if (animSource.prime[index] >= 18) {
-				draw.imageSector(I.enemy.fragment.open, Math.floor(animSource.prime[index] - 18) * 64, 0, 64, 64, x, y + 1);
-				draw.clock(x + 2, y + 5, 6, 0, (animSource.prime[index] - 18) * 5);
-			} else {
-				x += (18 - animSource.prime[index]) * 8;
-				draw.imageSector(I.enemy.fragment.roll, Math.floor(animSource.prime[index] % 4) * 64, 0, 64, 64, x, y + 1);
-				draw.clock(x + 2, y + 5, (4 - Math.floor((animSource.prime[index] - 2) % 4)) * 3, (4 - Math.floor(animSource.prime[index] % 4)) * 15);
-			};
-		} else if (enemy.type === SENTRY.BIG) {
-			if (enemy.shield > 0) {
-				draw.imageSector(I.enemy.sentry.big_defend, Math.floor(animSource.idle[index] + 7) * 64, 0, 64, 64, x, y + 1);
-			} else if (enemy.transition && enemy.transition[1] === TRANSITION.SHIELD) {
-				draw.imageSector(I.enemy.sentry.big_defend, Math.floor(7 - enemy.transition[0]) * 64, 0, 64, 64, x, y + 1);
-				enemy.transition[0]++;
-				if (enemy.transition[0] >= 7) delete enemy.transition;
-			} else {
-				draw.imageSector(I.enemy.sentry.big, Math.floor(animSource.idle[index]) * 64, 0, 64, 64, x, y + 1);
-			};
-		} else if (enemy.type === SENTRY.SMALL) {
-			if (enemy.shield > 0) {
-				draw.imageSector(I.enemy.sentry.small_defend, Math.floor(animSource.idle[index] + 5) * 64, 0, 64, 64, x, y);
-			} else if (enemy.transition && enemy.transition[1] === TRANSITION.SHIELD) {
-				draw.imageSector(I.enemy.sentry.small_defend, Math.floor(5 - enemy.transition[0]) * 64, 0, 64, 64, x, y);
-				enemy.transition[0]++;
-				if (enemy.transition[0] >= 5) delete enemy.transition;
-			} else {
-				draw.imageSector(I.enemy.sentry.small, Math.floor(animSource.idle[index]) * 64, 0, 64, 64, x, y);
-			};
-		} else if (enemy.type === SENTRY.PRIME) {
-			if (enemy.shield > 0) {
-				draw.imageSector(I.enemy.sentry.prime_defend, Math.floor(animSource.idle[index] + 9) * 64, 0, 64, 64, x, y);
-			} else if (enemy.transition && enemy.transition[1] === TRANSITION.SHIELD) {
-				draw.imageSector(I.enemy.sentry.prime_defend, Math.floor(9 - enemy.transition[0]) * 64, 0, 64, 64, x, y);
-				enemy.transition[0]++;
-				if (enemy.transition[0] >= 9) delete enemy.transition;
-			} else if (animSource.prime[index] == -1 || noPrimeAnim) {
-				draw.imageSector(I.enemy.sentry.prime, Math.floor(animSource.idle[index]) * 64, 0, 64, 64, x, y);
-			} else {
-				draw.imageSector(I.enemy.sentry.to_prime, Math.floor(animSource.prime[index]) * 64, 0, 64, 64, x, y);
-			};
-		} else if (enemy.type === SINGULARITY) {
-			if (Math.floor(animSource.idle[index]) == 1) y++;
-			else if (Math.floor(animSource.idle[index]) == 3) y--;
-			if (enemy.shield > 0) draw.image(I.enemy.singularity.defend, x, y);
-			else draw.image(I.enemy.singularity.idle, x, y);
-			draw.imageSector(I.enemy.singularity.orbs, Math.floor(animSource.sync % 24) * 64, 0, 64, 64, x, y);
-			if (enemy.shield > 0 && index != game.enemyNum) draw.image(I.enemy.singularity.shield, x, y);
-		};
-	},
 };
 
 const info = {
@@ -1094,7 +972,7 @@ const graphics = {
 		// enemy drawing
 		for (let index = 0; index < game.enemies.length; index++) {
 			if (enemyPos[index]?.length && isEnemyVisible(index)) {
-				draw.enemy(game.enemies[index], enemyPos[index][0], enemyPos[index][1], index);
+				enemyAnim.drawEnemy(enemyPos[index][0], enemyPos[index][1], index);
 			};
 		};
 		// action animations
@@ -1372,7 +1250,7 @@ const graphics = {
 			};
 		};
 		// move idle animations along
-		progressEnemyAnimations();
+		enemyAnim.progressAnimations();
 		// draw intents
 		if (game.select[0] === S.LOOKER || game.select[0] === S.HELP || game.select[0] === S.OPTIONS) {
 			for (let index = 0; index < game.enemies.length; index++) {
@@ -2148,7 +2026,7 @@ const graphics = {
 				const type = categories[category][index];
 				if (!kills[type]) continue;
 				draw.box(x, y, spaceX - 4, spaceY - 4, {"background-color": "#0004", "border-color": "#fff"});
-				draw.enemy(type, x + (spaceX - 4) / 2 - 32, y + 1, category * categories[category].length + index, menuEnemyAnim);
+				menuEnemyAnim.drawEnemy(x + (spaceX - 4) / 2 - 32, y + 1, category * categories[category].length + index);
 				draw.rect("#fff", x, y + 66, spaceX - 4, 6);
 				let text = "Killed ";
 				if (categories[category] === BOSS_ENEMIES) text += ENEMY_NAME[type];
@@ -2162,7 +2040,7 @@ const graphics = {
 		draw.rect("#0004", 0, 0, 400, 13);
 		draw.lore(200 - 2, 1, "Enemies Killed From Game #" + (Math.floor(menuSelect[1] / 3) + 1), {"color": "#fff", "text-align": DIR.CENTER});
 		draw.rect("#fff", 1, 12, 398, 1);
-		progressEnemyAnimations(menuEnemyAnim);
+		menuEnemyAnim.progressAnimations();
 	},
 };
 
