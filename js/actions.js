@@ -526,6 +526,44 @@ function selection() {
 };
 
 /**
+ * Returns the sort value of the previous game.
+ * @param {{result: number, difficulty: number, floor: number, health: number, gold: number, score: number, seed: string, cards: Card[], artifacts: number[], kills: {}}} prevGame - The previous game to get the sort value of.
+ */
+function getPrevGameSortValue(prevGame) {
+	if (prevGamesSort[0] == 1) {
+		if (prevGame.result === GAME_RESULT.DEFEAT) return 0;
+		if (prevGame.result === GAME_RESULT.VICTORY) return 2;
+		return 1;
+	} else if (prevGamesSort[0] == 2) {
+		if (prevGame.artifacts.includes(202)) return 999;
+		return prevGame.difficulty;
+	} else if (prevGamesSort[0] == 3) {
+		return prevGame.floor;
+	} else if (prevGamesSort[0] == 4) {
+		return prevGame.health;
+	} else if (prevGamesSort[0] == 5) {
+		return prevGame.gold;
+	} else if (prevGamesSort[0] == 6) {
+		return prevGame.score;
+	} else if (prevGamesSort[0] == 7) {
+		return prevGame.seed;
+	} else if (prevGamesSort[0] == 8) {
+		return prevGame.cards.length;
+	} else if (prevGamesSort[0] == 9) {
+		return prevGame.artifacts.length;
+	} else if (prevGamesSort[0] == 10) {
+		let kills = 0;
+		for (const key in prevGame.kills) {
+			if (prevGame.kills.hasOwnProperty(key)) {
+				kills += prevGame.kills[key];
+			};
+		};
+		return kills;
+	};
+	return 0;
+};
+
+/**
  * Performs the current action.
  */
 function performAction() {
@@ -576,8 +614,8 @@ function performAction() {
 				for (let index = 0; index < global.prevGames.length; index++) {
 					if (sortedPrevGames.includes(index)) continue;
 					if (pending == -1 || (prevGamesSort[1] ?
-						PREV_GAMES_SORT_VALUES[prevGamesSort[0]](global.prevGames[index]) >= PREV_GAMES_SORT_VALUES[prevGamesSort[0]](global.prevGames[pending])
-						: PREV_GAMES_SORT_VALUES[prevGamesSort[0]](global.prevGames[index]) < PREV_GAMES_SORT_VALUES[prevGamesSort[0]](global.prevGames[pending])
+						getPrevGameSortValue(global.prevGames[index]) >= getPrevGameSortValue(global.prevGames[pending])
+						: getPrevGameSortValue(global.prevGames[index]) < getPrevGameSortValue(global.prevGames[pending])
 					)) {
 						pending = index;
 					};

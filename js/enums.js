@@ -77,35 +77,6 @@ const MAIN_MENU_OPTIONS = ["Resume run", "Start new run", "Change difficulty", "
 // previous game sort options
 const PREV_GAMES_SORT_NAMES = ["Game number", "Result type", "Difficulty", "Highest floor", "Remaining health", "Remaining gold", "Total score", "Seed string", "Number of cards", "Number of artifacts", "Number of enemies killed"];
 
-const PREV_GAMES_SORT_VALUES = [
-	() => 0,
-	prevGame => {
-		if (prevGame.result === GAME_RESULT.DEFEAT) return 0;
-		if (prevGame.result === GAME_RESULT.VICTORY) return 2;
-		return 1;
-	},
-	prevGame => {
-		if (prevGame.artifacts.includes(202)) return 999;
-		return prevGame.difficulty;
-	},
-	prevGame => prevGame.floor,
-	prevGame => prevGame.health,
-	prevGame => prevGame.gold,
-	prevGame => prevGame.score,
-	prevGame => prevGame.seed,
-	prevGame => prevGame.cards.length,
-	prevGame => prevGame.artifacts.length,
-	prevGame => {
-		let kills = 0;
-		for (const key in prevGame.kills) {
-			if (prevGame.kills.hasOwnProperty(key)) {
-				kills += prevGame.kills[key];
-			};
-		};
-		return kills;
-	},
-];
-
 // special selects from card effects - used in `game.select` as [S, N] or [S, N, [S_PREV, N_PREV]]
 // N is an integer (which defaults to 0) and is defined differently for each following S:
 const SS = {
