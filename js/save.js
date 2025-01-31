@@ -166,6 +166,11 @@ function fixSave(version) {
 		game.deck = game.deckLocal;
 		delete game.deckLocal;
 	};
+	// version 2.2.17
+	if (version < 2_002_017) {
+		// `game.enemyStage` now always uses `ANIM.STARTING` instead of `-1`
+		if (game.enemyStage === -1) game.enemyStage = ANIM.STARTING;
+	};
 	// reset GAME_OVER and GAME_WON screen fade-in (all versions)
 	if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) game.select[1] = 0;
 	// fix in-progress player attack (all versions)

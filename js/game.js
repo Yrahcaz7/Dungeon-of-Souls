@@ -31,7 +31,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_002_015,
+	version: 2_002_017,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -50,7 +50,7 @@ let global = {
 	kills: {},
 	enemies: [],
 	enemyNum: -1,
-	enemyStage: -1,
+	enemyStage: ANIM.STARTING,
 	enemyAtt: [-1, 0, new Card(), false],
 	attackEffects: [],
 	artifacts: [200, 201],
@@ -272,13 +272,11 @@ function enterBattle() {
  * Handles the enemies' turn.
  */
 function enemyTurn() {
-	if (game.enemyNum == -1) {
-		game.enemyNum = 0;
-	};
+	if (game.enemyNum == -1) startAnim.enemy();
 	if (game.enemyNum < game.enemies.length) {
 		if (game.enemyStage === ANIM.ENDING) game.enemies[game.enemyNum].finishAction();
 		else if (game.enemyStage === ANIM.MIDDLE) game.enemies[game.enemyNum].middleAction();
-		else if (game.enemyStage !== ANIM.PENDING) game.enemies[game.enemyNum].startAction();
+		else if (game.enemyStage === ANIM.STARTING) game.enemies[game.enemyNum].startAction();
 	};
 };
 
@@ -295,7 +293,6 @@ function endBattle() {
 		game.state = STATE.EVENT_FIN;
 		game.turn = -1;
 		game.enemyNum = -1;
-		game.enemyStage = -1;
 		// activate artifacts
 		activateArtifacts(FUNC.FLOOR_CLEAR);
 		// set rewards
@@ -382,7 +379,7 @@ function manageGameplay() {
 	// update data
 	updateData();
 	// enemy actions
-	if (game.turn === TURN.ENEMY || game.enemyNum >= 0 || game.enemyStage !== -1) enemyTurn();
+	if (game.turn === TURN.ENEMY || game.enemyNum >= 0) enemyTurn();
 };
 
 /**

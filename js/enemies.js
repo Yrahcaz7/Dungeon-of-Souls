@@ -112,12 +112,9 @@ class Enemy {
 				if (game.eff[EFF.WEAKNESS]) startAnim.player(I.player.crouch_shield);
 				else startAnim.player(I.player.shield);
 			};
-			startAnim.enemy();
 		} else if (this.intent === INTENT.DEFEND) {
 			if (this.type === FRAGMENT) {
 				this.middleAction();
-			} else {
-				startAnim.enemy();
 			};
 		} else {
 			this.middleAction();
@@ -209,9 +206,8 @@ class Enemy {
 			game.enemyNum = -1;
 			startTurn();
 		} else {
-			game.enemyNum++;
+			startAnim.enemy();
 		};
-		game.enemyStage = -1;
 		delete this.done;
 	};
 	/**
