@@ -133,11 +133,13 @@ class Enemy {
 			} else if (game.shield == 0 && playerAnim[1] !== I.player.idle) {
 				startAnim.player(I.player.idle);
 			};
+			this.done = true;
 		} else if (this.intent === INTENT.DEFEND) {
 			enemyGainShield(this.getTotalDefendPower());
 			if (this.type === FRAGMENT) {
 				this.finishAction();
 			};
+			this.done = true;
 		} else if (this.intent === INTENT.BUFF) {
 			if (this.type === FRAGMENT) {
 				if (this.eff[EFF.RESILIENCE]) this.eff[EFF.RESILIENCE] += 3;
@@ -169,7 +171,6 @@ class Enemy {
 			};
 			this.finishAction();
 		};
-		this.done = true;
 	};
 	/**
 	 * Finishes the enemy's action.
