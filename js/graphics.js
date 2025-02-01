@@ -600,11 +600,11 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	deck(type, xPlus = 0, yPlus = 0) {
-		let deck = currentDeck();
+		const deck = currentDeck();
 		if (!deck[game.cardSelect]) return 0;
-		let refining = (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE);
-		let cols = (refining ? 3 : 6);
-		let selected = [game.cardSelect % cols, Math.floor(game.cardSelect / cols)];
+		const refining = (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE);
+		const cols = (refining ? 3 : 6);
+		const selected = [game.cardSelect % cols, Math.floor(game.cardSelect / cols)];
 		let x = (refining ? 72 : 71) + (selected[0] * (refining ? 68 : 66)) + xPlus;
 		let y = (refining ? 16 : 15) + (selected[1] * (refining ? 100 : 98)) - game.deckScroll + yPlus;
 		if (selected[0] >= (refining ? 2 : 4)) {
@@ -624,7 +624,8 @@ const info = {
 	 */
 	player(type, xPlus = 0, yPlus = 0) {
 		const eff = game.eff[type];
-		let y = 68 + yPlus, move = 0;
+		const y = 68 + yPlus;
+		let move = 0;
 		if (eff > 0) {
 			let desc = (PERM_EFF_DESC[type] ? PERM_EFF_DESC[type] : "You have " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE) && eff >= 2 ? "s" : "") + ".");
 			move += draw.textBox(85 + xPlus, y + move, desc.length, desc, {"text-small": true});
@@ -641,7 +642,8 @@ const info = {
 	enemy(type, xPlus = 0, yPlus = 0) {
 		const pos = enemyPos[game.select[1]];
 		const eff = game.enemies[game.select[1]].eff[type];
-		let y = pos[1] + yPlus, move = 0;
+		const y = pos[1] + yPlus;
+		let move = 0;
 		if (eff > 0) {
 			let desc = (PERM_EFF_DESC[type] ? PERM_EFF_DESC[type] : "This has " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "") + ".");
 			move += draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, y + move, desc.length, desc, {"text-small": true});
@@ -670,7 +672,8 @@ const info = {
 	 * @param {number} yOveride - overrides the y-coordinate of the infobox.
 	 */
 	artifact(type, xOveride = NaN, yOveride = NaN) {
-		let x = (xOveride === xOveride ? xOveride : 21 + (game.select[1] * 18)), y = (yOveride === yOveride ? yOveride : 13);
+		let x = (xOveride === xOveride ? xOveride : 21 + (game.select[1] * 18));
+		let y = (yOveride === yOveride ? yOveride : 13);
 		const obj = ARTIFACTS[type];
 		if (!obj) return;
 		if (obj.name.length <= 12) {
@@ -772,7 +775,7 @@ const graphics = {
 	 */
 	middleLayer() {
 		if (hasArtifact(202) && game.floor == 10) {
-			if (extraAnim.length == 0) {
+			if (!extraAnim.length) {
 				for (let index = 0; index < 9; index++) {
 					extraAnim[index] = [Math.random() * 180 + 6, index * 50 - Math.random() * 10, Math.floor(Math.random() * 20 + index) % 20];
 				};
@@ -1318,14 +1321,14 @@ const graphics = {
 	 * @param {boolean} focused - whether the deck layer is focused. Defaults to `true`.
 	 */
 	deck(focused = true) {
+		// draw background
 		draw.rect("#000c");
-		if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) {
-			if (refinableDeck.length == 0) {
-				refinableDeck = game.cards.filter(card => card.level == 0);
-				if (refinableDeck.length == 0) refinableDeck = [new Card()];
-			};
-			draw.rect("#fff", 207, 14, 1, 185);
+		// setup refinable deck
+		if ((game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) && !refinableDeck.length) {
+			refinableDeck = game.cards.filter(card => card.level == 0);
+			if (!refinableDeck.length) refinableDeck = [new Card()];
 		};
+		// setup for deck drawing
 		const deck = currentDeck();
 		const len = deck.length;
 		const refining = (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE);
@@ -1335,6 +1338,16 @@ const graphics = {
 		const startY = (refining ? 15 : 14);
 		const spaceX = (refining ? 68 : 66);
 		const spaceY = (refining ? 100 : 98);
+		// draw right bar
+		if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) {
+			draw.rect("#fff", 207, 14, 1, 185);
+			let cardObj = deck[game.cardSelect];
+			draw.lore(213, 18, "Press B to go back to the reward selection screen.\n\nPress space or enter to refine the selected card.\n\nA preview of the refined card is shown below.", {"color": "#fff", "text-small": true});
+			draw.card(cardObj, 213, 51, true, true);
+			draw.card(new Card(cardObj.id, 1), 329, 51, true, true);
+			draw.image(I.card.refine, 305 - I.card.refine.width / 2, 95);
+		};
+		// draw deck
 		if (len > 0) {
 			if (game.cardSelect > len - 1) game.cardSelect = len - 1;
 			let maxScroll = Math.max(spaceY * (Math.floor((len - 1) / cols) - 1) + scrollPadding, 0);
@@ -1359,6 +1372,7 @@ const graphics = {
 				};
 			};
 		};
+		// draw top bar
 		draw.rect("#0004", 0, 0, 400, 13);
 		if (menuSelect[0] === MENU.PREV_GAME_INFO) draw.lore(200 - 2, 1, "Cards From Game #" + (Math.floor(menuSelect[1] / 3) + 1), {"color": "#fff", "text-align": DIR.CENTER});
 		else if (game.select[0] === S.DECK) draw.lore(200 - 2, 1, "Deck", {"color": "#fff", "text-align": DIR.CENTER});
@@ -1368,13 +1382,6 @@ const graphics = {
 		else if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY) draw.lore(200 - 2, 1, "Purifier: Pick a Card to Destroy", {"color": "#fff", "text-align": DIR.CENTER});
 		else if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) draw.lore(200 - 2, 1, "Refiner: Pick a Card to Improve", {"color": "#fff", "text-align": DIR.CENTER});
 		draw.rect("#fff", 1, 12, 398, 1);
-		if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) {
-			let cardObj = deck[game.cardSelect];
-			draw.lore(213, 18, "Press B to go back to the reward selection screen.\n\nPress space or enter to refine the selected card.\n\nA preview of the refined card is shown below.", {"color": "#fff", "text-small": true});
-			draw.card(cardObj, 213, 51, true, true);
-			draw.card(new Card(cardObj.id, 1), 329, 51, true, true);
-			draw.image(I.card.refine, 305 - I.card.refine.width / 2, 95);
-		};
 	},
 	/**
 	 * Draws the player's hand on the canvas.
@@ -1559,7 +1566,7 @@ const graphics = {
 	 */
 	popups() {
 		for (let index = 0; index < popups.length && index <= 6; index++) {
-			if (popups[index].length == 0) continue;
+			if (!popups[index].length) continue;
 			if (popups[index][2] >= 150) {
 				popups[index] = [];
 				continue;
@@ -1707,8 +1714,8 @@ const graphics = {
 			};
 		};
 		// draw traveled path
-		for (let index = 0; index < game.traveled.length; index++) {
-			draw.polyline(mapPathPoints[Math.max(index - 1, 0)][game.traveled[Math.max(index - 1, 0)]][index][game.traveled[index]], "#842", 3);
+		for (let index = area * 10; index < (area + 1) * 10 && index < game.traveled.length; index++) {
+			draw.polyline(mapPathPoints[Math.max(index - 1, area * 10)][game.traveled[Math.max(index - 1, area * 10)]][index][game.traveled[index]], "#842", 3);
 		};
 		ctx.filter = "none";
 		// draw nodes
@@ -1890,8 +1897,11 @@ const graphics = {
 	 * @param {boolean} focused - whether the previous games layer is focused. Defaults to `true`.
 	 */
 	prevGames(focused = true) {
+		// draw background
 		draw.rect("#000c");
+		// draw right bar
 		draw.rect("#fff", 327, 14, 1, 185);
+		draw.lore(333, 18, "Press B to go back\nto the main menu.\n\nPress space or enter\nto view the details\nof the selected\naspect of a game.\n\nPress C to change the\nsorting of the list.", {"color": "#fff", "text-small": true});
 		const spaceY = 49;
 		// initialize sorted previous games
 		if (!sortedPrevGames.length) {
@@ -1982,11 +1992,10 @@ const graphics = {
 			if (menuScroll > maxScroll) menuScroll = maxScroll;
 			else if (menuScroll < 0) menuScroll = 0;
 		};
-		// draw top and right bars
+		// draw top bar
 		draw.rect("#0004", 0, 0, 400, 13);
 		draw.lore(200 - 2, 1, "Previous Games", {"color": "#fff", "text-align": DIR.CENTER});
 		draw.rect("#fff", 1, 12, 398, 1);
-		draw.lore(333, 18, "Press B to go back\nto the main menu.\n\nPress space or enter\nto view the details\nof the selected\naspect of a game.\n\nPress C to change the\nsorting of the list.", {"color": "#fff", "text-small": true});
 	},
 	/**
 	 * Draws the previous game artifact layer on the canvas.

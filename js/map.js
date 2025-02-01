@@ -520,7 +520,7 @@ const generateMap = (() => {
 					|| typeof game.map[x + 1][y] == "number"
 				) continue;
 				game.map[x][y] = available.splice(randomInt(0, available.length - 1), 1)[0];
-				if (available.length == 0) available = [0, 1, 2, 3, 4];
+				if (!available.length) available = [0, 1, 2, 3, 4];
 			};
 		};
 	};
