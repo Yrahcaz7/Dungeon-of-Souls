@@ -31,7 +31,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_002_019,
+	version: 2_002_020,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -325,7 +325,7 @@ function loadRoom() {
 		game.rewards = [];
 		game.enemies = [];
 		game.hand = [];
-		game.deck = shuffle(game.cards.map(obj => Card.classify(obj)));
+		game.deck = shuffle(game.cards.map(obj => new Card(obj.id, obj.level)));
 		game.discard = [];
 		game.void = [];
 		game.eff = {};

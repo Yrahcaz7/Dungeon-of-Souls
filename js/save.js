@@ -150,13 +150,6 @@ function fixSave(version) {
 		};
 		fixCard(game.enemyAtt[2]);
 	};
-	// version 2.1.25
-	if (version < 2_001_025) {
-		// it is now impossible to get a card with applied effects in your non-local deck (now called cards as of v2.2.1)
-		for (let index = 0; index < game.deck.length; index++) {
-			game.deck[index].eff = {};
-		};
-	};
 	// version 2.2.1
 	if (version < 2_002_001) {
 		// `game.deck` is now named `game.cards`
@@ -170,6 +163,13 @@ function fixSave(version) {
 	if (version < 2_002_017) {
 		// `game.enemyStage` now always uses `ANIM.STARTING` instead of `-1`
 		if (game.enemyStage === -1) game.enemyStage = ANIM.STARTING;
+	};
+	// version 2.2.20
+	if (version < 2_002_020) {
+		// it is now impossible to get a card with applied effects in `game.cards`
+		for (let index = 0; index < game.cards.length; index++) {
+			game.cards[index].eff = {};
+		};
 	};
 	// reset GAME_OVER and GAME_WON screen fade-in (all versions)
 	if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) game.select[1] = 0;
