@@ -16,19 +16,6 @@
  */
 
 /**
- * Returns a string formatted in title case.
- * @param {string} str - the string.
- */
-function title(str) {
-	let result = "";
-	for (let num = 0; num < str.length; num++) {
-		if (num === 0 || (/\s/.test(str.charAt(num - 1)) && !/^(a|an|and|at|but|by|for|in|nor|of|on|or|so|the|to|up|yet)(?!\w)/.test(str.substring(num)))) result += str.charAt(num).toUpperCase();
-		else result += str.charAt(num);
-	};
-	return result;
-};
-
-/**
  * Returns a string formatted with color tags.
  * @param {string} text - the string to color.
  */

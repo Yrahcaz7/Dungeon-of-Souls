@@ -17,20 +17,20 @@
 
 const CARDS = {
 	0: {
-		name: "error",
+		name: "Error",
 		desc: ["This card is\nclearly an error.\nUnplayable.", "Wow! An improved\nerror! Amazing! It\ndefinitely still\nisn't unplayable,\nright? That would\nbe ridiculous."],
 		rarity: -1,
 		cost: 0,
 	},
 	1000: {
-		name: "slash",
+		name: "Slash",
 		desc: ["Deal 5 damage to\nan enemy.", "Deal 10 damage to\nan enemy."],
 		rarity: 0,
 		cost: 1,
 		damage: [5, 10],
 	},
 	1001: {
-		name: "heat wave",
+		name: "Heat Wave",
 		desc: ["Deal 7 damage to\nan enemy, and apply\n2 burn to all\nenemies.", "Deal 7 damage to\nan enemy, and apply\n4 burn to all\nenemies."],
 		rarity: 2,
 		cost: 2,
@@ -44,7 +44,7 @@ const CARDS = {
 		},
 	},
 	1002: {
-		name: "sweeping slash",
+		name: "Sweeping Slash",
 		desc: ["Deal 4 damage to\nall enemies.\nUniform.", "Deal 8 damage to\nall enemies.\nUniform."],
 		rarity: 1,
 		cost: 1,
@@ -58,7 +58,7 @@ const CARDS = {
 		},
 	},
 	1003: {
-		name: "bladestorm",
+		name: "Bladestorm",
 		desc: "Consume all X aura\nblades to deal\nX times 6 damage\nto an enemy and X\nto all others.\nUniform.",
 		rarity: 2,
 		cost: [2, 1],
@@ -74,7 +74,7 @@ const CARDS = {
 		},
 	},
 	1004: {
-		name: "gold slash",
+		name: "Gold Slash",
 		desc: ["Consume 25 gold to\ndeal 8 damage to\nan enemy.", "Consume 20 gold to\ndeal 15 damage to\nan enemy."],
 		rarity: 1,
 		cost: 1,
@@ -90,14 +90,14 @@ const CARDS = {
 		cannotMessage: "not enough gold",
 	},
 	1005: {
-		name: "iron slash",
+		name: "Iron Slash",
 		desc: "Deal 12 damage to\nan enemy.",
 		rarity: 1,
 		cost: [2, 1],
 		damage: 12,
 	},
 	2000: {
-		name: "block",
+		name: "Block",
 		desc: ["Gain 4 shield.", "Gain 8 shield."],
 		rarity: 0,
 		cost: 1,
@@ -107,7 +107,7 @@ const CARDS = {
 		},
 	},
 	2001: {
-		name: "reinforce",
+		name: "Reinforce",
 		desc: ["Gain 2 shield and\n1 reinforce.", "Gain 4 shield and\n2 reinforces."],
 		rarity: 1,
 		cost: 1,
@@ -122,14 +122,14 @@ const CARDS = {
 		},
 	},
 	2002: {
-		name: "everlasting shield",
+		name: "Everlasting Shield",
 		desc: "Gain 3 reinforces.",
 		rarity: 2,
 		cost: [2, 1],
 		effect(level = 0) {gainEff(EFF.REINFORCE, 3)},
 	},
 	2003: {
-		name: "cower",
+		name: "Cower",
 		desc: ["Gain 9 shield and\n2 weakness.", "Gain 10 shield and\n1 weakness."],
 		rarity: 1,
 		cost: 1,
@@ -144,14 +144,14 @@ const CARDS = {
 		},
 	},
 	2004: {
-		name: "resilience",
+		name: "Resilience",
 		desc: ["Gain 2 resilience.", "Gain 3 resilience."],
 		rarity: 2,
 		cost: 1,
 		effect(level = 0) {gainEff(EFF.RESILIENCE, (level >= 1 ? 3 : 2))},
 	},
 	2005: {
-		name: "the eternal gold",
+		name: "The Eternal Gold",
 		desc: ["Consume 45 gold\nto gain 10 shield\nand 1 reinforce.", "Consume 30 gold\nto gain 15 shield\nand 1 reinforce."],
 		rarity: 1,
 		cost: 2,
@@ -172,7 +172,7 @@ const CARDS = {
 		cannotMessage: "not enough gold",
 	},
 	3000: {
-		name: "war cry",
+		name: "War Cry",
 		desc: ["All non-boss\nenemies switch\ntheir intents to\ndefense. One use.", "All non-boss\nenemies switch\ntheir intents to\ndefense. Draw a\ncard. One use."],
 		rarity: 1,
 		cost: 0,
@@ -188,7 +188,7 @@ const CARDS = {
 		},
 	},
 	3001: {
-		name: "rage",
+		name: "Rage",
 		desc: ["Kill a non-boss\nenemy. Take\nnon-combat damage\nequal to half its\nhealth, rounded up.", "Kill a non-boss\nenemy. Take\nnon-combat damage\nequal to half its\nhealth, rounded up.\nDraw a card."],
 		rarity: 1,
 		cost: 0,
@@ -202,7 +202,7 @@ const CARDS = {
 		},
 	},
 	3002: {
-		name: "burn",
+		name: "Burn",
 		desc: ["Apply 1 burn to\nyourself and all\nenemies.", "Apply 1 burn to\nyourself and apply\n2 burn to all\nenemies."],
 		rarity: 1,
 		cost: 0,
@@ -216,7 +216,7 @@ const CARDS = {
 		},
 	},
 	3003: {
-		name: "memorize",
+		name: "Memorize",
 		desc: "Choose a card from\nyour hand. Apply 1\ncost reduction\nand 1 retention to\nthe chosen card.",
 		rarity: 2,
 		cost: [1, 0],
@@ -231,14 +231,14 @@ const CARDS = {
 		cannotMessage: "no valid target",
 	},
 	4000: {
-		name: "aura blade",
+		name: "Aura Blade",
 		desc: "Gain 1 aura blade.",
 		rarity: 1,
 		cost: [1, 0],
 		effect(level = 0) {gainEff(EFF.AURA_BLADE, 1)},
 	},
 	4001: {
-		name: "aura blaze",
+		name: "Aura Blaze",
 		desc: "Gain 4 aura blades.\nOne use.",
 		rarity: 2,
 		cost: [3, 2],
@@ -347,7 +347,7 @@ class Card {
 	 */
 	getAttr(attr) {
 		if (!CARDS[this.id] || CARDS[this.id][attr] === null || CARDS[this.id][attr] === undefined) return;
-		if (attr == "name") return title(CARDS[this.id].name) + "+".repeat(this.level);
+		if (attr == "name") return CARDS[this.id].name + "+".repeat(this.level);
 		if (typeof CARDS[this.id][attr] == "object") {
 			if (attr == "select") {
 				if (typeof CARDS[this.id][attr][this.level] == "object") return CARDS[this.id][attr][this.level];

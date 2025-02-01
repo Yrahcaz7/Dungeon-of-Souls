@@ -17,44 +17,44 @@
 
 const ARTIFACTS = {
 	0: {
-		name: "error",
+		name: "Error",
 		desc: "This artifact is clearly\nan error. It does\nabsolutely nothing.",
 	},
 	100: {
-		name: "supershield",
+		name: "Supershield",
 		desc: "All cards that give you\nshield give you 2 extra.",
 	},
 	101: {
-		name: "gem of rage",
+		name: "Gem of Rage",
 		desc: "All cards that deal\ndamage deal 2 extra.",
 	},
 	102: {
-		name: "candy",
+		name: "Candy",
 		desc: "You have 15 less max\nhealth, but you gain 3\nhealth each time you\nclear a floor.",
 		[FUNC.FLOOR_CLEAR]() {
 			game.health += 3;
 		},
 	},
 	103: {
-		name: "corrosion",
+		name: "Corrosion",
 		desc: "You have 1 more max\nenergy, but you take 4\ncombat damage at the end\nof each of your turns.",
 		[FUNC.PLAYER_TURN_END]() {
 			takeDamage(4, true, -1);
 		},
 	},
 	104: {
-		name: "card charm",
+		name: "Card Charm",
 		desc: "You get 1 extra card\nreward choice, but your\nhand size is 1 smaller.",
 	},
 	105: {
-		name: "nutritious meal",
+		name: "Nutritious Meal",
 		desc: "You have 15 more max health.\nOn pickup, you gain 10 health.",
 		[FUNC.PICKUP]() {
 			game.health += 10;
 		},
 	},
 	106: {
-		name: "magic book",
+		name: "Magic Book",
 		desc: "You draw 2 cards each\ntime you play a magic\ntype card.",
 		[FUNC.PLAY_CARD](cardObj) {
 			if (Math.floor(cardObj.id / 1000) == 4) {
@@ -63,34 +63,34 @@ const ARTIFACTS = {
 		},
 	},
 	107: {
-		name: "bottled fire",
+		name: "Bottled Fire",
 		desc: "Enemies start with 1\nburn, and burn deals 3\nextra damage to enemies.",
 	},
 	200: {
-		name: "the map",
+		name: "The Map",
 		desc: "You can choose where\nto go next each time\nyou clear a floor.",
 	},
 	201: {
-		name: "iron will",
+		name: "Iron Will",
 		desc: "You gain 2 health each\ntime you clear a floor.",
 		[FUNC.FLOOR_CLEAR]() {
 			game.health += 2;
 		},
 	},
 	202: {
-		name: "determination",
+		name: "Determination",
 		desc: "As you confront your\ngreatest challenge yet,\nyou are filled with\na familiar feeling...",
 	},
 	203: {
-		name: "warped essence",
+		name: "Warped Essence",
 		desc: "You have 1 more max energy,\nbut you take 25% more\ncombat damage, rounded up.",
 	},
 	204: {
-		name: "shrouded pearl",
+		name: "Shrouded Pearl",
 		desc: "Non-boss enemies cannot\nattack on their first turn.",
 	},
 	205: {
-		name: "corrosion [stage 2]",
+		name: "Corrosion [stage 2]",
 		desc: "You have 1 more max energy, but you\ntake <#0f0 highlight>5</#0f0> combat damage [decay] at the\nend of each of your turns.\nSTAGE 2: Your hand size is 1 larger,\nbut decay damage is increased by 1.",
 		big: true,
 		[FUNC.PLAYER_TURN_END]() {

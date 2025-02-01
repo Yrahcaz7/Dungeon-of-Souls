@@ -239,8 +239,9 @@ const CHARACTERS = {
 		[],
 		[],
 		[0, 1, 1],
-		[1, 1],
-		[1],
+		[0, 1, 1],
+		[0, 0, 1],
+		[0, 1],
 	], "<": [
 		[0, 0, 0, 1, 1],
 		[0, 0, 1],
@@ -837,3 +838,13 @@ const CHARACTERS = {
 		[1, 0, 1, 1],
 	],
 };
+
+const LOW_CHAR_REGEX = (() => {
+	let lowChars = "";
+	for (const char in CHARACTERS) {
+		if (CHARACTERS.hasOwnProperty(char) && CHARACTERS[char].length > 9) {
+			lowChars += char;
+		};
+	};
+	return new RegExp("[" + lowChars + "]");
+})();

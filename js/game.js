@@ -31,7 +31,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_002_020,
+	version: 2_002_021,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -397,10 +397,10 @@ function updateVisuals() {
 	if (menuSelect[0] !== -1) {
 		graphics.middleLayer();
 		draw.image(I.title, (400 - I.title.width) / 2, 0);
-		draw.lore(390, 51, "Version " + get.versionDisplay(), {"color": "#f00", "text-align": DIR.LEFT, "text-small": true});
+		draw.lore(390, 51, "Version " + get.versionDisplay(), {"color": (get.area() == 1 ? "#fcc" : "#f00"), "text-align": DIR.LEFT, "text-small": true});
 		draw.lore(1, 1, "HIGH SCORE: " + global.highScore + " points", {"color": "#fff", "text-small": true});
 		if (hasArtifact(202) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": DIR.CENTER});
-		else if (get.area() == 1) draw.lore(200 - 2, 53, "Act 2: The Color of the Soul", {"color": "#fff", "text-align": DIR.CENTER});
+		else if (get.area() == 1) draw.lore(200 - 2, 53, "Act 2: The Color of the Soul", {"color": "#fcc", "text-align": DIR.CENTER});
 		else draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": DIR.CENTER});
 		graphics.menu(menuSelect[0] === MENU.MAIN);
 		if (game.select[0] === S.WELCOME) {
@@ -413,14 +413,7 @@ function updateVisuals() {
 			graphics.prevGames(menuSelect[0] === MENU.PREV_GAMES);
 		};
 		if (menuSelect[0] === MENU.ENTER_SEED) {
-			draw.rect("#0008");
-			const x = 200 - 17 * 3 - 4, y = 100 - 15.5;
-			draw.box(x, y, 17 * 6 + 5, 41);
-			draw.lore(x + 1, y + 1, "Enter a seed:", {"text-small": true});
-			draw.lore(x + 1, y + 19, "Only digits and A to F can be used.\nIf the seed is at least 1 character\nlong, you may press space or enter\nto start the custom run.", {"text-small": true});
-			draw.box(x + 2, y + 7, 6 * 6 + 1, 10);
-			draw.lore(x + 3, y + 8, newSeed);
-			if (newSeed.length < 6 && Date.now() % 1000 < 500) draw.rect("#000", x + 3 + newSeed.length * 6, y + 8, 1, 8);
+			graphics.seedInput();
 		} else if (menuSelect[0] === MENU.PREV_GAME_INFO) {
 			if (menuSelect[1] % 3 == 0) graphics.deck();
 			else if (menuSelect[1] % 3 == 1) graphics.prevGameArtifacts();
@@ -485,75 +478,7 @@ function updateVisuals() {
 	};
 	graphics.popups();
 	if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) {
-		ctx.globalAlpha = game.select[1] / (game.select[0] === S.GAME_WON ? 50 : 64);
-		if (game.select[1] < 50) game.select[1]++;
-		draw.rect("#222");
-		if (game.select[0] === S.GAME_WON) {
-			draw.image(I.background.victorious, 168, 42 + Math.round(Math.abs(winAnim - 4) - 2), I.background.victorious.width * 2, I.background.victorious.height * 2);
-			winAnim += Math.random() * 0.05 + 0.05;
-			if (winAnim >= 8) winAnim -= 8;
-			draw.rect("#0004");
-		};
-		const factors = get.scoreFactors();
-		let text = "";
-		if (game.select[0] === S.GAME_WON) {
-			text += "YOU BEAT THE GAME ";
-			if (hasArtifact(202)) text += "<#fcf050>WITH DETERMINATION</#fcf050>";
-			else if (game.difficulty) text += "ON <#f00>HARD MODE!</#f00>";
-			else text += "ON EASY MODE!";
-			text += "\n\nThank you for playing!\n\nMore content is coming soon!";
-		} else {
-			text += "GAME OVER\n\nDIFFICULTY: ";
-			if (hasArtifact(202)) text += "<#fcf050>DETERMINATION</#fcf050>";
-			else if (game.difficulty) text += "HARD";
-			else text += "EASY";
-			text += "\n\nTOP FLOOR: " + game.floor;
-		};
-		let len = factors.length;
-		if (game.difficulty) len += 2;
-		let normalColor = (game.select[0] === S.GAME_WON ? "#0f0" : "#f00");
-		let hardColor = (game.select[0] === S.GAME_WON ? "#f00" : "#0f0");
-		draw.lore(200 - 2, 100 - (len + 17) * 2.75, text, {"color": normalColor, "text-align": DIR.CENTER});
-		draw.lore(200 - 2, 100 + (len + 15) * 2.75, "PRESS ENTER TO START A NEW RUN", {"color": normalColor, "text-align": DIR.CENTER});
-		text = "";
-		for (let index = 0; index < factors.length; index++) {
-			text += factors[index][0] + ":\n";
-		};
-		if (game.difficulty) text += "\nBase score:\n\nTotal score:";
-		else text += "\nTotal score:";
-		draw.lore(120, 100 - (len - 7) * 2.75, text, {"color": normalColor, "text-small": true});
-		text = "";
-		let totalScore = 0;
-		for (let index = 0; index < factors.length; index++) {
-			text += factors[index][1] + "x" + factors[index][2] + " = ";
-			let amt = factors[index][1] * factors[index][2];
-			if (amt < 1000) text += " ".repeat(4 - ("" + amt).length);
-			if (amt == 1) {
-				text += "1 point \n";
-				totalScore++;
-			} else {
-				text += amt + " points\n";
-				totalScore += amt;
-			};
-		};
-		if (game.difficulty) {
-			text += "\n" + totalScore + " points";
-			if (hasArtifact(202) && game.kills[FRAGMENT]) {
-				text += "\n\n" + totalScore + "<#fcf050>x3</#fcf050>";
-				totalScore *= 3;
-			} else {
-				text += "\n\n" + totalScore + "<" + hardColor + ">x2</" + hardColor + ">";
-				totalScore *= 2;
-			};
-			text += " = " + totalScore + " points";
-		} else {
-			text += "\n" + totalScore + " points";
-		};
-		draw.lore(280, 100 - (len - 7) * 2.75, text, {"color": normalColor, "text-align": DIR.LEFT, "text-small": true});
-		if (!global.highScore || totalScore > global.highScore) {
-			draw.lore(280, 100 + (len + 9) * 2.75, ": NEW HIGH SCORE!", {"color": normalColor, "text-small": true});
-		};
-		ctx.globalAlpha = 1;
+		graphics.gameEnd();
 	};
 	if (hasArtifact(202) && game.floor == 10 && transition < 100) transition++;
 };
