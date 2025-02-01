@@ -1048,13 +1048,22 @@ const graphics = {
 						game.enemyStage = ANIM.PENDING;
 					};
 				} else if (type === FRAGMENT && enemyAnim.prime[game.enemyNum] == -1) {
-					draw.imageSector(I.enemy.fragment.attack, Math.floor(enemyAnim.action[0]) * 64, 0, 64, 64, pos[0], pos[1] + 1);
-					draw.clock(pos[0] + 2, pos[1] + 5, -1, (enemyAnim.action[0] >= 3 ? 0 : Math.floor(enemyAnim.action[0] + 1) * 15));
-					if (enemyAnim.action[0] >= 4 && enemyAnim.action[0] < 6) draw.rect("#f00", 0, pos[1] + 5, pos[0], 60);
+					if (enemyAnim.action[0] >= 19) {
+						draw.clock(pos[0] + 2, pos[1] + 5, -1, 0);
+						ctx.globalAlpha = (23 - enemyAnim.action[0]) / 5;
+						draw.imageSector(I.enemy.fragment.attack, 13 * 800, 0, 800, 400, pos[0] - 400 + 32, pos[1] - 200 + 32 + 1);
+					} else if (enemyAnim.action[0] >= 5) {
+						draw.imageSector(I.enemy.fragment.attack, Math.floor(enemyAnim.action[0] - 5) * 800, 0, 800, 400, pos[0] - 400 + 32, pos[1] - 200 + 32 + 1);
+					} else {
+						draw.clock(pos[0] + 2, pos[1] + 5, -1, Math.floor(enemyAnim.action[0] + 1) * 15);
+						ctx.globalAlpha = enemyAnim.action[0] / 5;
+						draw.imageSector(I.enemy.fragment.attack, 0, 0, 800, 400, pos[0] - 400 + 32, pos[1] - 200 + 32 + 1);
+					};
+					ctx.globalAlpha = 1;
 					enemyAnim.action[0]++;
-					if (enemyAnim.action[0] >= 7) {
+					if (enemyAnim.action[0] >= 24) {
 						game.enemyStage = ANIM.ENDING;
-					} else if (enemyAnim.action[0] == 4) {
+					} else if (enemyAnim.action[0] == 18) {
 						game.enemyStage = ANIM.MIDDLE;
 					} else {
 						game.enemyStage = ANIM.PENDING;

@@ -124,10 +124,11 @@ class Enemy {
 	 * Triggers the effects of the enemy's action.
 	 */
 	middleAction() {
+		if (this.done) return;
 		if (this.intent === INTENT.ATTACK) {
 			let prevHealth = game.health;
 			takeDamage(this.getTotalAttackPower());
-			if (game.health < prevHealth) {
+			if (game.health < prevHealth && this.type !== FRAGMENT) {
 				startAnim.player(I.player.hit);
 			} else if (game.shield == 0 && playerAnim[1] !== I.player.idle) {
 				startAnim.player(I.player.idle);
