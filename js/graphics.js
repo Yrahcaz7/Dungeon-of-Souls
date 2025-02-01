@@ -1801,7 +1801,7 @@ const graphics = {
 	gameEnd() {
 		ctx.globalAlpha = game.select[1] / (game.select[0] === S.GAME_WON ? 50 : 64);
 		if (game.select[1] < 50) game.select[1]++;
-		draw.rect("#222");
+		draw.rect("#000");
 		if (game.select[0] === S.GAME_WON) {
 			draw.image(I.background.victorious, 168, 42 + Math.round(Math.abs(winAnim - 4) - 2), I.background.victorious.width * 2, I.background.victorious.height * 2);
 			winAnim += Math.random() * 0.05 + 0.05;
@@ -1817,13 +1817,13 @@ const graphics = {
 			text += "\n\nThank you for playing!\n\nMore content is coming soon!";
 		} else {
 			text += "GAME OVER\n\nDIFFICULTY: ";
-			if (hasArtifact(202)) text += "<#fcf050>DETERMINATION</#fcf050>";
+			if (hasArtifact(202)) text += "<#0f0>EASY</#0f0> <#f00>+ HARD</#f00>";
 			else if (game.difficulty) text += "HARD";
 			else text += "EASY";
 			text += "\n\nTOP FLOOR: " + game.floor;
 		};
 		const factors = get.scoreFactors();
-		const len = factors.length;
+		let len = factors.length;
 		if (game.difficulty) len += 2;
 		const normalColor = (game.select[0] === S.GAME_WON ? "#0f0" : "#f00");
 		const hardColor = (game.select[0] === S.GAME_WON ? "#f00" : "#0f0");
@@ -1864,7 +1864,7 @@ const graphics = {
 			text += "\n" + totalScore + " points";
 		};
 		draw.lore(280, 100 - (len - 7) * 2.75, text, {"color": normalColor, "text-align": DIR.LEFT, "text-small": true});
-		if (!global.highScore || totalScore > global.highScore) {
+		if (totalScore > global.highScore && !game.cheat) {
 			draw.lore(280, 100 + (len + 9) * 2.75, ": NEW HIGH SCORE!", {"color": normalColor, "text-small": true});
 		};
 		ctx.globalAlpha = 1;
