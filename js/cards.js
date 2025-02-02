@@ -59,7 +59,7 @@ const CARDS = {
 	},
 	1003: {
 		name: "Bladestorm",
-		desc: "Consume all X aura\nblades to deal\nX times 6 damage\nto an enemy and X\nto all others.\nUniform.",
+		desc: "Consume all X aura\nblades to deal\nX times 6 damage\nto an enemy and X\ndamage to all other\nenemies. Uniform.",
 		rarity: 2,
 		cost: [2, 1],
 		attackEffects: false,
