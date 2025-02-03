@@ -69,6 +69,8 @@ const CARDS = {
 			};
 			game.eff[EFF.AURA_BLADE] = 0;
 		},
+		can(level = 0) {return game.eff[EFF.AURA_BLADE] > 0},
+		cannotMessage: "no aura blades",
 	},
 	1004: {
 		name: "Gold Slash",

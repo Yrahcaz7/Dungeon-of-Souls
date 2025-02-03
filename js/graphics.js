@@ -1882,12 +1882,14 @@ const graphics = {
 			draw.imageSector(I.background.difficulty, 0, 2 * 16, 64, 16, 168, 146);
 			ctx.globalAlpha = 1;
 		};
-		let text = "";
-		for (let index = 0; index < MAIN_MENU_OPTIONS.length; index++) {
-			if (index == menuSelect[1] && focused) text += " <#ff0>\> " + MAIN_MENU_OPTIONS[index] + "</#ff0>\n";
-			else text += "   " + MAIN_MENU_OPTIONS[index] + "\n";
+		if (game.select[0] !== S.WELCOME) {
+			let text = "";
+			for (let index = 0; index < MAIN_MENU_OPTIONS.length; index++) {
+				if (index == menuSelect[1] && focused) text += " <#ff0>\> " + MAIN_MENU_OPTIONS[index] + "</#ff0>\n";
+				else text += "   " + MAIN_MENU_OPTIONS[index] + "\n";
+			};
+			draw.lore(1, 84, text, {"color": "#fff"});
 		};
-		draw.lore(1, 84, text, {"color": "#fff"});
 	},
 	/**
 	 * Draws the confirmation layer on the canvas.

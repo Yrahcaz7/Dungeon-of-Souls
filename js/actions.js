@@ -572,6 +572,7 @@ function performAction() {
 	if (!actionTimer || actionTimer < -1) actionTimer = -1;
 	// menus
 	if (game.select[0] === S.WELCOME) {
+		menuSelect = [-1, 0];
 		game.select = [-1, 0];
 		actionTimer = 2;
 	} else if (menuSelect[0] === MENU.MAIN) {
