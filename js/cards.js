@@ -62,15 +62,12 @@ const CARDS = {
 		desc: "Consume all X aura\nblades to deal\nX times 6 damage\nto an enemy and X\ndamage to all other\nenemies. Uniform.",
 		rarity: 2,
 		cost: [2, 1],
-		attackEffects: false,
 		attack(level = 0) {
-			if (game.eff[EFF.AURA_BLADE]) {
-				dealDamage(game.eff[EFF.AURA_BLADE] * 6, 0.5);
-				for (let index = 0; index < game.enemies.length; index++) {
-					if (index != game.enemyAtt[1]) dealDamage(game.eff[EFF.AURA_BLADE], 0.5, index);
-				};
-				game.eff[EFF.AURA_BLADE] = 0;
+			dealDamage(((game.eff[EFF.AURA_BLADE] || 0) + 1) * 6, 0.5);
+			for (let index = 0; index < game.enemies.length; index++) {
+				if (index != game.enemyAtt[1]) dealDamage(game.eff[EFF.AURA_BLADE], 0.5, index);
 			};
+			game.eff[EFF.AURA_BLADE] = 0;
 		},
 	},
 	1004: {
