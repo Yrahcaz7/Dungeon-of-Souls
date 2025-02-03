@@ -64,7 +64,7 @@ const ARTIFACTS = {
 	},
 	107: {
 		name: "Bottled Fire",
-		desc: "Enemies start with 1\nburn, and burn deals 3\nextra damage to enemies.",
+		desc: "Enemies start with 1\nburn and burn deals 3\nextra damage to enemies.",
 	},
 	200: {
 		name: "The Map",

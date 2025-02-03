@@ -31,7 +31,7 @@ const CARDS = {
 	},
 	1001: {
 		name: "Heat Wave",
-		desc: ["Deal 7 damage to\nan enemy, and apply\n2 burn to all\nenemies.", "Deal 7 damage to\nan enemy, and apply\n4 burn to all\nenemies."],
+		desc: ["Deal 7 damage to\nan enemy and apply\n2 burn to all\nenemies.", "Deal 7 damage to\nan enemy and apply\n4 burn to all\nenemies."],
 		rarity: 2,
 		cost: 2,
 		damage: 7,
@@ -175,8 +175,8 @@ const CARDS = {
 		desc: ["All non-boss\nenemies switch\ntheir intents to\ndefense. One use.", "All non-boss\nenemies switch\ntheir intents to\ndefense. Draw a\ncard. One use."],
 		rarity: 1,
 		cost: 0,
+		effectAnim: I.effect.war_cry,
 		effect(level = 0) {
-			startAnim.effect(I.effect.war_cry);
 			for (let index = 0; index < game.enemies.length; index++) {
 				if (!game.enemies[index].isBoss()) {
 					game.enemies[index].intent = INTENT.DEFEND;

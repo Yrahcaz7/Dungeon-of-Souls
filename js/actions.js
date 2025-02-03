@@ -669,6 +669,7 @@ function performAction() {
 				actionTimer = 4;
 				return;
 			} else {
+				if (CARDS[game.enemyAtt[2].id].effectAnim) startAnim.effect(CARDS[game.enemyAtt[2].id].effectAnim);
 				if (CARDS[game.enemyAtt[2].id].effect) CARDS[game.enemyAtt[2].id].effect(game.enemyAtt[2].level);
 				game.energy -= getCardCost(game.enemyAtt[2]);
 				discardCard(game.hand.splice(game.enemyAtt[0], 1)[0], true);
@@ -701,6 +702,7 @@ function performAction() {
 					game.enemyAtt[2] = game.hand[game.enemyAtt[0]];
 					actionTimer = 4;
 				} else if (CARDS[id].effect) { // effects of cards that activate right away
+					if (CARDS[id].effectAnim) startAnim.effect(CARDS[id].effectAnim);
 					CARDS[id].effect(selected.level);
 					game.energy -= getCardCost(selected);
 					let cardObj = game.hand.splice(game.select[1], 1)[0];

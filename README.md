@@ -24,7 +24,7 @@ Use the arrow keys or WASD keys to select things.
 
 Press enter or the space bar to perform an action.
 
-Press tab to enter full screen, and escape to exit it.
+Press tab to enter full screen and escape to exit it.
 
 There are also some hotkeys, like the E key, which ends your turn.
 
