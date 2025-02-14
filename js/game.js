@@ -31,7 +31,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_002_024,
+	version: 2_002_025,
 }, game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
@@ -87,18 +87,19 @@ function hasPopups() {
  * @param {string} type - the type of the popup.
  * @param {string} description - the description of the popup.
  * @param {string} secondLine - the second line of the popup, if any.
+ * @param {function} action - the action to perform when the popup is interacted with.
  */
-function createPopup(type, description, secondLine = "") {
+function createPopup(type, description, secondLine = "", action = null) {
 	let oldest = 0;
 	for (let index = 0; index <= popups.length && index < 7; index++) {
 		if (popups[index]?.length) {
 			if (popups[index] && popups[index][2] > popups[oldest][2]) oldest = index;
 			continue;
 		};
-		popups[index] = [type, description, 0, secondLine];
+		popups[index] = [type, description, 0, secondLine, action];
 		return;
 	};
-	popups[oldest] = [type, description, 0, secondLine];
+	popups[oldest] = [type, description, 0, secondLine, action];
 };
 
 /**
@@ -121,7 +122,7 @@ function musicPopup() {
  * Creates a "go to the map" popup.
  */
 function mapPopup() {
-	createPopup("go", "go to the map!");
+	createPopup("go", "go to the map!", "", () => game.select = [S.MAP, -1]);
 };
 
 /**
@@ -319,6 +320,10 @@ function endBattle() {
  */
 function loadRoom() {
 	if (game.state === STATE.ENTER) {
+		// remove directive popups
+		for (let index = 0; index < popups.length; index++) {
+			if (popups[index][0] === "go") popups[index] = [];
+		};
 		// reset things
 		game.shield = 0;
 		game.energy = get.maxEnergy();

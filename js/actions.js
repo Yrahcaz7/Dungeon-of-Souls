@@ -937,33 +937,22 @@ function performAction() {
 		};
 	};
 	// popups
-	if (game.select[0] === S.POPUPS) {
-		if (game.select[1] >= popups.length) {
-			game.select[1] = popups.length - 1;
-			return;
-		} else if (!popups[game.select[1]].length) {
-			while (game.select[1] >= 0 && !popups[game.select[1]].length) {
-				game.select[1]--;
-			};
-			if (game.select[1] == -1) {
-				if (!game.hand.length) {
-					if (game.void.length) game.select = [S.VOID, 0];
-					else game.select = [S.DISCARD, 0];
-				} else game.select = [S.HAND, game.prevCard];
-			};
-		} else {
-			popups[game.select[1]] = [];
-			while (game.select[1] >= 0 && !popups[game.select[1]].length) {
-				game.select[1]--;
-			};
-			if (game.select[1] == -1) {
-				if (!game.hand.length) {
-					if (game.void.length) game.select = [S.VOID, 0];
-					else game.select = [S.DISCARD, 0];
-				} else game.select = [S.HAND, game.prevCard];
-			};
-			actionTimer = 1;
+	if (game.select[0] === S.POPUPS && popups[game.select[1]]) {
+		const action = popups[game.select[1]][4];
+		popups[game.select[1]] = [];
+		while (game.select[1] >= 0 && !popups[game.select[1]].length) {
+			game.select[1]--;
 		};
+		if (game.select[1] == -1) {
+			if (!game.hand.length) {
+				if (game.void.length) game.select = [S.VOID, 0];
+				else game.select = [S.DISCARD, 0];
+			} else {
+				game.select = [S.HAND, game.prevCard];
+			};
+		};
+		if (typeof action === "function") action();
+		actionTimer = 1;
 		return;
 	};
 	// activate purifier
