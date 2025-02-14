@@ -929,8 +929,8 @@ function performAction() {
 		const event = getCurrentEvent();
 		if (event[game.select[1]]) {
 			const next = event[game.select[1] + 2][1];
-			game.turn = 10000 + (typeof next == "function" ? next() : next);
-			getCurrentEvent()[0]();
+			game.turn = 10000 + (typeof next === "function" ? next() : next);
+			if (typeof event[0] === "function") event[0]();
 			if (game.select[0] === S.EVENT) game.select[1] = -1;
 			actionTimer = 2;
 			return;
