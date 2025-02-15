@@ -846,8 +846,10 @@ const graphics = {
 		draw.image(I.extra.options, 380, 2);
 		draw.image(I.extra.end, 3, 163);
 		draw.image(I.extra.deck, 4, 182);
+		draw.lore(5, 188, game.deck.length, {"color": "#fff"});
 		if (game.void.length) draw.image(I.extra.void, 381, 163);
 		draw.image(I.extra.discard, 382, 182);
+		draw.lore(396, 188, game.discard.length, {"color": "#fff", "text-align": DIR.LEFT});
 		// big artifacts
 		for (let index = 0; index < game.artifacts.length; index++) {
 			if (!ARTIFACTS[game.artifacts[index]].big) continue;
@@ -1683,6 +1685,7 @@ const graphics = {
 			};
 		};
 		draw.image(I.extra.deck, 22, 16);
+		draw.lore(23, 22, game.cards.length, {"color": "#fff"});
 		if (game.select[1] == availableLocations.length && focused) draw.image(I.select.deck, 21, 15);
 		draw.image(I.extra.end, 22, 179);
 		if (game.select[1] == -1 && focused) draw.image(I.select.round, 21, 178);
