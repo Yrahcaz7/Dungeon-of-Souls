@@ -103,16 +103,6 @@ function areAnyCardsPlayable() {
 	});
 };
 
-/**
- * Returns an array of locations that the player can move to from their current one.
- * @param {number[]} location - The player's location. Defaults to `game.location`.
- * @returns {number[][]}
- */
-function getAvailibleLocations(location = game.location) {
-	if (location.length >= 2) return (paths[location[0]] || {})[location[1]] || [];
-	return paths[location[0]] || [];
-};
-
 const get = {
 	/**
 	 * Gets the current area number based on the floor.
@@ -270,6 +260,28 @@ const get = {
 		const minor = Math.floor(version / 1_000) % 1_000;
 		const build = Math.floor(version) % 1_000;
 		return major + "." + minor + "." + build;
+	},
+	/**
+	 * Returns an array of locations that the player can move to from their current one.
+	 * @param {number[]} location - The player's location. Defaults to `game.location`.
+	 * @returns {number[][]}
+	 */
+	availibleLocations(location = game.location) {
+		if (location.length >= 2) return (paths[location[0]] || {})[location[1]] || [];
+		return paths[location[0]] || [];
+	},
+	/**
+	 * Gets the array of card positions for a hand of a certain size.
+	 * @param {number} size - the size of the hand. Defaults to `game.hand.length`.
+	 */
+	handPos(size = game.hand.length) {
+		let positions = [];
+		const margin = [-4, -4, -4, -4, -4, 8, 16, 24, 28, 32, 36, 38, 40, 42, 44, 46, 46, 48, 48, 50, 50, 52, 52, 52, 52];
+		if (size > margin.length) size = margin.length;
+		for (let index = 0; index < size; index++) {
+			positions.push(198 + (index - (size / 2)) * 64 - (index - ((size - 1) / 2)) * margin[size - 1]);
+		};
+		return positions;
 	},
 };
 

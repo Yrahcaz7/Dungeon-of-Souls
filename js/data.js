@@ -186,18 +186,14 @@ function updateData() {
 	};
 	// handPos
 	if (game.hand.length !== handPos.length) {
-		handPos = [];
-		const margin = [-4, -4, -4, -4, -4, 8, 16, 24, 28, 32, 36, 38, 40, 42, 44, 46, 46, 48, 48, 50, 50, 52, 52, 52, 52];
+		// calculate handPos
+		handPos = get.handPos();
 		// discard extra cards
-		if (game.hand.length > margin.length) {
-			let extraCards = game.hand.splice(margin.length);
+		if (game.hand.length > handPos) {
+			const extraCards = game.hand.splice(handPos);
 			for (const key of extraCards) {
 				discardCard(key);
 			};
-		};
-		// calculate handPos
-		for (let index = 0; index < game.hand.length; index++) {
-			handPos.push(198 + (index - (game.hand.length / 2)) * 64 - (index - ((game.hand.length - 1) / 2)) * margin[game.hand.length - 1]);
 		};
 	};
 	// info scroll

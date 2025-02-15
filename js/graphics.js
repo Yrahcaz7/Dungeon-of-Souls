@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-let auraBladePos = [[65, 10], [80, 25], [42, 0], [28, 35]], enemyPos = [], handPos = [];
+let auraBladePos = [[65, 10], [80, 25], [42, 0], [28, 35]], enemyPos = [], handPos = [], handSelectPos = [];
 
 let enemyAnim = new EnemyAnimationSource(6, () => game.enemies);
 
@@ -567,7 +567,7 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	cardSelect(type, xPlus = 0, yPlus = 0) {
-		let x = handPos[game.select[1]] + 69 + xPlus, y = 15 + yPlus;
+		let x = handSelectPos[game.select[1]] + 69 + xPlus, y = 15 + yPlus;
 		if (x + 24 * 3 + 2 > 400) {
 			const ref = CARDS[game.hand[game.select[1]].id];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
@@ -1425,24 +1425,23 @@ const graphics = {
 	 * Draws the player's hand in a special select on the canvas.
 	 */
 	handSelect() {
+		if (handSelectPos.length === 0) {
+			handSelectPos = get.handPos(game.hand.length - 1);
+		};
 		draw.rect("#000c");
 		draw.image(I.extra.end, 3, 55);
 		draw.image(I.extra.end, 381, 55);
-		if (game.select[1] == -1) draw.image(I.select.round, 2, 54);
-		else if (game.select[1] == game.hand.length) draw.image(I.select.round, 380, 54);
-		for (let index = 0; index < game.hand.length; index++) {
+		if (game.select[1] === -1) draw.image(I.select.round, 2, 54);
+		else if (game.select[1] === game.hand.length - 1) draw.image(I.select.round, 380, 54);
+		for (let index = 0; index < game.hand.length - 1; index++) {
 			if (index == game.select[1]) {
 				continue;
-			} else if (index == game.enemyAtt[0]) {
-				ctx.globalAlpha = 0.75;
-				draw.card(game.hand[index], handPos[index], 14);
-				ctx.globalAlpha = 1;
 			} else {
-				draw.card(game.hand[index], handPos[index], 14);
+				draw.card(game.hand[index >= game.enemyAtt[0] ? index + 1 : index], handSelectPos[index], 14);
 			};
 		};
-		if (game.select[1] >= 0 && game.select[1] < game.hand.length) {
-			draw.card(game.hand[game.select[1]], handPos[game.select[1]], 14, true);
+		if (game.select[1] >= 0 && game.select[1] < game.hand.length - 1) {
+			draw.card(game.hand[game.select[1] >= game.enemyAtt[0] ? game.select[1] + 1 : game.select[1]], handSelectPos[game.select[1]], 14, true);
 		};
 		draw.rect("#0004", 0, 0, 400, 13);
 		draw.lore(200 - 2, 1, "Select a Card", {"color": "#fff", "text-align": DIR.CENTER});
@@ -1560,8 +1559,8 @@ const graphics = {
 		};
 		if ((game.select[0] === S.HAND || (game.select[0] != S.ATTACK && game.select[0] != S.ENEMY && !hidden() && global.options[OPTION.STICKY_CARDS])) && game.hand.length && game.prevCard < game.hand.length) {
 			graphics.cardInfo("card", game.hand[game.prevCard]);
-		} else if (game.select[0] === SS.SELECT_HAND && game.select[1] >= 0 && game.select[1] < game.hand.length) {
-			graphics.cardInfo("cardSelect", game.hand[game.select[1]]);
+		} else if (game.select[0] === SS.SELECT_HAND && game.select[1] >= 0 && game.select[1] < game.hand.length - 1) {
+			graphics.cardInfo("cardSelect", game.hand[game.select[1] >= game.enemyAtt[0] ? game.select[1] + 1 : game.select[1]]);
 		};
 	},
 	/**
@@ -1658,7 +1657,7 @@ const graphics = {
 	 */
 	map(focused = true) {
 		// setup
-		let availableLocations = getAvailibleLocations();
+		let availableLocations = get.availibleLocations();
 		let area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0));
 		// draw map
 		draw.rect("#000");

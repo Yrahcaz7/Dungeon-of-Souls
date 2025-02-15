@@ -201,7 +201,7 @@ document.addEventListener("keydown", event => {
 	} else if (key == "0" && !event.repeat && menuSelect[0] == -1 && actionTimer == -1) {
 		if (game.select[0] === S.CARDS) {
 			if (game.select[2]) game.select = game.select[2];
-			else game.select = [S.MAP, getAvailibleLocations().length];
+			else game.select = [S.MAP, get.availibleLocations().length];
 		} else {
 			if (game.select[2]) game.select = [S.CARDS, 1, game.select[2]];
 			else game.select = [S.CARDS, 1, game.select];

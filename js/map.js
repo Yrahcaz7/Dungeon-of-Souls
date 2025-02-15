@@ -387,9 +387,9 @@ const generateMap = (() => {
 			if (types.includes(game.map[loc[0]][loc[1]][0])) {
 				return true;
 			};
-			let availableLocations = getAvailibleLocations(loc);
+			let availableLocations = get.availibleLocations(loc);
 			for (let i2 = 0; i2 < availableLocations.length; i2++) {
-				if (getAvailibleLocations(availableLocations[i2]).length) locations.push(availableLocations[i2]);
+				if (get.availibleLocations(availableLocations[i2]).length) locations.push(availableLocations[i2]);
 			};
 		};
 		return false;

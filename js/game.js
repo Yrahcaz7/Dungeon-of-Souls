@@ -31,7 +31,7 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_002_027,
+	version: 2_002_028,
 };
 
 let game = {

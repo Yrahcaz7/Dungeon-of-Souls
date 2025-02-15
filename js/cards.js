@@ -59,7 +59,7 @@ const CARDS = {
 	},
 	1003: {
 		name: "Bladestorm",
-		desc: "Consume all X aura\nblades to deal\nX times 6 damage\nto an enemy and X\ndamage to all other\nenemies. Uniform.",
+		desc: "Use all aura blades\nto deal 6 damage to\nan enemy and 1\ndamage to all other\nenemies per aura\nblade. Uniform.",
 		rarity: 2,
 		cost: [2, 1],
 		attack(level = 0) {
@@ -219,12 +219,13 @@ const CARDS = {
 		desc: "Choose a card from\nyour hand. Apply 1\ncost reduction\nand 1 retention to\nthe chosen card.",
 		rarity: 2,
 		cost: [1, 0],
-		select: [SS.SELECT_HAND, -1],
+		select() {return [SS.SELECT_HAND, game.select[1] - 1]},
 		effect(level = 0) {
-			if (game.hand[game.select[1]].eff[CARD_EFF.RETENTION]) game.hand[game.select[1]].eff[CARD_EFF.RETENTION]++;
-			else game.hand[game.select[1]].eff[CARD_EFF.RETENTION] = 1;
-			if (game.hand[game.select[1]].eff[CARD_EFF.COST_REDUCTION]) game.hand[game.select[1]].eff[CARD_EFF.COST_REDUCTION]++;
-			else game.hand[game.select[1]].eff[CARD_EFF.COST_REDUCTION] = 1;
+			const index = (game.select[1] >= game.enemyAtt[0] ? game.select[1] + 1 : game.select[1]);
+			if (game.hand[index].eff[CARD_EFF.RETENTION]) game.hand[index].eff[CARD_EFF.RETENTION]++;
+			else game.hand[index].eff[CARD_EFF.RETENTION] = 1;
+			if (game.hand[index].eff[CARD_EFF.COST_REDUCTION]) game.hand[index].eff[CARD_EFF.COST_REDUCTION]++;
+			else game.hand[index].eff[CARD_EFF.COST_REDUCTION] = 1;
 		},
 		can(level = 0) {return game.hand.length > 1},
 		cannotMessage: "no valid target",

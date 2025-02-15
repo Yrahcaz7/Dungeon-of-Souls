@@ -172,7 +172,7 @@ function selection() {
 		return;
 	};
 	// map
-	let availableLocations = getAvailibleLocations();
+	let availableLocations = get.availibleLocations();
 	if (game.select[0] === S.MAP && game.state === STATE.EVENT_FIN && availableLocations.length) {
 		if (action === DIR.UP) {
 			if (game.select[1] == -1) {
@@ -491,12 +491,10 @@ function selection() {
 	if (game.select[0] === SS.SELECT_HAND) {
 		if (action === DIR.LEFT && game.select[1] >= 0) {
 			game.select[1]--;
-			if (game.select[1] == game.enemyAtt[0]) game.select[1]--;
 			actionTimer = 1;
 			return;
-		} else if (action === DIR.RIGHT && game.select[1] < game.hand.length) {
+		} else if (action === DIR.RIGHT && game.select[1] < game.hand.length - 1) {
 			game.select[1]++;
-			if (game.select[1] == game.enemyAtt[0]) game.select[1]++;
 			actionTimer = 1;
 			return;
 		};
@@ -663,12 +661,14 @@ function performAction() {
 		};
 		// activate special selection effect
 		if (game.select[0] === SS.SELECT_HAND) {
-			if (game.select[1] == -1 || game.select[1] == game.hand.length) {
+			if (game.select[1] === -1 || game.select[1] === game.hand.length - 1) {
+				handSelectPos = [];
 				game.select = [S.HAND, game.enemyAtt[0]];
 				game.enemyAtt = [-1, -1, new Card(), false];
 				actionTimer = 4;
 				return;
 			} else {
+				handSelectPos = [];
 				if (CARDS[game.enemyAtt[2].id].effectAnim) startAnim.effect(CARDS[game.enemyAtt[2].id].effectAnim);
 				if (CARDS[game.enemyAtt[2].id].effect) CARDS[game.enemyAtt[2].id].effect(game.enemyAtt[2].level);
 				game.energy -= getCardCost(game.enemyAtt[2]);
@@ -686,7 +686,8 @@ function performAction() {
 		};
 		// play card
 		if (game.select[0] === S.HAND) {
-			let selected = game.hand[game.select[1]], id = selected.id;
+			const selected = game.hand[game.select[1]];
+			const id = selected.id;
 			if (CARDS[id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
 				if (CARDS[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
 				else notif = [game.select[1], 0, "unplayable", 0];
@@ -696,16 +697,17 @@ function performAction() {
 				else notif = [game.select[1], 0, selected.getAttr("cannotMessage"), 0];
 				actionTimer = 1;
 			} else if (game.energy >= getCardCost(selected)) {
-				if (CARDS[id].select instanceof Array) { // effects of cards that have a special selection
+				if (CARDS[id].select) { // effects of cards that have a special selection
 					game.enemyAtt[0] = game.select[1];
-					game.select = [CARDS[id].select[0], CARDS[id].select[1]];
+					const specialSelect = (typeof CARDS[id].select === "function" ? CARDS[id].select() : CARDS[id].select);
+					game.select = [specialSelect[0], specialSelect[1]];
 					game.enemyAtt[2] = game.hand[game.enemyAtt[0]];
 					actionTimer = 4;
 				} else if (CARDS[id].effect) { // effects of cards that activate right away
 					if (CARDS[id].effectAnim) startAnim.effect(CARDS[id].effectAnim);
 					CARDS[id].effect(selected.level);
 					game.energy -= getCardCost(selected);
-					let cardObj = game.hand.splice(game.select[1], 1)[0];
+					const cardObj = game.hand.splice(game.select[1], 1)[0];
 					discardCard(cardObj, true);
 					cardAnim.splice(game.select[1], 1);
 					activateArtifacts(FUNC.PLAY_CARD, cardObj);
@@ -720,7 +722,7 @@ function performAction() {
 						game.enemyAtt[2] = game.hand[game.select[1]];
 						activateAttackEffects(id);
 						game.enemyAtt[3] = true;
-						let cardObj = game.hand.splice(game.select[1], 1)[0];
+						const cardObj = game.hand.splice(game.select[1], 1)[0];
 						discardCard(cardObj, true);
 						cardAnim.splice(game.select[1], 1);
 						activateArtifacts(FUNC.PLAY_CARD, cardObj);
@@ -751,7 +753,7 @@ function performAction() {
 		return;
 	};
 	// confirmation
-	let availableLocations = getAvailibleLocations();
+	let availableLocations = get.availibleLocations();
 	if (game.select[0] === S.CONF_END) {
 		if (!game.select[1]) {
 			endTurn();
