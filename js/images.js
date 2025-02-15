@@ -164,7 +164,9 @@ const I = {
 		scribbles: new Image,
 		scribble_back: new Image,
 		node: {
-			battle: new Image,
+			battle1: new Image,
+			battle2: new Image,
+			battle3: new Image,
 			death_zone: new Image,
 			treasure: new Image,
 			treasure_open: new Image,
