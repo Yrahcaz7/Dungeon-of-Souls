@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_002_030;
+const VERSION = 2_002_031;
 
 /**
  * Returns the starting global data.

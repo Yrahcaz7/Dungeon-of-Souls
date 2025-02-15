@@ -573,6 +573,7 @@ function performAction() {
 		menuSelect = [-1, 0];
 		game.select = [-1, 0];
 		actionTimer = 2;
+		return; // to prevent a double action when resuming a run
 	} else if (menuSelect[0] === MENU.MAIN) {
 		if (menuSelect[1] == 0) {
 			menuSelect = [-1, 0];
