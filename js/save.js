@@ -26,23 +26,67 @@ function save() {
 };
 
 /**
+ * Resets all variables that are not reset on resets otherwise.
+ */
+function resetVars() {
+	popups = [];
+	notif = [-1, 0, "", 0];
+	refinableDeck = [];
+	winAnim = 0;
+	menuSelect = [MENU.MAIN, 0];
+	menuScroll = 0;
+	menuArtifactSelect = 0;
+	prevGamesSort = [0, false];
+	sortedPrevGames = [];
+	newSeed = "";
+	actionTimer = -1;
+	secret = false;
+	action = -1;
+	lastAction = -1;
+	enemyPos = [];
+	handPos = [];
+	handSelectPos = [];
+	enemyAnim = new EnemyAnimationSource(enemyAnim.idle.length, enemyAnim.enemies);
+	menuEnemyAnim = new EnemyAnimationSource(enemyAnim.idle.length, enemyAnim.enemies);
+	backAnim = [0, 1.5, 3, 0];
+	intentAnim = [0, 1.5, 3, 0.5, 2, 3.5];
+	cardAnim = [];
+	effAnim = [0, null];
+	playerAnim = [0, I.player.idle];
+	extraAnim = [];
+	transition = 0;
+	screenShake = 0;
+	auraBladeAnim = [0, 3, 6, 1];
+	infoPos = 0;
+	infoLimit = 0;
+};
+
+/**
  * Resets everything. Use carefully!
  */
-function hardReset() {
-	for (let index = localStorage.length - 1; index >= 0; index--) {
-		const key = localStorage.key(index);
-		if (key.startsWith(ID)) localStorage.removeItem(key);
-	};
-	game = null;
-	global = null;
-	location.reload();
+async function hardReset() {
+	const startTime = Date.now();
+	loaded = false;
+	game = getStartGameData();
+	global = getStartGlobalData();
+	fixCanvas(true);
+	resetVars();
+	await generateMap();
+	await generateMapPathPoints();
+	loaded = true;
+	save();
+	console.log("TOTAL RESET TIME: " + (Date.now() - startTime) + "ms");
 };
 
 /**
  * Restarts (and records) the current run.
  * @param {number} newDifficulty - The difficulty of the next run. Defaults to `game.difficulty`.
  */
-function restartRun(newDifficulty = game.difficulty) {
+async function restartRun(newDifficulty = game.difficulty) {
+	// setup
+	const startTime = Date.now();
+	loaded = false;
+	// record previous run
 	let prevGame = {};
 	prevGame.character = game.character;
 	prevGame.difficulty = game.difficulty;
@@ -65,16 +109,22 @@ function restartRun(newDifficulty = game.difficulty) {
 	};
 	if (game.cheat) prevGame.cheat = game.cheat;
 	global.prevGames.push(prevGame);
-	let nextGame = {};
-	nextGame.difficulty = newDifficulty;
-	if (newSeed) {
-		nextGame.seed = newSeed;
-		nextGame.cheat = true;
+	// start new run
+	game = getStartGameData();
+	game.difficulty = newDifficulty ?? 0;
+	if (game.difficulty === prevGame.difficulty) {
+		game.select = [-1, 0];
 	};
-	nextGame.newSave = true;
-	localStorage.setItem(ID + "/0", btoa(JSON.stringify(nextGame)));
-	game = null;
-	location.reload();
+	if (newSeed) {
+		game.seed = newSeed;
+		game.cheat = true;
+	};
+	resetVars();
+	await generateMap();
+	await generateMapPathPoints();
+	loaded = true;
+	save();
+	console.log("TOTAL RESET TIME: " + (Date.now() - startTime) + "ms");
 };
 
 /**
@@ -225,6 +275,10 @@ function load() {
 		if (get && atob(get) && JSON.parse(atob(get))) {
 			let obj = JSON.parse(atob(get));
 			if (obj.newSave) {
+				// This is kept for compatibility so new saves don't break if people keep their tabs open.
+				// If the game version in the tab is from before v2.2.30, it will still use this method.
+				// After enough time has passed, this method can be removed. Maybe a month? A year?
+				// No one keeps their tabs open for that long, right?
 				game.difficulty = obj.difficulty;
 				if (obj.seed) game.seed = obj.seed;
 				if (obj.cheat) game.cheat = obj.cheat;

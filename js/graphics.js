@@ -15,7 +15,9 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-let auraBladePos = [[65, 10], [80, 25], [42, 0], [28, 35]], enemyPos = [], handPos = [], handSelectPos = [];
+const auraBladePos = [[65, 10], [80, 25], [42, 0], [28, 35]];
+
+let enemyPos = [], handPos = [], handSelectPos = [];
 
 let enemyAnim = new EnemyAnimationSource(6, () => game.enemies);
 

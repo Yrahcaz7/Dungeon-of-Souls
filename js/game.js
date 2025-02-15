@@ -15,64 +15,76 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-let global = {
-	options: {
-		[OPTION.MUSIC]: true,
-		[OPTION.SCREEN_SHAKE]: true,
-		[OPTION.STICKY_CARDS]: false,
-		[OPTION.PERFECT_SCREEN]: false,
-		[OPTION.PERFECT_SIZE]: 1,
-		[OPTION.FAST_MOVEMENT]: true,
-		[OPTION.AUTO_END_TURN]: false,
-		[OPTION.END_TURN_CONFIRM]: true,
-	},
-	highScore: 0,
-	prevGames: [],
-	charStage: {
-		[CHARACTER.KNIGHT]: 0,
-	},
-	version: 2_002_029,
+const VERSION = 2_002_030;
+
+/**
+ * Returns the starting global data.
+ */
+function getStartGlobalData() {
+	return {
+		options: {
+			[OPTION.MUSIC]: true,
+			[OPTION.SCREEN_SHAKE]: true,
+			[OPTION.STICKY_CARDS]: false,
+			[OPTION.PERFECT_SCREEN]: false,
+			[OPTION.PERFECT_SIZE]: 1,
+			[OPTION.FAST_MOVEMENT]: true,
+			[OPTION.AUTO_END_TURN]: false,
+			[OPTION.END_TURN_CONFIRM]: true,
+		},
+		highScore: 0,
+		prevGames: [],
+		charStage: {
+			[CHARACTER.KNIGHT]: 0,
+		},
+		version: VERSION,
+	};
 };
 
-let game = {
-	character: CHARACTER.KNIGHT,
-	difficulty: 0,
-	health: 60,
-	shield: 0,
-	energy: 3,
-	floor: 0,
-	gold: 0,
-	location: [-1],
-	rewards: [],
-	state: STATE.ENTER,
-	turn: -1,
-	select: [S.WELCOME, 0],
-	prevCard: -1,
-	cardSelect: 0,
-	kills: {},
-	enemies: [],
-	enemyNum: -1,
-	enemyStage: ANIM.STARTING,
-	enemyAtt: [-1, 0, new Card(), false],
-	attackEffects: [],
-	artifacts: [200, 201],
-	cards: [new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000), new Card(2001), new Card(4000)],
-	deck: [],
-	deckScroll: 0,
-	hand: [],
-	discard: [],
-	void: [],
-	eventLog: {},
-	eff: {},
-	room: [],
-	firstRoom: [],
-	map: [],
-	traveled: [],
-	seed: randomize((Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase()),
-	version: global.version,
+/**
+ * Returns the starting game data.
+ */
+function getStartGameData() {
+	return {
+		character: CHARACTER.KNIGHT,
+		difficulty: 0,
+		health: 60,
+		shield: 0,
+		energy: 3,
+		floor: 0,
+		gold: 0,
+		location: [-1],
+		rewards: [],
+		state: STATE.ENTER,
+		turn: -1,
+		select: [S.WELCOME, 0],
+		prevCard: -1,
+		cardSelect: 0,
+		kills: {},
+		enemies: [],
+		enemyNum: -1,
+		enemyStage: ANIM.STARTING,
+		enemyAtt: [-1, 0, new Card(), false],
+		attackEffects: [],
+		artifacts: [200, 201],
+		cards: [new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000), new Card(2001), new Card(4000)],
+		deck: [],
+		deckScroll: 0,
+		hand: [],
+		discard: [],
+		void: [],
+		eventLog: {},
+		eff: {},
+		room: [],
+		firstRoom: [],
+		map: [],
+		traveled: [],
+		seed: randomize((Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase()),
+		version: VERSION,
+	};
 };
 
-let popups = [], notif = [-1, 0, "", 0], refinableDeck = [], winAnim = 0;
+let global = getStartGlobalData(), game = getStartGameData(), popups = [], notif = [-1, 0, "", 0], refinableDeck = [], winAnim = 0;
 
 let menuSelect = [MENU.MAIN, 0], newSeed = "", menuScroll = 0, menuArtifactSelect = 0, prevGamesSort = [0, false], sortedPrevGames = [];
 

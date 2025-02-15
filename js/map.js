@@ -249,7 +249,9 @@ const BOSS_ENEMIES = [FRAGMENT, SINGULARITY];
  * Generates a map and saves it.
  */
 const generateMap = (() => {
-	let mapProg = 0, mapTotal = 100, deathZones = 0, rowFalses = 0, rowNodes = 0, eventShift = 0, pathTypes = [];
+	const mapTotal = 100;
+
+	let mapProg = 0, deathZones = 0, rowFalses = 0, rowNodes = 0, eventShift = 0, pathTypes = [];
 
 	/**
 	 * Gets a weaker small enemy in the map syntax.
@@ -273,9 +275,13 @@ const generateMap = (() => {
 	 */
 	async function updateMapProg() {
 		clearCanvas();
-		if (mapProg === mapTotal) draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\nrunning final checks...", {"color": "#fff", "text-align": DIR.CENTER});
-		else draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\n" + (mapProg / mapTotal * 100).toFixed(0) + "%", {"color": "#fff", "text-align": DIR.CENTER});
-		mapProg++;
+		if (mapProg === mapTotal) {
+			draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\nrunning final checks...", {"color": "#fff", "text-align": DIR.CENTER});
+			mapProg = 0;
+		} else {
+			draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\n" + (mapProg / mapTotal * 100).toFixed(0) + "%", {"color": "#fff", "text-align": DIR.CENTER});
+			mapProg++;
+		};
 		await new Promise(resolve => setTimeout(resolve));
 	};
 
@@ -527,6 +533,7 @@ const generateMap = (() => {
 
 	return async () => {
 		const startTime = Date.now();
+		paths = {};
 		await updateMapProg();
 		game.firstRoom = await getMapNode(0, MAP_NODE.FIRST);
 		console.log("first battle generated in " + (Date.now() - startTime) + "ms");

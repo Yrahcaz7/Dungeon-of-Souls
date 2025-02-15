@@ -84,19 +84,15 @@ function chance(chance = 1/2) {
 let loaded = false;
 
 window.onload = async function() {
-	const loadStartTime = Date.now();
+	const startTime = Date.now();
 	// prep things
 	load();
-	console.log("[save loaded in " + (Date.now() - loadStartTime) + "ms]");
+	console.log("[save loaded in " + (Date.now() - startTime) + "ms]");
 	seed = internalSeed(game.seed);
 	setupCanvas();
 	// load images
 	draw.lore(200 - 2, 100 - 5.5 * 1, "Loading graphics...", {"color": "#fff", "text-align": DIR.CENTER});
 	await loadImages();
-	// fix canvas position and size
-	if (global.options[OPTION.PERFECT_SCREEN]) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
-	else document.getElementById("canvas").style = "";
-	fixCanvas();
 	// calculate things
 	if (game.map.length > 0) {
 		calculateMapPaths();
@@ -106,7 +102,7 @@ window.onload = async function() {
 	await generateMapPathPoints();
 	changeMusic();
 	loaded = true;
-	console.log("TOTAL LOAD TIME: " + (Date.now() - loadStartTime) + "ms");
+	console.log("TOTAL LOAD TIME: " + (Date.now() - startTime) + "ms");
 };
 
 let canvas, scale, ctx, action = -1, lastAction = -1;
@@ -124,6 +120,7 @@ function setupCanvas() {
 	ctx.webkitImageSmoothingEnabled = false;
 	ctx.msImageSmoothingEnabled = false;
 	ctx.imageSmoothingEnabled = false;
+	fixCanvas(true);
 };
 
 /**
@@ -134,10 +131,12 @@ function clearCanvas() {
 };
 
 /**
- * Fixes the canvas in the html.
+ * Fixes the canvas.
+ * @param {boolean} resize - whether to resize the canvas. Defaults to `false`.
  */
-function fixCanvas() {
+function fixCanvas(resize = false) {
 	if (global.options[OPTION.PERFECT_SCREEN]) {
+		if (resize) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
 		const width = +(document.getElementById("canvas").style.width.match(/\d+/) || [800])[0];
 		if (window.innerHeight <= width / 2) {
 			if (window.innerWidth <= width) document.getElementById("canvas").className = "onlyScroll";
@@ -146,6 +145,7 @@ function fixCanvas() {
 			document.getElementById("canvas").className = "";
 		};
 	} else {
+		if (resize) document.getElementById("canvas").style = "";
 		if (window.innerHeight <= window.innerWidth / 2) document.getElementById("canvas").className = "fixed";
 		else document.getElementById("canvas").className = "";
 	};

@@ -588,25 +588,33 @@ function performAction() {
 		actionTimer = 2;
 		return; // to prevent a double action when resuming a run
 	} else if (menuSelect[0] === MENU.NEW_RUN) {
-		if (!menuSelect[1]) restartRun();
-		else menuSelect = [MENU.MAIN, 1];
-		actionTimer = 2;
+		if (!menuSelect[1]) {
+			restartRun();
+			return;
+		} else {
+			menuSelect = [MENU.MAIN, 1];
+			actionTimer = 2;
+		};
 	} else if (menuSelect[0] === MENU.NEW_CUSTOM_RUN) {
 		if (!menuSelect[1]) menuSelect = [MENU.ENTER_SEED, 0];
 		else menuSelect = [MENU.MAIN, 2];
 		actionTimer = 2;
 	} else if (menuSelect[0] === MENU.ENTER_SEED) {
-		if (newSeed) restartRun();
-		else menuSelect = [MENU.NEW_CUSTOM_RUN, 0];
-		actionTimer = 2;
+		if (newSeed) {
+			restartRun();
+			return;
+		} else {
+			menuSelect = [MENU.NEW_CUSTOM_RUN, 0];
+			actionTimer = 2;
+		};
 	} else if (menuSelect[0] === MENU.DIFFICULTY) {
 		if (!menuSelect[1]) {
-			if (game.difficulty === 0) restartRun(1);
-			else restartRun(0);
+			restartRun(game.difficulty === 0 ? 1 : 0);
+			return;
 		} else {
 			menuSelect = [MENU.MAIN, 3];
+			actionTimer = 2;
 		};
-		actionTimer = 2;
 	} else if (menuSelect[0] === MENU.PREV_GAMES) {
 		menuSelect[0] = MENU.PREV_GAME_INFO;
 		actionTimer = 2;
@@ -749,7 +757,6 @@ function performAction() {
 	// game end
 	if ((game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) && game.select[1] == 50) {
 		restartRun();
-		actionTimer = 2;
 		return;
 	};
 	// confirmation
@@ -773,9 +780,12 @@ function performAction() {
 		actionTimer = 2;
 		return;
 	} else if (game.select[0] === S.CONF_RESTART) {
-		if (!game.select[1]) restartRun();
-		else game.select = [S.OPTIONS, Object.keys(global.options).length + 2];
-		actionTimer = 2;
+		if (!game.select[1]) {
+			restartRun();
+		} else {
+			game.select = [S.OPTIONS, Object.keys(global.options).length + 2];
+			actionTimer = 2;
+		};
 		return;
 	} else if (game.select[0] === S.CONF_HAND_ALIGN) {
 		if (game.select[1] == 2) {
@@ -1033,9 +1043,7 @@ function performAction() {
 			else document.getElementById("music").pause();
 			musicPopup();
 		} else if (option === OPTION.PERFECT_SCREEN || option === OPTION.PERFECT_SIZE) {
-			if (global.options[OPTION.PERFECT_SCREEN]) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
-			else document.getElementById("canvas").style = "";
-			fixCanvas();
+			fixCanvas(true);
 		} else if (option === OPTION.MUSIC_TRACK) {
 			fadeMusic();
 		};
