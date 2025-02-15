@@ -1315,7 +1315,7 @@ const graphics = {
 		draw.rect("#fff", 1, 12, 378, 1);
 		draw.lore(200 - 2, 15, text.trim().replace(/_/g, " "), {"color": "#fff", "text-align": DIR.CENTER});
 		draw.image(I.extra.options, 380, 2);
-		if (game.select[1] && focused) draw.image(get.area() == 1 ? I.select.options : I.select.options_yellow, 380, 2);
+		if (game.select[1] === 1 && focused) draw.image(get.area() === 1 ? I.select.options : I.select.options_yellow, 380, 2);
 	},
 	/**
 	 * Draws the current deck being viewed on the canvas.

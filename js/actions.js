@@ -733,7 +733,7 @@ function performAction() {
 						game.enemyAtt[0] = game.select[1];
 						game.select = [S.ATTACK, game.enemies.length - 1];
 						game.enemyAtt[2] = game.hand[game.enemyAtt[0]];
-						actionTimer = 4;
+						if (game.enemies.length > 1) actionTimer = 4;
 					};
 				};
 			} else {

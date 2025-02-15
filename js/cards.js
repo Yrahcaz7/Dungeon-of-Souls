@@ -180,7 +180,7 @@ const CARDS = {
 			for (let index = 0; index < game.enemies.length; index++) {
 				if (!game.enemies[index].isBoss()) {
 					game.enemies[index].intent = INTENT.DEFEND;
-					game.enemies[index].intentHistory.push(INTENT.DEFEND);
+					if (game.enemies[index].intent !== INTENT.DEFEND) game.enemies[index].intentHistory.push(INTENT.DEFEND);
 				};
 			};
 			if (level >= 1) drawCards(1);

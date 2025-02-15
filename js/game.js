@@ -31,8 +31,10 @@ let global = {
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
-	version: 2_002_025,
-}, game = {
+	version: 2_002_026,
+};
+
+let game = {
 	character: CHARACTER.KNIGHT,
 	difficulty: 0,
 	health: 60,
@@ -68,7 +70,9 @@ let global = {
 	traveled: [],
 	seed: randomize((Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase()),
 	version: global.version,
-}, popups = [], notif = [-1, 0, "", 0], refinableDeck = [], winAnim = 0;
+};
+
+let popups = [], notif = [-1, 0, "", 0], refinableDeck = [], winAnim = 0;
 
 let menuSelect = [MENU.MAIN, 0], newSeed = "", menuScroll = 0, menuArtifactSelect = 0, prevGamesSort = [0, false], sortedPrevGames = [];
 
