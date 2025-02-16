@@ -49,6 +49,13 @@ function hidden() {
 };
 
 /**
+ * Returns a boolean indicating whether a menu is being viewed.
+ */
+function inMenu() {
+	return menuSelect[0] !== -1 || game.select[0] === S.WELCOME;
+};
+
+/**
  * Returns a boolean indicating whether a deck outside battle is being viewed.
  */
 function inOutsideDeck() {

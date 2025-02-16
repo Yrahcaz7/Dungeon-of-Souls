@@ -59,9 +59,8 @@ function deckSelection() {
  */
 function selection() {
 	// action timer
-	actionTimer--;
+	actionTimer = Math.max(actionTimer, 0) - 1;
 	if (actionTimer > -1) return;
-	if (!actionTimer || actionTimer < -1) actionTimer = -1;
 	// menus
 	if (menuSelect[0] === MENU.MAIN) {
 		if (action === DIR.UP && menuSelect[1] > (game.map.length > 0 ? 0 : 1)) {
@@ -121,7 +120,7 @@ function selection() {
 			actionTimer = 1;
 		};
 	};
-	if (menuSelect[0] !== -1) return;
+	if (inMenu()) return;
 	// confirmation
 	if (game.select[0] === S.CONF_END || game.select[0] === S.CONF_EXIT || game.select[0] === S.CONF_RESTART || game.select[0] === S.CONF_REFINE || game.select[0] === S.CONF_PEARL) {
 		if (action === DIR.LEFT && game.select[1]) {
@@ -567,12 +566,10 @@ function getPrevGameSortValue(prevGame) {
 function performAction() {
 	// action timer
 	if (actionTimer > -1) return;
-	if (!actionTimer || actionTimer < -1) actionTimer = -1;
 	// menus
 	if (game.select[0] === S.WELCOME) {
 		game.select = [-1, 0];
 		actionTimer = 2;
-		return; // to prevent a double action when resuming a run
 	} else if (menuSelect[0] === MENU.MAIN) {
 		if (menuSelect[1] == 0) {
 			if (game.map.length > 0) menuSelect = [-1, 0];
@@ -592,7 +589,6 @@ function performAction() {
 			menuSelect = [MENU.PREV_GAMES, 0];
 		};
 		actionTimer = 2;
-		return; // to prevent a double action when resuming a run
 	} else if (menuSelect[0] === MENU.NEW_RUN) {
 		if (!menuSelect[1]) {
 			restartRun();
@@ -650,7 +646,7 @@ function performAction() {
 		};
 		actionTimer = 2;
 	};
-	if (menuSelect[0] !== -1) return;
+	if (inMenu() || actionTimer > -1) return;
 	// player turn
 	if (game.turn === TURN.PLAYER) {
 		// only one card can be active

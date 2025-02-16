@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_002_032;
+const VERSION = 2_002_033;
 
 /**
  * Returns the starting global data.
@@ -335,7 +335,7 @@ function endBattle() {
  * Loads the room that is being entered.
  */
 function loadRoom() {
-	if (game.state === STATE.ENTER && menuSelect[0] === -1 && game.select[0] !== S.WELCOME) {
+	if (game.state === STATE.ENTER && !inMenu()) {
 		// remove directive popups
 		for (let index = 0; index < popups.length; index++) {
 			if (popups[index][0] === "go") popups[index] = [];
@@ -415,7 +415,7 @@ function updateVisuals() {
 	updateData();
 	// visuals
 	graphics.backgrounds();
-	if (menuSelect[0] !== -1 || game.select[0] === S.WELCOME) {
+	if (inMenu()) {
 		graphics.middleLayer();
 		draw.image(I.title, (400 - I.title.width) / 2, 0);
 		draw.lore(390, 51, "Version " + get.versionDisplay(), {"color": (get.area() == 1 ? "#fcc" : "#f00"), "text-align": DIR.LEFT, "text-small": true});
@@ -507,7 +507,7 @@ function updateVisuals() {
 const GAME_LOOP = setInterval(() => {
 	if (!loaded) return;
 	// gameplay
-	if (menuSelect[0] === -1) manageGameplay();
+	if (!inMenu()) manageGameplay();
 	// selection
 	selection();
 	// visuals
@@ -530,7 +530,7 @@ const GAME_LOOP = setInterval(() => {
 const MUSIC_LOOP = setInterval(() => {
 	if (global.options[OPTION.MUSIC] && document.getElementById("music")?.src) {
 		let time = document.getElementById("music").currentTime;
-		if (time === 0 && menuSelect[0] === -1) {
+		if (time === 0 && !inMenu()) {
 			document.getElementById("music").play();
 		} else if (time > document.getElementById("music").duration - 1.005) {
 			document.getElementById("music").currentTime = 0;

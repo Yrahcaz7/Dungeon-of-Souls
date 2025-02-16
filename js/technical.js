@@ -251,7 +251,7 @@ document.addEventListener("keydown", event => {
 		};
 	};
 	if (!event.repeat && lastAction === action && global.options[OPTION.FAST_MOVEMENT]) {
-		if (menuSelect[0] === -1) manageGameplay();
+		if (!inMenu()) manageGameplay();
 		selection();
 		updateVisuals();
 	};
