@@ -304,10 +304,8 @@ function updateData() {
 		game.select = [S.GAME_WON, 0];
 	};
 	// state changes
-	if (game.select[0] !== S.WELCOME) {
-		endBattle();
-		loadRoom();
-	};
+	endBattle();
+	loadRoom();
 	// sort cards
 	Card.sort(game.cards);
 	Card.sort(game.void);

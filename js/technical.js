@@ -16,20 +16,20 @@
  */
 
 /**
- * Returns a seeding function based on a string.
- * @param {string} str - the string to use.
+ * Updates the random number generator to use the current seed.
  */
-function internalSeed(str) {
+function updateRandom() {
 	let h = 2166136261 >>> 0;
-	for (let i = 0; i < str.length; i++) {
-		let k = Math.imul(str.charCodeAt(i), 3432918353);
+	for (let i = 0; i < game.seed.length; i++) {
+		let k = Math.imul(game.seed.charCodeAt(i), 3432918353);
 		k = k << 15 | k >>> 17;
 		h ^= Math.imul(k, 461845907);
 		h = h << 13 | h >>> 19;
 		h = Math.imul(h, 5) + 3864292196 | 0;
 	};
-	h ^= str.length;
-	return () => {
+	h ^= game.seed.length;
+
+	const seed = () => {
 		h ^= h >>> 16;
 		h = Math.imul(h, 2246822507);
 		h ^= h >>> 13;
@@ -37,20 +37,12 @@ function internalSeed(str) {
 		h ^= h >>> 16;
 		return h >>> 0;
 	};
-};
 
-/**
- * Returns a seed.
- */
-let seed = internalSeed(game.seed);
-
-/**
- * Returns a seeded random number in [0, 1)
- */
-const random = (() => {
 	let a = seed(), b = seed(), c = seed(), d = seed();
-	return () => {
-		let t = b << 9, r = b * 5; r = (r << 7 | r >>> 25) * 9;
+
+	random = () => {
+		let t = b << 9, r = b * 5;
+		r = (r << 7 | r >>> 25) * 9;
 		c ^= a;
 		d ^= b;
 		b ^= c;
@@ -59,7 +51,13 @@ const random = (() => {
 		d = d << 11 | d >>> 21;
 		return (r >>> 0) / 4294967296;
 	};
-})();
+};
+
+/**
+ * Returns a seeded random number in [0, 1)
+ * @type {() => number}
+ */
+let random;
 
 /**
  * Returns a seeded random integer in [min, max]
@@ -84,25 +82,15 @@ function chance(chance = 1/2) {
 let loaded = false;
 
 window.onload = async function() {
-	const startTime = Date.now();
-	// prep things
-	load();
-	console.log("[save loaded in " + (Date.now() - startTime) + "ms]");
-	seed = internalSeed(game.seed);
+	const promises = [];
+	// setup and load things
 	setupCanvas();
-	// load images
 	draw.lore(200 - 2, 100 - 5.5 * 1, "Loading graphics...", {"color": "#fff", "text-align": DIR.CENTER});
-	await loadImages();
-	// calculate things
-	if (game.map.length > 0) {
-		calculateMapPaths();
-	} else {
-		await generateMap();
-	};
-	await generateMapPathPoints();
-	changeMusic();
+	promises.push(loadImages());
+	promises.push(loadSave());
+	// finish loading
+	await Promise.all(promises);
 	loaded = true;
-	console.log("TOTAL LOAD TIME: " + (Date.now() - startTime) + "ms");
 };
 
 let canvas, scale, ctx, action = -1, lastAction = -1;

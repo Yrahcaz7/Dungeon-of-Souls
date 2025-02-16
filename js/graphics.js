@@ -1896,7 +1896,8 @@ const graphics = {
 		if (game.select[0] !== S.WELCOME) {
 			let text = "";
 			for (let index = 0; index < MAIN_MENU_OPTIONS.length; index++) {
-				if (index == menuSelect[1] && focused) text += " <#ff0>\> " + MAIN_MENU_OPTIONS[index] + "</#ff0>\n";
+				if (index === menuSelect[1] && focused) text += " <#ff0>\> " + MAIN_MENU_OPTIONS[index] + "</#ff0>\n";
+				else if (index === 0 && game.map.length === 0) text += "   <#888>" + MAIN_MENU_OPTIONS[index] + "</#888>\n";
 				else text += "   " + MAIN_MENU_OPTIONS[index] + "\n";
 			};
 			draw.lore(1, 84, text, {"color": "#fff"});

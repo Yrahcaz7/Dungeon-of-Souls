@@ -532,6 +532,7 @@ const generateMap = (() => {
 	};
 
 	return async () => {
+		loaded = false;
 		const startTime = Date.now();
 		paths = {};
 		await updateMapProg();
@@ -542,5 +543,7 @@ const generateMap = (() => {
 		await generateArea(1);
 		addScribbles();
 		console.log("[map data generated in " + (Date.now() - startTime) + "ms]");
+		await generateMapPathPoints();
+		loaded = true;
 	};
 })();

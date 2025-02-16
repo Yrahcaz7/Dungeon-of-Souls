@@ -64,7 +64,7 @@ function selection() {
 	if (!actionTimer || actionTimer < -1) actionTimer = -1;
 	// menus
 	if (menuSelect[0] === MENU.MAIN) {
-		if (action === DIR.UP && menuSelect[1] > 0) {
+		if (action === DIR.UP && menuSelect[1] > (game.map.length > 0 ? 0 : 1)) {
 			menuSelect[1]--;
 			actionTimer = 1;
 		} else if (action === DIR.DOWN && menuSelect[1] < MAIN_MENU_OPTIONS.length - 1) {
@@ -570,15 +570,20 @@ function performAction() {
 	if (!actionTimer || actionTimer < -1) actionTimer = -1;
 	// menus
 	if (game.select[0] === S.WELCOME) {
-		menuSelect = [-1, 0];
 		game.select = [-1, 0];
 		actionTimer = 2;
 		return; // to prevent a double action when resuming a run
 	} else if (menuSelect[0] === MENU.MAIN) {
 		if (menuSelect[1] == 0) {
-			menuSelect = [-1, 0];
+			if (game.map.length > 0) menuSelect = [-1, 0];
 		} else if (menuSelect[1] == 1) {
-			menuSelect = [MENU.NEW_RUN, 1];
+			if (game.map.length > 0) {
+				menuSelect = [MENU.NEW_RUN, 1];
+			} else {
+				menuSelect = [-1, 0];
+				generateMap();
+				return;
+			};
 		} else if (menuSelect[1] == 2) {
 			menuSelect = [MENU.NEW_CUSTOM_RUN, 1];
 		} else if (menuSelect[1] == 3) {

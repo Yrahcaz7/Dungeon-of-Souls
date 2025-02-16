@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_002_031;
+const VERSION = 2_002_032;
 
 /**
  * Returns the starting global data.
@@ -335,7 +335,7 @@ function endBattle() {
  * Loads the room that is being entered.
  */
 function loadRoom() {
-	if (game.state === STATE.ENTER) {
+	if (game.state === STATE.ENTER && menuSelect[0] === -1 && game.select[0] !== S.WELCOME) {
 		// remove directive popups
 		for (let index = 0; index < popups.length; index++) {
 			if (popups[index][0] === "go") popups[index] = [];
@@ -415,7 +415,7 @@ function updateVisuals() {
 	updateData();
 	// visuals
 	graphics.backgrounds();
-	if (menuSelect[0] !== -1) {
+	if (menuSelect[0] !== -1 || game.select[0] === S.WELCOME) {
 		graphics.middleLayer();
 		draw.image(I.title, (400 - I.title.width) / 2, 0);
 		draw.lore(390, 51, "Version " + get.versionDisplay(), {"color": (get.area() == 1 ? "#fcc" : "#f00"), "text-align": DIR.LEFT, "text-small": true});

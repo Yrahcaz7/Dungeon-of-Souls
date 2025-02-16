@@ -33,7 +33,7 @@ function resetVars() {
 	notif = [-1, 0, "", 0];
 	refinableDeck = [];
 	winAnim = 0;
-	menuSelect = [MENU.MAIN, 0];
+	menuSelect = [MENU.MAIN, 1];
 	menuScroll = 0;
 	menuArtifactSelect = 0;
 	prevGamesSort = [0, false];
@@ -59,6 +59,8 @@ function resetVars() {
 	auraBladeAnim = [0, 3, 6, 1];
 	infoPos = 0;
 	infoLimit = 0;
+	updateRandom();
+	changeMusic();
 };
 
 /**
@@ -71,11 +73,9 @@ async function hardReset() {
 	global = getStartGlobalData();
 	fixCanvas(true);
 	resetVars();
-	await generateMap();
-	await generateMapPathPoints();
 	loaded = true;
 	save();
-	console.log("TOTAL RESET TIME: " + (Date.now() - startTime) + "ms");
+	console.log("[hard reset done in " + (Date.now() - startTime) + "ms]");
 };
 
 /**
@@ -84,7 +84,6 @@ async function hardReset() {
  */
 async function restartRun(newDifficulty = game.difficulty) {
 	// setup
-	const startTime = Date.now();
 	loaded = false;
 	// record previous run
 	let prevGame = {};
@@ -113,18 +112,16 @@ async function restartRun(newDifficulty = game.difficulty) {
 	game = getStartGameData();
 	game.difficulty = newDifficulty ?? 0;
 	if (game.difficulty === prevGame.difficulty) {
-		game.select = [-1, 0];
+		game.select = [-1, 0]; // skip welcome screen
 	};
 	if (newSeed) {
 		game.seed = newSeed;
 		game.cheat = true;
 	};
 	resetVars();
-	await generateMap();
-	await generateMapPathPoints();
-	loaded = true;
+	menuSelect = [-1, 0];
+	await generateMap(); // sets loaded to true when done
 	save();
-	console.log("TOTAL RESET TIME: " + (Date.now() - startTime) + "ms");
 };
 
 /**
@@ -248,7 +245,8 @@ function fixSave(version) {
 /**
  * Loads the save. Creates a new save if there is no save to load.
  */
-function load() {
+async function loadSave() {
+	const startTime = Date.now();
 	let oldVersion = 0, newGlobal = false;
 	// load global stuff
 	let get = localStorage.getItem(ID + "/master");
@@ -295,6 +293,17 @@ function load() {
 	if (oldVersion) fixSave(oldVersion);
 	// save fixed save
 	save();
+	// log time
+	console.log("[save loaded in " + (Date.now() - startTime) + "ms]");
+	// setup things based on save
+	updateRandom();
+	changeMusic();
+	if (game.map.length > 0) {
+		calculateMapPaths();
+		await generateMapPathPoints();
+	} else {
+		menuSelect = [MENU.MAIN, 1];
+	};
 };
 
 document.onvisibilitychange = (() => {
