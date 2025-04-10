@@ -76,6 +76,44 @@ function finishEvent() {
 	mapPopup();
 };
 
+/**
+ * Performs a screen shake animation.
+ * @param {number} strength - the strength of the initial shake. Cannot exceed `1`.
+ * @param {number} duration - the duration of the animation in seconds.
+ * @param {number} angle - the angle of the initial shake. Defaults to a random angle.
+ */
+const doScreenShake = (() => {
+	const SCREEN_SHAKE_MAX_DIST = 8;
+	const SCREEN_SHAKE_ANGLE_VARIANCE = Math.PI / 2;
+	const SCREEN_SHAKE_TIME = 0.05;
+
+	let screenShakeAnimation = null;
+
+	return (strength, duration, angle = Math.random() * 2 * Math.PI) => {
+		if (strength <= 0 || duration <= 0 || !global.options[OPTION.SCREEN_SHAKE]) return;
+		strength = Math.min(strength, 1);
+		let animation = [];
+		if (screenShakeAnimation instanceof Animation && screenShakeAnimation.playState !== "finished") {
+			const transform = document.defaultView.getComputedStyle(document.body).transform.split(/\(|, |\)/g);
+			animation.push({transform: "translate(" + transform[transform.length - 3] + "px, " + transform[transform.length - 2] + "px)"});
+			screenShakeAnimation.cancel();
+		} else {
+			animation.push({transform: "translate(0px, 0px)"});
+		};
+		let decayProgress = 0;
+		while (true) {
+			const shakeX = Math.cos(angle) * strength * SCREEN_SHAKE_MAX_DIST;
+			const shakeY = Math.sin(angle) * strength * SCREEN_SHAKE_MAX_DIST;
+			animation.push({transform: "translate(" + shakeX.toFixed(3) + "px, " + shakeY.toFixed(3) + "px)"});
+			if (strength * SCREEN_SHAKE_MAX_DIST < 0.0005) break;
+			angle = (Math.random() * 2 - 1) * SCREEN_SHAKE_ANGLE_VARIANCE - angle;
+			decayProgress += SCREEN_SHAKE_TIME / duration;
+			strength = Math.max(strength * (1 - decayProgress ** 2), 0);
+		};
+		screenShakeAnimation = document.body.animate(animation, duration * 1000);
+	};
+})();
+
 const EVENTS = {
 	any: [{
 		0: [null, "You see a crowd of enemies up ahead.\nNone of the enemies seem to have noticed you.\nHow will you get past them?", ["Charge through", () => chance() ? 20 : 10], ["Sneak past", () => chance(1/4) ? 40 : 30], ["Fight them fairly", 50]],
@@ -98,7 +136,7 @@ const EVENTS = {
 		120: [null, "You are back at the front of the chasm. What will you do?", ["Jump across the chasm", 200], ["Climb down the side", 300]],
 		200: [() => {
 			logEventDamage(5);
-			screenShake = 20;
+			doScreenShake(0.5, 1, Math.PI / 2);
 		}, () => "You fail and fall into the chasm.\nLuckily, the chasm is not that deep.\nYou only took " + getLoggedEvent(EVENT_LOG.DAMAGE, 5) + " damage.\nWhat do you do now?", ["Look around", 400], ["Climb up", 500]],
 		300: [null, "You climb down into the chasm unexpectedly easily.\nHowever, going back up will be harder.\nWhat will you do?", ["Look around", 400], ["Climb up", 500]],
 		400: [null, "You find a platform with two giant cups on it.\nThe left cup is filled with purple ooze.\nThe right cup is filled with glowing water.\nClearly one is all you can drink.\nYou would vomit if you had both.", ["Look closer at left cup", 410], ["Look closer at right cup", 420], ["Forget this, climb back up", 500]],

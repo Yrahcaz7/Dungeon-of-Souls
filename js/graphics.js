@@ -23,7 +23,7 @@ let enemyAnim = new EnemyAnimationSource(6, () => game.enemies);
 
 let menuEnemyAnim = new EnemyAnimationSource(8, [...SMALL_ENEMIES, ...BIG_ENEMIES, ...PRIME_ENEMIES, ...BOSS_ENEMIES]);
 
-let backAnim = [0, 1.5, 3, 0], intentAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], effAnim = [0, null], playerAnim = [0, I.player.idle], extraAnim = [], transition = 0, screenShake = 0, auraBladeAnim = [0, 3, 6, 1];
+let backAnim = [0, 1.5, 3, 0], intentAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], effAnim = [0, null], playerAnim = [0, I.player.idle], extraAnim = [], transition = 0, auraBladeAnim = [0, 3, 6, 1];
 
 let infoPos = 0, infoLimit = 0;
 

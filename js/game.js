@@ -511,18 +511,7 @@ const GAME_LOOP = setInterval(() => {
 	// selection
 	selection();
 	// visuals
-	if (screenShake > 0) {
-		if (global.options[OPTION.SCREEN_SHAKE]) {
-			clearCanvas();
-			ctx.save();
-			ctx.translate((Math.random() - 0.5) * Math.min(screenShake, 10), (Math.random() - 0.5) * Math.min(screenShake, 10));
-			screenShake--;
-		} else {
-			screenShake = 0;
-		};
-	};
 	updateVisuals();
-	ctx.restore();
 	// save
 	save();
 }, 100);

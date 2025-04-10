@@ -55,7 +55,6 @@ function resetVars() {
 	playerAnim = [0, I.player.idle];
 	extraAnim = [];
 	transition = 0;
-	screenShake = 0;
 	auraBladeAnim = [0, 3, 6, 1];
 	infoPos = 0;
 	infoLimit = 0;
