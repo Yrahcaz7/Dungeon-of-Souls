@@ -90,6 +90,7 @@ window.onload = async function() {
 	promises.push(loadSave());
 	// finish loading
 	await Promise.all(promises);
+	fixCanvas(true);
 	loaded = true;
 };
 
@@ -99,16 +100,14 @@ let canvas, scale, ctx, action = -1, lastAction = -1;
  * Sets up the canvas.
  */
 function setupCanvas() {
-	let canv = document.getElementById("canvas");
-	scale = canv.width / 400;
-	canv.height = canv.width / 2;
-	canvas = canv;
+	canvas = document.getElementById("canvas");
+	scale = canvas.width / 400;
+	canvas.height = canvas.width / 2;
 	ctx = canvas.getContext("2d");
 	ctx.mozImageSmoothingEnabled = false;
 	ctx.webkitImageSmoothingEnabled = false;
 	ctx.msImageSmoothingEnabled = false;
 	ctx.imageSmoothingEnabled = false;
-	fixCanvas(true);
 };
 
 /**

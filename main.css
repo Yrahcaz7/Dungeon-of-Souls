@@ -22,9 +22,13 @@
 html, body {
 	margin: 0;
 	height: 100%;
-	background-color: black;
+	background-color: #000000;
 	text-align: center;
-	color: white;
+	color: #e0e0e0;
+}
+
+audio {
+	display: none !important;
 }
 
 canvas {
@@ -35,16 +39,9 @@ canvas {
 	right: 0;
 	margin: auto;
 	width: min(100vw, 200vh);
-	background-color: black;
-	cursor: none;
-	-ms-interpolation-mode: nearest-neighbor;
-	image-rendering: -moz-crisp-edges;
-	image-rendering: -o-crisp-edges;
-	image-rendering: -webkit-optimize-contrast;
-	image-rendering: -webkit-crisp-edges;
-	image-rendering: -ms-crisp-edges;
-	image-rendering: crisp-edges;
+	background-color: #000000;
 	image-rendering: pixelated;
+	cursor: none;
 }
 
 .fixed {
@@ -53,4 +50,13 @@ canvas {
 
 .onlyScroll {
 	margin: 0 !important;
+}
+
+.overlay {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	position: relative;
+	height: 100%;
+	background-color: #202020;
 }
