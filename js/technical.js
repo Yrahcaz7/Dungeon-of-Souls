@@ -82,14 +82,9 @@ function chance(chance = 1/2) {
 let loaded = false;
 
 window.onload = async function() {
-	const promises = [];
-	// setup and load things
 	setupCanvas();
 	draw.lore(200 - 2, 100 - 5.5 * 1, "Loading graphics...", {"color": "#fff", "text-align": DIR.CENTER});
-	promises.push(loadImages());
-	promises.push(loadSave());
-	// finish loading
-	await Promise.all(promises);
+	await Promise.all([loadImages(), loadSave()]);
 	fixCanvas(true);
 	loaded = true;
 };

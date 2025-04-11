@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_002_035;
+const VERSION = 2_002_036;
 
 /**
  * Returns the starting global data.
@@ -86,7 +86,7 @@ function getStartGameData() {
 
 let global = getStartGlobalData(), game = getStartGameData(), popups = [], notif = [-1, 0, "", 0], refinableDeck = [], winAnim = 0;
 
-let menuSelect = [MENU.MAIN, 0], newSeed = "", menuScroll = 0, menuArtifactSelect = 0, prevGamesSort = [0, false], sortedPrevGames = [];
+let menuSelect = [MENU.MAIN, 0], newSeed = "", menuScroll = 0, menuArtifactSelect = 0, prevGamesSort = [0, true], sortedPrevGames = [];
 
 /**
  * Checks if there is any active popups.
@@ -490,7 +490,7 @@ function updateVisuals() {
 	} else if (game.select[0] === S.CONF_EXIT) {
 		graphics.rewards(false);
 		graphics.conf();
-	} else if (game.select[0] === S.CONF_RESTART) {
+	} else if (game.select[0] === S.CONF_SURRENDER) {
 		graphics.options(false);
 		graphics.conf();
 	} else if (game.select[0] === S.CONF_HAND_ALIGN) {

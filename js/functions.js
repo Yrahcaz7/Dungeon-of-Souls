@@ -45,7 +45,7 @@ function randomize(str) {
  * Returns a boolean indicating whether the middleground layers are hidden.
  */
 function hidden() {
-	return !!((game.select[0] === S.LOOKER || game.select[0] === S.HELP || game.select[0] === S.OPTIONS || game.select[0] === S.DECK || game.select[0] === S.DISCARD || game.select[0] === S.VOID) && game.select[1]) || game.select[0] === S.MAP || game.select[0] === S.CARDS || game.select[0] === S.CONF_HAND_ALIGN || game.select[0] === S.CONF_RESTART;
+	return !!((game.select[0] === S.LOOKER || game.select[0] === S.HELP || game.select[0] === S.OPTIONS || game.select[0] === S.DECK || game.select[0] === S.DISCARD || game.select[0] === S.VOID) && game.select[1]) || game.select[0] === S.MAP || game.select[0] === S.CARDS || game.select[0] === S.CONF_HAND_ALIGN || game.select[0] === S.CONF_SURRENDER;
 };
 
 /**

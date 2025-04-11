@@ -122,7 +122,7 @@ function selection() {
 	};
 	if (inMenu()) return;
 	// confirmation
-	if (game.select[0] === S.CONF_END || game.select[0] === S.CONF_EXIT || game.select[0] === S.CONF_RESTART || game.select[0] === S.CONF_REFINE || game.select[0] === S.CONF_PEARL) {
+	if (game.select[0] === S.CONF_END || game.select[0] === S.CONF_EXIT || game.select[0] === S.CONF_SURRENDER || game.select[0] === S.CONF_REFINE || game.select[0] === S.CONF_PEARL) {
 		if (action === DIR.LEFT && game.select[1]) {
 			game.select[1] = 0;
 			actionTimer = 1;
@@ -591,7 +591,7 @@ function performAction() {
 		actionTimer = 2;
 	} else if (menuSelect[0] === MENU.NEW_RUN) {
 		if (!menuSelect[1]) {
-			restartRun();
+			endRun(true);
 			return;
 		} else {
 			menuSelect = [MENU.MAIN, 1];
@@ -603,7 +603,7 @@ function performAction() {
 		actionTimer = 2;
 	} else if (menuSelect[0] === MENU.ENTER_SEED) {
 		if (newSeed) {
-			restartRun();
+			endRun(true);
 			return;
 		} else {
 			menuSelect = [MENU.NEW_CUSTOM_RUN, 0];
@@ -611,7 +611,7 @@ function performAction() {
 		};
 	} else if (menuSelect[0] === MENU.DIFFICULTY) {
 		if (!menuSelect[1]) {
-			restartRun(game.difficulty === 0 ? 1 : 0);
+			endRun(false, 1 - game.difficulty);
 			return;
 		} else {
 			menuSelect = [MENU.MAIN, 3];
@@ -758,7 +758,7 @@ function performAction() {
 	};
 	// game end
 	if ((game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) && game.select[1] == 50) {
-		restartRun();
+		endRun();
 		return;
 	};
 	// confirmation
@@ -781,9 +781,9 @@ function performAction() {
 		};
 		actionTimer = 2;
 		return;
-	} else if (game.select[0] === S.CONF_RESTART) {
+	} else if (game.select[0] === S.CONF_SURRENDER) {
 		if (!game.select[1]) {
-			restartRun();
+			endRun();
 		} else {
 			game.select = [S.OPTIONS, Object.keys(global.options).length + 2];
 			actionTimer = 2;
@@ -1038,7 +1038,7 @@ function performAction() {
 		} else if (option) {
 			global.options[option] = !global.options[option];
 		} else {
-			game.select = [S.CONF_RESTART, 1];
+			game.select = [S.CONF_SURRENDER, 1];
 		};
 		if (option === OPTION.MUSIC) {
 			if (global.options[OPTION.MUSIC]) document.getElementById("music").play();

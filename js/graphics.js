@@ -1320,8 +1320,8 @@ const graphics = {
 				else text += OPTION_NAME[options[index]] + ": " + option + "\n";
 			};
 		};
-		if (game.select[1] - 2 === options.length && focused) text += "\n<#ff0>RESTART RUN</#ff0>";
-		else text += "\nRESTART RUN";
+		if (game.select[1] - 2 === options.length && focused) text += "\n<#ff0>SURRENDER</#ff0>";
+		else text += "\nSURRENDER";
 		draw.rect("#000c");
 		draw.rect("#0004", 0, 0, 400, 13);
 		draw.lore(200 - 2, 1, "Options", {"color": "#fff", "text-align": DIR.CENTER});
@@ -1848,7 +1848,7 @@ const graphics = {
 		const normalColor = (game.select[0] === S.GAME_WON ? "#0f0" : "#f00");
 		const hardColor = (game.select[0] === S.GAME_WON ? "#f00" : "#0f0");
 		draw.lore(200 - 2, 100 - (len + 17) * 2.75, text, {"color": normalColor, "text-align": DIR.CENTER});
-		draw.lore(200 - 2, 100 + (len + 15) * 2.75, "PRESS ENTER TO START A NEW RUN", {"color": normalColor, "text-align": DIR.CENTER});
+		draw.lore(200 - 2, 100 + (len + 15) * 2.75, "PRESS ENTER TO END THE RUN", {"color": normalColor, "text-align": DIR.CENTER});
 		text = "";
 		for (let index = 0; index < factors.length; index++) {
 			text += factors[index][0] + ":\n";
@@ -1917,44 +1917,28 @@ const graphics = {
 	 * @param {boolean} focused - whether the confirmation layer is focused. Defaults to `true`.
 	 */
 	conf(focused = true) {
-		let text = "";
+		let text = ["Are you sure?"];
+		if (menuSelect[0] === MENU.NEW_RUN) text = ["Are you sure you want to start a new run?", "If you have an ongoing run, it will be lost forever."];
+		else if (menuSelect[0] === MENU.NEW_CUSTOM_RUN || menuSelect[0] === MENU.ENTER_SEED) text = ["Are you sure you want to start a new custom run?", "If you have an ongoing run, it will be lost forever.", "The new run will also not count towards your high score."];
+		else if (menuSelect[0] === MENU.DIFFICULTY) text = ["Are you sure you want to change the difficulty to " + (game.difficulty ? "easy" : "hard") + "?", "If you have an ongoing run, it will be reset."];
+		else if (game.select[0] === S.CONF_END) text = ["Are you sure you want to end your turn?"];
+		else if (game.select[0] === S.CONF_EXIT) text = ["Are you sure you want to finish collecting rewards?", "There are still rewards left unclaimed."];
+		else if (game.select[0] === S.CONF_SURRENDER) text = ["Are you sure you want to end your current run by surrendering?", "This choice cannot be undone."];
+		else if (game.select[0] === S.CONF_HAND_ALIGN) text = ["Are you sure you want to align the hands of time?", "You will regret it. There is no going back."];
+		else if (game.select[0] === S.CONF_PURIFY) text = ["Are you sure you want to destroy the card " + game.cards[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only destroy one copy of the card."];
+		else if (game.select[0] === S.CONF_REFINE) text = ["Are you sure you want to improve the card " + refinableDeck[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only improve one copy of the card."];
+		else if (game.select[0] === S.CONF_PEARL) text = ["As the dark cloud clears, you see a strange pearl resting on the ground.", "Will you pick it up? This will consume 2 energy."];
 		let width = 39;
-		let height = 26; // 20 for one line of text, 26 for two.
-		if (menuSelect[0] === MENU.NEW_RUN || game.select[0] === S.CONF_RESTART) {
-			text = "Are you sure you want to restart your current run?\nThe map will also be different next time.";
-			width = 152;
-		} else if (menuSelect[0] === MENU.NEW_CUSTOM_RUN || menuSelect[0] === MENU.ENTER_SEED) {
-			text = "Are you sure you want to start a new custom run?\nThe run will not count towards your high score.";
-			width = 146;
-		} else if (menuSelect[0] === MENU.DIFFICULTY) {
-			if (game.difficulty === 0) text = "Are you sure you want to change the difficulty to hard?\nThis will also reset your current run.";
-			else text = "Are you sure you want to change the difficulty to easy?\nThis will also reset your current run.";
-			width = 167;
-		} else if (game.select[0] === S.CONF_END) {
-			text = "Are you sure you want to end your turn?";
-			width = 119;
-			height = 20;
-		} else if (game.select[0] === S.CONF_EXIT) {
-			text = "Are you sure you want to finish collecting rewards?\nThere are still rewards left unclaimed.";
-			width = 155;
-		} else if (game.select[0] === S.CONF_HAND_ALIGN) {
-			text = "Are you sure you want to align the hands of time?\nYou will regret it. There is no going back.";
-			width = 149;
-		} else if (game.select[0] === S.CONF_PURIFY) {
-			text = "Are you sure you want to destroy the card " + game.cards[game.cardSelect].getAttr("name") + "?\nIf you have multiple, this will only destroy one copy of the card.";
-			width = 200;
-		} else if (game.select[0] === S.CONF_REFINE) {
-			text = "Are you sure you want to improve the card " + refinableDeck[game.cardSelect].getAttr("name") + "?\nIf you have multiple, this will only improve one copy of the card.";
-			width = 200;
-		} else if (game.select[0] === S.CONF_PEARL) {
-			text = "As the dark cloud clears, you see a strange pearl resting on the ground.\nWill you pick it up? This will consume 2 energy.";
-			width = 218;
+		for (let index = 0; index < text.length; index++) {
+			const size = text[index].length * 3 + 2;
+			if (size > width) width = size;
 		};
+		const height = Math.ceil(text.length * 5.5) + 15;
 		const x = (400 - width) / 2;
 		const y = (game.select[0] === S.CONF_REFINE ? 20 : (200 - height) / 2);
 		draw.rect("#0008");
 		draw.box(x, y, width, height);
-		draw.lore(x + 1, y + 1, text, {"text-small": true});
+		draw.lore(x + 1, y + 1, text.join("\n"), {"text-small": true});
 		if (focused) {
 			const select = (menuSelect[0] == -1 ? game.select[1] : menuSelect[1]);
 			if (select == 0) {
@@ -2017,7 +2001,7 @@ const graphics = {
 		const spaceY = 49;
 		// initialize sorted previous games
 		if (!sortedPrevGames.length) {
-			for (let index = 0; index < global.prevGames.length; index++) {
+			for (let index = global.prevGames.length - 1; index >= 0; index--) {
 				sortedPrevGames.push(index);
 			};
 		};

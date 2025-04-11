@@ -27,17 +27,20 @@ function save() {
 
 /**
  * Resets all variables that are not reset on resets otherwise.
+ * @param {boolean} prevGamesMenu - Whether to reset the previous games menu. Defaults to `false`.
  */
-function resetVars() {
+function resetVars(prevGamesMenu = false) {
 	popups = [];
 	notif = [-1, 0, "", 0];
 	refinableDeck = [];
 	winAnim = 0;
 	menuSelect = [MENU.MAIN, 1];
-	menuScroll = 0;
-	menuArtifactSelect = 0;
-	prevGamesSort = [0, false];
-	sortedPrevGames = [];
+	if (prevGamesMenu) {
+		menuScroll = 0;
+		menuArtifactSelect = 0;
+		prevGamesSort = [0, true];
+		sortedPrevGames = [];
+	};
 	newSeed = "";
 	actionTimer = -1;
 	secret = false;
@@ -47,7 +50,7 @@ function resetVars() {
 	handPos = [];
 	handSelectPos = [];
 	enemyAnim = new EnemyAnimationSource(enemyAnim.idle.length, enemyAnim.enemies);
-	menuEnemyAnim = new EnemyAnimationSource(enemyAnim.idle.length, enemyAnim.enemies);
+	menuEnemyAnim = new EnemyAnimationSource(menuEnemyAnim.idle.length, menuEnemyAnim.enemies);
 	backAnim = [0, 1.5, 3, 0];
 	intentAnim = [0, 1.5, 3, 0.5, 2, 3.5];
 	cardAnim = [];
@@ -78,10 +81,11 @@ async function hardReset() {
 };
 
 /**
- * Restarts (and records) the current run.
+ * Ends (and records) the current run.
+ * @param {boolean} startNewRun - Whether to start a new run. Defaults to `false`.
  * @param {number} newDifficulty - The difficulty of the next run. Defaults to `game.difficulty`.
  */
-async function restartRun(newDifficulty = game.difficulty) {
+async function endRun(startNewRun = false, newDifficulty = game.difficulty) {
 	// setup
 	loaded = false;
 	// record previous run
@@ -106,20 +110,29 @@ async function restartRun(newDifficulty = game.difficulty) {
 		prevGame.newHighScore = true;
 	};
 	if (game.cheat) prevGame.cheat = game.cheat;
-	global.prevGames.push(prevGame);
+	if (game.map.length > 0) {
+		global.prevGames.push(prevGame);
+	};
 	// start new run
 	game = getStartGameData();
-	game.difficulty = newDifficulty ?? 0;
+	if (newDifficulty) {
+		game.difficulty = newDifficulty;
+	};
 	if (game.difficulty === prevGame.difficulty) {
 		game.select = [-1, 0]; // skip welcome screen
 	};
-	if (newSeed) {
-		game.seed = newSeed;
-		game.cheat = true;
+	if (startNewRun) {
+		if (newSeed) {
+			game.seed = newSeed;
+			game.cheat = true;
+		};
+		resetVars(game.map.length > 0);
+		menuSelect = [-1, 0];
+		await generateMap(); // sets loaded to true when done
+	} else {
+		resetVars(game.map.length > 0);
+		loaded = true;
 	};
-	resetVars();
-	menuSelect = [-1, 0];
-	await generateMap(); // sets loaded to true when done
 	save();
 };
 

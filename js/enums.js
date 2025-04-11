@@ -47,7 +47,7 @@ const S = {
 	OPTIONS: 318, // if N is 0, it indicates that the OPTIONS menu is closed; otherwise, it indicates the position of the selection in the open OPTIONS menu.
 	GAME_OVER: 319, // N is the opacity of the GAME_OVER screen.
 	GAME_WON: 320, // N is the opacity of the GAME_WON screen.
-	CONF_RESTART: 322, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
+	CONF_SURRENDER: 322, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 	WELCOME: 323, // N does not indicate anything.
 	ARTIFACT_REWARD: 324, // N is the index of the selected artifact reward if it exists; otherwise, N indicates that the back button is selected.
 	CONF_HAND_ALIGN: 325, // N indicates which button is selected (2 for the back button, 1 for the ignore button, 0 for the confirm button).
