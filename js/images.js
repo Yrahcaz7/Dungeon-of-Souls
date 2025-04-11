@@ -277,14 +277,19 @@ const loadImages = (() => {
 			};
 		};
 		// load images
+		const promises = [];
 		for (const folder in I) {
 			if (I.hasOwnProperty(folder)) {
-				const folderStartTime = Date.now();
-				await loadImage(I, folder, "images/");
-				await updateLoadProg();
-				console.log("I." + folder + " loaded in " + (Date.now() - folderStartTime) + "ms");
+				promises.push((async () => {
+					const folderStartTime = Date.now();
+					return loadImage(I, folder, "images/").then(() => {
+						updateLoadProg();
+						console.log("I." + folder + " loaded in " + (Date.now() - folderStartTime) + "ms");
+					});
+				})());
 			};
 		};
+		await Promise.all(promises);
 		console.log("[all images loaded in " + (Date.now() - loadStartTime) + "ms]");
 	};
 })();
