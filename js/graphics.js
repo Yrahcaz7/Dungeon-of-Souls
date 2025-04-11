@@ -15,19 +15,27 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const auraBladePos = [[65, 10], [80, 25], [42, 0], [28, 35]];
+const NO_ANTIALIASING_FILTER = `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="discrete" tableValues="0 1"/></feComponentTransfer></filter></svg>#filter')`;
+const AURA_BLADE_POS = [[65, 10], [80, 25], [42, 0], [28, 35]];
 
-let enemyPos = [], handPos = [], handSelectPos = [];
+let enemyPos = [];
+let handPos = [];
+let handSelectPos = [];
 
 let enemyAnim = new EnemyAnimationSource(6, () => game.enemies);
-
 let menuEnemyAnim = new EnemyAnimationSource(8, [...SMALL_ENEMIES, ...BIG_ENEMIES, ...PRIME_ENEMIES, ...BOSS_ENEMIES]);
 
-let backAnim = [0, 1.5, 3, 0], intentAnim = [0, 1.5, 3, 0.5, 2, 3.5], cardAnim = [], effAnim = [0, null], playerAnim = [0, I.player.idle], extraAnim = [], transition = 0, auraBladeAnim = [0, 3, 6, 1];
+let backAnim = [0, 1.5, 3, 0];
+let intentAnim = [0, 1.5, 3, 0.5, 2, 3.5];
+let cardAnim = [];
+let effAnim = [0, null];
+let playerAnim = [0, I.player.idle];
+let extraAnim = [];
+let transition = 0;
+let auraBladeAnim = [0, 3, 6, 1];
 
-let infoPos = 0, infoLimit = 0;
-
-const NO_ANTIALIASING_FILTER = `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="discrete" tableValues="0 1"/></feComponentTransfer></filter></svg>#filter')`;
+let infoPos = 0;
+let infoLimit = 0;
 
 const draw = {
 	/**
@@ -899,7 +907,7 @@ const graphics = {
 		let x = 15, y = 27;
 		// aura blades
 		for (let index = 0; index < game.eff[EFF.AURA_BLADE] && index < 4; index++) {
-			draw.image(I.aura_blade, x + auraBladePos[index][0], y + auraBladePos[index][1] + 4 - Math.abs(Math.round(auraBladeAnim[index]) - 4));
+			draw.image(I.aura_blade, x + AURA_BLADE_POS[index][0], y + AURA_BLADE_POS[index][1] + 4 - Math.abs(Math.round(auraBladeAnim[index]) - 4));
 			auraBladeAnim[index] += (Math.random() + 0.5) * 0.05;
 			if (auraBladeAnim[index] >= 8) auraBladeAnim[index] -= 8;
 		};
@@ -1905,9 +1913,13 @@ const graphics = {
 		if (game.select[0] !== S.WELCOME) {
 			let text = "";
 			for (let index = 0; index < MAIN_MENU_OPTIONS.length; index++) {
-				if (index === menuSelect[1] && focused) text += " <#ff0>\> " + MAIN_MENU_OPTIONS[index] + "</#ff0>\n";
-				else if (index === 0 && game.map.length === 0) text += "   <#888>" + MAIN_MENU_OPTIONS[index] + "</#888>\n";
-				else text += "   " + MAIN_MENU_OPTIONS[index] + "\n";
+				if (index === menuSelect[1] && focused) {
+					text += " <#ff0>\> " + MAIN_MENU_OPTIONS[index] + "</#ff0>\n";
+				} else if ((index === 0 && game.map.length === 0) || (index === MAIN_MENU_OPTIONS.length - 1 && global.prevGames.length === 0)) {
+					text += "   <#888>" + MAIN_MENU_OPTIONS[index] + "</#888>\n";
+				} else {
+					text += "   " + MAIN_MENU_OPTIONS[index] + "\n";
+				};
 			};
 			draw.lore(1, 84, text, {"color": "#fff"});
 		};
@@ -1927,7 +1939,7 @@ const graphics = {
 		else if (game.select[0] === S.CONF_HAND_ALIGN) text = ["Are you sure you want to align the hands of time?", "You will regret it. There is no going back."];
 		else if (game.select[0] === S.CONF_PURIFY) text = ["Are you sure you want to destroy the card " + game.cards[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only destroy one copy of the card."];
 		else if (game.select[0] === S.CONF_REFINE) text = ["Are you sure you want to improve the card " + refinableDeck[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only improve one copy of the card."];
-		else if (game.select[0] === S.CONF_PEARL) text = ["As the dark cloud clears, you see a strange pearl resting on the ground.", "Will you pick it up? This will consume 2 energy."];
+		else if (game.select[0] === S.CONF_PEARL) text = ["As the dark cloud clears, you see a strange pearl resting on the ground.", "Will you pick it up? This will consume 1 energy."];
 		let width = 39;
 		for (let index = 0; index < text.length; index++) {
 			const size = text[index].length * 3 + 2;

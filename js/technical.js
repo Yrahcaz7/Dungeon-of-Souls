@@ -83,13 +83,21 @@ let loaded = false;
 
 window.onload = async function() {
 	setupCanvas();
-	draw.lore(200 - 2, 100 - 5.5 * 1, "Loading graphics...", {"color": "#fff", "text-align": DIR.CENTER});
+	draw.lore(200 - 2, 100 - 5.5 * 3, "Loading graphics...\n\n0%", {"color": "#fff", "text-align": DIR.CENTER});
 	await Promise.all([loadImages(), loadSave()]);
 	fixCanvas(true);
 	loaded = true;
 };
 
-let canvas, scale, ctx, action = -1, lastAction = -1;
+/** @type {HTMLCanvasElement} */
+let canvas;
+/** @type {number} */
+let scale;
+/** @type {CanvasRenderingContext2D} */
+let ctx;
+
+let action = -1;
+let lastAction = -1;
 
 /**
  * Sets up the canvas.
@@ -99,9 +107,6 @@ function setupCanvas() {
 	scale = canvas.width / 400;
 	canvas.height = canvas.width / 2;
 	ctx = canvas.getContext("2d");
-	ctx.mozImageSmoothingEnabled = false;
-	ctx.webkitImageSmoothingEnabled = false;
-	ctx.msImageSmoothingEnabled = false;
 	ctx.imageSmoothingEnabled = false;
 };
 

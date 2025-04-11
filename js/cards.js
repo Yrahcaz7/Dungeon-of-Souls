@@ -247,7 +247,6 @@ const CARDS = {
 };
 
 const RARITY = ["starter", "common", "rare"];
-
 const CARD_TYPE = ["error", "attack", "defense", "skill", "magic"];
 
 /**

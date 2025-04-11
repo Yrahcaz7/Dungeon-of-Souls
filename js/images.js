@@ -193,6 +193,9 @@ const I = {
  * Loads all images.
  */
 const loadImages = (() => {
+	const LOAD_STEPS = 18;
+	let loadProg = 0;
+
 	/**
 	 * Loads an image or all images in a folder.
 	 * @param {object} ref - a reference to the containing folder.
@@ -235,6 +238,16 @@ const loadImages = (() => {
 		};
 	};
 
+	/**
+	 * Updates the graphics loading progress.
+	 */
+	async function updateLoadProg() {
+		clearCanvas();
+		draw.lore(200 - 2, 100 - 5.5 * 3, "Loading graphics...\n\n" + (loadProg / LOAD_STEPS * 100).toFixed(0) + "%", {"color": "#fff", "text-align": DIR.CENTER});
+		loadProg++;
+		await new Promise(resolve => setTimeout(resolve));
+	};
+
 	return async () => {
 		const loadStartTime = Date.now();
 		// setup cards
@@ -268,6 +281,7 @@ const loadImages = (() => {
 			if (I.hasOwnProperty(folder)) {
 				const folderStartTime = Date.now();
 				await loadImage(I, folder, "images/");
+				await updateLoadProg();
 				console.log("I." + folder + " loaded in " + (Date.now() - folderStartTime) + "ms");
 			};
 		};

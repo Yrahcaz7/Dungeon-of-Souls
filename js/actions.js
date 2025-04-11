@@ -15,9 +15,11 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const PIXEL_SIZES = [1, 2, 0.5], MUSIC_TRACKS = ["default", "Ruins of Caelum", "The Final Ruins", "Future Dungeon"];
+const PIXEL_SIZES = [1, 2, 0.5];
+const MUSIC_TRACKS = ["default", "Ruins of Caelum", "The Final Ruins", "Future Dungeon"];
 
-let actionTimer = -1, secret = false;
+let actionTimer = -1;
+let secret = false;
 
 /**
  * Handles deck selection.
@@ -66,7 +68,7 @@ function selection() {
 		if (action === DIR.UP && menuSelect[1] > (game.map.length > 0 ? 0 : 1)) {
 			menuSelect[1]--;
 			actionTimer = 1;
-		} else if (action === DIR.DOWN && menuSelect[1] < MAIN_MENU_OPTIONS.length - 1) {
+		} else if (action === DIR.DOWN && menuSelect[1] < MAIN_MENU_OPTIONS.length - (global.prevGames.length > 0 ? 1 : 2)) {
 			menuSelect[1]++;
 			actionTimer = 1;
 		};
@@ -586,7 +588,7 @@ function performAction() {
 		} else if (menuSelect[1] == 3) {
 			menuSelect = [MENU.DIFFICULTY, 1];
 		} else if (menuSelect[1] == 4) {
-			menuSelect = [MENU.PREV_GAMES, 0];
+			if (global.prevGames.length > 0) menuSelect = [MENU.PREV_GAMES, 0];
 		};
 		actionTimer = 2;
 	} else if (menuSelect[0] === MENU.NEW_RUN) {
@@ -835,10 +837,12 @@ function performAction() {
 		return;
 	} else if (game.select[0] === S.CONF_PEARL) {
 		if (!game.select[1]) {
-			game.energy -= 2;
+			game.energy--; // spend 1 energy picking up the pearl
 			game.artifacts.push(204); // give player artifact "Shrouded Pearl"
+			game.select = [S.ARTIFACTS, game.artifacts.length - 1];
+		} else {
+			game.select = [S.HAND, 0];
 		};
-		game.select = [S.HAND, 0];
 		actionTimer = 2;
 		return;
 	};

@@ -259,7 +259,8 @@ function fixSave(version) {
  */
 async function loadSave() {
 	const startTime = Date.now();
-	let oldVersion = 0, newGlobal = false;
+	let oldVersion = 0;
+	let newGlobal = false;
 	// load global stuff
 	let get = localStorage.getItem(ID + "/master");
 	if (get && atob(get) && JSON.parse(atob(get))) {

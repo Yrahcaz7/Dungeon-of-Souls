@@ -108,13 +108,13 @@ const generateMapPathPoints = (() => {
 	 */
 	function getSubdividedPath(points = []) {
 		const t = [];
-		const t_square = [];
-		const t_cube = [];
+		const tSquared = [];
+		const tCubed = [];
 		const increment = 1 / (MAP_PATH_SUBDIVISIONS + 1);
 		for (let sub = 0; sub < MAP_PATH_SUBDIVISIONS; sub++) {
 			t[sub] = (sub + 1) * increment;
-			t_square[sub] = t[sub] * t[sub];
-			t_cube[sub] = t_square[sub] * t[sub];
+			tSquared[sub] = t[sub] * t[sub];
+			tCubed[sub] = tSquared[sub] * t[sub];
 		};
 		let pathPoints = [points[0]];
 		for (let index = 1; index < points.length - 2; index++) {
@@ -134,8 +134,8 @@ const generateMapPathPoints = (() => {
 			let dy = 2 * p1[1];
 			for (let sub = 0; sub < MAP_PATH_SUBDIVISIONS; sub++) {
 				pathPoints[subdivisionIndex + sub + 1] = [];
-				pathPoints[subdivisionIndex + sub + 1][0] = 0.5 * (ax * t_cube[sub] + bx * t_square[sub] + cx * t[sub] + dx);
-				pathPoints[subdivisionIndex + sub + 1][1] = 0.5 * (ay * t_cube[sub] + by * t_square[sub] + cy * t[sub] + dy);
+				pathPoints[subdivisionIndex + sub + 1][0] = 0.5 * (ax * tCubed[sub] + bx * tSquared[sub] + cx * t[sub] + dx);
+				pathPoints[subdivisionIndex + sub + 1][1] = 0.5 * (ay * tCubed[sub] + by * tSquared[sub] + cy * t[sub] + dy);
 			};
 		};
 		pathPoints.push(points[points.length - 2]);
@@ -249,9 +249,13 @@ const BOSS_ENEMIES = [FRAGMENT, SINGULARITY];
  * Generates a map and saves it.
  */
 const generateMap = (() => {
-	const mapTotal = 100;
-
-	let mapProg = 0, deathZones = 0, rowFalses = 0, rowNodes = 0, eventShift = 0, pathTypes = [];
+	const GEN_STEPS = 100;
+	let genProg = 0;
+	let deathZones = 0;
+	let rowFalses = 0;
+	let rowNodes = 0;
+	let eventShift = 0;
+	let pathTypes = [];
 
 	/**
 	 * Gets a weaker small enemy in the map syntax.
@@ -273,14 +277,14 @@ const generateMap = (() => {
 	/**
 	 * Updates the map generation progress.
 	 */
-	async function updateMapProg() {
+	async function updateGenProg() {
 		clearCanvas();
-		if (mapProg === mapTotal) {
+		if (genProg === GEN_STEPS) {
 			draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\nrunning final checks...", {"color": "#fff", "text-align": DIR.CENTER});
-			mapProg = 0;
+			genProg = 0;
 		} else {
-			draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\n" + (mapProg / mapTotal * 100).toFixed(0) + "%", {"color": "#fff", "text-align": DIR.CENTER});
-			mapProg++;
+			draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\n" + (genProg / GEN_STEPS * 100).toFixed(0) + "%", {"color": "#fff", "text-align": DIR.CENTER});
+			genProg++;
 		};
 		await new Promise(resolve => setTimeout(resolve));
 	};
@@ -300,7 +304,7 @@ const generateMap = (() => {
 			if (index >= EVENTS.any.length) index += 100 - EVENTS.any.length;
 			return [ROOM.EVENT, randomInt(-5, 5), randomInt(-5, 5), index, getGoldReward(row), randomCardSet(5)];
 		};
-		await updateMapProg();
+		await updateGenProg();
 		if (attribute === MAP_NODE.ORB) return [ROOM.ORB, randomInt(-5, 5), randomInt(-5, 5)];
 		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, 0, 0, [BOSS_ENEMIES[area]], getGoldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
 		let type = chance(3/5) ? ROOM.BATTLE : false;
@@ -535,7 +539,7 @@ const generateMap = (() => {
 		loaded = false;
 		const startTime = Date.now();
 		paths = {};
-		await updateMapProg();
+		await updateGenProg();
 		game.firstRoom = await getMapNode(0, MAP_NODE.FIRST);
 		console.log("first battle generated in " + (Date.now() - startTime) + "ms");
 		game.map = [];

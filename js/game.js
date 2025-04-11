@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_002_036;
+const VERSION = 2_002_037;
 
 /**
  * Returns the starting global data.
@@ -84,9 +84,19 @@ function getStartGameData() {
 	};
 };
 
-let global = getStartGlobalData(), game = getStartGameData(), popups = [], notif = [-1, 0, "", 0], refinableDeck = [], winAnim = 0;
+let global = getStartGlobalData();
+let game = getStartGameData();
+let popups = [];
+let notif = [-1, 0, "", 0];
+let refinableDeck = [];
+let winAnim = 0;
 
-let menuSelect = [MENU.MAIN, 0], newSeed = "", menuScroll = 0, menuArtifactSelect = 0, prevGamesSort = [0, true], sortedPrevGames = [];
+let menuSelect = [MENU.MAIN, 0];
+let newSeed = "";
+let menuScroll = 0;
+let menuArtifactSelect = 0;
+let prevGamesSort = [0, true];
+let sortedPrevGames = [];
 
 /**
  * Checks if there is any active popups.
