@@ -152,6 +152,8 @@ const I = {
 		buff: new Image,
 		summon: new Image,
 		ritual: new Image,
+		increase: new Image,
+		decrease: new Image,
 	}, popup: {
 		back: new Image,
 		music: new Image,

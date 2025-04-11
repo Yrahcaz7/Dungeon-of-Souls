@@ -148,7 +148,7 @@ const draw = {
 	 */
 	clock(x, y, hours = 0, minutes = 0, offsetH = 0, offsetM = 0) {
 		ctx.filter = NO_ANTIALIASING_FILTER;
-		let coords = [(x + 30) * scale, (y + 30) * scale];
+		const coords = [(x + 30) * scale, (y + 30) * scale];
 		if (hours >= 0) {
 			ctx.save();
 			ctx.translate(coords[0], coords[1]);
@@ -214,11 +214,16 @@ const draw = {
 	 */
 	lore(x, y, str, style = {"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false}) {
 		style = Object.assign({"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false}, style);
-		let color = style["color"], highlight = "", position = style["text-align"], small = style["text-small"];
+		let color = style["color"];
+		let highlight = "";
+		let textAlign = style["text-align"];
+		let small = style["text-small"];
 		str = ("" + str).replace(/<br>/g, "\n");
 		x = Math.round(x * 2) / 2;
 		y = Math.round(y * 2) / 2;
-		let enters = 0, enterIndex = 0, len = str.replace(/<.*?>/g, "").length;
+		let enters = 0;
+		let enterIndex = 0;
+		let len = str.replace(/<.*?>/g, "").length;
 		// check for size tags
 		if (str.includes("<b>") || str.includes("<big>") || str.includes("<s>") || str.includes("<small>")) {
 			str = str.replace(/<\/b>|<\/big>|<\/s>|<\/small>/g, "");
@@ -245,7 +250,7 @@ const draw = {
 			return space;
 		};
 		// print special multi-line text
-		if (str.includes("\n") && position !== DIR.RIGHT) {
+		if (str.includes("\n") && textAlign !== DIR.RIGHT) {
 			let array = str.split("\n");
 			let space = 0;
 			if (!array[0]) array.splice(0, 1);
@@ -282,19 +287,19 @@ const draw = {
 			// don't print if no color
 			if (color == "none" || style["color"] == "none") continue;
 			// print character
-			if (position === DIR.RIGHT) {
+			if (textAlign === DIR.RIGHT) {
 				draw.char(char, x + ((a - enterIndex) * (small ? 3 : 6)), y + (enters * (small ? 5.5 : 11)), {
 					"color": color,
 					"highlight-color": highlight,
 					"text-small": small,
 				});
-			} else if (position === DIR.LEFT) {
+			} else if (textAlign === DIR.LEFT) {
 				draw.char(char, x + (((a - enterIndex) - len) * (small ? 3 : 6)), y + (enters * (small ? 5.5 : 11)), {
 					"color": color,
 					"highlight-color": highlight,
 					"text-small": small,
 				});
-			} else if (position === DIR.CENTER) {
+			} else if (textAlign === DIR.CENTER) {
 				draw.char(char, x + ((a - enterIndex) * (small ? 3 : 6)) - (len * (small ? 1.5 : 3)) + (small ? 1 : 2), y + (enters * (small ? 5.5 : 11)), {
 					"color": color,
 					"highlight-color": highlight,
@@ -324,23 +329,25 @@ const draw = {
 	intent(index) {
 		if (game.enemies[index].eff[ENEMY_EFF.SHROUD]) return;
 		if (index === game.enemyNum) return;
-		let x = enemyPos[index][0] + 16;
-		let y = getEnemyIntentPos(index, true);
+		const x = enemyPos[index][0] + 16;
+		const y = getEnemyIntentPos(index, true);
 		if (game.enemies[index].intent === INTENT.SUMMON) {
 			if (game.enemies.length >= 6) draw.image(I.intent.ritual, x, y);
 			else draw.image(I.intent.summon, x, y);
 		} else if (game.enemies[index].intent === INTENT.BUFF) {
 			draw.image(I.intent.buff, x, y);
 		} else if (game.enemies[index].intent === INTENT.ATTACK) {
-			let power = game.enemies[index].getTotalAttackPower();
-			power = Math.ceil(power * get.takeDamageMult(index));
+			const power = Math.ceil(game.enemies[index].getTotalAttackPower() * get.takeDamageMult(index));
 			draw.image(I.intent.attack[Math.min(Math.floor(power / 5), 10)], x, y);
-			draw.lore(x + 30 - 16, y + 12, power, {"color": "#fff", "text-align": DIR.CENTER});
+			draw.lore(x + 14, y + 12, power, {"color": "#fff", "text-align": DIR.CENTER});
+			if (power > game.enemies[index].attackPower) draw.image(I.intent.increase, x + 32 - 10, y);
+			else if (power < game.enemies[index].attackPower) draw.image(I.intent.decrease, x + 32 - 10, y + 32 - 8);
 		} else if (game.enemies[index].intent === INTENT.DEFEND) {
-			let power = game.enemies[index].getTotalDefendPower();
-			power = Math.ceil(power * get.enemyShieldMult(index));
+			const power = Math.ceil(game.enemies[index].getTotalDefendPower() * get.enemyShieldMult(index));
 			draw.image(I.intent.defend[Math.min(Math.floor(power / 5), 10)], x, y);
-			draw.lore(x + 30 - 16, y + 11, power, {"color": "#fff", "text-align": DIR.CENTER});
+			draw.lore(x + 14, y + 11, power, {"color": "#fff", "text-align": DIR.CENTER});
+			if (power > game.enemies[index].defendPower) draw.image(I.intent.increase, x + 32 - 10, y);
+			else if (power < game.enemies[index].defendPower) draw.image(I.intent.decrease, x + 32 - 10, y + 32 - 8);
 		};
 		intentAnim[index] += (Math.random() + 0.5) * 0.15;
 		if (intentAnim[index] >= 4) intentAnim[index] -= 4;
@@ -356,13 +363,12 @@ const draw = {
 	box(x, y, width, height, style = {"background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
 		style = Object.assign({"background-color": "#ccc", "border-width": 1, "border-color": "#000"}, style);
 		if (style["background-color"]) draw.rect(style["background-color"], x, y, width, height);
-		let val = style["border-width"];
-		if (val) {
-			let col = style["border-color"];
-			draw.rect(col, x - val, y - val, width + val, val); // top
-			draw.rect(col, x - val, y + height, width + val, val); // bottom
-			draw.rect(col, x - val, y - val, val, height + val); // left
-			draw.rect(col, x + width, y - val, val, height + (val * 2)); // right
+		const borderW = style["border-width"];
+		if (borderW) {
+			draw.rect(style["border-color"], x - borderW, y - borderW, width + borderW, borderW); // top
+			draw.rect(style["border-color"], x - borderW, y + height, width + borderW, borderW); // bottom
+			draw.rect(style["border-color"], x - borderW, y - borderW, borderW, height + borderW); // left
+			draw.rect(style["border-color"], x + width, y - borderW, borderW, height + (borderW * 2)); // right
 		};
 	},
 	/**
@@ -375,10 +381,7 @@ const draw = {
 	 * @param {number} maxShield - the max shield of the entity. Defaults to `0`.
 	 */
 	bars(x, y, health, maxHealth, shield = 0, maxShield = 0) {
-		let cutoff, percentage = health / maxHealth;
-		if (percentage < 0) cutoff = 0;
-		else if (percentage > 1) cutoff = 62;
-		else cutoff = Math.round(percentage * 62);
+		let cutoff = Math.round(Math.min(Math.max(health / maxHealth, 0), 1) * 62);
 		if ((health < 10 && maxHealth >= 10) || (health < 100 && maxHealth >= 100) || (health < 1000 && maxHealth >= 1000)) {
 			health = "0" + health;
 		};
@@ -386,10 +389,7 @@ const draw = {
 		draw.imageSector(I.bar.health_empty, cutoff + 1, 0, 64 - (cutoff + 1), 12, x + (cutoff + 1), y + 65);
 		draw.lore(x + 31, y + 67, health, {"text-align": DIR.LEFT});
 		draw.lore(x + 34, y + 67, maxHealth);
-		percentage = shield / maxShield;
-		if (percentage < 0) cutoff = 0;
-		else if (percentage > 1) cutoff = 62;
-		else cutoff = Math.round(percentage * 62);
+		cutoff = Math.round(Math.min(Math.max(shield / maxShield, 0), 1) * 62);
 		if ((shield < 10 && maxShield >= 10) || (shield < 100 && maxShield >= 100) || (shield < 1000 && maxShield >= 1000)) {
 			shield = "0" + shield;
 		};
@@ -411,9 +411,10 @@ const draw = {
 		if (!(card instanceof Object)) card = new Card(card);
 		let img = I.card.error;
 		const rarity = +CARDS[card.id].rarity;
-		if (rarity >= 0 && I.card[RARITY[rarity]]) img = I.card[RARITY[rarity]][card.id];
-		// card back
-		if (card.id !== 0) draw.image(I.card.back, x + 2, y + 2);
+		if (rarity >= 0 && I.card[RARITY[rarity]]) {
+			img = I.card[RARITY[rarity]][card.id];
+			draw.image(I.card.back, x + 2, y + 2);
+		};
 		// card outline
 		const type = CARD_TYPE[Math.floor(card.id / 1000)];
 		if (I.card.outline[type]) draw.image(I.card.outline[type], x + 3, y + 3);
@@ -428,7 +429,7 @@ const draw = {
 			};
 		};
 		// card image
-		if (img == I.card.error) draw.image(I.card.error, x + 2, y + 2);
+		if (img === I.card.error) draw.image(img, x + 2, y + 2);
 		else draw.image(img, x + 7, y + 7);
 		// card title
 		const name = card.getAttr("name");
@@ -496,7 +497,8 @@ const draw = {
 	 */
 	textBox(x, y, width, str, style = {"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
 		style = Object.assign({"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}, style);
-		let lines = (("" + str).match(/\n/g) || []).length, height = style["text-small"] ? 7 : 12;
+		const lines = (("" + str).match(/\n/g) || []).length;
+		let height = style["text-small"] ? 7 : 12;
 		if (style["text-small"]) {
 			width = Math.ceil(width * 3 + 0.5);
 			height = Math.ceil(lines * 5.5 + 7);
@@ -522,9 +524,10 @@ const draw = {
 	 * @param {number} index - the index of the enemy.
 	 */
 	enemyIcons(index) {
-		let enemy = game.enemies[index], pos = enemyPos[index];
-		draw.bars(pos[0], pos[1], enemy.health, enemy.maxHealth, enemy.shield, enemy.maxShield);
-		let x = +pos[0], y = +pos[1];
+		const enemy = game.enemies[index];
+		draw.bars(enemyPos[index][0], enemyPos[index][1], enemy.health, enemy.maxHealth, enemy.shield, enemy.maxShield);
+		let x = +enemyPos[index][0];
+		let y = +enemyPos[index][1];
 		for (const key in enemy.eff) {
 			if (enemy.eff.hasOwnProperty(key) && enemy.eff[key]) {
 				let img = I.icon[key];
@@ -532,11 +535,11 @@ const draw = {
 				draw.image(img, x, y + 89);
 				if (!PERM_EFF_DESC[key]) draw.lore(x + 17, y + 97, enemy.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
 				x += 17;
-				if (x >= pos[0] + (index == 0 && game.void.length && game.enemies.length > 2 ?
+				if (x >= enemyPos[index][0] + (index == 0 && game.void.length && game.enemies.length > 2 ?
 					(Object.keys(enemy.eff).length > (game.enemies.length > 3 ? 4 : 6) ? 51 : 34)
-					: 68
-				)) {
-					x = pos[0];
+					: 68)
+				) {
+					x = enemyPos[index][0];
 					y += 17;
 				};
 			};
@@ -552,7 +555,8 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	card(type, xPlus = 0, yPlus = 0) {
-		let x = handPos[game.prevCard] + 69 + xPlus, y = 147 - Math.floor(cardAnim[game.prevCard]) + yPlus;
+		let x = handPos[game.prevCard] + 69 + xPlus;
+		const y = 147 - Math.floor(cardAnim[game.prevCard]) + yPlus;
 		if (x + 24 * 3 + 2 > 400) {
 			const ref = CARDS[game.hand[game.prevCard].id];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
@@ -569,7 +573,8 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	cardSelect(type, xPlus = 0, yPlus = 0) {
-		let x = handSelectPos[game.select[1]] + 69 + xPlus, y = 15 + yPlus;
+		let x = handSelectPos[game.select[1]] + 69 + xPlus;
+		const y = 15 + yPlus;
 		if (x + 24 * 3 + 2 > 400) {
 			const ref = CARDS[game.hand[game.select[1]].id];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
@@ -586,15 +591,16 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	reward(type, xPlus = 0, yPlus = 0) {
-		let x = handPos[game.select[1]] + xPlus;
+		let x = handPos[game.select[1]] + 69 + xPlus;
+		const y = 51 + yPlus;
 		if (game.select[1] == get.cardRewardChoices() - 1 && get.cardRewardChoices() >= 4) {
 			const ref = CARDS[game.room[5][game.select[1]]];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
 			else x -= 145;
 			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
 		};
-		if (EFF_DESC[type]) return draw.textBox(x + 69, 51 + yPlus, 24, EFF_DESC[type], {"text-small": true});
-		return draw.textBox(x + 69, 51 + yPlus, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
+		if (EFF_DESC[type]) return draw.textBox(x, y, 24, EFF_DESC[type], {"text-small": true});
+		return draw.textBox(x, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
 	/**
 	 * Draws an infobox for a card in a deck.
@@ -609,7 +615,7 @@ const info = {
 		const cols = (refining ? 3 : 6);
 		const selected = [game.cardSelect % cols, Math.floor(game.cardSelect / cols)];
 		let x = (refining ? 72 : 71) + (selected[0] * (refining ? 68 : 66)) + xPlus;
-		let y = (refining ? 16 : 15) + (selected[1] * (refining ? 100 : 98)) - game.deckScroll + yPlus;
+		const y = (refining ? 16 : 15) + (selected[1] * (refining ? 100 : 98)) - game.deckScroll + yPlus;
 		if (selected[0] >= (refining ? 2 : 4)) {
 			let ref = CARDS[deck[game.cardSelect].id];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
@@ -627,13 +633,14 @@ const info = {
 	 */
 	player(type, xPlus = 0, yPlus = 0) {
 		const eff = game.eff[type];
+		const x = 85 + xPlus;
 		const y = 68 + yPlus;
 		let move = 0;
 		if (eff > 0) {
-			let desc = (PERM_EFF_DESC[type] ? PERM_EFF_DESC[type] : "You have " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE) && eff >= 2 ? "s" : "") + ".");
-			move += draw.textBox(85 + xPlus, y + move, desc.length, desc, {"text-small": true});
+			const desc = (PERM_EFF_DESC[type] || "You have " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE) && eff >= 2 ? "s" : "") + ".");
+			move += draw.textBox(x, y + move, desc.length, desc, {"text-small": true});
 		};
-		move += draw.textBox(85 + xPlus, y + move, 24, EFF_DESC[type], {"text-small": true});
+		move += draw.textBox(x, y + move, 24, EFF_DESC[type], {"text-small": true});
 		return move;
 	},
 	/**
@@ -645,14 +652,15 @@ const info = {
 	enemy(type, xPlus = 0, yPlus = 0) {
 		const pos = enemyPos[game.select[1]];
 		const eff = game.enemies[game.select[1]].eff[type];
+		const x = pos[0] - 72.5 + xPlus;
 		const y = pos[1] + yPlus;
 		let move = 0;
 		if (eff > 0) {
-			let desc = (PERM_EFF_DESC[type] ? PERM_EFF_DESC[type] : "This has " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "") + ".");
-			move += draw.textBox(pos[0] - (desc.length * 3) - 0.5 + xPlus, y + move, desc.length, desc, {"text-small": true});
+			let desc = (PERM_EFF_DESC[type] || "This has " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "") + ".");
+			move += draw.textBox(x + 72 - (desc.length * 3), y + move, desc.length, desc, {"text-small": true});
 		};
-		move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, EFF_DESC[type], {"text-small": true});
-		if (type === ENEMY_EFF.COUNTDOWN) move += draw.textBox(pos[0] - 72.5 + xPlus, y + move, 24, "The next intent will be\nto " + MIN_INTENT_DESC[game.enemies[game.select[1]].intentHistory[eff - 1]] + ".", {"text-small": true});
+		move += draw.textBox(x, y + move, 24, EFF_DESC[type], {"text-small": true});
+		if (type === ENEMY_EFF.COUNTDOWN) move += draw.textBox(x, y + move, 24, "The next intent will be\nto " + MIN_INTENT_DESC[game.enemies[game.select[1]].intentHistory[eff - 1]] + ".", {"text-small": true});
 		return move;
 	},
 	/**
@@ -661,11 +669,12 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	intent(xPlus = 0, yPlus = 0) {
-		let y = getEnemyIntentPos(game.select[1]) + yPlus;
+		const x = enemyPos[game.select[1]][0] - 71 + xPlus;
+		const y = getEnemyIntentPos(game.select[1]) + yPlus;
 		if (y === y) {
-			let intent = game.enemies[game.select[1]]?.intent;
-			let desc = (intent === INTENT.SUMMON && game.enemies.length >= 6 ? FULL_INTENT_DESC[INTENT.RITUAL] : FULL_INTENT_DESC[intent]);
-			if (desc) draw.textBox(enemyPos[game.select[1]][0] - 71 + xPlus, y - (desc.match(/\n/g) || []).length * 3, 28, desc, {"text-small": true});
+			const intent = game.enemies[game.select[1]]?.intent;
+			const desc = FULL_INTENT_DESC[intent === INTENT.SUMMON && game.enemies.length >= 6 ? INTENT.RITUAL : intent];
+			if (desc) draw.textBox(x, y - (desc.match(/\n/g) || []).length * 3, 28, desc, {"text-small": true});
 		};
 	},
 	/**
@@ -675,8 +684,8 @@ const info = {
 	 * @param {number} yOveride - overrides the y-coordinate of the infobox.
 	 */
 	artifact(type, xOveride = NaN, yOveride = NaN) {
-		let x = (xOveride === xOveride ? xOveride : 21 + (game.select[1] * 18));
-		let y = (yOveride === yOveride ? yOveride : 13);
+		const x = (xOveride === xOveride ? xOveride : 21 + (game.select[1] * 18));
+		const y = (yOveride === yOveride ? yOveride : 13);
 		const obj = ARTIFACTS[type];
 		if (!obj) return;
 		if (obj.name.length <= 12) {
