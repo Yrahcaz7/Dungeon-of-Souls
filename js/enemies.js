@@ -26,7 +26,6 @@ class Enemy {
 	intent = INTENT.ATTACK;
 	intentHistory = [INTENT.ATTACK];
 	eff = {};
-
 	/**
 	 * Returns a new enemy.
 	 * @param {number} type - the enemy's type.

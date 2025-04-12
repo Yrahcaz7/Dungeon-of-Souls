@@ -47,7 +47,7 @@ const draw = {
 	 * @param {number} height - the height of the image. Defaults to `image.height`.
 	 */
 	image(image, x = 0, y = 0, width = image.width, height = image.height) {
-		ctx.drawImage(image, (x ?? 0) * scale, (y ?? 0) * scale, (width ?? image.width) * scale, (height ?? image.height) * scale);
+		ctx.drawImage(image, (x ?? 0) * SCALE, (y ?? 0) * SCALE, (width ?? image.width) * SCALE, (height ?? image.height) * SCALE);
 	},
 	/**
 	 * Draws an image sector on the canvas.
@@ -62,7 +62,7 @@ const draw = {
 	 * @param {number} dh - the height of the image. Defaults to `sh`.
 	 */
 	imageSector(image, sx, sy, sw, sh, dx = 0, dy = 0, dw = sw, dh = sh) {
-		ctx.drawImage(image, sx, sy, sw, sh, (dx ?? 0) * scale, (dy ?? 0) * scale, (dw ?? sw) * scale, (dh ?? sh) * scale);
+		ctx.drawImage(image, sx, sy, sw, sh, (dx ?? 0) * SCALE, (dy ?? 0) * SCALE, (dw ?? sw) * SCALE, (dh ?? sh) * SCALE);
 	},
 	/**
 	 * Draws a rectangle on the canvas.
@@ -72,9 +72,9 @@ const draw = {
 	 * @param {number} width - the width of the rectangle. Defaults to `canvas.width / scale`.
 	 * @param {number} height - the height of the rectangle. Defaults to `canvas.height / scale`.
 	 */
-	rect(color, x = 0, y = 0, width = canvas.width / scale, height = canvas.height / scale) {
+	rect(color, x = 0, y = 0, width = canvas.width / SCALE, height = canvas.height / SCALE) {
 		ctx.fillStyle = color;
-		ctx.fillRect((x ?? 0) * scale, (y ?? 0) * scale, (width ?? canvas.width / scale) * scale, (height ?? canvas.height / scale) * scale);
+		ctx.fillRect((x ?? 0) * SCALE, (y ?? 0) * SCALE, (width ?? canvas.width / SCALE) * SCALE, (height ?? canvas.height / SCALE) * SCALE);
 	},
 	/**
 	 * Draws a line on the canvas.
@@ -88,9 +88,9 @@ const draw = {
 	line(x1, y1, x2, y2, color = "#000", width = 1) {
 		ctx.beginPath();
 		ctx.strokeStyle = color ?? "#000";
-		ctx.lineWidth = (width ?? 1) * scale;
-		ctx.moveTo(x1 * scale, y1 * scale);
-		ctx.lineTo(x2 * scale, y2 * scale);
+		ctx.lineWidth = (width ?? 1) * SCALE;
+		ctx.moveTo(x1 * SCALE, y1 * SCALE);
+		ctx.lineTo(x2 * SCALE, y2 * SCALE);
 		ctx.stroke();
 	},
 	/**
@@ -107,9 +107,9 @@ const draw = {
 	curvedLine(x1, y1, x2, y2, x3, y3, color = "#000", width = 1) {
 		ctx.beginPath();
 		ctx.strokeStyle = color ?? "#000";
-		ctx.lineWidth = (width ?? 1) * scale;
-		ctx.moveTo(x1 * scale, y1 * scale);
-		ctx.quadraticCurveTo(x2 * scale, y2 * scale, x3 * scale, y3 * scale);
+		ctx.lineWidth = (width ?? 1) * SCALE;
+		ctx.moveTo(x1 * SCALE, y1 * SCALE);
+		ctx.quadraticCurveTo(x2 * SCALE, y2 * SCALE, x3 * SCALE, y3 * SCALE);
 		ctx.stroke();
 	},
 	/**
@@ -121,9 +121,9 @@ const draw = {
 	polyline(points, color = "#000", width = 1) {
 		ctx.beginPath();
 		ctx.strokeStyle = color ?? "#000";
-		ctx.lineWidth = (width ?? 1) * scale;
+		ctx.lineWidth = (width ?? 1) * SCALE;
 		for (let index = 0; index < points.length; index++) {
-			ctx.lineTo(points[index][0] * scale, points[index][1] * scale);
+			ctx.lineTo(points[index][0] * SCALE, points[index][1] * SCALE);
 		};
 		ctx.stroke();
 	},
@@ -137,9 +137,9 @@ const draw = {
 		ctx.beginPath();
 		ctx.fillStyle = style["background-color"];
 		ctx.strokeStyle = style["border-color"];
-		ctx.lineWidth = style["border-width"] * scale;
+		ctx.lineWidth = style["border-width"] * SCALE;
 		for (let index = 0; index < points.length; index++) {
-			ctx.lineTo(points[index][0] * scale, points[index][1] * scale);
+			ctx.lineTo(points[index][0] * SCALE, points[index][1] * SCALE);
 		};
 		ctx.closePath();
 		ctx.fill();
@@ -156,7 +156,7 @@ const draw = {
 	 */
 	clock(x, y, hours = 0, minutes = 0, offsetH = 0, offsetM = 0) {
 		ctx.filter = NO_ANTIALIASING_FILTER;
-		const coords = [(x + 30) * scale, (y + 30) * scale];
+		const coords = [(x + 30) * SCALE, (y + 30) * SCALE];
 		if (hours >= 0) {
 			ctx.save();
 			ctx.translate(coords[0], coords[1]);
@@ -206,8 +206,8 @@ const draw = {
 			for (let row = 0; row < CHARACTERS[char].length; row++) {
 				for (let index = 0; index < CHARACTERS[char][row].length; index++) {
 					if (CHARACTERS[char][row][index]) {
-						if (style["text-small"]) ctx.fillRect(x * scale + index, y * scale + row, 1, 1);
-						else ctx.fillRect((x + index) * scale, (y + row) * scale, scale, scale);
+						if (style["text-small"]) ctx.fillRect(x * SCALE + index, y * SCALE + row, 1, 1);
+						else ctx.fillRect((x + index) * SCALE, (y + row) * SCALE, SCALE, SCALE);
 					};
 				};
 			};

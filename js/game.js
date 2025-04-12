@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_002_038;
+const VERSION = 2_002_039;
 
 /**
  * Returns the starting global data.
@@ -79,7 +79,14 @@ function getStartGameData() {
 		firstRoom: [],
 		map: [],
 		traveled: [],
-		seed: randomize((Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase()),
+		seed: (() => {
+			let arr = (Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase().split("");
+			for (let index = arr.length - 1; index > 0; index--) {
+				let rand = Math.floor(Math.random() * (index + 1));
+				[arr[index], arr[rand]] = [arr[rand], arr[index]];
+			};
+			return arr.join("");
+		})(),
 		version: VERSION,
 	};
 };
@@ -97,16 +104,6 @@ let menuScroll = 0;
 let menuArtifactSelect = 0;
 let prevGamesSort = [0, true];
 let sortedPrevGames = [];
-
-/**
- * Checks if there is any active popups.
- */
-function hasPopups() {
-	for (let index = 0; index < popups.length; index++) {
-		if (popups[index].length) return true;
-	};
-	return false;
-};
 
 /**
  * Creates a popup.
@@ -296,18 +293,6 @@ function enterBattle() {
 };
 
 /**
- * Handles the enemies' turn.
- */
-function enemyTurn() {
-	if (game.enemyNum == -1) startAnim.enemy();
-	if (game.enemyNum < game.enemies.length) {
-		if (game.enemyStage === ANIM.ENDING) game.enemies[game.enemyNum].finishAction();
-		else if (game.enemyStage === ANIM.MIDDLE) game.enemies[game.enemyNum].middleAction();
-		else if (game.enemyStage === ANIM.STARTING) game.enemies[game.enemyNum].startAction();
-	};
-};
-
-/**
  * Ends the battle if there are no enemies remaining.
  */
 function endBattle() {
@@ -410,7 +395,14 @@ function manageGameplay() {
 	// update data
 	updateData();
 	// enemy actions
-	if (game.turn === TURN.ENEMY || game.enemyNum >= 0) enemyTurn();
+	if (game.turn === TURN.ENEMY || game.enemyNum >= 0) {
+		if (game.enemyNum == -1) startAnim.enemy();
+		if (game.enemyNum < game.enemies.length) {
+			if (game.enemyStage === ANIM.ENDING) game.enemies[game.enemyNum].finishAction();
+			else if (game.enemyStage === ANIM.MIDDLE) game.enemies[game.enemyNum].middleAction();
+			else if (game.enemyStage === ANIM.STARTING) game.enemies[game.enemyNum].startAction();
+		};
+	};
 };
 
 /**
@@ -418,7 +410,7 @@ function manageGameplay() {
  */
 function updateVisuals() {
 	// bugs
-	if (!canvas || !ctx) return;
+	if (!(ctx instanceof CanvasRenderingContext2D)) return;
 	// clear
 	clearCanvas();
 	// update data

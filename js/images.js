@@ -195,7 +195,6 @@ const I = {
 const loadImages = (() => {
 	const LOAD_STEPS = 18;
 	let loadProg = 0;
-
 	/**
 	 * Loads an image or all images in a folder.
 	 * @param {object} ref - a reference to the containing folder.
@@ -221,15 +220,17 @@ const loadImages = (() => {
 			};
 			await Promise.all(promises);
 		} else if (ref[name] instanceof Number) {
-			let num = +ref[name];
+			const promises = [];
+			const num = +ref[name];
 			ref[name] = [];
 			for (let index = 0; index < num; index++) {
 				ref[name].push(new Image);
-				await loadImage(ref[name], index, path + name + "/");
+				promises.push(loadImage(ref[name], index, path + name + "/"));
 			};
+			await Promise.all(promises);
 		} else {
-			select = ref[name].select && !(ref[name].select instanceof Image);
-			blue = ref[name].select_blue && !(ref[name].select_blue instanceof Image);
+			select = ref[name].select && !(ref[name].select instanceof Image) && !(ref[name].select instanceof Number);
+			blue = ref[name].select_blue && !(ref[name].select_blue instanceof Image) && !(ref[name].select_blue instanceof Number);
 			for (const folder in ref[name]) {
 				if (ref[name].hasOwnProperty(folder)) {
 					await loadImage(ref[name], folder, path + name + "/", select, blue);
@@ -237,7 +238,6 @@ const loadImages = (() => {
 			};
 		};
 	};
-
 	/**
 	 * Updates the graphics loading progress.
 	 */
@@ -247,7 +247,6 @@ const loadImages = (() => {
 		loadProg++;
 		await new Promise(resolve => setTimeout(resolve));
 	};
-
 	return async () => {
 		const loadStartTime = Date.now();
 		// setup cards
@@ -282,7 +281,7 @@ const loadImages = (() => {
 			if (I.hasOwnProperty(folder)) {
 				promises.push((async () => {
 					const folderStartTime = Date.now();
-					return loadImage(I, folder, "images/").then(() => {
+					await loadImage(I, folder, "images/").then(() => {
 						updateLoadProg();
 						console.log("I." + folder + " loaded in " + (Date.now() - folderStartTime) + "ms");
 					});

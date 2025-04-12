@@ -79,35 +79,23 @@ function chance(chance = 1/2) {
 	return random() < chance;
 };
 
+const SCALE = 2;
+
+/** @type {HTMLCanvasElement} */
+let canvas;
+/** @type {CanvasRenderingContext2D} */
+let ctx;
+
 let loaded = false;
 
 window.onload = async function() {
-	setupCanvas();
+	canvas = document.getElementById("canvas");
+	ctx = canvas.getContext("2d");
+	ctx.imageSmoothingEnabled = false;
 	draw.lore(200 - 2, 100 - 5.5 * 3, "Loading graphics...\n\n0%", {"color": "#fff", "text-align": DIR.CENTER});
 	await Promise.all([loadImages(), loadSave()]);
 	fixCanvas(true);
 	loaded = true;
-};
-
-/** @type {HTMLCanvasElement} */
-let canvas;
-/** @type {number} */
-let scale;
-/** @type {CanvasRenderingContext2D} */
-let ctx;
-
-let action = -1;
-let lastAction = -1;
-
-/**
- * Sets up the canvas.
- */
-function setupCanvas() {
-	canvas = document.getElementById("canvas");
-	scale = canvas.width / 400;
-	canvas.height = canvas.width / 2;
-	ctx = canvas.getContext("2d");
-	ctx.imageSmoothingEnabled = false;
 };
 
 /**
@@ -123,26 +111,27 @@ function clearCanvas() {
  */
 function fixCanvas(resize = false) {
 	if (global.options[OPTION.PERFECT_SCREEN]) {
-		if (resize) document.getElementById("canvas").style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
-		const width = +(document.getElementById("canvas").style.width.match(/\d+/) || [800])[0];
+		if (resize) canvas.style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
+		const width = +(canvas.style.width.match(/\d+/) || [800])[0];
 		if (window.innerHeight <= width / 2) {
-			if (window.innerWidth <= width) document.getElementById("canvas").className = "onlyScroll";
-			else document.getElementById("canvas").className = "fixed";
+			if (window.innerWidth <= width) canvas.className = "onlyScroll";
+			else canvas.className = "fixed";
 		} else {
-			document.getElementById("canvas").className = "";
+			canvas.className = "";
 		};
 	} else {
-		if (resize) document.getElementById("canvas").style = "";
-		if (window.innerHeight <= window.innerWidth / 2) document.getElementById("canvas").className = "fixed";
-		else document.getElementById("canvas").className = "";
+		if (resize) canvas.style = "";
+		if (window.innerHeight <= window.innerWidth / 2) canvas.className = "fixed";
+		else canvas.className = "";
 	};
 };
 
-window.onresize = () => {
-	fixCanvas();
-};
+window.onresize = fixCanvas;
 
-document.addEventListener("keydown", event => {
+let action = -1;
+let lastAction = -1;
+
+document.onkeydown = event => {
 	if (!loaded) return;
 	const key = event.key;
 	if (key.length == 1 && /[0-9a-f]/i.test(key) && !event.repeat && menuSelect[0] === MENU.ENTER_SEED && newSeed.length < 6 && actionTimer == -1) {
@@ -255,9 +244,9 @@ document.addEventListener("keydown", event => {
 		updateVisuals();
 	};
 	if (action !== -1) lastAction = action;
-});
+};
 
-document.addEventListener("keyup", event => {
+document.onkeyup = event => {
 	const key = event.key;
 	if (key == "W" || key == "w" || key == "ArrowUp" || key == "A" || key == "a" || key == "ArrowLeft" || key == "S" || key == "s" || key == "ArrowDown" || key == "D" || key == "d" || key == "ArrowRight") action = -1;
-});
+};

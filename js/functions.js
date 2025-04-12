@@ -29,19 +29,6 @@ function color(text) {
 };
 
 /**
- * Returns a string with each character's position randomized.
- * @param {string} str - the string.
- */
-function randomize(str) {
-	let arr = str.split("");
-	for (let index = arr.length - 1; index > 0; index--) {
-		let rand = Math.floor(Math.random() * (index + 1));
-		[arr[index], arr[rand]] = [arr[rand], arr[index]];
-	};
-	return arr.join("");
-};
-
-/**
  * Returns a boolean indicating whether the middleground layers are hidden.
  */
 function hidden() {

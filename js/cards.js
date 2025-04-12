@@ -295,7 +295,6 @@ class Card {
 	id = 0;
 	level = 0;
 	eff = {};
-
 	/**
 	 * Returns a new card.
 	 * @param {number} id - the card's id. Defaults to `0`.

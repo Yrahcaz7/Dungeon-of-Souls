@@ -101,7 +101,6 @@ let mapPathPoints = [];
 
 const generateMapPathPoints = (() => {
 	const MAP_PATH_SUBDIVISIONS = 32;
-
 	/**
 	 * Returns an array of points that represent the subdivided path of `points`.
 	 * @param {number[][]} points - an array of points that represents a path.
@@ -142,7 +141,6 @@ const generateMapPathPoints = (() => {
 		pathPoints.push(points[points.length - 1]);
 		return pathPoints;
 	};
-
 	/**
 	 * Gets the visual map paths of an area.
 	 * @param {number} area - the area to get the visual map paths of.
@@ -230,7 +228,6 @@ const generateMapPathPoints = (() => {
 		};
 		console.log("area " + area + " generated in " + (Date.now() - startTime) + "ms");
 	};
-
 	return async () => {
 		const startTime = Date.now();
 		mapPathPoints = [];
@@ -256,7 +253,6 @@ const generateMap = (() => {
 	let rowNodes = 0;
 	let eventShift = 0;
 	let pathTypes = [];
-
 	/**
 	 * Gets a weaker small enemy in the map syntax.
 	 * @param {number} row - the row the enemy will be contained in.
@@ -265,7 +261,6 @@ const generateMap = (() => {
 		let area = get.area(row + 1);
 		return [SMALL_ENEMIES[area], Math.round(((row - game.difficulty * 12 + (1 - area) * 10) * 0.05) * 100) / 100];
 	};
-
 	/**
 	 * Gets the base gold reward for a room.
 	 * @param {number} row - the row the room is in.
@@ -273,7 +268,6 @@ const generateMap = (() => {
 	function getGoldReward(row) {
 		return randomInt(25, 50) + (row * 2);
 	};
-
 	/**
 	 * Updates the map generation progress.
 	 */
@@ -288,7 +282,6 @@ const generateMap = (() => {
 		};
 		await new Promise(resolve => setTimeout(resolve));
 	};
-
 	/**
 	 * Returns a map node.
 	 * @param {number} row - the row of the map node.
@@ -320,7 +313,6 @@ const generateMap = (() => {
 		};
 		return result;
 	};
-
 	/**
 	 * Returns a map row.
 	 * @param {number} row - the row number.
@@ -341,7 +333,6 @@ const generateMap = (() => {
 		if (row % 10 == 9) return [false, false, await getMapNode(row, MAP_NODE.BOSS), false, false, false];
 		return [await getMapNode(row), await getMapNode(row), await getMapNode(row), await getMapNode(row), await getMapNode(row), await getMapNode(row)];
 	};
-
 	/**
 	 * Calculates the path types of a map row.
 	 * @param {number} row - the row number.
@@ -374,7 +365,6 @@ const generateMap = (() => {
 		};
 		pathTypes[row] = arr;
 	};
-
 	/**
 	 * Checks if a map path has any nodes of specified types.
 	 * @param {number[]} coords - the coordinates of the node to start searching from.
@@ -404,7 +394,6 @@ const generateMap = (() => {
 		};
 		return false;
 	};
-
 	/**
 	 * Generates an area of the map.
 	 * @param {number} area - the area number.
@@ -496,7 +485,6 @@ const generateMap = (() => {
 		// no calculatePathTypes needed here, as this is the last usage of pathHasTypes in this area and further areas do not need information from previous areas
 		console.log("> area " + area + " generated in " + (Date.now() - areaStartTime) + "ms");
 	};
-
 	/**
 	 * Returns a boolean indicating whether the map has a node at the respective coordinates.
 	 * @param {number} x - the x-coordinate to check for a node at.
@@ -507,7 +495,6 @@ const generateMap = (() => {
 		if (loose) return typeof game.map[x][y] != "boolean" || (typeof game.map[x][y - 1] == "object" && game.map[x][y - 1][0] === ROOM.BOSS);
 		return typeof game.map[x][y] == "object" || (typeof game.map[x][y - 1] == "object" && game.map[x][y - 1][0] === ROOM.BOSS);
 	};
-
 	/**
 	 * Adds scribbles to the map.
 	 */
@@ -534,7 +521,6 @@ const generateMap = (() => {
 			};
 		};
 	};
-
 	return async () => {
 		loaded = false;
 		const startTime = Date.now();

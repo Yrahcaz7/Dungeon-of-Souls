@@ -5,7 +5,6 @@ class EnemyAnimationSource {
 	sync = 0;
 	action = [0, ANIM.STARTING];
 	actionData = [];
-
 	/**
 	 * Returns a new enemy animation source.
 	 * @param {number} maxSize - the maximum size of the source.
