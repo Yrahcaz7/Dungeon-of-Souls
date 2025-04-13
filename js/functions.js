@@ -107,15 +107,6 @@ const get = {
 		return Math.floor((floor - 1) / 10);
 	},
 	/**
-	 * Gets the hand size.
-	 */
-	handSize() {
-		let size = 5;
-		if (hasArtifact(104)) size--;
-		if (hasArtifact(205)) size++;
-		return size;
-	},
-	/**
 	 * Gets the number of card reward choices.
 	 */
 	cardRewardChoices() {
@@ -211,40 +202,6 @@ const get = {
 		return mult;
 	},
 	/**
-	 * Gets the score factors.
-	 */
-	scoreFactors() {
-		let factors = [];
-		for (const key in game.kills) {
-			if (game.kills.hasOwnProperty(key)) {
-				const amt = game.kills[key];
-				if (BOSS_ENEMIES.includes(+key)) factors.push(["Killed " + ENEMY_NAME[+key], ENEMY_WORTH[+key], amt]);
-				else factors.push(["Killed " + amt + " " + (amt > 1 ? PLURAL_ENEMY_NAME : ENEMY_NAME)[+key], ENEMY_WORTH[+key], amt]);
-			};
-		};
-		factors.push(["Saved " + game.gold + " gold", 1, Math.floor(game.gold / 5)]);
-		if (game.select[0] === S.GAME_WON) factors.push(["Saved " + game.health + " health", 5, game.health]);
-		return factors;
-	},
-	/**
-	 * Gets the total score.
-	 */
-	totalScore() {
-		let score = 0;
-		for (const key in game.kills) {
-			if (game.kills.hasOwnProperty(key)) {
-				score += game.kills[+key] * ENEMY_WORTH[+key];
-			};
-		};
-		score += Math.floor(game.gold / 5);
-		if (game.select[0] === S.GAME_WON) score += game.health * 5;
-		if (game.difficulty) {
-			if (hasArtifact(202) && game.kills[FRAGMENT]) score *= 3;
-			else score *= 2;
-		};
-		return score;
-	},
-	/**
 	 * Gets the version display.
 	 * @param {number} version - the version to display. Defaults to `global.version`.
 	 */
@@ -284,11 +241,9 @@ const get = {
  * @param {Card[]} deck - the deck to shuffle.
  */
 function shuffle(deck) {
-	let index = deck.length, randomIndex;
-	while (index != 0) {
-		randomIndex = Math.floor(random() * index);
-		index--;
-		[deck[index], deck[randomIndex]] = [deck[randomIndex], deck[index]];
+	for (let index = deck.length - 1; index > 0; index--) {
+		const rand = Math.floor(random() * (index + 1));
+		[deck[index], deck[rand]] = [deck[rand], deck[index]];
 	};
 	return deck;
 };
@@ -446,20 +401,4 @@ function enemyGainShield(amount = 0, index = game.enemyNum) {
 function gainEff(type, amt) {
 	if (game.eff[type]) game.eff[type] += amt;
 	else game.eff[type] = amt;
-};
-
-/**
- * Activates the attack effects of a card.
- * @param {number} id - the id of the card.
- */
-function activateAttackEffects(id) {
-	// stop if effects are not allowed
-	if (CARDS[id].attackEffects === false) return;
-	// trigger aura blade effect
-	if (game.eff[EFF.AURA_BLADE]) {
-		game.eff[EFF.AURA_BLADE]--;
-		game.attackEffects.push(ATT_EFF.AURA_BLADE);
-	};
-	// start player animation
-	startAnim.player(CARDS[id].attackAnim || I.player.attack);
 };

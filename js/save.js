@@ -104,7 +104,18 @@ async function endRun(startNewRun = false, newDifficulty = game.difficulty) {
 	prevGame.seed = game.seed;
 	prevGame.startVersion = game.version;
 	prevGame.endVersion = global.version;
-	prevGame.score = get.totalScore();
+	prevGame.score = 0;
+	for (const key in game.kills) {
+		if (game.kills.hasOwnProperty(key)) {
+			prevGame.score += game.kills[+key] * ENEMY_WORTH[+key];
+		};
+	};
+	prevGame.score += Math.floor(game.gold / 5);
+	if (game.select[0] === S.GAME_WON) prevGame.score += game.health * 5;
+	if (game.difficulty) {
+		if (hasArtifact(202) && game.kills[FRAGMENT]) prevGame.score *= 3;
+		else prevGame.score *= 2;
+	};
 	if (prevGame.score > global.highScore && !game.cheat) {
 		global.highScore = prevGame.score;
 		prevGame.newHighScore = true;

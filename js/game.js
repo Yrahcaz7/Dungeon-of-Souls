@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_002_039;
+const VERSION = 2_002_040;
 
 /**
  * Returns the starting global data.
@@ -183,40 +183,50 @@ function fadeMusic() {
  * Starts the player's turn.
  * @param {boolean} firstTurn - if true, it is the player's first turn.
  */
-function startTurn(firstTurn = false) {
-	let toSelect = [];
-	// end of enemy turn effects
-	if (!firstTurn) {
-		for (let index = 0; index < game.enemies.length; index++) {
-			if (game.enemies[index].eff[EFF.BURN]) {
-				let damage = game.enemies[index].eff[EFF.BURN];
-				if (hasArtifact(107)) damage += 3;
-				dealDamage(damage, 0, index, false);
-				game.enemies[index].eff[EFF.BURN]--;
-			};
-			if (game.enemies[index].eff[EFF.WEAKNESS]) game.enemies[index].eff[EFF.WEAKNESS]--;
-			if (game.enemies[index].eff[EFF.BLAZE]) game.enemies[index].eff[EFF.BLAZE]--;
-			if (game.enemies[index].eff[EFF.ATKUP]) game.enemies[index].eff[EFF.ATKUP]--;
-			if (game.enemies[index].eff[EFF.DEFUP]) game.enemies[index].eff[EFF.DEFUP]--;
-			if (game.enemies[index].eff[ENEMY_EFF.SHROUD]) {
-				game.enemies[index].eff[ENEMY_EFF.SHROUD]--;
-				if (!game.enemies[index].eff[ENEMY_EFF.SHROUD] && !hasArtifact(204)) {
-					toSelect = [S.CONF_PEARL, 0];
+const startTurn = (() => {
+	/**
+	 * Gets the player's hand size.
+	 */
+	function getHandSize() {
+		let size = 5;
+		if (hasArtifact(104)) size--;
+		if (hasArtifact(205)) size++;
+		return size;
+	};
+	return (firstTurn = false) => {
+		let toSelect = [S.HAND, 0];
+		// end of enemy turn effects
+		if (!firstTurn) {
+			for (let index = 0; index < game.enemies.length; index++) {
+				if (game.enemies[index].eff[EFF.BURN]) {
+					let damage = game.enemies[index].eff[EFF.BURN];
+					if (hasArtifact(107)) damage += 3;
+					dealDamage(damage, 0, index, false);
+					game.enemies[index].eff[EFF.BURN]--;
+				};
+				if (game.enemies[index].eff[EFF.WEAKNESS]) game.enemies[index].eff[EFF.WEAKNESS]--;
+				if (game.enemies[index].eff[EFF.BLAZE]) game.enemies[index].eff[EFF.BLAZE]--;
+				if (game.enemies[index].eff[EFF.ATKUP]) game.enemies[index].eff[EFF.ATKUP]--;
+				if (game.enemies[index].eff[EFF.DEFUP]) game.enemies[index].eff[EFF.DEFUP]--;
+				if (game.enemies[index].eff[ENEMY_EFF.SHROUD]) {
+					game.enemies[index].eff[ENEMY_EFF.SHROUD]--;
+					if (!game.enemies[index].eff[ENEMY_EFF.SHROUD] && !hasArtifact(204)) {
+						toSelect = [S.CONF_PEARL, 0];
+					};
 				};
 			};
 		};
+		// start of player turn effects
+		drawCards(getHandSize());
+		game.turn = TURN.PLAYER;
+		if (game.eff[EFF.REINFORCE]) game.eff[EFF.REINFORCE]--;
+		else game.shield = 0;
+		if (game.eff[EFF.RESILIENCE]) game.eff[EFF.RESILIENCE]--;
+		game.energy = get.maxEnergy();
+		game.select = toSelect;
+		if (playerAnim[1] !== I.player.idle && playerAnim[1] !== I.player.hit) startAnim.player(I.player.idle);
 	};
-	// start of your turn effects
-	drawCards(get.handSize());
-	game.turn = TURN.PLAYER;
-	if (game.eff[EFF.REINFORCE]) game.eff[EFF.REINFORCE]--;
-	else game.shield = 0;
-	if (game.eff[EFF.RESILIENCE]) game.eff[EFF.RESILIENCE]--;
-	game.energy = get.maxEnergy();
-	if (toSelect.length) game.select = toSelect;
-	else game.select = [S.HAND, 0];
-	if (playerAnim[1] !== I.player.idle && playerAnim[1] !== I.player.hit) startAnim.player(I.player.idle);
-};
+})();
 
 /**
  * Ends the player's turn.

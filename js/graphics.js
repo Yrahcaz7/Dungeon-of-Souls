@@ -445,14 +445,16 @@ const draw = {
 		else if (LOW_CHAR_REGEX.test(name)) draw.lore(x + 32, y + 41, name, {"text-align": DIR.CENTER});
 		else draw.lore(x + 32, y + 42, name, {"text-align": DIR.CENTER});
 		// card description
-		let desc = card.getAttr("desc"), exDamage = get.extraDamage(), mulDamage = get.dealDamageMult(), valueIsLess = false;
+		let desc = card.getAttr("desc");
+		let extra = get.extraDamage();
+		let mult = get.dealDamageMult(game.select[0] === S.ATTACK ? game.select[1] : game.enemyAtt[1]);
+		let valueIsLess = false;
 		if (CARDS[card.id].attackEffects !== false && !outside) {
-			if (CARDS[card.id].keywords.includes(CARD_EFF.UNIFORM)) exDamage = Math.floor(exDamage * 0.5);
-			if (game.select[0] === S.ATTACK) mulDamage = get.dealDamageMult(game.select[1]);
-			if (exDamage || mulDamage !== 1) {
+			if (CARDS[card.id].keywords.includes(CARD_EFF.UNIFORM)) extra = Math.floor(extra / 2);
+			if (extra || mult !== 1) {
 				desc = desc.replace(/(deal\s)(\d+)(\s<#f44>damage<\/#f44>)/gi, (substring, pre, number, post) => {
 					const original = parseInt(number);
-					let damage = Math.ceil((original + exDamage) * mulDamage);
+					let damage = Math.ceil((original + extra) * mult);
 					if (damage > original) {
 						return pre + "<#0f0 highlight>" + damage + "</#0f0>" + post;
 					} else if (damage < original) {
@@ -464,17 +466,24 @@ const draw = {
 				});
 			};
 		};
-		let exShield = get.extraShield();
-		if (exShield && !outside) {
-			desc = desc.replace(/(gain\s)(\d+)(\s<#58f>shield<\/#58f>)/gi, (substring, pre, number, post) => {
-				const original = parseInt(number);
-				let shield = Math.ceil(original + exShield);
-				if (shield > original) {
-					return pre + "<#0f0 highlight>" + shield + "</#0f0>" + post;
-				} else {
-					return pre + shield + post;
-				};
-			});
+		extra = get.extraShield();
+		mult = get.playerShieldMult();
+		if (CARDS[card.id].defendEffects !== false && !outside) {
+			if (CARDS[card.id].keywords.includes(CARD_EFF.UNIFORM)) extra = Math.floor(extra / 2);
+			if (extra || mult !== 1) {
+				desc = desc.replace(/(gain\s)(\d+)(\s<#58f>shield<\/#58f>)/gi, (substring, pre, number, post) => {
+					const original = parseInt(number);
+					let shield = Math.ceil((original + extra) * mult);
+					if (shield > original) {
+						return pre + "<#0f0 highlight>" + shield + "</#0f0>" + post;
+					} else if (shield < original) {
+						valueIsLess = true;
+						return pre + "<#fff highlight>" + shield + "</#fff>" + post;
+					} else {
+						return pre + shield + post;
+					};
+				});
+			};
 		};
 		// card text
 		draw.lore(x + 6, y + 55, desc, {"highlight-color": (valueIsLess ? "#f00" : "#000"), "text-small": true});
@@ -482,12 +491,12 @@ const draw = {
 		// card energy and rarity
 		if (rarity == 2) draw.image(I.card.rarity.rare, x - 1, y - 2);
 		if (!CARDS[card.id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
-			let originalCost = card.getAttr("cost");
+			const originalCost = card.getAttr("cost");
 			if (outside) {
 				draw.image(I.card.energy, x, y);
 				draw.lore(x + 4, y + 2, originalCost);
 			} else {
-				let cost = getCardCost(card);
+				const cost = getCardCost(card);
 				if (cost < originalCost) draw.image(I.card.green_energy, x, y);
 				else if (cost > originalCost) draw.image(I.card.red_energy, x, y);
 				else draw.image(I.card.energy, x, y);
@@ -1827,6 +1836,7 @@ const graphics = {
 	 * Draws the game end layer on the canvas.
 	 */
 	gameEnd() {
+		// draw background
 		ctx.globalAlpha = game.select[1] / (game.select[0] === S.GAME_WON ? 50 : 64);
 		if (game.select[1] < 50) game.select[1]++;
 		draw.rect("#000");
@@ -1836,6 +1846,7 @@ const graphics = {
 			if (winAnim >= 8) winAnim -= 8;
 			draw.rect("#0004");
 		};
+		// calculate header text
 		let text = "";
 		if (game.select[0] === S.GAME_WON) {
 			text += "YOU BEAT THE GAME ";
@@ -1850,13 +1861,26 @@ const graphics = {
 			else text += "EASY";
 			text += "\n\nTOP FLOOR: " + game.floor;
 		};
-		const factors = get.scoreFactors();
+		// calculate score factors
+		let factors = [];
+		for (const key in game.kills) {
+			if (game.kills.hasOwnProperty(key)) {
+				const amt = game.kills[key];
+				if (BOSS_ENEMIES.includes(+key)) factors.push(["Killed " + ENEMY_NAME[+key], ENEMY_WORTH[+key], amt]);
+				else factors.push(["Killed " + amt + " " + (amt > 1 ? PLURAL_ENEMY_NAME : ENEMY_NAME)[+key], ENEMY_WORTH[+key], amt]);
+			};
+		};
+		factors.push(["Saved " + game.gold + " gold", 1, Math.floor(game.gold / 5)]);
+		if (game.select[0] === S.GAME_WON) factors.push(["Saved " + game.health + " health", 5, game.health]);
+		// calculate text position and color
 		let len = factors.length;
 		if (game.difficulty) len += 2;
 		const normalColor = (game.select[0] === S.GAME_WON ? "#0f0" : "#f00");
 		const hardColor = (game.select[0] === S.GAME_WON ? "#f00" : "#0f0");
+		// draw header and footer text
 		draw.lore(200 - 2, 100 - (len + 17) * 2.75, text, {"color": normalColor, "text-align": DIR.CENTER});
 		draw.lore(200 - 2, 100 + (len + 15) * 2.75, "PRESS ENTER TO END THE RUN", {"color": normalColor, "text-align": DIR.CENTER});
+		// calculate score text
 		text = "";
 		for (let index = 0; index < factors.length; index++) {
 			text += factors[index][0] + ":\n";
@@ -1891,6 +1915,7 @@ const graphics = {
 		} else {
 			text += "\n" + totalScore + " points";
 		};
+		// draw score text
 		draw.lore(280, 100 - (len - 7) * 2.75, text, {"color": normalColor, "text-align": DIR.LEFT, "text-small": true});
 		if (totalScore > global.highScore && !game.cheat) {
 			draw.lore(280, 100 + (len + 9) * 2.75, ": NEW HIGH SCORE!", {"color": normalColor, "text-small": true});

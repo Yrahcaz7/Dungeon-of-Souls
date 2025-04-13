@@ -574,6 +574,21 @@ const performAction = (() => {
 		};
 		return 0;
 	};
+	/**
+	 * Activates the attack effects of a card.
+	 * @param {number} id - the id of the card.
+	 */
+	function activateAttackEffects(id) {
+		// stop if effects are not allowed
+		if (CARDS[id].attackEffects === false) return;
+		// trigger aura blade effect
+		if (game.eff[EFF.AURA_BLADE]) {
+			game.eff[EFF.AURA_BLADE]--;
+			game.attackEffects.push(ATT_EFF.AURA_BLADE);
+		};
+		// start player animation
+		startAnim.player(CARDS[id].attackAnim ?? I.player.attack);
+	};
 	return () => {
 		// action timer
 		if (actionTimer > -1) return;
