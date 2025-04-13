@@ -26,28 +26,25 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 	// calculate connections
 	let store = [];
 	for (let x = xMin; x < xMax && x < game.map.length; x++) {
-		for (let y = 0; y < game.map[x].length; y++) {
-			if (!(typeof game.map[x][y] == "object")) continue;
-			if (x % 10 != 9 && game.map[x + 1]) {
-				for (num = 0; num < game.map[x + 1].length; num++) {
-					if (typeof game.map[x + 1][y - num] == "object") {
-						store.push([x, y, x + 1, y - num]);
-						break;
-					} else if (typeof game.map[x + 1][y + num] == "object") {
-						store.push([x, y, x + 1, y + num]);
-						break;
-					};
+		const bossRow = (x % 10 == 9);
+		for (let y = (bossRow ? 2 : 0); y < (bossRow ? 3 : game.map[x].length); y++) {
+			if (!bossRow && typeof game.map[x][y] != "object") continue;
+			for (num = 0; num < game.map[x + 1]?.length; num++) {
+				if (typeof game.map[x + 1][y - num] == "object") {
+					store.push([x, y, x + 1, y - num]);
+					break;
+				} else if (typeof game.map[x + 1][y + num] == "object") {
+					store.push([x, y, x + 1, y + num]);
+					break;
 				};
 			};
-			if (x % 10 != 0) {
-				for (num = 0; num < game.map[x - 1].length; num++) {
-					if (typeof game.map[x - 1][y - num] == "object") {
-						store.push([x, y, x - 1, y - num]);
-						break;
-					} else if (typeof game.map[x - 1][y + num] == "object") {
-						store.push([x, y, x - 1, y + num]);
-						break;
-					};
+			for (num = 0; num < game.map[x - 1]?.length; num++) {
+				if (typeof game.map[x - 1][y - num] == "object") {
+					store.push([x, y, x - 1, y - num]);
+					break;
+				} else if (typeof game.map[x - 1][y + num] == "object") {
+					store.push([x, y, x - 1, y + num]);
+					break;
 				};
 			};
 		};
@@ -226,13 +223,11 @@ const generateMapPathPoints = (() => {
 				};
 			};
 		};
-		console.log("area " + area + " generated in " + (Date.now() - startTime) + "ms");
 	};
 	return async () => {
 		const startTime = Date.now();
 		mapPathPoints = [];
-		await getVisualMapPaths(0);
-		await getVisualMapPaths(1);
+		await Promise.all([getVisualMapPaths(0), getVisualMapPaths(1)]);
 		console.log("[map visuals generated in " + (Date.now() - startTime) + "ms]");
 	};
 })();
@@ -248,10 +243,8 @@ const BOSS_ENEMIES = [FRAGMENT, SINGULARITY];
 const generateMap = (() => {
 	const GEN_STEPS = 100;
 	let genProg = 0;
-	let deathZones = 0;
-	let rowFalses = 0;
-	let rowNodes = 0;
-	let eventShift = 0;
+	let rowFalses = [0, 0];
+	let rowNodes = [0, 0];
 	let pathTypes = [];
 	/**
 	 * Gets a weaker small enemy in the map syntax.
@@ -288,7 +281,7 @@ const generateMap = (() => {
 	 * @param {number} attribute - the attribute of the map node, if any.
 	 */
 	async function getMapNode(row, attribute = -1) {
-		let area = get.area(row + 1);
+		const area = get.area(row + 1);
 		if (attribute === MAP_NODE.FIRST) return [ROOM.BATTLE, 0, 0, [SMALL_ENEMIES[area]], getGoldReward(row), randomCardSet(5)];
 		if (attribute === MAP_NODE.TREASURE) return [ROOM.TREASURE, randomInt(-5, 5), randomInt(-5, 5), false, getGoldReward(row) * 2, randomCardSet(5, 4/10)];
 		if (attribute === MAP_NODE.PRIME) return [ROOM.PRIME, randomInt(-5, 5), randomInt(-5, 5), [getWeakerSmallEnemy(row), PRIME_ENEMIES[area], getWeakerSmallEnemy(row)], getGoldReward(row) * 2, randomCardSet(5, 9/10), randomArtifactSet(3)];
@@ -300,12 +293,12 @@ const generateMap = (() => {
 		await updateGenProg();
 		if (attribute === MAP_NODE.ORB) return [ROOM.ORB, randomInt(-5, 5), randomInt(-5, 5)];
 		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, 0, 0, [BOSS_ENEMIES[area]], getGoldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
-		let type = chance(3/5) ? ROOM.BATTLE : false;
-		if (rowFalses >= 3 || (row % 10 == 0 && rowFalses >= 2) || (rowNodes + rowFalses == 2 && rowFalses == 2)) type = ROOM.BATTLE;
-		if (type) rowNodes++;
-		else rowFalses++;
-		if (!type || rowNodes == 6) return false;
-		let result = [type, randomInt(-5, 5), randomInt(-5, 5)];
+		let type = (chance(3/5) ? ROOM.BATTLE : false);
+		if (rowFalses[area] >= 3 || (row % 10 == 0 && rowFalses[area] >= 2) || (rowNodes[area] + rowFalses[area] == 2 && rowFalses[area] == 2)) type = ROOM.BATTLE;
+		if (type) rowNodes[area]++;
+		else rowFalses[area]++;
+		if (!type || rowNodes[area] == 6) return false;
+		const result = [type, randomInt(-5, 5), randomInt(-5, 5)];
 		if (type === ROOM.BATTLE) {
 			if (row % 10 >= 5) result.push(chance(1/3) ? [BIG_ENEMIES[area]] : (chance(2/3) ? [BIG_ENEMIES[area], getWeakerSmallEnemy(row)] : [SMALL_ENEMIES[area], SMALL_ENEMIES[area]]));
 			else result.push(chance() ? [BIG_ENEMIES[area]] : [SMALL_ENEMIES[area], getWeakerSmallEnemy(row)]);
@@ -318,8 +311,9 @@ const generateMap = (() => {
 	 * @param {number} row - the row number.
 	 */
 	async function getMapRow(row) {
-		rowFalses = 0;
-		rowNodes = 0;
+		const area = get.area(row + 1);
+		rowFalses[area] = 0;
+		rowNodes[area] = 0;
 		if (row % 10 == 0) return [false, await getMapNode(row), await getMapNode(row), await getMapNode(row), await getMapNode(row), false];
 		if (row % 10 == 8) {
 			if (chance()) {
@@ -338,16 +332,15 @@ const generateMap = (() => {
 	 * @param {number} row - the row number.
 	 */
 	function calculatePathTypes(row = pathTypes.length) {
-		if (!game.map[row] || row > pathTypes.length) return;
-		let arr = [];
+		if (!game.map[row]) return;
+		const arr = [];
 		for (let num = 0; num < game.map[row].length; num++) {
 			if (!game.map[row][num]) {
 				arr.push([]);
 				continue;
 			};
-			let types = [game.map[row][num][0]];
+			const types = [game.map[row][num][0]];
 			if (row % 10 == 0) {
-				if (row == 0 && !types.includes(ROOM.BATTLE)) types.push(ROOM.BATTLE); // this makes the initial battle count as a battle
 				arr.push(types);
 				continue;
 			};
@@ -399,14 +392,12 @@ const generateMap = (() => {
 	 * @param {number} area - the area number.
 	 */
 	async function generateArea(area) {
-		const areaStartTime = Date.now();
-		deathZones = 0;
-		eventShift = randomInt(0, 1);
+		let deathZones = 0;
+		const eventShift = randomInt(0, 1);
 		for (let index = 0; index < 10; index++) {
-			const rowStartTime = Date.now();
-			let rowNum = index + area * 10;
-			game.map.push(await getMapRow(rowNum));
-			calculateMapPaths(Math.max(rowNum - 1, 0));
+			const rowNum = index + area * 10;
+			game.map[rowNum] = await getMapRow(rowNum);
+			calculateMapPaths(Math.max(rowNum - 1, 0), rowNum);
 			calculatePathTypes(rowNum);
 			if (rowNum % 10 > 0 && rowNum % 10 < 8) {
 				let newRow = game.map[rowNum];
@@ -460,9 +451,8 @@ const generateMap = (() => {
 					calculatePathTypes(rowNum);
 				};
 			};
-			console.log("row " + rowNum + " generated in " + (Date.now() - rowStartTime) + "ms");
 		};
-		// add death zone
+		// add death zone (no calculatePathTypes is needed after this, as this is the last usage of pathHasTypes in this area)
 		let row = 3 + area * 10;
 		while (deathZones === 0) {
 			let available = [0, 1, 2, 3, 4, 5];
@@ -482,8 +472,6 @@ const generateMap = (() => {
 			else if (row % 10 == 2) break;
 			else row++;
 		};
-		// no calculatePathTypes needed here, as this is the last usage of pathHasTypes in this area and further areas do not need information from previous areas
-		console.log("> area " + area + " generated in " + (Date.now() - areaStartTime) + "ms");
 	};
 	/**
 	 * Returns a boolean indicating whether the map has a node at the respective coordinates.
@@ -522,15 +510,12 @@ const generateMap = (() => {
 		};
 	};
 	return async () => {
-		loaded = false;
 		const startTime = Date.now();
+		loaded = false;
 		paths = {};
-		await updateGenProg();
-		game.firstRoom = await getMapNode(0, MAP_NODE.FIRST);
-		console.log("first battle generated in " + (Date.now() - startTime) + "ms");
 		game.map = [];
-		await generateArea(0);
-		await generateArea(1);
+		await updateGenProg();
+		await Promise.all([(async () => game.firstRoom = await getMapNode(0, MAP_NODE.FIRST))(), generateArea(0), generateArea(1)]);
 		addScribbles();
 		console.log("[map data generated in " + (Date.now() - startTime) + "ms]");
 		await generateMapPathPoints();

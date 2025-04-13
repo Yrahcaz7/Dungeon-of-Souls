@@ -279,16 +279,10 @@ const loadImages = (() => {
 		const promises = [];
 		for (const folder in I) {
 			if (I.hasOwnProperty(folder)) {
-				promises.push((async () => {
-					const folderStartTime = Date.now();
-					await loadImage(I, folder, "images/").then(() => {
-						updateLoadProg();
-						console.log("I." + folder + " loaded in " + (Date.now() - folderStartTime) + "ms");
-					});
-				})());
+				promises.push(loadImage(I, folder, "images/").then(updateLoadProg));
 			};
 		};
 		await Promise.all(promises);
-		console.log("[all images loaded in " + (Date.now() - loadStartTime) + "ms]");
+		console.log("[images loaded in " + (Date.now() - loadStartTime) + "ms]");
 	};
 })();
