@@ -121,7 +121,7 @@ function hasArtifact(id) {
 function activateArtifacts(type, ...params) {
 	for (let index = 0; index < game.artifacts.length; index++) {
 		const func = ARTIFACTS[game.artifacts[index]][type];
-		if (typeof func == "function") func(...params);
+		if (func instanceof Function) func(...params);
 	};
 };
 

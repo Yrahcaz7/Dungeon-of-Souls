@@ -190,13 +190,11 @@ document.onkeydown = event => {
 			action = -1;
 			actionTimer = 2;
 		} else if (menuSelect[0] == -1 && game.select[0] === S.REFINER) {
-			for (let index = 0; index < game.rewards.length; index++) {
-				if (game.rewards[index] == "1 refiner") {
-					game.select = [S.REWARDS, index];
-					action = -1;
-					actionTimer = 2;
-					break;
-				};
+			const index = game.rewards.findIndex(arr => arr[0] === REWARD.REFINER);
+			if (index >= 0) {
+				game.select = [S.REWARDS, index];
+				action = -1;
+				actionTimer = 2;
 			};
 		};
 	} else if ((key == "C" || key == "c") && !event.repeat && menuSelect[0] === MENU.PREV_GAMES && actionTimer == -1) {

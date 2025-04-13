@@ -254,3 +254,9 @@ const EVENT_LOG = {DAMAGE: 2000};
 
 // game result types
 const GAME_RESULT = {DEFEAT: 2100, VICTORY: 2101, SURRENDER: 2102};
+
+// reward types
+const REWARD = {GOLD: 2200, CARD: 2201, ARTIFACT: 2202, HEALTH: 2203, PURIFIER: 2204, REFINER: 2205, FINISH: 2206};
+
+// names of rewards
+const REWARD_NAME = {[REWARD.GOLD]: "gold", [REWARD.CARD]: "card", [REWARD.ARTIFACT]: "artifact", [REWARD.HEALTH]: "health", [REWARD.PURIFIER]: "purifier", [REWARD.REFINER]: "refiner", [REWARD.FINISH]: "finish"};

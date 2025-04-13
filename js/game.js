@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_002_041;
+const VERSION = 2_002_044;
 
 /**
  * Returns the starting global data.
@@ -283,7 +283,7 @@ function postCardActivation() {
 				if (CARDS[game.enemyAtt[2].id].keywords.includes(CARD_EFF.UNIFORM)) dealDamage(game.enemyAtt[2].getAttr("damage"), 0.5);
 				else dealDamage(game.enemyAtt[2].getAttr("damage"));
 			};
-			if (typeof attCard.attack == "function") attCard.attack(game.enemyAtt[2].level);
+			if (attCard.attack instanceof Function) attCard.attack(game.enemyAtt[2].level);
 			game.enemyAtt = [-1, -1, new Card(), false];
 			game.attackEffects = [];
 			updateData();
@@ -308,7 +308,7 @@ function enterBattle() {
 function endBattle() {
 	if (game.state === STATE.BATTLE && !game.enemies.length) {
 		// normal stuff
-		if (game.hand.length) discardHand(true);
+		discardHand(true);
 		cardAnim = [];
 		notif = [-1, 0, "", 0];
 		game.select = [S.REWARDS, 0];
@@ -319,20 +319,20 @@ function endBattle() {
 		activateArtifacts(FUNC.FLOOR_CLEAR);
 		// set rewards
 		game.rewards = [];
-		if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
-		if (get.cardRewardChoices() > 0) game.rewards.push("1 card");
-		if (game.room[0] === ROOM.PRIME || game.room[0] === ROOM.BOSS) {
-			if (game.room[6]) {
-				for (let index = 0; index < game.room[6].length; index++) {
-					if (hasArtifact(game.room[6][index])) {
-						game.room[6][index] = randomArtifact(game.artifacts.concat(game.room[6]));
-					};
+		if (game.room[4] > 0) game.rewards.push([REWARD.GOLD, game.room[4]]);
+		if (get.cardRewardChoices() > 0) game.rewards.push([REWARD.CARD]);
+		if ((game.room[0] === ROOM.PRIME || game.room[0] === ROOM.BOSS) && game.room[6] instanceof Array) {
+			for (let index = 0; index < game.room[6].length; index++) {
+				if (hasArtifact(game.room[6][index])) {
+					game.room[6][index] = randomArtifact(game.artifacts.concat(game.room[6]));
 				};
-				game.rewards.push("1 artifact");
 			};
+			game.rewards.push([REWARD.ARTIFACT]);
 		};
-		if (game.room[0] === ROOM.BOSS) game.rewards.push("1 refiner");
-		game.rewards.push("finish");
+		if (game.room[0] === ROOM.BOSS) {
+			game.rewards.push([REWARD.REFINER]);
+		};
+		game.rewards.push([REWARD.FINISH]);
 	};
 };
 
@@ -356,9 +356,9 @@ function loadRoom() {
 		game.void = [];
 		game.eff = {};
 		// enter room
-		const type = (game.location == -1 ? ROOM.BATTLE : game.map[game.location[0]][game.location[1]][0]);
+		const type = (game.location[0] === -1 ? ROOM.BATTLE : game.map[game.location[0]][game.location[1]][0]);
 		if (type === ROOM.BATTLE || type === ROOM.PRIME || type === ROOM.BOSS) {
-			if (game.location == -1) game.room = game.firstRoom;
+			if (game.location[0] === -1) game.room = game.firstRoom;
 			else game.traveled.push(game.location[1]);
 			for (let index = 0; index < game.room[3].length; index++) {
 				const enemy = game.room[3][index];
@@ -376,17 +376,17 @@ function loadRoom() {
 			game.select = [S.REWARDS, 0];
 			game.state = STATE.EVENT_FIN;
 			game.rewards = [];
-			if (game.room[4] > 0) game.rewards.push(game.room[4] + " gold");
-			if (get.cardRewardChoices() > 0) game.rewards.push("1 card");
-			game.rewards.push("finish");
+			if (game.room[4] > 0) game.rewards.push([REWARD.GOLD, game.room[4]]);
+			if (get.cardRewardChoices() > 0) game.rewards.push([REWARD.CARD]);
+			game.rewards.push([REWARD.FINISH]);
 			activateArtifacts(FUNC.FLOOR_CLEAR);
 		} else if (type === ROOM.ORB) {
 			game.traveled.push(game.location[1]);
 			game.select = [S.REWARDS, 0];
 			game.state = STATE.EVENT_FIN;
-			game.rewards = [Math.floor(get.maxHealth() * 0.5) + " health", "1 purifier"];
-			if (get.area() >= 1) game.rewards.push("1 refiner");
-			game.rewards.push("finish");
+			game.rewards = [[REWARD.HEALTH, Math.floor(get.maxHealth() * 0.5)], [REWARD.PURIFIER]];
+			if (get.area() >= 1) game.rewards.push([REWARD.REFINER]);
+			game.rewards.push([REWARD.FINISH]);
 			activateArtifacts(FUNC.FLOOR_CLEAR);
 		} else if (type === ROOM.EVENT) {
 			game.traveled.push(game.location[1]);

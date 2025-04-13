@@ -1625,19 +1625,19 @@ const graphics = {
 	 */
 	rewards(focused = true) {
 		draw.box(145, 20, 110, 160, {"background-color": "#aaa"});
-		const type = (game.location == -1 ? ROOM.BATTLE : game.map[game.location[0]][game.location[1]][0]);
+		const type = (game.location[0] === -1 ? ROOM.BATTLE : game.map[game.location[0]][game.location[1]][0]);
 		if (type === ROOM.BATTLE) draw.lore(200 - 2, 21, "Battle Loot!", {"text-align": DIR.CENTER});
 		else if (type === ROOM.TREASURE) draw.lore(200 - 2, 21, "Treasure!", {"text-align": DIR.CENTER});
 		else if (type === ROOM.ORB) draw.lore(200 - 2, 21, "Healing!", {"text-align": DIR.CENTER});
 		else draw.lore(200 - 2, 21, "Rewards!", {"text-align": DIR.CENTER});
 		for (let index = 0; index < game.rewards.length; index++) {
-			let item = game.rewards[index];
+			const arr = game.rewards[index];
 			draw.image(I.reward.item, 149, 33 + (index * 20));
-			if (game.select[1] == index && focused) draw.image(I.select.item_border, 148, 32 + (index * 20));
-			if (item.endsWith(" - claimed")) draw.image(I.select.item_green, 149, 33 + (index * 20));
+			if (game.select[1] === index && focused) draw.image(I.select.item_border, 148, 32 + (index * 20));
+			if (arr[2]) draw.image(I.select.item_green, 149, 33 + (index * 20));
 			else if (game.select[1] == index && focused) draw.image(I.select.item, 149, 33 + (index * 20));
-			if (item == "finish") draw.image(I.reward.back, 149, 33 + (index * 20));
-			draw.lore(166, 37 + (index * 20), item.replace(" - claimed", ""));
+			if (arr[0] === REWARD.FINISH) draw.image(I.reward.back, 149, 33 + (index * 20));
+			draw.lore(166, 37 + (index * 20), (arr[0] === REWARD.FINISH ? "" : (arr[1] ?? "1") + " ") + REWARD_NAME[arr[0]]);
 		};
 	},
 	/**
@@ -1824,12 +1824,11 @@ const graphics = {
 		graphics.foregrounds();
 		const event = getCurrentEvent();
 		if (!event[1]) return;
-		draw.lore(200 - 2, 50, (typeof event[1] == "function" ? event[1]() : event[1]), {"color": "#fff", "text-align": DIR.CENTER});
+		draw.lore(200 - 2, 50, (event[1] instanceof Function ? event[1]() : event[1]), {"color": "#fff", "text-align": DIR.CENTER});
 		for (let index = 2; index < event.length; index++) {
-			let text = event[index][0];
-			text = (typeof text == "function" ? text() : text);
+			const text = (event[index][0] instanceof Function ? event[index][0]() : event[index][0]);
 			if (index == game.select[1] + 2) draw.lore(200 - 2, 100 + index * 20, "<#ff0>\> " + text + "  </#ff0>", {"color": "#fff", "text-align": DIR.CENTER});
-			else  draw.lore(200 - 2, 100 + index * 20, text, {"color": "#fff", "text-align": DIR.CENTER});
+			else draw.lore(200 - 2, 100 + index * 20, text, {"color": "#fff", "text-align": DIR.CENTER});
 		};
 	},
 	/**

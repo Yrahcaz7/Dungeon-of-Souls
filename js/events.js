@@ -138,7 +138,7 @@ const EVENTS = {
 			logEventDamage(5);
 			doScreenShake(0.5, 1, Math.PI / 2);
 		}, () => "You fail and fall into the chasm.\nLuckily, the chasm is not that deep.\nYou only took " + getLoggedEvent(EVENT_LOG.DAMAGE, 5) + " damage.\nWhat do you do now?", ["Look around", 400], ["Climb up", 500]],
-		300: [null, "You climb down into the chasm unexpectedly easily.\nHowever, going back up will be harder.\nWhat will you do?", ["Look around", 400], ["Climb up", 500]],
+		300: [null, "You climb down into the chasm unexpectedly easily.\nHowever, going back up may be harder.\nWhat will you do?", ["Look around", 400], ["Climb up", 500]],
 		400: [null, "You find a platform with two giant cups on it.\nThe left cup is filled with purple ooze.\nThe right cup is filled with glowing water.\nClearly one is all you can drink.\nYou would vomit if you had both.", ["Look closer at left cup", 410], ["Look closer at right cup", 420], ["Forget this, climb back up", 500]],
 		410: [null, "There is an engraving on the cup.\nIt says: ENVIGORATING BUT DANGEROUS.\nCONSUME AT YOUR OWN RISK.", ["Drink from the left cup", () => hasArtifact(103) ? 430 : 411], ["Look closer at right cup", 420], ["Forget this, climb back up", 500]],
 		411: [() => game.artifacts.push(103), "A foul energy courses through your veins.\nYou can now wield Corrosion.", ["Get out of this chasm already", 412]],
@@ -150,7 +150,7 @@ const EVENTS = {
 		422: [() => {
 			game.select = [S.REWARDS, 0];
 			game.state = STATE.EVENT_FIN;
-			game.rewards = ["1 purifier", "finish"];
+			game.rewards = [[REWARD.PURIFIER], [REWARD.FINISH]];
 			activateArtifacts(FUNC.FLOOR_CLEAR);
 		}],
 		430: [() => game.artifacts = game.artifacts.map(id => id === 103 ? 205 : id), "A foul energy courses through your veins.\nYou feel the Corrosion within you grow...", ["Get out of this chasm already", 412]],

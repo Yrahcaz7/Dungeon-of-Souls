@@ -22,7 +22,7 @@ class EnemyAnimationSource {
 	 * @returns {(Enemy | number)[]}
 	 */
 	getEnemies() {
-		return (typeof this.enemies == "function" ? this.enemies() : this.enemies);
+		return (this.enemies instanceof Function ? this.enemies() : this.enemies);
 	};
 	/**
 	 * Progresses the animations of the enemies the source animates.

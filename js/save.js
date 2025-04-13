@@ -243,6 +243,23 @@ const loadSave = (() => {
 				game.cards[index].eff = {};
 			};
 		};
+		// version 2.2.44
+		if (version < 2_002_044) {
+			// `game.rewards` is now an array of arrays instead of an array of strings
+			game.rewards = game.rewards.map(str => {
+				const arr = [REWARD.FINISH];
+				const items = ("" + str).split(" ");
+				for (const key in REWARD_NAME) {
+					if (REWARD_NAME.hasOwnProperty(key) && REWARD_NAME[key] === items[1]) {
+						arr[0] = +key;
+						break;
+					};
+				};
+				if (items[1] === "gold" || items[1] === "health") arr[1] = +items[0];
+				if (items.length >= 4) arr[2] = true;
+				return arr;
+			});
+		};
 		// reset GAME_OVER and GAME_WON screen fade-in (all versions)
 		if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) game.select[1] = 0;
 		// fix in-progress player attack (all versions)

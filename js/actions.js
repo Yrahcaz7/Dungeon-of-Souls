@@ -735,7 +735,7 @@ const performAction = (() => {
 				} else if (game.energy >= getCardCost(selected)) {
 					if (CARDS[id].select) { // effects of cards that have a special selection
 						game.enemyAtt[0] = game.select[1];
-						const specialSelect = (typeof CARDS[id].select === "function" ? CARDS[id].select() : CARDS[id].select);
+						const specialSelect = (CARDS[id].select instanceof Function ? CARDS[id].select() : CARDS[id].select);
 						game.select = [specialSelect[0], specialSelect[1]];
 						game.enemyAtt[2] = game.hand[game.enemyAtt[0]];
 						actionTimer = 4;
@@ -833,12 +833,10 @@ const performAction = (() => {
 				game.select = [S.PURIFIER, 0];
 			} else {
 				if (game.select[1] == 0) game.cards.splice(game.cardSelect, 1);
-				for (let index = 0; index < game.rewards.length; index++) {
-					if (game.rewards[index] == "1 purifier") {
-						if (game.select[1] == 0) game.rewards[index] += " - claimed";
-						game.select = [S.REWARDS, index];
-						break;
-					};
+				const index = game.rewards.findIndex(arr => arr[0] === REWARD.PURIFIER);
+				if (index >= 0) {
+					if (game.select[1] == 0) game.rewards[index][2] = true;
+					game.select = [S.REWARDS, index];
 				};
 			};
 			actionTimer = 2;
@@ -849,12 +847,10 @@ const performAction = (() => {
 			} else {
 				refinableDeck[game.cardSelect].level = 1;
 				refinableDeck = [];
-				for (let index = 0; index < game.rewards.length; index++) {
-					if (game.rewards[index] == "1 refiner") {
-						game.rewards[index] += " - claimed";
-						game.select = [S.REWARDS, index];
-						break;
-					};
+				const index = game.rewards.findIndex(arr => arr[0] === REWARD.REFINER);
+				if (index >= 0) {
+					game.rewards[index][2] = true;
+					game.select = [S.REWARDS, index];
 				};
 			};
 			actionTimer = 2;
@@ -872,32 +868,24 @@ const performAction = (() => {
 		};
 		// rewards
 		if (game.select[0] === S.REWARDS) {
-			const item = "" + game.rewards[game.select[1]];
-			if (!item.endsWith(" - claimed")) {
-				let arr = item.split(" ");
-				if (arr[1] == "gold") {
-					game.gold += +arr[0];
-					game.rewards[game.select[1]] += " - claimed";
-				} else if (arr[1] == "card") {
-					game.select = [S.CARD_REWARD, 0];
-				} else if (arr[1] == "artifact") {
+			const arr = game.rewards[game.select[1]];
+			if (!arr[2]) {
+				if (arr[0] === REWARD.GOLD) {
+					game.gold += arr[1];
+					arr[2] = true;
+				} else if (arr[0] === REWARD.CARD) {
+					game.select = [S.CARD_REWARD, -1];
+				} else if (arr[0] === REWARD.ARTIFACT) {
 					game.select = [S.ARTIFACT_REWARD, -1];
-				} else if (arr[1] == "health") {
-					game.health += +arr[0];
-					game.rewards[game.select[1]] += " - claimed";
-				} else if (arr[1] == "purifier") {
+				} else if (arr[0] === REWARD.HEALTH) {
+					game.health += arr[1];
+					arr[2] = true;
+				} else if (arr[0] === REWARD.PURIFIER) {
 					game.select = [S.PURIFIER, 0];
-				} else if (arr[1] == "refiner") {
+				} else if (arr[0] === REWARD.REFINER) {
 					game.select = [S.REFINER, 0];
-				} else if (item == "finish") {
-					let bool = false;
-					for (let index = 0; index < game.rewards.length; index++) {
-						if (!game.rewards[index].endsWith(" - claimed") && game.rewards[index] != "finish") {
-							bool = true;
-							break;
-						};
-					};
-					if (bool) {
+				} else if (arr[0] === REWARD.FINISH) {
+					if (game.rewards.some(arr => arr[0] !== REWARD.FINISH && !arr[2])) {
 						game.select = [S.CONF_EXIT, 1];
 					} else {
 						game.select = [S.ARTIFACTS, 0];
@@ -908,44 +896,31 @@ const performAction = (() => {
 			actionTimer = 2;
 			return;
 		} else if (game.select[0] === S.CARD_REWARD) {
+			const index = game.rewards.findIndex(arr => arr[0] === REWARD.CARD);
 			if (game.select[1] === -1 || game.select[1] === get.cardRewardChoices()) {
-				for (let index = 0; index < game.rewards.length; index++) {
-					if (game.rewards[index] == "1 card") {
-						game.select = [S.REWARDS, index];
-						break;
-					};
-				};
+				game.select = [S.REWARDS, index];
+				if (game.select[1] < 0) game.select[1] = 0;
 			} else {
 				game.cards.push(new Card(game.room[5][game.select[1]]));
-				for (let index = 0; index < game.rewards.length; index++) {
-					if (game.rewards[index] == "1 card") {
-						game.rewards[index] += " - claimed";
-						game.select = [S.REWARDS, index];
-						break;
-					};
+				if (index >= 0) {
+					game.rewards[index][2] = true;
+					game.select = [S.REWARDS, index];
 				};
 			};
 			actionTimer = 2;
 			return;
 		} else if (game.select[0] === S.ARTIFACT_REWARD) {
+			const index = game.rewards.findIndex(arr => arr[0] === REWARD.ARTIFACT);
 			if (game.select[1] === -1 || game.select[1] === 3) {
-				for (let index = 0; index < game.rewards.length; index++) {
-					if (game.rewards[index] == "1 artifact") {
-						game.select = [S.REWARDS, index];
-						break;
-					};
-				};
+				game.select = [S.REWARDS, index];
+				if (game.select[1] < 0) game.select[1] = 0;
 			} else {
-				const index = game.room[6][game.select[1]];
-				const func = ARTIFACTS[index][FUNC.PICKUP];
-				if (typeof func == "function") func();
-				game.artifacts.push(index);
-				for (let index = 0; index < game.rewards.length; index++) {
-					if (game.rewards[index] == "1 artifact") {
-						game.rewards[index] += " - claimed";
-						game.select = [S.REWARDS, index];
-						break;
-					};
+				game.artifacts.push(game.room[6][game.select[1]]);
+				const func = ARTIFACTS[game.room[6][game.select[1]]][FUNC.PICKUP];
+				if (func instanceof Function) func();
+				if (index >= 0) {
+					game.rewards[index][2] = true;
+					game.select = [S.REWARDS, index];
 				};
 			};
 			actionTimer = 2;
@@ -968,11 +943,12 @@ const performAction = (() => {
 		};
 		// event
 		if (game.select[0] === S.EVENT) {
-			const event = getCurrentEvent();
-			if (event[game.select[1]]) {
+			let event = getCurrentEvent();
+			if (event[game.select[1] + 2]) {
 				const next = event[game.select[1] + 2][1];
-				game.turn = 10000 + (typeof next === "function" ? next() : next);
-				if (typeof event[0] === "function") event[0]();
+				game.turn = 10000 + (next instanceof Function ? next() : next);
+				event = getCurrentEvent();
+				if (event[0] instanceof Function) event[0]();
 				if (game.select[0] === S.EVENT) game.select[1] = -1;
 				actionTimer = 2;
 				return;
@@ -993,7 +969,7 @@ const performAction = (() => {
 					game.select = [S.HAND, game.prevCard];
 				};
 			};
-			if (typeof action === "function") action();
+			if (action instanceof Function) action();
 			actionTimer = 1;
 			return;
 		};
