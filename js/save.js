@@ -132,18 +132,16 @@ async function endRun(startNewRun = false, newDifficulty = game.difficulty) {
 	if (game.difficulty === prevGame.difficulty) {
 		game.select = [-1, 0]; // skip welcome screen
 	};
-	if (startNewRun) {
-		if (newSeed) {
-			game.seed = newSeed;
-			game.cheat = true;
-		};
-		resetVars(game.map.length > 0);
-		menuSelect = [-1, 0];
-		await generateMap(); // sets loaded to true when done
-	} else {
-		resetVars(game.map.length > 0);
-		loaded = true;
+	if (newSeed) {
+		game.seed = newSeed;
+		game.cheat = true;
 	};
+	resetVars(game.map.length > 0);
+	if (startNewRun) {
+		menuSelect = [-1, 0];
+		await generateMap();
+	};
+	loaded = true;
 	save();
 };
 

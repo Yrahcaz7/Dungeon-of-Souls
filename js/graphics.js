@@ -1956,8 +1956,8 @@ const graphics = {
 	conf(focused = true) {
 		let text = ["Are you sure?"];
 		if (menuSelect[0] === MENU.NEW_RUN) text = ["Are you sure you want to start a new run?", "If you have an ongoing run, it will be lost forever."];
-		else if (menuSelect[0] === MENU.NEW_CUSTOM_RUN || menuSelect[0] === MENU.ENTER_SEED) text = ["Are you sure you want to start a new custom run?", "If you have an ongoing run, it will be lost forever.", "The new run will also not count towards your high score."];
 		else if (menuSelect[0] === MENU.DIFFICULTY) text = ["Are you sure you want to change the difficulty to " + (game.difficulty ? "easy" : "hard") + "?", "If you have an ongoing run, it will be reset."];
+		else if (menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED) text = ["Are you sure you want to change the seed?", "If you have an ongoing run, it will be reset.", "The new run will also not count towards your high score."];
 		else if (game.select[0] === S.CONF_END) text = ["Are you sure you want to end your turn?"];
 		else if (game.select[0] === S.CONF_EXIT) text = ["Are you sure you want to finish collecting rewards?", "There are still rewards left unclaimed."];
 		else if (game.select[0] === S.CONF_SURRENDER) text = ["Are you sure you want to end your current run by surrendering?", "This choice cannot be undone."];
@@ -2017,7 +2017,7 @@ const graphics = {
 	 */
 	seedInput(focused = true) {
 		draw.rect("#0008");
-		const x = 200 - 17 * 3 - 4, y = 100 - 15.5;
+		const x = 200 - 17 * 3 - 4, y = 100 - 20.5;
 		draw.box(x, y, 17 * 6 + 5, 41);
 		draw.lore(x + 1, y + 1, "Enter a seed:", {"text-small": true});
 		draw.lore(x + 1, y + 19, "Only digits and A to F can be used.\nIf the seed is at least 1 character\nlong, you may press space or enter\nto start the custom run.", {"text-small": true});
