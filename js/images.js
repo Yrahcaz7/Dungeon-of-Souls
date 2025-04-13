@@ -46,9 +46,9 @@ const I = {
 		rarity: {
 			rare: new Image,
 		},
-		starter: {},
-		common: {},
-		rare: {},
+		0: {},
+		1: {},
+		2: {},
 	}, enemy: {
 		slime: {
 			big: new Image,
@@ -252,7 +252,7 @@ const loadImages = (() => {
 		// setup cards
 		for (const id in CARDS) {
 			if (CARDS.hasOwnProperty(id) && CARDS[id].rarity >= 0) {
-				I.card[RARITY[CARDS[id].rarity]][id] = new Image;
+				I.card[CARDS[id].rarity][id] = new Image;
 				CARD_IDS[CARDS[id].rarity].push(+id);
 			};
 		};

@@ -103,7 +103,7 @@ const selection = (() => {
 		} else if (menuSelect[0] === MENU.PREV_GAME_INFO && menuSelect[1] % 3 == 0) {
 			deckSelection();
 		} else if (menuSelect[0] === MENU.PREV_GAME_INFO && menuSelect[1] % 3 == 1) {
-			const len = global.prevGames[Math.floor(menuSelect[1] / 3)].artifacts.length;
+			const len = global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].artifacts.length;
 			if (action === DIR.LEFT && menuArtifactSelect > 0) {
 				menuArtifactSelect--;
 				actionTimer = 1;

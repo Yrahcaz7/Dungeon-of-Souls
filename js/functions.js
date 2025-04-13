@@ -61,7 +61,7 @@ function inDeck() {
  * @returns {Card[]}
  */
 function currentDeck() {
-	if (menuSelect[0] === MENU.PREV_GAME_INFO) return global.prevGames[Math.floor(menuSelect[1] / 3)].cards;
+	if (menuSelect[0] === MENU.PREV_GAME_INFO) return global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].cards;
 	if (game.select[0] === S.DECK && game.select[1]) return Card.sort(game.deck.slice());
 	if (game.select[0] === S.DISCARD && game.select[1]) return game.discard;
 	if (game.select[0] === S.VOID && game.select[1]) return game.void;

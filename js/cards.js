@@ -247,47 +247,49 @@ const CARDS = {
 const RARITY = ["starter", "common", "rare"];
 const CARD_TYPE = ["error", "attack", "defense", "skill", "magic"];
 
-/**
- * Loads a card and returns its description.
- * @param {object} ref - a reference to the card.
- * @param {string} desc - the card's description.
- */
-function loadCard(ref, desc) {
-	// color text
-	desc = color(desc);
-	// list keywords
-	if (!ref.keywords) ref.keywords = [];
-	for (const eff in EFF) {
-		if (EFF.hasOwnProperty(eff)) {
-			if (!ref.keywords.includes(EFF[eff]) && new RegExp(EFF_NAME[EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) {
-				ref.keywords.push(EFF[eff]);
+// Loads all card data.
+(() => {
+	/**
+	 * Loads a card and returns its description.
+	 * @param {object} ref - a reference to the card data.
+	 * @param {string} desc - the card's description.
+	 */
+	function loadCard(ref, desc) {
+		// color text
+		desc = color(desc);
+		// list keywords
+		if (!ref.keywords) ref.keywords = [];
+		for (const eff in EFF) {
+			if (EFF.hasOwnProperty(eff)) {
+				if (!ref.keywords.includes(EFF[eff]) && new RegExp(EFF_NAME[EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) {
+					ref.keywords.push(EFF[eff]);
+				};
+			};
+		};
+		for (const eff in CARD_EFF) {
+			if (CARD_EFF.hasOwnProperty(eff) && CARD_EFF[eff] !== CARD_EFF.COST_REDUCTION && CARD_EFF[eff] !== CARD_EFF.DESC) {
+				if (!ref.keywords.includes(CARD_EFF[eff]) && new RegExp(EFF_NAME[CARD_EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) {
+					ref.keywords.push(CARD_EFF[eff]);
+				};
+			};
+		};
+		// extra info
+		if (!ref.keywords.includes(CARD_EFF.DESC) && /apply/i.test(desc) && /card/i.test(desc)) ref.keywords.push(CARD_EFF.DESC);
+		// return desc
+		return desc;
+	};
+	for (const key in CARDS) {
+		if (CARDS.hasOwnProperty(key)) {
+			if (CARDS[key].desc instanceof Array) {
+				for (let index = 0; index < CARDS[key].desc.length; index++) {
+					CARDS[key].desc[index] = loadCard(CARDS[key], CARDS[key].desc[index]);
+				};
+			} else {
+				CARDS[key].desc = loadCard(CARDS[key], CARDS[key].desc);
 			};
 		};
 	};
-	for (const eff in CARD_EFF) {
-		if (CARD_EFF.hasOwnProperty(eff) && CARD_EFF[eff] !== CARD_EFF.COST_REDUCTION && CARD_EFF[eff] !== CARD_EFF.DESC) {
-			if (!ref.keywords.includes(CARD_EFF[eff]) && new RegExp(EFF_NAME[CARD_EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) {
-				ref.keywords.push(CARD_EFF[eff]);
-			};
-		};
-	};
-	// extra info
-	if (!ref.keywords.includes(CARD_EFF.DESC) && /apply/i.test(desc) && /card/i.test(desc)) ref.keywords.push(CARD_EFF.DESC);
-	// return desc
-	return desc;
-};
-
-for (const key in CARDS) {
-	if (CARDS.hasOwnProperty(key)) {
-		if (CARDS[key].desc instanceof Array) {
-			for (let index = 0; index < CARDS[key].desc.length; index++) {
-				CARDS[key].desc[index] = loadCard(CARDS[key], CARDS[key].desc[index]);
-			};
-		} else {
-			CARDS[key].desc = loadCard(CARDS[key], CARDS[key].desc);
-		};
-	};
-};
+})();
 
 class Card {
 	id = 0;

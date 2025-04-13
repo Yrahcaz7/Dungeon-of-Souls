@@ -419,8 +419,8 @@ const draw = {
 		if (!(card instanceof Object)) card = new Card(card);
 		let img = I.card.error;
 		const rarity = +CARDS[card.id].rarity;
-		if (rarity >= 0 && I.card[RARITY[rarity]]) {
-			img = I.card[RARITY[rarity]][card.id];
+		if (rarity >= 0 && I.card[rarity]) {
+			img = I.card[rarity][card.id];
 			draw.image(I.card.back, x + 2, y + 2);
 		};
 		// card outline
@@ -1405,7 +1405,7 @@ const graphics = {
 		};
 		// draw top bar
 		draw.rect("#0004", 0, 0, 400, 13);
-		if (menuSelect[0] === MENU.PREV_GAME_INFO) draw.lore(200 - 2, 1, "Cards From Game #" + (Math.floor(menuSelect[1] / 3) + 1), {"color": "#fff", "text-align": DIR.CENTER});
+		if (menuSelect[0] === MENU.PREV_GAME_INFO) draw.lore(200 - 2, 1, "Cards From Game #" + (sortedPrevGames[Math.floor(menuSelect[1] / 3)] + 1), {"color": "#fff", "text-align": DIR.CENTER});
 		else if (game.select[0] === S.DECK) draw.lore(200 - 2, 1, "Deck", {"color": "#fff", "text-align": DIR.CENTER});
 		else if (game.select[0] === S.DISCARD) draw.lore(200 - 2, 1, "Discard", {"color": "#fff", "text-align": DIR.CENTER});
 		else if (game.select[0] === S.VOID) draw.lore(200 - 2, 1, "Void", {"color": "#fff", "text-align": DIR.CENTER});
