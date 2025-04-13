@@ -36,10 +36,9 @@ const CARDS = {
 		cost: 2,
 		damage: 7,
 		attack(level = 0) {
-			let burn = (level >= 1 ? 4 : 2);
+			const burn = (level >= 1 ? 4 : 2);
 			for (let index = 0; index < game.enemies.length; index++) {
-				if (game.enemies[index].eff[EFF.BURN]) game.enemies[index].eff[EFF.BURN] += burn;
-				else game.enemies[index].eff[EFF.BURN] = burn;
+				game.enemies[index].gainEff(EFF.BURN, burn);
 			};
 		},
 	},
@@ -116,7 +115,7 @@ const CARDS = {
 				gainEff(EFF.REINFORCE, 2);
 			} else {
 				playerGainShield(2);
-				gainEff(EFF.REINFORCE, 1);
+				gainEff(EFF.REINFORCE);
 			};
 		},
 	},
@@ -135,7 +134,7 @@ const CARDS = {
 		effect(level = 0) {
 			if (level >= 1) {
 				playerGainShield(10);
-				gainEff(EFF.WEAKNESS, 1);
+				gainEff(EFF.WEAKNESS);
 			} else {
 				playerGainShield(9);
 				gainEff(EFF.WEAKNESS, 2);
@@ -162,7 +161,7 @@ const CARDS = {
 				game.gold -= 45;
 				playerGainShield(10);
 			};
-			gainEff(EFF.REINFORCE, 1);
+			gainEff(EFF.REINFORCE);
 		},
 		can(level = 0) {
 			if (level >= 1) return game.gold >= 30;
@@ -206,11 +205,10 @@ const CARDS = {
 		rarity: 1,
 		cost: 0,
 		effect(level = 0) {
-			gainEff(EFF.BURN, 1);
-			let burn = (level >= 1 ? 2 : 1);
+			gainEff(EFF.BURN);
+			const burn = (level >= 1 ? 2 : 1);
 			for (let index = 0; index < game.enemies.length; index++) {
-				if (game.enemies[index].eff[EFF.BURN]) game.enemies[index].eff[EFF.BURN] += burn;
-				else game.enemies[index].eff[EFF.BURN] = burn;
+				game.enemies[index].gainEff(EFF.BURN, burn);
 			};
 		},
 	},
@@ -235,7 +233,7 @@ const CARDS = {
 		desc: "Gain 1 aura blade.",
 		rarity: 1,
 		cost: [1, 0],
-		effect(level = 0) {gainEff(EFF.AURA_BLADE, 1)},
+		effect(level = 0) {gainEff(EFF.AURA_BLADE)},
 	},
 	4001: {
 		name: "Aura Blaze",

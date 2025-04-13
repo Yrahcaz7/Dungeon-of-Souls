@@ -166,7 +166,7 @@ class Enemy {
 			} else {
 				// SUMMON (summon a small enemy that gives no points when defeated)
 				game.enemies.push(new Enemy(SMALL_ENEMIES[get.area()], -0.5));
-				game.enemies[game.enemies.length - 1].eff[ENEMY_EFF.SCRAP_HEAP] = 1;
+				game.enemies[game.enemies.length - 1].gainEff(ENEMY_EFF.SCRAP_HEAP);
 			};
 			this.finishAction();
 		};
@@ -259,6 +259,15 @@ class Enemy {
 			};
 		};
 		return false;
+	};
+	/**
+	 * Has the enemy gain an effect.
+	 * @param {number} type - the type of effect to gain.
+	 * @param {number} amt - the amount of the effect to gain. Defaults to `1`.
+	 */
+	gainEff(type, amt = 1) {
+		if (game.eff[type]) game.eff[type] += amt;
+		else game.eff[type] = amt;
 	};
 };
 

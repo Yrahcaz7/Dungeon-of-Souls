@@ -335,10 +335,7 @@ function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true) 
 		game.enemies[index].health -= amount;
 	};
 	// additional effects
-	if (attack && game.eff[EFF.BLAZE]) {
-		if (game.enemies[index].eff[EFF.BURN]) game.enemies[index].eff[EFF.BURN]++;
-		else game.enemies[index].eff[EFF.BURN] = 1;
-	};
+	if (attack && game.eff[EFF.BLAZE]) game.enemies[index].gainEff(EFF.BURN);
 	// transitions
 	startEnemyTransition(index, prevShield);
 };
@@ -362,7 +359,7 @@ function takeDamage(amount, attack = true, index = game.enemyNum) {
 		game.health -= amount;
 	};
 	// additional effects
-	if (attack && index >= 0 && game.enemies[index].eff[EFF.BLAZE]) gainEff(EFF.BURN, 1);
+	if (attack && index >= 0 && game.enemies[index].eff[EFF.BLAZE]) gainEff(EFF.BURN);
 };
 
 /**
@@ -396,9 +393,9 @@ function enemyGainShield(amount = 0, index = game.enemyNum) {
 /**
  * Has the player gain an effect.
  * @param {number} type - the type of effect to gain.
- * @param {number} amt - the amount of the effect to gain.
+ * @param {number} amt - the amount of the effect to gain. Defaults to `1`.
  */
-function gainEff(type, amt) {
+function gainEff(type, amt = 1) {
 	if (game.eff[type]) game.eff[type] += amt;
 	else game.eff[type] = amt;
 };
