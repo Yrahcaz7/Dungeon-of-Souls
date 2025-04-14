@@ -25,7 +25,7 @@ let paths = {};
 function calculateMapPaths(xMin = 0, xMax = Infinity) {
 	// calculate connections
 	let store = [];
-	for (let x = xMin; x < xMax && x < game.map.length; x++) {
+	for (let x = Math.max(xMin, 0); x < xMax && x < game.map.length; x++) {
 		const bossRow = (x % 10 == 9);
 		for (let y = (bossRow ? 2 : 0); y < (bossRow ? 3 : game.map[x].length); y++) {
 			if (!bossRow && typeof game.map[x][y] != "object") continue;
@@ -340,14 +340,10 @@ const generateMap = (() => {
 				continue;
 			};
 			const types = [game.map[row][num][0]];
-			if (row % 10 == 0) {
-				arr.push(types);
-				continue;
-			};
-			const x = row - 1;
-			for (const y in paths[x]) {
-				if (paths[x].hasOwnProperty(y)) {
-					if (paths[x][y].some(location => location[0] === row && location[1] === num)) {
+			if (row % 10 > 0) {
+				const x = row - 1;
+				for (const y in paths[x]) {
+					if (paths[x].hasOwnProperty(y) && paths[x][y].some(location => location[0] === row && location[1] === num)) {
 						for (let index = 0; index < pathTypes[x][y].length; index++) {
 							if (!types.includes(pathTypes[x][y][index])) types.push(pathTypes[x][y][index]);
 						};
@@ -371,7 +367,7 @@ const generateMap = (() => {
 			};
 			return false;
 		};
-		let locations = [coords];
+		const locations = [coords];
 		for (let index = 0; index < locations.length; index++) {
 			const loc = locations[index];
 			if (!game.map[loc[0]] || !game.map[loc[0]][loc[1]] || game.map[loc[0]][loc[1]][0] === ROOM.BOSS) {
@@ -397,7 +393,7 @@ const generateMap = (() => {
 		for (let index = 0; index < 10; index++) {
 			const rowNum = index + area * 10;
 			game.map[rowNum] = await getMapRow(rowNum);
-			calculateMapPaths(Math.max(rowNum - 1, 0), rowNum);
+			calculateMapPaths(rowNum - 1, rowNum + 1);
 			calculatePathTypes(rowNum);
 			if (rowNum % 10 > 0 && rowNum % 10 < 8) {
 				let newRow = game.map[rowNum];
@@ -408,6 +404,7 @@ const generateMap = (() => {
 					while (true) {
 						if (newRow[rand] && !pathHasTypes([rowNum, rand], [ROOM.TREASURE, ROOM.PRIME])) {
 							newRow[rand] = await getMapNode(rowNum, MAP_NODE.TREASURE);
+							calculatePathTypes(rowNum);
 							break;
 						} else if (available.length) {
 							rand = available.splice(randomInt(0, available.length - 1), 1)[0];
@@ -415,7 +412,6 @@ const generateMap = (() => {
 							break;
 						};
 					};
-					calculatePathTypes(rowNum);
 				};
 				// add death zone
 				if (rowNum % 10 >= 3 && deathZones < 2) {
@@ -425,6 +421,7 @@ const generateMap = (() => {
 						if (newRow[rand] && newRow[rand][0] !== ROOM.TREASURE && !pathHasTypes([rowNum, rand], [ROOM.TREASURE, ROOM.PRIME])) {
 							newRow[rand] = await getMapNode(rowNum, MAP_NODE.PRIME);
 							deathZones++;
+							calculatePathTypes(rowNum);
 							break;
 						} else if (available.length) {
 							rand = available.splice(randomInt(0, available.length - 1), 1)[0];
@@ -432,7 +429,6 @@ const generateMap = (() => {
 							break;
 						};
 					};
-					calculatePathTypes(rowNum);
 				};
 				// add event
 				if (rowNum % 2 == eventShift && rowNum % 10 < 7) {
@@ -441,6 +437,7 @@ const generateMap = (() => {
 					while (true) {
 						if (newRow[rand] && newRow[rand][0] !== ROOM.TREASURE && newRow[rand][0] !== ROOM.PRIME && !pathHasTypes([rowNum, rand], [ROOM.EVENT])) {
 							newRow[rand] = await getMapNode(rowNum, MAP_NODE.EVENT);
+							calculatePathTypes(rowNum);
 							break;
 						} else if (available.length) {
 							rand = available.splice(randomInt(0, available.length - 1), 1)[0];
@@ -448,7 +445,6 @@ const generateMap = (() => {
 							break;
 						};
 					};
-					calculatePathTypes(rowNum);
 				};
 			};
 		};
