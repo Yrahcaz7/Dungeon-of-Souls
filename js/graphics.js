@@ -591,7 +591,7 @@ const info = {
 	 */
 	cardSelect(type, xPlus = 0, yPlus = 0) {
 		let x = handSelectPos[game.select[1]] + 69 + xPlus;
-		const y = 15 + yPlus;
+		const y = 18 + yPlus;
 		if (x + 24 * 3 + 2 > 400) {
 			const ref = CARDS[game.hand[game.select[1]].id];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
@@ -712,6 +712,46 @@ const info = {
 			draw.textBox(x, y, obj.name.length, obj.name);
 			draw.textBox(x, y + 13, obj.name.length * 2, obj.desc, {"text-small": true});
 		};
+	},
+	/**
+	 * Draws an infobox for a menu item.
+	 * @param {number} location - the location of the menu item. Can be a `DIR` value or `S.MAP`.
+	 * @param {number} index - the index of the menu item in its location.
+	 * @param {string} desc - the description of the menu item (if location is not `S.MAP`).
+	 */
+	menuItem(location, index, desc = "") {
+		let loc = [0, 0];
+		if (location === DIR.LEFT) {
+			loc = [22, 184 - index * 19];
+		} else if (location === DIR.RIGHT) {
+			loc = [377 - desc.length * 6, 184 - index * 19];
+		} else if (location === DIR.UP) {
+			loc = [377 - index * 19 - desc.length * 6, 5];
+		} else if (location === S.MAP) {
+			const selection = get.availibleLocations()[index];
+			if (selection) {
+				const node = game.map[selection[0]][selection[1]];
+				const area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0));
+				loc = [25 + ((selection[0] - area * 10) * 32) + node[1] + 19, 18 + (selection[1] * 32) + node[2] + 2];
+				if (node[0] === ROOM.BATTLE) desc = "Enter Battle";
+				else if (node[0] === ROOM.TREASURE) desc = "Claim Treasure";
+				else if (node[0] === ROOM.PRIME) desc = "Enter Death Zone";
+				else if (node[0] === ROOM.ORB) desc = "Claim Orb";
+				else if (node[0] === ROOM.BOSS) desc = "Fight Boss";
+				else if (node[0] === ROOM.EVENT) desc = "Enter Event";
+				else desc = "Enter Location";
+			} else if (index < 0) {
+				loc = [41, 181];
+				desc = "Close Map";
+			} else {
+				loc = [41, 18];
+				desc = "View Owned Cards";
+			};
+		} else if (location === DIR.CENTER) {
+			if (index === 0) loc = [22, 60];
+			else loc = [376 - desc.length * 6, 60];
+		};
+		draw.textBox(loc[0], loc[1], desc.length, desc);
 	},
 };
 
@@ -895,9 +935,9 @@ const graphics = {
 		else if (game.select[0] === S.HELP) draw.image(I.select.round, 361, 2);
 		else if (game.select[0] === S.OPTIONS) draw.image(get.area() == 1 ? I.select.options : I.select.options_yellow, 380, 2);
 		else if (game.select[0] === S.END) draw.image(I.select.round, 2, 162);
-		else if (game.select[0] === S.DECK) draw.image(I.select.deck, 3, 181);
-		else if (game.select[0] === S.VOID) draw.image(I.select.round, 380, 162);
-		else if (game.select[0] === S.DISCARD) draw.image(I.select.discard, 381, 181);
+		else if (game.select[0] === S.DECK && !game.select[1]) draw.image(I.select.deck, 3, 181);
+		else if (game.select[0] === S.VOID && !game.select[1]) draw.image(I.select.round, 380, 162);
+		else if (game.select[0] === S.DISCARD && !game.select[1]) draw.image(I.select.discard, 381, 181);
 		// info
 		draw.lore(1, 1, "Floor " + game.floor + " - " + game.gold + " gold", {"color": (get.area() == 1 ? "#000" : "#f44")});
 		// intents
@@ -1435,12 +1475,12 @@ const graphics = {
 				draw.card(game.hand[index], handPos[index], 146 - Math.floor(cardAnim[index]));
 			};
 		};
-		if (temp != -1) {
+		if (temp !== -1) {
 			if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
 			if (cardAnim[temp] > 44) cardAnim[temp] = 44;
 			draw.card(game.hand[temp], handPos[temp], 146 - Math.floor(cardAnim[temp]), true);
 		};
-		if (notif[0] != -1) {
+		if (notif[0] !== -1) {
 			draw.lore(handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1] + notif[3], notif[2], {
 				"color": "#ff" + ["4444", "cccc"][get.area()] + Math.min(16 - notif[1], 15).toString(16) + "f",
 				"text-align": DIR.CENTER,
@@ -1457,19 +1497,16 @@ const graphics = {
 			handSelectPos = get.handPos(game.hand.length - 1);
 		};
 		draw.rect("#000c");
-		draw.image(I.extra.end, 3, 55);
-		draw.image(I.extra.end, 381, 55);
-		if (game.select[1] === -1) draw.image(I.select.round, 2, 54);
-		else if (game.select[1] === game.hand.length - 1) draw.image(I.select.round, 380, 54);
+		draw.image(I.extra.end, 3, 58);
+		draw.image(I.extra.end, 381, 58);
+		if (game.select[1] === -1) draw.image(I.select.round, 2, 57);
+		else if (game.select[1] === game.hand.length - 1) draw.image(I.select.round, 380, 57);
 		for (let index = 0; index < game.hand.length - 1; index++) {
-			if (index == game.select[1]) {
-				continue;
-			} else {
-				draw.card(game.hand[index >= game.enemyAtt[0] ? index + 1 : index], handSelectPos[index], 14);
-			};
+			if (index === game.select[1]) continue;
+			draw.card(game.hand[index >= game.enemyAtt[0] ? index + 1 : index], handSelectPos[index], 17);
 		};
 		if (game.select[1] >= 0 && game.select[1] < game.hand.length - 1) {
-			draw.card(game.hand[game.select[1] >= game.enemyAtt[0] ? game.select[1] + 1 : game.select[1]], handSelectPos[game.select[1]], 14, true);
+			draw.card(game.hand[game.select[1] >= game.enemyAtt[0] ? game.select[1] + 1 : game.select[1]], handSelectPos[game.select[1]], 17, true);
 		};
 		draw.rect("#0004", 0, 0, 400, 13);
 		draw.lore(200 - 2, 1, "Select a Card", {"color": "#fff", "text-align": DIR.CENTER});
@@ -1498,13 +1535,14 @@ const graphics = {
 	 */
 	target() {
 		if (inDeck()) {
-			let cardObj = currentDeck()[game.cardSelect];
+			const cardObj = currentDeck()[game.cardSelect];
 			if (cardObj) graphics.cardInfo("deck", cardObj);
 		} else if (game.select[0] === S.ATTACK || game.select[0] === S.ENEMY) {
 			const enemy = game.enemies[game.select[1]];
 			const type = enemy.type;
 			const pos = enemyPos[game.select[1]];
-			let coords = [], name = ENEMY_NAME[type];
+			let coords = [];
+			let name = ENEMY_NAME[type];
 			if (type === SLIME.BIG || (type === SLIME.PRIME && enemyAnim.prime[game.select[1]] != -1 && enemyAnim.prime[game.select[1]] < 5)) {
 				coords = [5, 26, 54, 38];
 				name = ENEMY_NAME[SLIME.BIG];
@@ -1528,7 +1566,7 @@ const graphics = {
 					coords[1] = 31 - pos[1];
 					coords[3] -= 31 - pos[1];
 				};
-				let left = game.select[1] === 0 && game.enemies.length > 1;
+				const left = game.select[1] === 0 && game.enemies.length > 1;
 				draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
 				draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "#fff", "text-align": DIR.CENTER, "text-small": true});
 				if (game.select[1] !== game.enemyNum && !game.enemies[game.select[1]].eff[ENEMY_EFF.SHROUD]) {
@@ -1538,9 +1576,10 @@ const graphics = {
 				const exDef = enemy.getExtraDefendPower();
 				if (left) draw.lore(pos[0] + coords[0] - 2.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-align": DIR.LEFT, "text-small": true});
 				else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-small": true});
-				let x = coords[0] - 5.5, y = coords[1] - 1;
-				const logEff = (type) => {
-					let height = Math.ceil((EFF_DESC[type].match(/\n/g) || []).length * 5.5 + (game.enemies[game.select[1]].eff[type] > 0 ? 22 : 11));
+				let x = coords[0] - 5.5;
+				let y = coords[1] - 1;
+				const logEff = type => {
+					const height = Math.ceil((EFF_DESC[type].match(/\n/g) || []).length * 5.5 + (game.enemies[game.select[1]].eff[type] > 0 ? 22 : 11));
 					if ((left ? y + 12 : y) + height >= 202 - pos[1]) {
 						y = coords[1] - 1;
 						x -= 77;
@@ -1557,13 +1596,14 @@ const graphics = {
 				};
 			};
 		} else if (game.select[0] === S.PLAYER) {
-			let coords = [58, 69, 24, 39];
+			const coords = [58, 69, 24, 39];
 			draw.selector(coords[0], coords[1], coords[2], coords[3]);
 			if (game.character === CHARACTER.KNIGHT) {
 				if (global.charStage[CHARACTER.KNIGHT] === 0) draw.lore(coords[0] + (coords[2] / 2) - 1, 61.5, "the forgotten one", {"color": "#fff", "text-align": DIR.CENTER, "text-small": true});
 				else if (global.charStage[CHARACTER.KNIGHT] === 1) draw.lore(coords[0] + (coords[2] / 2) - 1, 61.5, "the true knight", {"color": "#fff", "text-align": DIR.CENTER, "text-small": true});
 			};
-			let x = coords[0] + coords[2] - 80, y = 0;
+			let x = coords[0] + coords[2] - 80;
+			let y = 0;
 			const logEff = (type) => {
 				let height = Math.ceil((EFF_DESC[type].match(/\n/g) || []).length * 5.5 + (game.eff[type] > 0 ? 22 : 11));
 				if (y + height >= 202 - coords[1]) {
@@ -1584,11 +1624,31 @@ const graphics = {
 			info.artifact(game.room[6][game.select[1]], 179 + (game.select[1] * 32), 90);
 		} else if (game.select[0] === S.CARD_REWARD && game.select[1] > -1 && game.select[1] < get.cardRewardChoices()) {
 			graphics.cardInfo("reward", new Card(game.room[5][game.select[1]]));
+		} else if (game.select[0] === S.LOOKER) {
+			info.menuItem(DIR.UP, 2, "View Background");
+		} else if (game.select[0] === S.HELP) {
+			info.menuItem(DIR.UP, 1, "View Manual");
+		} else if (game.select[0] === S.OPTIONS && game.select[1] <= 1) {
+			info.menuItem(DIR.UP, 0, "Configure Options");
+		} else if (game.select[0] === S.END) {
+			info.menuItem(DIR.LEFT, 1, "End Turn");
+		} else if (game.select[0] === S.DECK) {
+			info.menuItem(DIR.LEFT, 0, "View Deck");
+		} else if (game.select[0] === S.VOID) {
+			info.menuItem(DIR.RIGHT, 1, "View Void");
+		} else if (game.select[0] === S.DISCARD) {
+			info.menuItem(DIR.RIGHT, 0, "View Discard");
+		} else if (game.select[0] === S.MAP) {
+			info.menuItem(S.MAP, game.select[1]);
 		};
-		if ((game.select[0] === S.HAND || (game.select[0] != S.ATTACK && game.select[0] != S.ENEMY && !hidden() && global.options[OPTION.STICKY_CARDS])) && game.hand.length && game.prevCard < game.hand.length) {
+		if ((game.select[0] === S.HAND || (game.select[0] !== S.ATTACK && game.select[0] !== S.ENEMY && !hidden() && global.options[OPTION.STICKY_CARDS])) && game.hand.length && game.prevCard < game.hand.length) {
 			graphics.cardInfo("card", game.hand[game.prevCard]);
-		} else if (game.select[0] === SS.SELECT_HAND && game.select[1] >= 0 && game.select[1] < game.hand.length - 1) {
-			graphics.cardInfo("cardSelect", game.hand[game.select[1] >= game.enemyAtt[0] ? game.select[1] + 1 : game.select[1]]);
+		} else if (game.select[0] === SS.SELECT_HAND) {
+			if (game.select[1] >= 0 && game.select[1] < game.hand.length - 1) {
+				graphics.cardInfo("cardSelect", game.hand[game.select[1] >= game.enemyAtt[0] ? game.select[1] + 1 : game.select[1]]);
+			} else {
+				info.menuItem(DIR.CENTER, (game.select[1] >= 0 ? 1 : 0), "Cancel");
+			};
 		};
 	},
 	/**
@@ -1689,8 +1749,8 @@ const graphics = {
 	 */
 	map(focused = true) {
 		// setup
-		let availableLocations = get.availibleLocations();
-		let area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0));
+		const availableLocations = get.availibleLocations();
+		const area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0));
 		// draw map
 		draw.rect("#000");
 		draw.image(I.map.top, 3, 12);
@@ -1717,9 +1777,9 @@ const graphics = {
 		};
 		draw.image(I.extra.deck, 22, 16);
 		draw.lore(23, 22, game.cards.length, {"color": "#fff"});
-		if (game.select[1] == availableLocations.length && focused) draw.image(I.select.deck, 21, 15);
+		if (game.select[1] === availableLocations.length && focused) draw.image(I.select.deck, 21, 15);
 		draw.image(I.extra.end, 22, 179);
-		if (game.select[1] == -1 && focused) draw.image(I.select.round, 21, 178);
+		if (game.select[1] === -1 && focused) draw.image(I.select.round, 21, 178);
 		draw.lore(1, 1, "Floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
 		draw.lore(399, 1, "Seed: " + game.seed, {"color": "#fff", "text-align": DIR.LEFT});
 		// draw scribbles
@@ -1758,7 +1818,7 @@ const graphics = {
 		const coordOn = game.location ? game.location : [];
 		for (let x = area * 10; x < (area + 1) * 10; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
-				if (typeof game.map[x][y] != "object") continue;
+				if (!(game.map[x][y] instanceof Object)) continue;
 				let drawX = 25 + ((x - area * 10) * 32) + game.map[x][y][1];
 				let drawY = 18 + (y * 32) + game.map[x][y][2];
 				if (game.map[x][y][0] === ROOM.BATTLE) {

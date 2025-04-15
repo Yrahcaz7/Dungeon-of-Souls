@@ -345,10 +345,10 @@ class Card {
 	 */
 	getAttr(attr) {
 		if (!CARDS[this.id] || CARDS[this.id][attr] === null || CARDS[this.id][attr] === undefined) return;
-		if (attr == "name") return CARDS[this.id].name + "+".repeat(this.level);
-		if (typeof CARDS[this.id][attr] == "object") {
-			if (attr == "select") {
-				if (typeof CARDS[this.id][attr][this.level] == "object") return CARDS[this.id][attr][this.level];
+		if (attr === "name") return CARDS[this.id].name + "+".repeat(this.level);
+		if (CARDS[this.id][attr] instanceof Object) {
+			if (attr === "select") {
+				if (CARDS[this.id][attr][this.level] instanceof Object) return CARDS[this.id][attr][this.level];
 				return CARDS[this.id][attr];
 			};
 			return CARDS[this.id][attr][this.level];

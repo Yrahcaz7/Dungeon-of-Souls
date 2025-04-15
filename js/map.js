@@ -28,21 +28,21 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 	for (let x = Math.max(xMin, 0); x < xMax && x < game.map.length; x++) {
 		const bossRow = (x % 10 == 9);
 		for (let y = (bossRow ? 2 : 0); y < (bossRow ? 3 : game.map[x].length); y++) {
-			if (!bossRow && typeof game.map[x][y] != "object") continue;
+			if (!bossRow && !(game.map[x][y] instanceof Object)) continue;
 			for (num = 0; num < game.map[x + 1]?.length; num++) {
-				if (typeof game.map[x + 1][y - num] == "object") {
+				if (game.map[x + 1][y - num] instanceof Object) {
 					store.push([x, y, x + 1, y - num]);
 					break;
-				} else if (typeof game.map[x + 1][y + num] == "object") {
+				} else if (game.map[x + 1][y + num] instanceof Object) {
 					store.push([x, y, x + 1, y + num]);
 					break;
 				};
 			};
 			for (num = 0; num < game.map[x - 1]?.length; num++) {
-				if (typeof game.map[x - 1][y - num] == "object") {
+				if (game.map[x - 1][y - num] instanceof Object) {
 					store.push([x, y, x - 1, y - num]);
 					break;
-				} else if (typeof game.map[x - 1][y + num] == "object") {
+				} else if (game.map[x - 1][y + num] instanceof Object) {
 					store.push([x, y, x - 1, y + num]);
 					break;
 				};
@@ -254,7 +254,7 @@ const generateMap = (() => {
 	 * @param {number} row - the row the enemy will be contained in.
 	 */
 	function getWeakerSmallEnemy(row) {
-		let area = get.area(row + 1);
+		const area = get.area(row + 1);
 		return [SMALL_ENEMIES[area], Math.round(((row - game.difficulty * 12 + (1 - area) * 10) * 0.05) * 100) / 100];
 	};
 	/**
@@ -297,10 +297,10 @@ const generateMap = (() => {
 		if (attribute === MAP_NODE.ORB) return [ROOM.ORB, randomInt(-5, 5), randomInt(-5, 5)];
 		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, 0, 0, [BOSS_ENEMIES[area]], getGoldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
 		let type = (chance(3/5) ? ROOM.BATTLE : false);
-		if (rowFalses[area] >= 3 || (row % 10 == 0 && rowFalses[area] >= 2) || (rowNodes[area] + rowFalses[area] == 2 && rowFalses[area] == 2)) type = ROOM.BATTLE;
+		if (rowFalses[area] >= 3 || (row % 10 === 0 && rowFalses[area] >= 2) || (rowNodes[area] + rowFalses[area] === 2 && rowFalses[area] === 2)) type = ROOM.BATTLE;
 		if (type) rowNodes[area]++;
 		else rowFalses[area]++;
-		if (!type || rowNodes[area] == 6) return false;
+		if (!type || rowNodes[area] === 6) return false;
 		const result = [type, randomInt(-5, 5), randomInt(-5, 5)];
 		if (type === ROOM.BATTLE) {
 			if (row % 10 >= 5) result.push(chance(1/3) ? [BIG_ENEMIES[area]] : (chance(2/3) ? [BIG_ENEMIES[area], getWeakerSmallEnemy(row)] : [SMALL_ENEMIES[area], SMALL_ENEMIES[area]]));
@@ -317,8 +317,8 @@ const generateMap = (() => {
 		const area = get.area(row + 1);
 		rowFalses[area] = 0;
 		rowNodes[area] = 0;
-		if (row % 10 == 0) return [false, await getMapNode(row), await getMapNode(row), await getMapNode(row), await getMapNode(row), false];
-		if (row % 10 == 8) {
+		if (row % 10 === 0) return [false, await getMapNode(row), await getMapNode(row), await getMapNode(row), await getMapNode(row), false];
+		if (row % 10 === 8) {
 			if (chance()) {
 				if (chance()) return [await getMapNode(row, MAP_NODE.ORB), false, await getMapNode(row, MAP_NODE.ORB), false, false, await getMapNode(row, MAP_NODE.ORB)];
 				else return [await getMapNode(row, MAP_NODE.ORB), false, await getMapNode(row, MAP_NODE.ORB), false, await getMapNode(row, MAP_NODE.ORB), false];
@@ -327,7 +327,7 @@ const generateMap = (() => {
 				else return [false, await getMapNode(row, MAP_NODE.ORB), false, await getMapNode(row, MAP_NODE.ORB), false, await getMapNode(row, MAP_NODE.ORB)];
 			};
 		};
-		if (row % 10 == 9) return [false, false, await getMapNode(row, MAP_NODE.BOSS), false, false, false];
+		if (row % 10 === 9) return [false, false, await getMapNode(row, MAP_NODE.BOSS), false, false, false];
 		return [await getMapNode(row), await getMapNode(row), await getMapNode(row), await getMapNode(row), await getMapNode(row), await getMapNode(row)];
 	};
 	/**
@@ -479,8 +479,8 @@ const generateMap = (() => {
 	 * @param {boolean} loose - if true, considers anything a node.
 	 */
 	function mapHasNode(x, y, loose = false) {
-		if (loose) return typeof game.map[x][y] != "boolean" || (typeof game.map[x][y - 1] == "object" && game.map[x][y - 1][0] === ROOM.BOSS);
-		return typeof game.map[x][y] == "object" || (typeof game.map[x][y - 1] == "object" && game.map[x][y - 1][0] === ROOM.BOSS);
+		if (loose) return typeof game.map[x][y] !== "boolean" || (game.map[x][y - 1] instanceof Object && game.map[x][y - 1][0] === ROOM.BOSS);
+		return game.map[x][y] instanceof Object || (game.map[x][y - 1] instanceof Object && game.map[x][y - 1][0] === ROOM.BOSS);
 	};
 	/**
 	 * Adds scribbles to the map.
@@ -498,10 +498,10 @@ const generateMap = (() => {
 					|| (!mapHasNode(x + 1, y - 1) && !mapHasNode(x + 1, y - 2) && mapHasNode(x, y - 1))
 					|| (!mapHasNode(x, y + 2) && !mapHasNode(x, y + 3) && mapHasNode(x + 1, y + 2))
 					|| (!mapHasNode(x + 1, y + 2) && !mapHasNode(x + 1, y + 3) && mapHasNode(x, y + 2))
-					|| (game.map[x - 1] && typeof game.map[x - 1][y] == "number")
-					|| typeof game.map[x][y - 1] == "number"
-					|| typeof game.map[x][y + 1] == "number"
-					|| typeof game.map[x + 1][y] == "number"
+					|| (game.map[x - 1] && typeof game.map[x - 1][y] === "number")
+					|| typeof game.map[x][y - 1] === "number"
+					|| typeof game.map[x][y + 1] === "number"
+					|| typeof game.map[x + 1][y] === "number"
 				) continue;
 				game.map[x][y] = available.splice(randomInt(0, available.length - 1), 1)[0];
 				if (!available.length) available = [0, 1, 2, 3, 4];

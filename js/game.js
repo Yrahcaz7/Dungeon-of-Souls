@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_002_047;
+const VERSION = 2_002_049;
 
 /**
  * Returns the starting global data.
@@ -530,7 +530,7 @@ const GAME_LOOP = setInterval(() => {
 
 const MUSIC_LOOP = setInterval(() => {
 	if (global.options[OPTION.MUSIC] && document.getElementById("music")?.src) {
-		let time = document.getElementById("music").currentTime;
+		const time = document.getElementById("music").currentTime;
 		if (time === 0 && !inMenu()) {
 			document.getElementById("music").play();
 		} else if (time > document.getElementById("music").duration - 1.005) {

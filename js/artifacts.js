@@ -68,7 +68,7 @@ const ARTIFACTS = {
 	},
 	200: {
 		name: "The Map",
-		desc: "You can choose where\nto go next each time\nyou clear a floor.",
+		desc: "You can choose where\nto go next each time\nyou clear a floor.\nInteract to open.",
 	},
 	201: {
 		name: "Iron Will",
