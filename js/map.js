@@ -96,6 +96,9 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 
 let mapPathPoints = [];
 
+/**
+ * Generates the visual points of all paths in the map and saves them.
+ */
 const generateMapPathPoints = (() => {
 	const MAP_PATH_SUBDIVISIONS = 32;
 	/**

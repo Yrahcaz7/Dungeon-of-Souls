@@ -159,27 +159,34 @@ const selection = (() => {
 				actionTimer = 1;
 			};
 			return;
-		} else if (game.select[0] === S.CARD_REWARD) {
-			if (action === DIR.RIGHT && game.select[1] < get.cardRewardChoices()) {
-				game.select[1]++;
+		} else if (game.select[0] === S.CARD_REWARD || game.select[0] === S.ARTIFACT_REWARD) {
+			const selectMax = (game.select[0] === S.CARD_REWARD ? get.cardRewardChoices() : 3);
+			if (game.select[1] < 0) {
+				if (action === DIR.RIGHT) {
+					game.select[1] = 0;
+					actionTimer = 1;
+				} else if (action === DIR.LEFT) {
+					game.select[1] = selectMax - 1;
+					actionTimer = 1;
+				} else if (action === DIR.UP) {
+					game.select[1] = -game.select[1] - 1;
+					actionTimer = 1;
+				};
+			} else if (action === DIR.RIGHT) {
+				if (game.select[1] < selectMax - 1) game.select[1]++;
+				else game.select[1] = -selectMax;
 				actionTimer = 1;
-			} else if (action === DIR.LEFT && game.select[1] > -1) {
+			} else if (action === DIR.LEFT && game.select[1] >= 0) {
 				game.select[1]--;
 				actionTimer = 1;
-			};
-			return;
-		} else if (game.select[0] === S.ARTIFACT_REWARD) {
-			if (action === DIR.RIGHT && game.select[1] < 3) {
-				game.select[1]++;
-				actionTimer = 1;
-			} else if (action === DIR.LEFT && game.select[1] > -1) {
-				game.select[1]--;
+			} else if (action === DIR.DOWN) {
+				game.select[1] = -game.select[1] - 1;
 				actionTimer = 1;
 			};
 			return;
 		};
 		// map
-		let availableLocations = get.availibleLocations();
+		const availableLocations = get.availibleLocations();
 		if (game.select[0] === S.MAP && game.state === STATE.EVENT_FIN && availableLocations.length) {
 			if (action === DIR.UP) {
 				if (game.select[1] == -1) {
@@ -788,7 +795,7 @@ const performAction = (() => {
 			return;
 		};
 		// confirmation
-		let availableLocations = get.availibleLocations();
+		const availableLocations = get.availibleLocations();
 		if (game.select[0] === S.CONF_END) {
 			if (!game.select[1]) {
 				endTurn();
@@ -895,34 +902,21 @@ const performAction = (() => {
 			};
 			actionTimer = 2;
 			return;
-		} else if (game.select[0] === S.CARD_REWARD) {
-			const index = game.rewards.findIndex(arr => arr[0] === REWARD.CARD);
-			if (game.select[1] === -1 || game.select[1] === get.cardRewardChoices()) {
-				game.select = [S.REWARDS, index];
-				if (game.select[1] < 0) game.select[1] = 0;
-			} else {
-				game.cards.push(new Card(game.room[5][game.select[1]]));
-				if (index >= 0) {
-					game.rewards[index][2] = true;
-					game.select = [S.REWARDS, index];
+		} else if (game.select[0] === S.CARD_REWARD || game.select[0] === S.ARTIFACT_REWARD) {
+			let index = 0;
+			if (game.select[0] === S.CARD_REWARD) index = game.rewards.findIndex(arr => arr[0] === REWARD.CARD);
+			else if (game.select[0] === S.ARTIFACT_REWARD) index = game.rewards.findIndex(arr => arr[0] === REWARD.ARTIFACT);
+			if (game.select[1] >= 0) {
+				if (game.select[0] === S.CARD_REWARD) {
+					game.cards.push(new Card(game.room[5][game.select[1]]));
+				} else if (game.select[0] === S.ARTIFACT_REWARD) {
+					game.artifacts.push(game.room[6][game.select[1]]);
+					const func = ARTIFACTS[game.room[6][game.select[1]]][FUNC.PICKUP];
+					if (func instanceof Function) func();
 				};
+				if (index >= 0) game.rewards[index][2] = true;
 			};
-			actionTimer = 2;
-			return;
-		} else if (game.select[0] === S.ARTIFACT_REWARD) {
-			const index = game.rewards.findIndex(arr => arr[0] === REWARD.ARTIFACT);
-			if (game.select[1] === -1 || game.select[1] === 3) {
-				game.select = [S.REWARDS, index];
-				if (game.select[1] < 0) game.select[1] = 0;
-			} else {
-				game.artifacts.push(game.room[6][game.select[1]]);
-				const func = ARTIFACTS[game.room[6][game.select[1]]][FUNC.PICKUP];
-				if (func instanceof Function) func();
-				if (index >= 0) {
-					game.rewards[index][2] = true;
-					game.select = [S.REWARDS, index];
-				};
-			};
+			game.select = [S.REWARDS, Math.max(index, 0)];
 			actionTimer = 2;
 			return;
 		};

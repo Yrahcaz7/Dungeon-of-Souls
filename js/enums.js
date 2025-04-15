@@ -32,19 +32,19 @@ const S = {
 	ENEMY: 302, // N is the index of the selected enemy.
 	ATTACK: 303, // N is the index of the selected enemy.
 	LOOKER: 304, // N indicates if the looker is active (1 if it is, 0 if not).
-	HELP: 305, // if N is 0, it indicates that no HELP menu is open; otherwise, it indicates which HELP menu is open.
+	HELP: 305, // if N == 0, it indicates that no HELP menu is open; otherwise, it indicates which HELP menu is open.
 	END: 306, // N does not indicate anything.
 	CONF_END: 307, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 	DECK: 308, // N indicates if the respective menu is open (1 if it is, 0 if not).
 	DISCARD: 309, // N indicates if the respective menu is open (1 if it is, 0 if not).
-	MAP: 311, // If N is 0, it indicates that the back button is selected; otherwise, it indicates the index of the selected node in the available locations array if it exists, and otherwise N indicates that the open cards menu button is selected.
+	MAP: 311, // If N == 0, it indicates that the back button is selected; otherwise, it indicates the index of the selected node in the available locations array if it exists, and otherwise N indicates that the open cards menu button is selected.
 	POPUPS: 312, // N is the index of the selected popup.
 	REWARDS: 313, // N is the index of the selected reward.
-	CARD_REWARD: 314, // N is the index of the selected card reward if it exists and is obtainable; otherwise, N indicates that the back button is selected.
+	CARD_REWARD: 314, // if N >= 0, N is the index of the selected card reward; otherwise, N indicates that the back button is selected and that previously, the card reward with index -N-1 was selected.
 	ARTIFACTS: 315, // N is the index of the selected artifact.
 	VOID: 316, // N indicates if the respective menu is open (1 if it is, 0 if not).
 	CONF_EXIT: 317, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
-	OPTIONS: 318, // if N is 0, it indicates that the OPTIONS menu is closed; otherwise, it indicates the position of the selection in the open OPTIONS menu.
+	OPTIONS: 318, // if N == 0, it indicates that the OPTIONS menu is closed; otherwise, it indicates the position of the selection in the open OPTIONS menu.
 	GAME_OVER: 319, // N is the opacity of the GAME_OVER screen.
 	GAME_WON: 320, // N is the opacity of the GAME_WON screen.
 	CONF_SURRENDER: 322, // N indicates which button is selected (1 for the back button, 0 for the confirm button).

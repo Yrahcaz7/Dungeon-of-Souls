@@ -260,6 +260,13 @@ const loadSave = (() => {
 				return arr;
 			});
 		};
+		// version 2.2.47
+		if (version < 2_002_047) {
+			// card and artifact reward selections now use negative indexes for the back button
+			if ((game.select[0] === S.CARD_REWARD && game.select[1] === get.cardRewardChoices()) || (game.select[0] === S.ARTIFACT_REWARD && game.select[1] === 3)) {
+				game.select[1] = -game.select[1];
+			};
+		};
 		// reset GAME_OVER and GAME_WON screen fade-in (all versions)
 		if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) game.select[1] = 0;
 		// fix in-progress player attack (all versions)

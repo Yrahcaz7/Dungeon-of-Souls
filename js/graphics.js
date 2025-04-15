@@ -1646,19 +1646,20 @@ const graphics = {
 	 */
 	cardRewards(focused = true) {
 		const choices = get.cardRewardChoices();
-		let x = 198 - (choices * 68 / 2), y = 20, width = (choices * 68) + 4, height = 160;
+		const x = 198 - (choices * 68 / 2);
+		const y = 20;
+		const width = (choices * 68) + 4;
+		const height = 160;
 		draw.box(x, y, width, height, {"background-color": "#aaa"});
 		if (choices === 1) draw.lore(200 - 2, y + 1, "Take the\ncard?", {"text-align": DIR.CENTER});
 		else draw.lore(200 - 2, y + 1, "Pick a card:", {"text-align": DIR.CENTER});
 		handPos = [];
 		for (let index = 0; index < choices; index++) {
 			handPos.push((199 - (choices * 68 / 2)) + 1 + (index * 68));
-			draw.card(game.room[5][index], handPos[index], 50, false, true);
+			if (index !== game.select[1] || !focused) draw.card(game.room[5][index], handPos[index], 50, false, true);
 		};
-		if (game.select[1] > -1 && game.select[1] < choices && focused) {
-			draw.card(game.room[5][game.select[1]], handPos[game.select[1]], 50, true, true);
-		};
-		if ((game.select[1] === -1 || game.select[1] === choices) && focused) draw.rect("#fff", x, y + height - 14, width, 14);
+		if (game.select[1] >= 0 && focused) draw.card(game.room[5][game.select[1]], handPos[game.select[1]], 50, true, true);
+		if (game.select[1] < 0 && focused) draw.rect("#fff", x, y + height - 14, width, 14);
 		draw.box(x + 2, y + height - 12, width - 4, 10);
 		draw.lore(x + 3, y + height - 11, "Go back");
 	},
@@ -1668,14 +1669,17 @@ const graphics = {
 	 */
 	artifactRewards(focused = true) {
 		graphics.rewards(false);
-		let x = 140, y = 70, width = 120, height = 60;
+		const x = 140;
+		const y = 70;
+		const width = 120;
+		const height = 60;
 		draw.box(x, y, width, height, {"background-color": "#aaa"});
 		draw.lore(200 - 2, y + 1, "Pick an artifact:", {"text-align": DIR.CENTER});
 		for (let index = 0; index < 3; index++) {
 			draw.image(I.artifact[game.room[6][index]], 160 + (index * 32), 90);
-			if (game.select[1] === index) draw.image(I.artifact.select[game.room[6][index]], 159 + (index * 32), 89);
+			if (index === game.select[1]) draw.image(I.artifact.select[game.room[6][index]], 159 + (index * 32), 89);
 		};
-		if ((game.select[1] === -1 || game.select[1] === 3) && focused) draw.rect("#fff", x, y + height - 14, width, 14);
+		if (game.select[1] < 0 && focused) draw.rect("#fff", x, y + height - 14, width, 14);
 		draw.box(x + 2, y + height - 12, width - 4, 10);
 		draw.lore(x + 3, y + height - 11, "Go back");
 	},
