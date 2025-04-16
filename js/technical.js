@@ -134,17 +134,22 @@ let lastAction = -1;
 document.onkeydown = event => {
 	if (!loaded) return;
 	const key = event.key;
-	if (key.length == 1 && /[0-9a-f]/i.test(key) && !event.repeat && menuSelect[0] === MENU.ENTER_SEED && newSeed.length < 6 && actionTimer == -1) {
-		newSeed += key.toUpperCase();
-	} else if (key == "Backspace" && !event.repeat && menuSelect[0] === MENU.ENTER_SEED && actionTimer == -1) {
-		newSeed = newSeed.slice(0, -1);
-	} else if (key == "Clear" && !event.repeat && menuSelect[0] === MENU.ENTER_SEED && actionTimer == -1) {
-		newSeed = "";
-	} else if ((key == "E" || key == "e") && !event.repeat && menuSelect[0] == -1 && game.turn === TURN.PLAYER && actionTimer == -1) {
+	if (menuSelect[0] === MENU.ENTER_SEED) {
+		if (key.length === 1 && /[0-9A-F]/i.test(key) && !event.repeat && actionTimer === -1 && newSeed.length < 6) {
+			newSeed += key.toUpperCase();
+		} else if (key === "Backspace" && !event.repeat && actionTimer === -1) {
+			newSeed = newSeed.slice(0, -1);
+		} else if (key === "Clear" && !event.repeat && actionTimer === -1) {
+			newSeed = "";
+		} else if ((key === " " || key === "Enter") && !event.repeat && actionTimer === -1) {
+			performAction();
+		};
+		action = -1;
+	} else if ((key === "E" || key === "e") && !event.repeat && menuSelect[0] === -1 && actionTimer === -1 && game.turn === TURN.PLAYER) {
 		if (game.select[0] === S.CONF_END) game.select = [S.HAND, game.prevCard];
 		else endTurnConfirm();
 		action = -1;
-	} else if (key == "1" && !event.repeat && menuSelect[0] == -1 && actionTimer == -1) {
+	} else if (key === "1" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1) {
 		if (game.select[0] === S.DECK && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [S.DECK, 0];
@@ -154,7 +159,7 @@ document.onkeydown = event => {
 		};
 		action = -1;
 		actionTimer = 2;
-	} else if (key == "2" && !event.repeat && menuSelect[0] == -1 && actionTimer == -1) {
+	} else if (key === "2" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1) {
 		if (game.select[0] === S.DISCARD && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [S.DISCARD, 0];
@@ -164,7 +169,7 @@ document.onkeydown = event => {
 		};
 		action = -1;
 		actionTimer = 2;
-	} else if (key == "3" && !event.repeat && menuSelect[0] == -1 && game.void.length && actionTimer == -1) {
+	} else if (key === "3" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1 && game.void.length) {
 		if (game.select[0] === S.VOID && game.select[1]) {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [S.VOID, 0];
@@ -174,7 +179,7 @@ document.onkeydown = event => {
 		};
 		action = -1;
 		actionTimer = 2;
-	} else if (key == "0" && !event.repeat && menuSelect[0] == -1 && actionTimer == -1) {
+	} else if (key === "0" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1) {
 		if (game.select[0] === S.CARDS) {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [S.MAP, get.availibleLocations().length];
@@ -184,38 +189,28 @@ document.onkeydown = event => {
 		};
 		action = -1;
 		actionTimer = 2;
-	} else if ((key == "B" || key == "b") && !event.repeat && actionTimer == -1) {
-		if (menuSelect[0] === MENU.PREV_GAMES) {
-			menuSelect = [MENU.MAIN, 4];
-			action = -1;
-			actionTimer = 2;
-		} else if (menuSelect[0] == -1 && game.select[0] === S.REFINER) {
-			const index = game.rewards.findIndex(arr => arr[0] === REWARD.REFINER);
-			if (index >= 0) {
-				game.select = [S.REWARDS, index];
-				action = -1;
-				actionTimer = 2;
-			};
-		};
-	} else if ((key == "C" || key == "c") && !event.repeat && menuSelect[0] === MENU.PREV_GAMES && actionTimer == -1) {
+	} else if ((key === "C" || key === "c") && !event.repeat && menuSelect[0] === MENU.PREV_GAMES && actionTimer === -1) {
 		menuSelect = [MENU.PREV_GAME_SORT, 0];
 		action = -1;
 		actionTimer = 2;
-	} else if ((key == " " || key == "Enter") && !event.repeat && actionTimer == -1) {
+	} else if ((key === " " || key === "Enter") && !event.repeat && actionTimer === -1) {
 		action = -1;
 		performAction();
-	} else if (key == "W" || key == "w" || key == "ArrowUp") {
+	} else if ((key === "B" || key === "b") && !event.repeat && actionTimer === -1) {
+		action = -1;
+		performAction(true);
+	} else if (key === "W" || key === "w" || key === "ArrowUp") {
 		action = DIR.UP;
-	} else if (key == "A" || key == "a" || key == "ArrowLeft") {
+	} else if (key === "A" || key === "a" || key === "ArrowLeft") {
 		action = DIR.LEFT;
-	} else if (key == "S" || key == "s" || key == "ArrowDown") {
+	} else if (key === "S" || key === "s" || key === "ArrowDown") {
 		action = DIR.DOWN;
-	} else if (key == "D" || key == "d" || key == "ArrowRight") {
+	} else if (key === "D" || key === "d" || key === "ArrowRight") {
 		action = DIR.RIGHT;
 	} else {
 		action = -1;
 	};
-	if (key == "Escape") { // exits fullscreen
+	if (key === "Escape") { // exits fullscreen
 		if (document.body.exitFullscreen) {
 			document.body.exitFullscreen();
 		} else if (document.body.webkitExitFullscreen) {
@@ -225,7 +220,7 @@ document.onkeydown = event => {
 		} else if (document.body.msExitFullscreen) {
 			document.body.msExitFullscreen();
 		};
-	} else if (key == "Tab") { // enters fullscreen
+	} else if (key === "Tab") { // enters fullscreen
 		if (document.body.requestFullscreen) {
 			document.body.requestFullscreen();
 		} else if (document.body.webkitRequestFullscreen) {
@@ -246,5 +241,5 @@ document.onkeydown = event => {
 
 document.onkeyup = event => {
 	const key = event.key;
-	if (key == "W" || key == "w" || key == "ArrowUp" || key == "A" || key == "a" || key == "ArrowLeft" || key == "S" || key == "s" || key == "ArrowDown" || key == "D" || key == "d" || key == "ArrowRight") action = -1;
+	if (key === "W" || key === "w" || key === "ArrowUp" || key === "A" || key === "a" || key === "ArrowLeft" || key === "S" || key === "s" || key === "ArrowDown" || key === "D" || key === "d" || key === "ArrowRight") action = -1;
 };

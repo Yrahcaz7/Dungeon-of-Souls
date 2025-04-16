@@ -22,13 +22,13 @@ Is there something more to this place than what it seems?
 
 Use the arrow keys or WASD keys to select things.
 
-Press enter or the space bar to perform an action.
+The enter key and the space bar perform actions and interact with things.
 
-Press tab to enter full screen and escape to exit it.
-
-There are also some hotkeys, like the E key, which ends your turn.
+There are also hotkeys, like E, which ends your turn, and B, which goes back in menus.
 
 The 1, 2, 3, and 0 keys view your deck, discard, void, and owned cards, respectively.
+
+You also can press tab to enter fullscreen and escape to exit it.
 
 ## How to play
 
