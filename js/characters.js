@@ -842,7 +842,7 @@ const CHARACTERS = {
 const LOW_CHAR_REGEX = (() => {
 	let lowChars = "";
 	for (const char in CHARACTERS) {
-		if (CHARACTERS.hasOwnProperty(char) && CHARACTERS[char].length > 9) {
+		if (CHARACTERS[char].length > 9) {
 			lowChars += char;
 		};
 	};

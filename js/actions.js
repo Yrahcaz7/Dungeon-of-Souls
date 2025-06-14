@@ -574,9 +574,7 @@ const performAction = (() => {
 		} else if (prevGamesSort[0] == 10) {
 			let kills = 0;
 			for (const key in prevGame.kills) {
-				if (prevGame.kills.hasOwnProperty(key)) {
-					kills += prevGame.kills[key];
-				};
+				kills += prevGame.kills[key];
 			};
 			return kills;
 		};

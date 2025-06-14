@@ -100,9 +100,7 @@ const ARTIFACTS = {
 };
 
 for (const key in ARTIFACTS) {
-	if (ARTIFACTS.hasOwnProperty(key)) {
-		ARTIFACTS[key].desc = color(ARTIFACTS[key].desc);
-	};
+	ARTIFACTS[key].desc = color(ARTIFACTS[key].desc);
 };
 
 /**

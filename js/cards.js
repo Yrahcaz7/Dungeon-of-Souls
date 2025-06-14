@@ -275,17 +275,14 @@ const CARD_TYPE = ["error", "attack", "defense", "skill", "magic"];
 		// list keywords
 		if (!ref.keywords) ref.keywords = [];
 		for (const eff in EFF) {
-			if (EFF.hasOwnProperty(eff)) {
-				if (!ref.keywords.includes(EFF[eff]) && new RegExp(EFF_NAME[EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) {
-					ref.keywords.push(EFF[eff]);
-				};
+			if (!ref.keywords.includes(EFF[eff]) && new RegExp(EFF_NAME[EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) {
+				ref.keywords.push(EFF[eff]);
 			};
 		};
 		for (const eff in CARD_EFF) {
-			if (CARD_EFF.hasOwnProperty(eff) && CARD_EFF[eff] !== CARD_EFF.COST_REDUCTION && CARD_EFF[eff] !== CARD_EFF.DESC) {
-				if (!ref.keywords.includes(CARD_EFF[eff]) && new RegExp(EFF_NAME[CARD_EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) {
-					ref.keywords.push(CARD_EFF[eff]);
-				};
+			if (CARD_EFF[eff] === CARD_EFF.COST_REDUCTION || CARD_EFF[eff] === CARD_EFF.DESC) continue;
+			if (!ref.keywords.includes(CARD_EFF[eff]) && new RegExp(EFF_NAME[CARD_EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i").test(desc)) {
+				ref.keywords.push(CARD_EFF[eff]);
 			};
 		};
 		// extra info
@@ -294,14 +291,12 @@ const CARD_TYPE = ["error", "attack", "defense", "skill", "magic"];
 		return desc;
 	};
 	for (const key in CARDS) {
-		if (CARDS.hasOwnProperty(key)) {
-			if (CARDS[key].desc instanceof Array) {
-				for (let index = 0; index < CARDS[key].desc.length; index++) {
-					CARDS[key].desc[index] = loadCard(CARDS[key], CARDS[key].desc[index]);
-				};
-			} else {
-				CARDS[key].desc = loadCard(CARDS[key], CARDS[key].desc);
+		if (CARDS[key].desc instanceof Array) {
+			for (let index = 0; index < CARDS[key].desc.length; index++) {
+				CARDS[key].desc[index] = loadCard(CARDS[key], CARDS[key].desc[index]);
 			};
+		} else {
+			CARDS[key].desc = loadCard(CARDS[key], CARDS[key].desc);
 		};
 	};
 })();
@@ -326,7 +321,7 @@ class Card {
 	static classify(obj = {}) {
 		let instance = new Card();
 		for (const key in instance) {
-			if (instance.hasOwnProperty(key) && obj?.hasOwnProperty(key)) {
+			if (Object.hasOwn(instance, key) && Object.hasOwn(obj, key)) {
 				instance[key] = obj[key];
 			};
 		};

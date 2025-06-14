@@ -246,9 +246,7 @@ const EFF_DESC = {
 };
 
 for (const key in EFF_DESC) {
-	if (EFF_DESC.hasOwnProperty(key)) {
-		EFF_DESC[key] = color(EFF_DESC[key]);
-	};
+	EFF_DESC[key] = color(EFF_DESC[key]);
 };
 
 // event log types

@@ -232,9 +232,7 @@ const loadImages = (() => {
 			select = ref[name].select && !(ref[name].select instanceof Image) && !(ref[name].select instanceof Number);
 			blue = ref[name].select_blue && !(ref[name].select_blue instanceof Image) && !(ref[name].select_blue instanceof Number);
 			for (const folder in ref[name]) {
-				if (ref[name].hasOwnProperty(folder)) {
-					await loadImage(ref[name], folder, path + name + "/", select, blue);
-				};
+				await loadImage(ref[name], folder, path + name + "/", select, blue);
 			};
 		};
 	};
@@ -251,36 +249,27 @@ const loadImages = (() => {
 		const loadStartTime = Date.now();
 		// setup cards
 		for (const id in CARDS) {
-			if (CARDS.hasOwnProperty(id) && CARDS[id].rarity >= 0) {
-				I.card[CARDS[id].rarity][id] = new Image;
-				CARD_IDS[CARDS[id].rarity].push(+id);
-			};
+			if (CARDS[id].rarity < 0) continue;
+			I.card[CARDS[id].rarity][id] = new Image;
+			CARD_IDS[CARDS[id].rarity].push(+id);
 		};
 		// setup artifacts
 		for (const id in ARTIFACTS) {
-			if (ARTIFACTS.hasOwnProperty(id)) {
-				I.artifact[id] = new Image;
-				if (id >= 100 && id < 200) ARTIFACT_IDS.push(+id);
-			};
+			I.artifact[id] = new Image;
+			if (id >= 100 && id < 200) ARTIFACT_IDS.push(+id);
 		};
 		// setup effect icons
 		for (const eff in EFF) {
-			if (EFF.hasOwnProperty(eff)) {
-				I.icon[EFF[eff]] = new Image;
-			};
+			I.icon[EFF[eff]] = new Image;
 		};
 		// setup enemy effect icons
 		for (const eff in ENEMY_EFF) {
-			if (ENEMY_EFF.hasOwnProperty(eff)) {
-				I.icon[ENEMY_EFF[eff]] = new Image;
-			};
+			I.icon[ENEMY_EFF[eff]] = new Image;
 		};
 		// load images
 		const promises = [];
 		for (const folder in I) {
-			if (I.hasOwnProperty(folder)) {
-				promises.push(loadImage(I, folder, "images/").then(updateLoadProg));
-			};
+			promises.push(loadImage(I, folder, "images/").then(updateLoadProg));
 		};
 		await Promise.all(promises);
 		console.log("[images loaded in " + (Date.now() - loadStartTime) + "ms]");

@@ -80,15 +80,11 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 	};
 	// sort paths
 	for (const x in paths) {
-		if (paths.hasOwnProperty(x)) {
-			if (x == -1) {
-				paths[x].sort();
-			} else {
-				for (const y in paths[x]) {
-					if (paths[x].hasOwnProperty(y)) {
-						paths[x][y].sort();
-					};
-				};
+		if (x === -1) {
+			paths[x].sort();
+		} else {
+			for (const y in paths[x]) {
+				paths[x][y].sort();
 			};
 		};
 	};
@@ -203,25 +199,19 @@ const generateMapPathPoints = (() => {
 		// average the points in `nodePaths` for each subdivision for each node pair.
 		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
 			for (const node1 in mapPathPoints[row1]) {
-				if (mapPathPoints[row1].hasOwnProperty(node1)) {
-					for (const row2 in mapPathPoints[row1][node1]) {
-						if (mapPathPoints[row1][node1].hasOwnProperty(row2)) {
-							for (const node2 in mapPathPoints[row1][node1][row2]) {
-								if (mapPathPoints[row1][node1][row2].hasOwnProperty(node2)) {
-									const nodePair = mapPathPoints[row1][node1][row2][node2];
-									let averagePath = [];
-									for (let sub = 0; sub < nodePair.length; sub++) {
-										let total = [0, 0];
-										for (let index = 0; index < nodePair[sub].length; index++) {
-											total[0] += nodePair[sub][index][0];
-											total[1] += nodePair[sub][index][1];
-										};
-										averagePath.push([total[0] / nodePair[sub].length, total[1] / nodePair[sub].length]);
-									};
-									mapPathPoints[row1][node1][row2][node2] = averagePath;
-								};
+				for (const row2 in mapPathPoints[row1][node1]) {
+					for (const node2 in mapPathPoints[row1][node1][row2]) {
+						const nodePair = mapPathPoints[row1][node1][row2][node2];
+						let averagePath = [];
+						for (let sub = 0; sub < nodePair.length; sub++) {
+							let total = [0, 0];
+							for (let index = 0; index < nodePair[sub].length; index++) {
+								total[0] += nodePair[sub][index][0];
+								total[1] += nodePair[sub][index][1];
 							};
+							averagePath.push([total[0] / nodePair[sub].length, total[1] / nodePair[sub].length]);
 						};
+						mapPathPoints[row1][node1][row2][node2] = averagePath;
 					};
 				};
 			};
@@ -346,7 +336,7 @@ const generateMap = (() => {
 			if (row % 10 > 0) {
 				const x = row - 1;
 				for (const y in paths[x]) {
-					if (paths[x].hasOwnProperty(y) && paths[x][y].some(location => location[0] === row && location[1] === num)) {
+					if (paths[x][y].some(location => location[0] === row && location[1] === num)) {
 						for (let index = 0; index < pathTypes[x][y].length; index++) {
 							if (!types.includes(pathTypes[x][y][index])) types.push(pathTypes[x][y][index]);
 						};

@@ -546,7 +546,7 @@ const draw = {
 		let x = +enemyPos[index][0];
 		let y = +enemyPos[index][1];
 		for (const key in enemy.eff) {
-			if (enemy.eff.hasOwnProperty(key) && enemy.eff[key]) {
+			if (enemy.eff[key]) {
 				let img = I.icon[key];
 				if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x - 1, y + 88);
 				draw.image(img, x, y + 89);
@@ -962,7 +962,7 @@ const graphics = {
 		};
 		// icons
 		for (const key in game.eff) {
-			if (game.eff.hasOwnProperty(key) && game.eff[key]) {
+			if (game.eff[key]) {
 				let img = I.icon[key];
 				if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x + 22, y + 103);
 				draw.image(img, x + 23, y + 104);
@@ -1590,9 +1590,7 @@ const graphics = {
 					else if (type === ENEMY_EFF.PLAN_DEFEND && !game.enemies[game.select[1]].eff[EFF.DEFUP]) logEff(EFF.DEFUP);
 				};
 				for (const key in game.enemies[game.select[1]].eff) {
-					if (game.enemies[game.select[1]].eff.hasOwnProperty(key)) {
-						logEff(+key);
-					};
+					logEff(+key);
 				};
 			};
 		} else if (game.select[0] === S.PLAYER) {
@@ -1614,9 +1612,7 @@ const graphics = {
 				if (type === EFF.BLAZE && !game.eff[EFF.BURN]) logEff(EFF.BURN);
 			};
 			for (const key in game.eff) {
-				if (game.eff.hasOwnProperty(key)) {
-					logEff(+key);
-				};
+				logEff(+key);
 			};
 		} else if (game.select[0] === S.ARTIFACTS) {
 			info.artifact(game.artifacts[game.select[1]]);
@@ -1794,16 +1790,10 @@ const graphics = {
 		ctx.filter = NO_ANTIALIASING_FILTER;
 		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
 			for (const node1 in mapPathPoints[row1]) {
-				if (mapPathPoints[row1].hasOwnProperty(node1)) {
-					for (const row2 in mapPathPoints[row1][node1]) {
-						if (mapPathPoints[row1][node1].hasOwnProperty(row2)) {
-							for (const node2 in mapPathPoints[row1][node1][row2]) {
-								if (mapPathPoints[row1][node1][row2].hasOwnProperty(node2)) {
-									if (game.traveled[row1] == node1 && game.traveled[row2] == node2) continue;
-									draw.polyline(mapPathPoints[row1][node1][row2][node2], "#b84", 3);
-								};
-							};
-						};
+				for (const row2 in mapPathPoints[row1][node1]) {
+					for (const node2 in mapPathPoints[row1][node1][row2]) {
+						if (game.traveled[row1] == node1 && game.traveled[row2] == node2) continue;
+						draw.polyline(mapPathPoints[row1][node1][row2][node2], "#b84", 3);
 					};
 				};
 			};
@@ -1927,11 +1917,9 @@ const graphics = {
 		// calculate score factors
 		let factors = [];
 		for (const key in game.kills) {
-			if (game.kills.hasOwnProperty(key)) {
-				const amt = game.kills[key];
-				if (BOSS_ENEMIES.includes(+key)) factors.push(["Killed " + ENEMY_NAME[+key], ENEMY_WORTH[+key], amt]);
-				else factors.push(["Killed " + amt + " " + (amt > 1 ? PLURAL_ENEMY_NAME : ENEMY_NAME)[+key], ENEMY_WORTH[+key], amt]);
-			};
+			const amt = game.kills[key];
+			if (BOSS_ENEMIES.includes(+key)) factors.push(["Killed " + ENEMY_NAME[+key], ENEMY_WORTH[+key], amt]);
+			else factors.push(["Killed " + amt + " " + (amt > 1 ? PLURAL_ENEMY_NAME : ENEMY_NAME)[+key], ENEMY_WORTH[+key], amt]);
 		};
 		factors.push(["Saved " + game.gold + " gold", 1, Math.floor(game.gold / 5)]);
 		if (game.select[0] === S.GAME_WON) factors.push(["Saved " + game.health + " health", 5, game.health]);
@@ -2159,9 +2147,7 @@ const graphics = {
 			x += 6 * 16;
 			let kills = 0;
 			for (const key in prevGame.kills) {
-				if (prevGame.kills.hasOwnProperty(key)) {
-					kills += prevGame.kills[key];
-				};
+				kills += prevGame.kills[key];
 			};
 			if (index * 3 + 2 == menuSelect[1] && focused) draw.lore(x, y, "> Enemies killed: " + kills, {"color": "#ff0"});
 			else if (kills > 0) draw.lore(x, y, "  Enemies killed: <#0f0>" + kills + "</#0f0>", {"color": "#fff"});

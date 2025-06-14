@@ -62,7 +62,7 @@ class Enemy {
 	static classify(obj = {}) {
 		let instance = new Enemy();
 		for (const key in instance) {
-			if (instance.hasOwnProperty(key) && obj?.hasOwnProperty(key)) {
+			if (Object.hasOwn(instance, key) && Object.hasOwn(obj, key)) {
 				instance[key] = obj[key];
 			};
 		};

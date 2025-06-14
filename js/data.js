@@ -208,15 +208,11 @@ function updateData() {
 	if (infoPos > infoLimit) infoPos = infoLimit;
 	// effect removal
 	for (const eff in game.eff) {
-		if (game.eff.hasOwnProperty(eff) && !game.eff[eff]) {
-			delete game.eff[eff];
-		};
+		if (!game.eff[eff]) delete game.eff[eff];
 	};
 	for (let index = 0; index < game.enemies.length; index++) {
 		for (const eff in game.enemies[index].eff) {
-			if (game.enemies[index].eff.hasOwnProperty(eff) && !game.enemies[index].eff[eff]) {
-				delete game.enemies[index].eff[eff];
-			};
+			if (!game.enemies[index].eff[eff]) delete game.enemies[index].eff[eff];
 		};
 	};
 	// fixes

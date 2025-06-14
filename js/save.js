@@ -106,9 +106,7 @@ async function endRun(startNewRun = false, newDifficulty = game.difficulty) {
 	prevGame.endVersion = global.version;
 	prevGame.score = 0;
 	for (const key in game.kills) {
-		if (game.kills.hasOwnProperty(key)) {
-			prevGame.score += game.kills[+key] * ENEMY_WORTH[+key];
-		};
+		prevGame.score += game.kills[+key] * ENEMY_WORTH[+key];
 	};
 	prevGame.score += Math.floor(game.gold / 5);
 	if (game.select[0] === S.GAME_WON) prevGame.score += game.health * 5;
@@ -250,7 +248,7 @@ const loadSave = (() => {
 				const arr = [REWARD.FINISH];
 				const items = ("" + str).split(" ");
 				for (const key in REWARD_NAME) {
-					if (REWARD_NAME.hasOwnProperty(key) && REWARD_NAME[key] === items[1]) {
+					if (REWARD_NAME[key] === items[1]) {
 						arr[0] = +key;
 						break;
 					};
