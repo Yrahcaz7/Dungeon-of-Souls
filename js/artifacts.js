@@ -100,7 +100,7 @@ const ARTIFACTS = {
 };
 
 for (const key in ARTIFACTS) {
-	ARTIFACTS[key].desc = color(ARTIFACTS[key].desc);
+	ARTIFACTS[key].desc = colorText(ARTIFACTS[key].desc);
 };
 
 /**

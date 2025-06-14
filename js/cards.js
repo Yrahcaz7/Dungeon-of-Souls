@@ -271,7 +271,7 @@ const CARD_TYPE = ["error", "attack", "defense", "skill", "magic"];
 	 */
 	function loadCard(ref, desc) {
 		// color text
-		desc = color(desc);
+		desc = colorText(desc);
 		// list keywords
 		if (!ref.keywords) ref.keywords = [];
 		for (const eff in EFF) {
