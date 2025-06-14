@@ -335,7 +335,10 @@ function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true) 
 		game.enemies[index].health -= amount;
 	};
 	// additional effects
-	if (attack && game.eff[EFF.BLAZE]) game.enemies[index].gainEff(EFF.BURN);
+	if (attack) {
+		if (game.eff[EFF.BLAZE]) game.enemies[index].gainEff(EFF.BURN);
+		if (game.eff[EFF.PULSE]) game.enemies[index].gainEff(EFF.PULSE);
+	};
 	// transitions
 	startEnemyTransition(index, prevShield);
 };
@@ -359,7 +362,10 @@ function takeDamage(amount, attack = true, index = game.enemyNum) {
 		game.health -= amount;
 	};
 	// additional effects
-	if (attack && index >= 0 && game.enemies[index].eff[EFF.BLAZE]) gainEff(EFF.BURN);
+	if (attack && index >= 0) {
+		if (game.enemies[index].eff[EFF.BLAZE]) gainEff(EFF.BURN);
+		if (game.enemies[index].eff[EFF.PULSE]) gainEff(EFF.PULSE);
+	};
 };
 
 /**

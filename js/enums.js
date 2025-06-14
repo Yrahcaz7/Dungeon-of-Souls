@@ -173,7 +173,7 @@ const OPTION = {MUSIC: 1600, SCREEN_SHAKE: 1601, STICKY_CARDS: 1602, PERFECT_SCR
 const OPTION_NAME = {[OPTION.MUSIC]: "Music", [OPTION.SCREEN_SHAKE]: "Screen shake", [OPTION.STICKY_CARDS]: "Sticky cards", [OPTION.PERFECT_SCREEN]: "Pixel perfect screen", [OPTION.PERFECT_SIZE]: "Pixel perfect size", [OPTION.FAST_MOVEMENT]: "Allow fast movement", [OPTION.AUTO_END_TURN]: "Automatically end turn", [OPTION.END_TURN_CONFIRM]: "End turn confirmation", [OPTION.MUSIC_TRACK]: "Music track"};
 
 // general effects
-const EFF = {AURA_BLADE: 1700, BURN: 1701, REINFORCE: 1702, RESILIENCE: 1703, WEAKNESS: 1704, BLAZE: 1705, ATKUP: 1706, DEFUP: 1707};
+const EFF = {AURA_BLADE: 1700, BURN: 1701, REINFORCE: 1702, RESILIENCE: 1703, WEAKNESS: 1704, BLAZE: 1705, ATKUP: 1706, DEFUP: 1707, PULSE: 1708};
 
 // card effects
 const CARD_EFF = {ONE_USE: 1800, UNIFORM: 1801, UNPLAYABLE: 1802, COST_REDUCTION: 1803, RETENTION: 1804, DESC: 1899};
@@ -192,6 +192,7 @@ const EFF_NAME = {
 	[EFF.BLAZE]: "blaze",
 	[EFF.ATKUP]: "ATK+",
 	[EFF.DEFUP]: "DEF+",
+	[EFF.PULSE]: "pulse",
 	// card effects
 	[CARD_EFF.ONE_USE]: "one use",
 	[CARD_EFF.UNIFORM]: "uniform",
@@ -227,6 +228,7 @@ const EFF_DESC = {
 	[EFF.BLAZE]: "If something has X\nblaze, when it attacks,\nit applies 1 burn on\nthe target. At the end\nof its turn, X is\nreduced by 1.",
 	[EFF.ATKUP]: "If something has X ATK+,\nits attack is increased\nby 25%, rounded up. At\nthe end of its turn, X\nis reduced by 1.",
 	[EFF.DEFUP]: "If something has X DEF+,\nits defense is increased\nby 25%, rounded up. At\nthe end of its turn, X\nis reduced by 1.",
+	[EFF.PULSE]: "If something has X\npulse, when it attacks,\nit applies 1 pulse on\nthe target. At the end\nof its turn, X is\nreduced by 2.",
 	// card effects
 	[CARD_EFF.ONE_USE]: "When a one use card is\nplayed, it is sent to\nthe void. Cards in the\nvoid stay there until\nthe end of the battle.",
 	[CARD_EFF.RETENTION]: "A card with X retention\nwill not be discarded\nat the end of your turn.\nInstead, X will be\nreduced by 1.",

@@ -77,14 +77,8 @@ const CARDS = {
 		rarity: 1,
 		cost: 1,
 		damage: [8, 15],
-		attack(level = 0) {
-			if (level >= 1) game.gold -= 20;
-			else game.gold -= 25;
-		},
-		can(level = 0) {
-			if (level >= 1) return game.gold >= 20;
-			return game.gold >= 25;
-		},
+		attack(level = 0) {game.gold -= (level >= 1 ? 20 : 25)},
+		can(level = 0) {return game.gold >= (level >= 1 ? 20 : 25)},
 		cannotMessage: "not enough gold",
 	},
 	1005: {
@@ -94,15 +88,22 @@ const CARDS = {
 		cost: [2, 1],
 		damage: 12,
 	},
+	1006: {
+		name: "Pulsating Strike",
+		desc: ["Gain 1 pulse, then\ndeal [4 + pulse]\ndamage to an enemy.", "Gain 2 pulse, then\ndeal [4 + pulse]\ndamage to an enemy."],
+		rarity: 1,
+		cost: 1,
+		attack(level = 0) {
+			gainEff(EFF.PULSE, (level >= 1 ? 2 : 1));
+			dealDamage(4 + game.eff[EFF.PULSE]);
+		},
+	},
 	2000: {
 		name: "Block",
 		desc: ["Gain 4 shield.", "Gain 8 shield."],
 		rarity: 0,
 		cost: 1,
-		effect(level = 0) {
-			if (level >= 1) playerGainShield(8);
-			else playerGainShield(4);
-		},
+		effect(level = 0) {playerGainShield(level >= 1 ? 8 : 4)},
 	},
 	2001: {
 		name: "Reinforce",
@@ -163,11 +164,18 @@ const CARDS = {
 			};
 			gainEff(EFF.REINFORCE);
 		},
-		can(level = 0) {
-			if (level >= 1) return game.gold >= 30;
-			return game.gold >= 45;
-		},
+		can(level = 0) {return game.gold >= (level >= 1 ? 30 : 45)},
 		cannotMessage: "not enough gold",
+	},
+	2006: {
+		name: "Pulsating Shield",
+		desc: ["Gain 1 pulse, then\ngain [3 + pulse]\nshield.", "Gain 2 pulse, then\ngain [3 + pulse]\nshield."],
+		rarity: 1,
+		cost: 1,
+		effect(level = 0) {
+			gainEff(EFF.PULSE, (level >= 1 ? 2 : 1));
+			playerGainShield(3 + game.eff[EFF.PULSE]);
+		},
 	},
 	3000: {
 		name: "War Cry",
@@ -227,6 +235,13 @@ const CARDS = {
 		},
 		can(level = 0) {return game.hand.length > 1},
 		cannotMessage: "no valid target",
+	},
+	3004: {
+		name: "Vibration",
+		desc: "Gain 2 pulse.",
+		rarity: 1,
+		cost: [1, 0],
+		effect(level = 0) {gainEff(EFF.PULSE, 2)},
 	},
 	4000: {
 		name: "Aura Blade",

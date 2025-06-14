@@ -266,8 +266,8 @@ class Enemy {
 	 * @param {number} amt - the amount of the effect to gain. Defaults to `1`.
 	 */
 	gainEff(type, amt = 1) {
-		if (game.eff[type]) game.eff[type] += amt;
-		else game.eff[type] = amt;
+		if (this.eff[type]) this.eff[type] += amt;
+		else this.eff[type] = amt;
 	};
 };
 

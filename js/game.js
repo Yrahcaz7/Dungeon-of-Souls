@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_002_050;
+const VERSION = 2_003_000;
 
 /**
  * Returns the starting global data.
@@ -208,6 +208,7 @@ const startTurn = (() => {
 				if (game.enemies[index].eff[EFF.BLAZE]) game.enemies[index].eff[EFF.BLAZE]--;
 				if (game.enemies[index].eff[EFF.ATKUP]) game.enemies[index].eff[EFF.ATKUP]--;
 				if (game.enemies[index].eff[EFF.DEFUP]) game.enemies[index].eff[EFF.DEFUP]--;
+				if (game.enemies[index].eff[EFF.PULSE]) game.enemies[index].eff[EFF.PULSE] = Math.max(game.enemies[index].eff[EFF.PULSE] - 2, 0);
 				if (game.enemies[index].eff[ENEMY_EFF.SHROUD]) {
 					game.enemies[index].eff[ENEMY_EFF.SHROUD]--;
 					if (!game.enemies[index].eff[ENEMY_EFF.SHROUD] && !hasArtifact(204)) {
@@ -245,6 +246,7 @@ function endTurn() {
 		if (game.eff[EFF.BLAZE]) game.eff[EFF.BLAZE]--;
 		if (game.eff[EFF.ATKUP]) game.eff[EFF.ATKUP]--;
 		if (game.eff[EFF.DEFUP]) game.eff[EFF.DEFUP]--;
+		if (game.eff[EFF.PULSE]) game.eff[EFF.PULSE] = Math.max(game.eff[EFF.PULSE] - 2, 0);
 		// activate artifacts
 		activateArtifacts(FUNC.PLAYER_TURN_END);
 		// start of enemy turn effects
