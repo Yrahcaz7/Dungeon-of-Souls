@@ -603,6 +603,7 @@ const performAction = (() => {
 			game.select = [-1, 0];
 			actionTimer = 2;
 		} else if (menuSelect[0] === MENU.MAIN) {
+			if (back) return;
 			if (menuSelect[1] == 0) {
 				if (game.map.length > 0) menuSelect = [-1, 0];
 			} else if (menuSelect[1] == 1) {

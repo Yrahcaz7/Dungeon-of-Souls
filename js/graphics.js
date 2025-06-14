@@ -428,20 +428,18 @@ const draw = {
 		if (I.card.outline[type]) draw.image(I.card.outline[type], x + 3, y + 3);
 		// card selector
 		if (selected) {
-			if (CARDS[card.id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
-				if (rarity == 2) draw.image(I.select.card_rare_unplayable, x - 2, y - 3);
-				else draw.image(I.select.card_unplayable, x + 1, y + 1);
-			} else {
-				if (rarity == 2) draw.image(I.select.card_rare, x - 2, y - 3);
-				else draw.image(I.select.card, x - 1, y - 1);
-			};
+			let selectorName = "card";
+			if (rarity == 2) selectorName += "_rare";
+			if (CARDS[card.id].keywords.includes(CARD_EFF.UNPLAYABLE)) selectorName += "_unplayable";
+			if (card.level >= 1) selectorName += "_plus";
+			draw.image(I.select[selectorName], x - 3, y - 3);
 		};
 		// card image
 		if (img === I.card.error) draw.image(img, x + 2, y + 2);
 		else draw.image(img, x + 7, y + 7);
 		// card title
-		const name = card.getAttr("name");
-		if (CARDS[card.id].name.length >= 10) draw.lore(x + 33, y + 44, name, {"text-align": DIR.CENTER, "text-small": true});
+		const name = CARDS[card.id].name;
+		if (name.length >= 10) draw.lore(x + 33, y + 44, name, {"text-align": DIR.CENTER, "text-small": true});
 		else if (LOW_CHAR_REGEX.test(name)) draw.lore(x + 32, y + 41, name, {"text-align": DIR.CENTER});
 		else draw.lore(x + 32, y + 42, name, {"text-align": DIR.CENTER});
 		// card description
@@ -503,6 +501,7 @@ const draw = {
 				draw.lore(x + 4, y + 2, cost);
 			};
 		};
+		if (card.level >= 1) draw.image(I.card.plus, x + 55, y);
 	},
 	/**
 	 * Draws a textbox on the canvas.
