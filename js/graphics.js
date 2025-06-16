@@ -829,7 +829,9 @@ const graphics = {
 				ctx.globalAlpha = 1;
 			};
 			if (game.floor != 10) {
-				let now = new Date(), time = [now.getHours(), now.getMinutes()], y = 64 - Math.abs(Math.round(backAnim[2]) - 2);
+				const now = new Date();
+				let time = [now.getHours(), now.getMinutes()];
+				const y = 64 - Math.abs(Math.round(backAnim[2]) - 2);
 				time[0] += (time[1] / 60);
 				if (time[0] >= 12) time[0] = time[0] - 12;
 				draw.image(I.background.clock_face, 170, y);
@@ -1520,17 +1522,19 @@ const graphics = {
 	 * @param {Card} cardObj - the card object.
 	 */
 	cardInfo(type, cardObj) {
+		const keywords = CARDS[cardObj.id]?.keywords || [];
 		let x = 0, y = 0;
-		if (cardObj.eff[CARD_EFF.RETENTION]) {
-			y += info[type]("This has " + cardObj.eff[CARD_EFF.RETENTION] + " <#666>retention</#666>.", x, y);
-		};
-		const keywords = CARDS[cardObj.id]?.keywords;
-		if (keywords instanceof Array) {
-			for (let index = 0; index < keywords.length; index++) {
-				y += info[type](keywords[index], x, y);
-				if (keywords[index] === EFF.BLAZE && !keywords.includes(EFF.BURN)) y += info[type](EFF.BURN, x, y);
+		for (const key in cardObj.eff) {
+			if (EFF_DESC[key]) {
+				y += info[type]("This has " + cardObj.eff[key] + " <#666>" + EFF_NAME[key] + "</#666>.", x, y);
+				if (!keywords.includes(key)) y += info[type](key, x, y);
 			};
 		};
+		for (let index = 0; index < keywords.length; index++) {
+			y += info[type](keywords[index], x, y);
+			if (keywords[index] === EFF.BLAZE && !keywords.includes(EFF.BURN)) y += info[type](EFF.BURN, x, y);
+		};
+		if (keywords.length === 0 && (x > 0 || y > 0)) y += info[type](CARD_EFF.DESC, x, y);
 	},
 	/**
 	 * Draws the selector and the info it targets on the canvas.

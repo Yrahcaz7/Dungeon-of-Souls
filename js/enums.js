@@ -220,32 +220,40 @@ const PERM_EFF_DESC = {
 // descriptions of effects
 const EFF_DESC = {
 	// general effects
-	[EFF.AURA_BLADE]: "Aura blade: On attack,\ndeal [5 + count] extra\ndamage, then count\ndecreases by 1.",
-	[EFF.BURN]: "Burn: On end of turn,\ntake [count] non-combat\ndamage, then count\ndecreases by 1.",
-	[EFF.REINFORCE]: "Reinforce: On start of\nturn, shield is kept,\nthen count decreases by\n1.",
-	[EFF.RESILIENCE]: "Resilience: Take 25%\nless combat damage,\nrounded up.\nCount decreases by 1 at\nstart of turn.",
-	[EFF.WEAKNESS]: "Weakness: Attack is 25%\nless, rounded up.\nCount decreases by 1 at\nend of turn.",
-	[EFF.BLAZE]: "Blaze: On attack, apply\n1 burn on the target.\nCount decreases by 1 at\nend of turn.",
-	[EFF.ATKUP]: "ATK+: Attack is 25%\ngreater, rounded up.\nCount decreases by 1 at\nend of turn.",
-	[EFF.DEFUP]: "DEF+: Defense is 25%\ngreater, rounded up.\nCount decreases by 1 at\nend of turn.",
-	[EFF.PULSE]: "Pulse: On attack, apply\n1 pulse on the target.\nCount decreases by 2 at\nend of turn.",
+	[EFF.AURA_BLADE]: "On attack,\ndeal [5 + count] extra\ndamage, then count\ndecreases by 1.",
+	[EFF.BURN]: "On end of turn,\ntake [count] non-combat\ndamage, then count\ndecreases by 1.",
+	[EFF.REINFORCE]: "On start of\nturn, shield is kept,\nthen count decreases by\n1.",
+	[EFF.RESILIENCE]: "Take 25%\nless combat damage,\nrounded up.\nCount decreases by 1 at\nstart of turn.",
+	[EFF.WEAKNESS]: "Attack is 25%\nless, rounded up.\nCount decreases by 1 at\nend of turn.",
+	[EFF.BLAZE]: "On attack, apply\n1 burn on the target.\nCount decreases by 1 at\nend of turn.",
+	[EFF.ATKUP]: "Attack is 25%\ngreater, rounded up.\nCount decreases by 1 at\nend of turn.",
+	[EFF.DEFUP]: "Defense is 25%\ngreater, rounded up.\nCount decreases by 1 at\nend of turn.",
+	[EFF.PULSE]: "On attack, apply\n1 pulse on the target.\nCount decreases by 2 at\nend of turn.",
 	// card effects
-	[CARD_EFF.ONE_USE]: "One use: When played,\nthe card is sent to the\nvoid. Cards in the void\nstay there until the end\nof the battle.",
-	[CARD_EFF.RETENTION]: "Retention: On end of\nturn, the card is not\ndiscarded, then count\ndecreases by 1.",
-	[CARD_EFF.UNIFORM]: "Uniform: Extra damage\nand extra shield have\nhalf the effect on the\ncard, rounded down.",
+	[CARD_EFF.ONE_USE]: "When played,\nthe card is sent to the\nvoid. Cards in the void\nstay there until the end\nof the battle.",
+	[CARD_EFF.RETENTION]: "On end of\nturn, the card is not\ndiscarded, then count\ndecreases by 1.",
+	[CARD_EFF.UNIFORM]: "Extra damage\nand extra shield have\nhalf the effect on the\ncard, rounded down.",
 	[CARD_EFF.DESC]: "After a card leaves\nyour hand, it loses all\nof its applied effects.",
 	// enemy effects
-	[ENEMY_EFF.COUNTDOWN]: "Countdown: On end of\nturn, intent is set to\nwhat it was on the\n[count]th turn, then\ncount decreases by 1.",
-	[ENEMY_EFF.REWIND]: "Rewind: Is 20% stronger\nfor each count, rounded\ndown. If this has 0\ncountdown and 0 health,\ngain 1 count, then all\nentities heal fully and\nthe countdown begins.",
-	[ENEMY_EFF.SHROUD]: "Shroud: Intent is not\nvisible.\nCount decreases by 1 at\nend of turn.",
-	[ENEMY_EFF.PLAN_ATTACK]: "Plan attack: If the\nplayer has enough shield\nto block 100% of attack,\ngain 2 ATK+ and make a\nnew plan. If this has\nshield and intends to\ndefend, change intent to\nattack and make a new\nplan.",
-	[ENEMY_EFF.PLAN_SUMMON]: "Plan summon: If the\nplayer has enough shield\nto block 100% of attack\nor this has shield and\nintends to defend,\nchange intent to summon\nand make a new plan.",
-	[ENEMY_EFF.PLAN_DEFEND]: "Plan defend: If this has\nshield and intends to\ndefend, gain 2 DEF+ and\nmake a new plan. If the\nplayer has enough shield\nto block 100% of attack,\nchange intent to defense\nand make a new plan.",
-	[ENEMY_EFF.SCRAP_HEAP]: "Scrap heap: On death,\nno effects trigger.",
+	[ENEMY_EFF.COUNTDOWN]: "On end of\nturn, intent is set to\nwhat it was on the\n[count]th turn, then\ncount decreases by 1.",
+	[ENEMY_EFF.REWIND]: "Is 20% stronger\nfor each count, rounded\ndown. If this has 0\ncountdown and 0 health,\ngain 1 count, then all\nentities heal fully and\nthe countdown begins.",
+	[ENEMY_EFF.SHROUD]: "Intent is not\nvisible.\nCount decreases by 1 at\nend of turn.",
+	[ENEMY_EFF.PLAN_ATTACK]: "If the\nplayer has enough shield\nto block 100% of attack,\ngain 2 ATK+ and make a\nnew plan. If this has\nshield and intends to\ndefend, change intent to\nattack and make a new\nplan.",
+	[ENEMY_EFF.PLAN_SUMMON]: "If the\nplayer has enough shield\nto block 100% of attack\nor this has shield and\nintends to defend,\nchange intent to summon\nand make a new plan.",
+	[ENEMY_EFF.PLAN_DEFEND]: "If this has\nshield and intends to\ndefend, gain 2 DEF+ and\nmake a new plan. If the\nplayer has enough shield\nto block 100% of attack,\nchange intent to defense\nand make a new plan.",
+	[ENEMY_EFF.SCRAP_HEAP]: "On death,\nno effects trigger.",
 };
 
 for (const key in EFF_DESC) {
-	EFF_DESC[key] = colorText(EFF_DESC[key]);
+	if (EFF_NAME[key]) {
+		let color = "";
+		if (key >= 1800 && key < 1900) color = "#666"; // card effects: gray
+		if (color) {
+			EFF_DESC[key] = "<" + color + ">" + EFF_NAME[key].at(0).toUpperCase() + EFF_NAME[key].slice(1) + "</" + color + ">: " + colorText(EFF_DESC[key]);
+		} else {
+			EFF_DESC[key] = EFF_NAME[key].at(0).toUpperCase() + EFF_NAME[key].slice(1) + ": " + colorText(EFF_DESC[key]);
+		};
+	};
 };
 
 // event log types
