@@ -16,19 +16,6 @@
  */
 
 /**
- * Returns a string formatted with color tags.
- * @param {string} text - the string to color.
- */
-function colorText(text) {
-	text = text.replace(/(max\shealth|health|non-combat\sdamage|combat\sdamage|extra\sdamage|damage|attacks|attack)/gi, "<#f44>$1</#f44>");
-	text = text.replace(/(extra\sshield|shield|defend|defense)/gi, "<#58f>$1</#58f>");
-	text = text.replace(/(cost\sreduction|one\suse|retention|uniform|unplayable)/gi, "<#666>$1</#666>");
-	text = text.replace(/(magic)(\stype)/gi, "<#f0f>$1</#f0f>$2");
-	text = text.replace(/(\[decay\]|decay)/gi, "<#80f>$1</#80f>");
-	return text;
-};
-
-/**
  * Returns a boolean indicating whether the middleground layers are hidden.
  */
 function hidden() {

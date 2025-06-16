@@ -368,8 +368,8 @@ const draw = {
 	 * @param {number} height - the box's height.
 	 * @param style - the box's style object.
 	 */
-	box(x, y, width, height, style = {"background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
-		style = Object.assign({"background-color": "#ccc", "border-width": 1, "border-color": "#000"}, style);
+	box(x, y, width, height, style = {"background-color": "#ddd", "border-width": 1, "border-color": "#000"}) {
+		style = Object.assign({"background-color": "#ddd", "border-width": 1, "border-color": "#000"}, style);
 		if (style["background-color"]) draw.rect(style["background-color"], x, y, width, height);
 		const borderW = style["border-width"];
 		if (borderW) {
@@ -469,7 +469,7 @@ const draw = {
 		if (CARDS[card.id].defendEffects !== false && !outside) {
 			if (CARDS[card.id].keywords.includes(CARD_EFF.UNIFORM)) extra = Math.floor(extra / 2);
 			if (extra || mult !== 1) {
-				desc = desc.replace(/(gain\s)(\d+)(\s<#58f>shield<\/#58f>)/gi, (substring, pre, number, post) => {
+				desc = desc.replace(/(gain\s)(\d+)(\s<#48f>shield<\/#48f>)/gi, (substring, pre, number, post) => {
 					const original = parseInt(number);
 					let shield = Math.ceil((original + extra) * mult);
 					if (shield > original) {
@@ -511,8 +511,8 @@ const draw = {
 	 * @param {string} str - the string containing the lore to insert into the textbox.
 	 * @param style - the textbox's style object.
 	 */
-	textBox(x, y, width, str, style = {"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}) {
-		style = Object.assign({"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false, "background-color": "#ccc", "border-width": 1, "border-color": "#000"}, style);
+	textBox(x, y, width, str, style = {"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false, "background-color": "#ddd", "border-width": 1, "border-color": "#000"}) {
+		style = Object.assign({"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false, "background-color": "#ddd", "border-width": 1, "border-color": "#000"}, style);
 		const lines = (("" + str).match(/\n/g) || []).length;
 		let height = style["text-small"] ? 7 : 12;
 		if (style["text-small"]) {
@@ -656,8 +656,10 @@ const info = {
 		const y = 68 + yPlus;
 		let move = 0;
 		if (eff > 0) {
-			const desc = (PERM_EFF_DESC[type] || "You have " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE) && eff >= 2 ? "s" : "") + ".");
-			move += draw.textBox(x, y + move, desc.length, desc, {"text-small": true});
+			const name = EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "");
+			const start = (PERM_EFF_DESC[type] ? "This " + PERM_EFF_DESC[type] : "This has " + eff);
+			const desc = start + " " + name + ".";
+			move += draw.textBox(x, y + move, desc.length, (EFF_COLOR[type] ? start + " <" + EFF_COLOR[type] + ">" + name + "</" + EFF_COLOR[type] + ">." : desc), {"text-small": true});
 		};
 		move += draw.textBox(x, y + move, 24, EFF_DESC[type], {"text-small": true});
 		return move;
@@ -675,8 +677,10 @@ const info = {
 		const y = pos[1] + yPlus;
 		let move = 0;
 		if (eff > 0) {
-			let desc = (PERM_EFF_DESC[type] || "This has " + eff + " " + EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === EFF.REINFORCE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "") + ".");
-			move += draw.textBox(x + 72 - (desc.length * 3), y + move, desc.length, desc, {"text-small": true});
+			const name = EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "");
+			const start = (PERM_EFF_DESC[type] ? "This " + PERM_EFF_DESC[type] : "This has " + eff);
+			const desc = start + " " + name + ".";
+			move += draw.textBox(x + 72 - (desc.length * 3), y + move, desc.length, (EFF_COLOR[type] ? start + " <" + EFF_COLOR[type] + ">" + name + "</" + EFF_COLOR[type] + ">." : desc), {"text-small": true});
 		};
 		move += draw.textBox(x, y + move, 24, EFF_DESC[type], {"text-small": true});
 		if (type === ENEMY_EFF.COUNTDOWN) move += draw.textBox(x, y + move, 24, "The next intent will be\nto " + MIN_INTENT_DESC[game.enemies[game.select[1]].intentHistory[eff - 1]] + ".", {"text-small": true});

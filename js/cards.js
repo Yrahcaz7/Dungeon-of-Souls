@@ -107,7 +107,7 @@ const CARDS = {
 	},
 	2001: {
 		name: "Reinforce",
-		desc: ["Gain 2 shield and\n1 reinforce.", "Gain 4 shield and\n2 reinforces."],
+		desc: ["Gain 2 shield and\n1 reinforce.", "Gain 4 shield and\n2 reinforce."],
 		rarity: 1,
 		cost: 1,
 		effect(level = 0) {
@@ -122,7 +122,7 @@ const CARDS = {
 	},
 	2002: {
 		name: "Everlasting Shield",
-		desc: "Gain 3 reinforces.",
+		desc: "Gain 3 reinforce.",
 		rarity: 2,
 		cost: [2, 1],
 		effect(level = 0) {gainEff(EFF.REINFORCE, 3)},

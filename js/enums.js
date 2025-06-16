@@ -131,7 +131,7 @@ const INTENT = {ATTACK: 700, DEFEND: 701, BUFF: 702, SUMMON: 703, RITUAL: 704};
 // minimal descriptions of enemy intents
 const MIN_INTENT_DESC = {
 	[INTENT.ATTACK]: "<#f44>attack</#f44> you",
-	[INTENT.DEFEND]: "<#58f>defend</#58f> itself",
+	[INTENT.DEFEND]: "<#48f>defend</#48f> itself",
 	[INTENT.BUFF]: "buff itself",
 	[INTENT.SUMMON]: "summon a minion",
 };
@@ -139,7 +139,7 @@ const MIN_INTENT_DESC = {
 // full descriptions of enemy intents
 const FULL_INTENT_DESC = {
 	[INTENT.ATTACK]: "This enemy intends to <#f44>attack</#f44>\nyou on its next turn.",
-	[INTENT.DEFEND]: "This enemy intends to <#58f>defend</#58f>\nitself on its next turn.",
+	[INTENT.DEFEND]: "This enemy intends to <#48f>defend</#48f>\nitself on its next turn.",
 	[INTENT.BUFF]: "This enemy intends to buff\nitself on its next turn.",
 	[INTENT.SUMMON]: "This enemy intends to summon\na minion on its next turn.",
 	[INTENT.RITUAL]: "This enemy would have\nsummoned a minion on its\nnext turn, but since there\nare already five, it will\nperform a ritual instead.",
@@ -211,10 +211,10 @@ const EFF_NAME = {
 
 // descriptions of having permanent effects
 const PERM_EFF_DESC = {
-	[ENEMY_EFF.PLAN_ATTACK]: "This has plan attack.",
-	[ENEMY_EFF.PLAN_SUMMON]: "This has plan summon.",
-	[ENEMY_EFF.PLAN_DEFEND]: "This has plan defend.",
-	[ENEMY_EFF.SCRAP_HEAP]: "This is a scrap heap.",
+	[ENEMY_EFF.PLAN_ATTACK]: "has",
+	[ENEMY_EFF.PLAN_SUMMON]: "has",
+	[ENEMY_EFF.PLAN_DEFEND]: "has",
+	[ENEMY_EFF.SCRAP_HEAP]: "is a",
 };
 
 // descriptions of effects
@@ -244,14 +244,58 @@ const EFF_DESC = {
 	[ENEMY_EFF.SCRAP_HEAP]: "On death,\nno effects trigger.",
 };
 
+// effects and phrases associated with colors
+const COLOR = {
+	"#f44": ["max health", "health", "non-combat damage", "combat damage", "extra damage", "damage", "attacks", "attack", EFF.ATKUP, ENEMY_EFF.COUNTDOWN, ENEMY_EFF.SCRAP_HEAP], // red
+	"#48f": ["extra shield", "shield", "defend", "defense", "aura blades", EFF.AURA_BLADE, EFF.DEFUP], // blue
+	"#e70": [EFF.BURN, EFF.BLAZE], // orange
+	"#862": [EFF.REINFORCE], // brown
+	"#665": [EFF.RESILIENCE], // yellowish gray
+	"#655": [EFF.WEAKNESS], // reddish gray
+	"#e50": [EFF.PULSE], // reddish orange
+	"#a80": ["rewinds", ENEMY_EFF.REWIND], // yellow
+	"#556": [ENEMY_EFF.SHROUD], // bluish gray
+	"#900": [ENEMY_EFF.PLAN_ATTACK], // dark red
+	"#070": [ENEMY_EFF.PLAN_SUMMON], // dark green
+	"#00a": [ENEMY_EFF.PLAN_DEFEND], // dark blue
+	"#666": [CARD_EFF.ONE_USE, CARD_EFF.UNIFORM, CARD_EFF.UNPLAYABLE, CARD_EFF.COST_REDUCTION, CARD_EFF.RETENTION], // gray
+};
+
+/**
+ * Returns a string formatted with color tags.
+ * @param {string} text - the string to color.
+ */
+const colorText = (() => {
+	const COLOR_REGEX = {};
+	for (const color in COLOR) {
+		COLOR_REGEX[color] = new RegExp("(" + COLOR[color].map(eff => (EFF_NAME[eff] || eff).replace(" ", "\\s").replace("+", "\\+")).join("|") + ")", "gi");
+	};
+	return (text = "") => {
+		for (const color in COLOR_REGEX) {
+			text = text.replace(COLOR_REGEX[color], "<" + color + ">$1</" + color + ">");
+		};
+		text = text.replace(/(magic)(\stype)/gi, "<#f0f>$1</#f0f>$2");
+		text = text.replace(/(\[decay\]|decay)/gi, "<#80f>$1</#80f>");
+		return text;
+	};
+})();
+
+// colors of effects
+const EFF_COLOR = {};
+
+for (const color in COLOR) {
+	COLOR[color].forEach(eff => {
+		if (EFF_NAME[eff]) EFF_COLOR[eff] = color;
+	});
+};
+
 for (const key in EFF_DESC) {
-	if (EFF_NAME[key]) {
-		let color = "";
-		if (key >= 1800 && key < 1900) color = "#666"; // card effects: gray
-		if (color) {
-			EFF_DESC[key] = "<" + color + ">" + EFF_NAME[key].at(0).toUpperCase() + EFF_NAME[key].slice(1) + "</" + color + ">: " + colorText(EFF_DESC[key]);
+	const num = +key;
+	if (EFF_NAME[num]) {
+		if (EFF_COLOR[num]) {
+			EFF_DESC[num] = "<" + EFF_COLOR[num] + ">" + EFF_NAME[num].at(0).toUpperCase() + EFF_NAME[num].slice(1) + "</" + EFF_COLOR[num] + ">: " + colorText(EFF_DESC[num]);
 		} else {
-			EFF_DESC[key] = EFF_NAME[key].at(0).toUpperCase() + EFF_NAME[key].slice(1) + ": " + colorText(EFF_DESC[key]);
+			EFF_DESC[num] = EFF_NAME[num].at(0).toUpperCase() + EFF_NAME[num].slice(1) + ": " + colorText(EFF_DESC[num]);
 		};
 	};
 };
