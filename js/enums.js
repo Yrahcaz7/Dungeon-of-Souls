@@ -244,10 +244,16 @@ const EFF_DESC = {
 	[ENEMY_EFF.SCRAP_HEAP]: "On death,\nno effects trigger.",
 };
 
+// numeric desc node types
+const DESC = {DAMAGE: 2300, SHIELD: 2301};
+
+// names of desc node types
+const DESC_NAME = {[DESC.DAMAGE]: "damage", [DESC.SHIELD]: "shield"};
+
 // effects and phrases associated with colors
 const COLOR = {
-	"#f44": ["max health", "health", "non-combat damage", "combat damage", "extra damage", "damage", "attacks", "attack", EFF.ATKUP, ENEMY_EFF.COUNTDOWN, ENEMY_EFF.SCRAP_HEAP], // red
-	"#48f": ["extra shield", "shield", "defend", "defense", "aura blades", EFF.AURA_BLADE, EFF.DEFUP], // blue
+	"#f44": ["max health", "health", "non-combat damage", "combat damage", "extra damage", "damage", "attacks", "attack", DESC.DAMAGE, EFF.ATKUP, ENEMY_EFF.COUNTDOWN, ENEMY_EFF.SCRAP_HEAP], // red
+	"#48f": ["extra shield", "shield", "defend", "defense", "aura blades", DESC.SHIELD, EFF.AURA_BLADE, EFF.DEFUP], // blue
 	"#e70": [EFF.BURN, EFF.BLAZE], // orange
 	"#862": [EFF.REINFORCE], // brown
 	"#665": [EFF.RESILIENCE], // yellowish gray
@@ -268,7 +274,7 @@ const COLOR = {
 const colorText = (() => {
 	const COLOR_REGEX = {};
 	for (const color in COLOR) {
-		COLOR_REGEX[color] = new RegExp("(" + COLOR[color].map(eff => (EFF_NAME[eff] || eff).replace(" ", "\\s").replace("+", "\\+")).join("|") + ")", "gi");
+		COLOR_REGEX[color] = new RegExp("(" + COLOR[color].filter(key => !DESC_NAME[key]).map(key => (EFF_NAME[key] || key).replace(" ", "\\s").replace("+", "\\+")).join("|") + ")", "gi");
 	};
 	return (text = "") => {
 		for (const color in COLOR_REGEX) {
@@ -284,8 +290,8 @@ const colorText = (() => {
 const EFF_COLOR = {};
 
 for (const color in COLOR) {
-	COLOR[color].forEach(eff => {
-		if (EFF_NAME[eff]) EFF_COLOR[eff] = color;
+	COLOR[color].forEach(key => {
+		if (DESC_NAME[key] || EFF_NAME[key]) EFF_COLOR[key] = color;
 	});
 };
 
@@ -311,6 +317,3 @@ const REWARD = {GOLD: 2200, CARD: 2201, ARTIFACT: 2202, HEALTH: 2203, PURIFIER: 
 
 // names of rewards
 const REWARD_NAME = {[REWARD.GOLD]: "gold", [REWARD.CARD]: "card", [REWARD.ARTIFACT]: "artifact", [REWARD.HEALTH]: "health", [REWARD.PURIFIER]: "purifier", [REWARD.REFINER]: "refiner", [REWARD.FINISH]: "finish"};
-
-// numeric desc node types
-const DESC = {DAMAGE: 2300, SHIELD: 2301};

@@ -512,8 +512,8 @@ const draw = {
 				x += 17;
 				if (x >= enemyPos[index][0] + (index == 0 && game.void.length && game.enemies.length > 2 ?
 					(Object.keys(enemy.eff).length > (game.enemies.length > 3 ? 4 : 6) ? 51 : 34)
-					: 68)
-				) {
+					: 68
+				)) {
 					x = enemyPos[index][0];
 					y += 17;
 				};
@@ -530,7 +530,7 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	card(type, xPlus = 0, yPlus = 0) {
-		if (type === CARD_EFF.UNPLAYABLE) return 0;
+		if (typeof type === "number" && !EFF_DESC[type]) return 0;
 		let x = handPos[game.prevCard] + 69 + xPlus;
 		const y = 147 - Math.floor(cardAnim[game.prevCard]) + yPlus;
 		if (x + 24 * 3 + 2 > 400) {
@@ -549,7 +549,7 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	cardSelect(type, xPlus = 0, yPlus = 0) {
-		if (type === CARD_EFF.UNPLAYABLE) return 0;
+		if (typeof type === "number" && !EFF_DESC[type]) return 0;
 		let x = handSelectPos[game.select[1]] + 69 + xPlus;
 		const y = 18 + yPlus;
 		if (x + 24 * 3 + 2 > 400) {
@@ -568,7 +568,7 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	reward(type, xPlus = 0, yPlus = 0) {
-		if (type === CARD_EFF.UNPLAYABLE) return 0;
+		if (typeof type === "number" && !EFF_DESC[type]) return 0;
 		let x = handPos[game.select[1]] + 69 + xPlus;
 		const y = 51 + yPlus;
 		if (game.select[1] == get.cardRewardChoices() - 1 && get.cardRewardChoices() >= 4) {
@@ -588,7 +588,7 @@ const info = {
 	 */
 	deck(type, xPlus = 0, yPlus = 0) {
 		const deck = currentDeck();
-		if (!deck[game.cardSelect] || type === CARD_EFF.UNPLAYABLE) return 0;
+		if (!deck[game.cardSelect] || (typeof type === "number" && !EFF_DESC[type])) return 0;
 		const refining = (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE);
 		const cols = (refining ? 3 : 6);
 		const selected = [game.cardSelect % cols, Math.floor(game.cardSelect / cols)];

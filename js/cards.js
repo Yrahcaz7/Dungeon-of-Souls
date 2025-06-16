@@ -18,7 +18,7 @@
 const CARDS = {
 	0: {
 		name: "Error",
-		desc: [new Desc("This card is\nclearly an error.\nUnplayable."), new Desc("Wow! An improved\nerror! Amazing! It\ndefinitely still\nisn't unplayable,\nright? That would\nbe ridiculous.")],
+		desc: [new Desc("This card is\nclearly an error.\n", [CARD_EFF.UNPLAYABLE, true], "."), new Desc("Wow! An improved\nerror! Amazing! It\ndefinitely still\nisn't ", CARD_EFF.UNPLAYABLE, ",\nright? That would\nbe ridiculous.")],
 		rarity: -1,
 		cost: 0,
 	},
@@ -31,7 +31,7 @@ const CARDS = {
 	},
 	1001: {
 		name: "Heat Wave",
-		desc: [new Desc("Deal ", [7, DESC.DAMAGE], " to\nan enemy and apply\n2 burn to all\nenemies."), new Desc("Deal ", [7, DESC.DAMAGE], " to\nan enemy and apply\n4 burn to all\nenemies.")],
+		desc: [new Desc("Deal ", [7, DESC.DAMAGE], " to\nan enemy and apply\n2 ", EFF.BURN, " to all\nenemies."), new Desc("Deal ", [7, DESC.DAMAGE], " to\nan enemy and apply\n4 ", EFF.BURN, " to all\nenemies.")],
 		rarity: 2,
 		cost: 2,
 		damage: 7,
@@ -44,7 +44,7 @@ const CARDS = {
 	},
 	1002: {
 		name: "Sweeping Slash",
-		desc: [new Desc("Deal ", [4, DESC.DAMAGE], " to\nall enemies.\nUniform."), new Desc("Deal ", [8, DESC.DAMAGE], " to\nall enemies.\nUniform.")],
+		desc: [new Desc("Deal ", [4, DESC.DAMAGE], " to\nall enemies.\n", [CARD_EFF.UNIFORM, true], "."), new Desc("Deal ", [8, DESC.DAMAGE], " to\nall enemies.\n", [CARD_EFF.UNIFORM, true], ".")],
 		rarity: 1,
 		cost: 1,
 		attackAnim: I.player.attack_2,
@@ -58,7 +58,7 @@ const CARDS = {
 	},
 	1003: {
 		name: "Bladestorm",
-		desc: new Desc("Use all aura blades\nto deal ", [0, DESC.DAMAGE], " to\nall enemies per\naura blade.\nUniform."),
+		desc: new Desc("Use all ", [EFF.AURA_BLADE, "s"], "\nto deal ", [0, DESC.DAMAGE], " to\nall enemies per\n", EFF.AURA_BLADE, ".\n", [CARD_EFF.UNIFORM, true], "."),
 		rarity: 2,
 		cost: [2, 1],
 		attackAnim: I.player.attack_2,
@@ -94,7 +94,7 @@ const CARDS = {
 	},
 	1006: {
 		name: "Pulsating Strike",
-		desc: [new Desc("Gain 1 pulse, then\ndeal [", [4, DESC.DAMAGE, " + pulse]\n"], " to an enemy."), new Desc("Gain 2 pulse, then\ndeal [", [4, DESC.DAMAGE, " + pulse]\n"], " to an enemy.")],
+		desc: [new Desc("Gain 1 ", EFF.PULSE, ", then\ndeal [", [4, DESC.DAMAGE, [" + ", EFF.PULSE, "]\n"]], " to an enemy."), new Desc("Gain 2 ", EFF.PULSE, ", then\ndeal [", [4, DESC.DAMAGE, [" + ", EFF.PULSE, "]\n"]], " to an enemy.")],
 		rarity: 1,
 		cost: 1,
 		attack(level = 0) {
@@ -111,7 +111,7 @@ const CARDS = {
 	},
 	2001: {
 		name: "Reinforce",
-		desc: [new Desc("Gain ", [2, DESC.SHIELD], " and\n1 reinforce."), new Desc("Gain ", [4, DESC.SHIELD], " and\n2 reinforce.")],
+		desc: [new Desc("Gain ", [2, DESC.SHIELD], " and\n1 ", EFF.REINFORCE, "."), new Desc("Gain ", [4, DESC.SHIELD], " and\n2 ", EFF.REINFORCE, ".")],
 		rarity: 1,
 		cost: 1,
 		effect(level = 0) {
@@ -126,14 +126,14 @@ const CARDS = {
 	},
 	2002: {
 		name: "Everlasting Shield",
-		desc: new Desc("Gain 3 reinforce."),
+		desc: new Desc("Gain 3 ", EFF.REINFORCE, "."),
 		rarity: 2,
 		cost: [2, 1],
 		effect(level = 0) {gainEff(EFF.REINFORCE, 3)},
 	},
 	2003: {
 		name: "Cower",
-		desc: [new Desc("Gain ", [9, DESC.SHIELD], " and\n2 weakness."), new Desc("Gain ", [10, DESC.SHIELD], " and\n1 weakness.")],
+		desc: [new Desc("Gain ", [9, DESC.SHIELD], " and\n2 ", EFF.WEAKNESS, "."), new Desc("Gain ", [10, DESC.SHIELD], " and\n1 ", EFF.WEAKNESS, ".")],
 		rarity: 1,
 		cost: 1,
 		effect(level = 0) {
@@ -148,14 +148,14 @@ const CARDS = {
 	},
 	2004: {
 		name: "Resilience",
-		desc: [new Desc("Gain 2 resilience."), new Desc("Gain 3 resilience.")],
+		desc: [new Desc("Gain 2 ", EFF.RESILIENCE, "."), new Desc("Gain 3 ", EFF.RESILIENCE, ".")],
 		rarity: 2,
 		cost: 1,
 		effect(level = 0) {gainEff(EFF.RESILIENCE, (level >= 1 ? 3 : 2))},
 	},
 	2005: {
 		name: "The Eternal Gold",
-		desc: [new Desc("Consume 45 gold\nto gain ", [10, DESC.SHIELD], "\nand 1 reinforce."), new Desc("Consume 30 gold\nto gain ", [15, DESC.SHIELD], "\nand 1 reinforce.")],
+		desc: [new Desc("Consume 45 gold\nto gain ", [10, DESC.SHIELD], "\nand 1 ", EFF.REINFORCE, "."), new Desc("Consume 30 gold\nto gain ", [15, DESC.SHIELD], "\nand 1 ", EFF.REINFORCE, ".")],
 		rarity: 1,
 		cost: 2,
 		effect(level = 0) {
@@ -173,7 +173,7 @@ const CARDS = {
 	},
 	2006: {
 		name: "Pulsating Shield",
-		desc: [new Desc("Gain 1 pulse, then\ngain [", [3, DESC.SHIELD, " + pulse]\n"], "."), new Desc("Gain 2 pulse, then\ngain [", [3, DESC.SHIELD, " + pulse]\n"], ".")],
+		desc: [new Desc("Gain 1 ", EFF.PULSE, ", then\ngain [", [3, DESC.SHIELD, [" + ", EFF.PULSE, "]\n"]], "."), new Desc("Gain 2 ", EFF.PULSE, ", then\ngain [", [3, DESC.SHIELD, [" + ", EFF.PULSE, "]\n"]], ".")],
 		rarity: 1,
 		cost: 1,
 		effect(level = 0) {
@@ -183,7 +183,7 @@ const CARDS = {
 	},
 	3000: {
 		name: "War Cry",
-		desc: [new Desc("All non-boss\nenemies switch\ntheir intents to\ndefense. One use."), new Desc("All non-boss\nenemies switch\ntheir intents to\ndefense. Draw a\ncard. One use.")],
+		desc: [new Desc("All non-boss\nenemies switch\ntheir intents to\ndefense. ", [CARD_EFF.ONE_USE, true], "."), new Desc("All non-boss\nenemies switch\ntheir intents to\ndefense. Draw a\ncard. ", [CARD_EFF.ONE_USE, true], ".")],
 		rarity: 1,
 		cost: 0,
 		effectAnim: I.effect.war_cry,
@@ -213,7 +213,7 @@ const CARDS = {
 	},
 	3002: {
 		name: "Burn",
-		desc: [new Desc("Apply 1 burn to\nyourself and all\nenemies."), new Desc("Apply 1 burn to\nyourself and apply\n2 burn to all\nenemies.")],
+		desc: [new Desc("Apply 1 ", EFF.BURN, " to\nyourself and all\nenemies."), new Desc("Apply 1 ", EFF.BURN, " to\nyourself and apply\n2 ", EFF.BURN, " to all\nenemies.")],
 		rarity: 1,
 		cost: 0,
 		effect(level = 0) {
@@ -226,37 +226,37 @@ const CARDS = {
 	},
 	3003: {
 		name: "Memorize",
-		desc: new Desc("Choose a card from\nyour hand. Apply 1\ncost reduction\nand 1 retention to\nthe chosen card."),
+		desc: new Desc("Choose a card from\nyour hand. Apply 1\n", CARD_EFF.COST_REDUCTION, "\nand 1 ", CARD_EFF.RETENTION, " to\nthe chosen card."),
 		rarity: 2,
 		cost: [1, 0],
 		select() {return [SS.SELECT_HAND, game.select[1] - 1]},
 		effect(level = 0) {
 			const index = (game.select[1] >= game.enemyAtt[0] ? game.select[1] + 1 : game.select[1]);
-			if (game.hand[index].eff[CARD_EFF.RETENTION]) game.hand[index].eff[CARD_EFF.RETENTION]++;
-			else game.hand[index].eff[CARD_EFF.RETENTION] = 1;
 			if (game.hand[index].eff[CARD_EFF.COST_REDUCTION]) game.hand[index].eff[CARD_EFF.COST_REDUCTION]++;
 			else game.hand[index].eff[CARD_EFF.COST_REDUCTION] = 1;
+			if (game.hand[index].eff[CARD_EFF.RETENTION]) game.hand[index].eff[CARD_EFF.RETENTION]++;
+			else game.hand[index].eff[CARD_EFF.RETENTION] = 1;
 		},
 		can(level = 0) {return game.hand.length > 1},
 		cannotMessage: "no valid target",
 	},
 	3004: {
 		name: "Vibration",
-		desc: new Desc("Gain 2 pulse."),
+		desc: new Desc("Gain 2 ", EFF.PULSE, "."),
 		rarity: 1,
 		cost: [1, 0],
 		effect(level = 0) {gainEff(EFF.PULSE, 2)},
 	},
 	4000: {
 		name: "Aura Blade",
-		desc: new Desc("Gain 1 aura blade."),
+		desc: new Desc("Gain 1 ", EFF.AURA_BLADE, "."),
 		rarity: 1,
 		cost: [1, 0],
 		effect(level = 0) {gainEff(EFF.AURA_BLADE)},
 	},
 	4001: {
 		name: "Aura Blaze",
-		desc: new Desc("Gain 4 aura blades.\nOne use."),
+		desc: new Desc("Gain 4 ", [EFF.AURA_BLADE, "s"], ".\n", [CARD_EFF.ONE_USE, true], "."),
 		rarity: 2,
 		cost: [3, 2],
 		effect(level = 0) {gainEff(EFF.AURA_BLADE, 4)},
@@ -269,25 +269,38 @@ const CARD_TYPE = ["error", "attack", "defense", "skill", "magic"];
 // Loads all card data.
 (() => {
 	/**
+	 * Checks if a number is enclosed within an array recursively.
+	 * @param {Array|number} arr - The array to check.
+	 * @param {number} num - The number to check for.
+	 */
+	function encloses(arr, num) {
+		if (arr instanceof Array) {
+			for (let index = 0; index < arr.length; index++) {
+				if (encloses(arr[index], num)) return true;
+			};
+		} else if (arr === num) {
+			return true;
+		};
+		return false;
+	};
+	/**
 	 * Loads a card and returns its description.
 	 * @param {object} ref - a reference to the card data.
 	 * @param {Desc} desc - the card's description.
 	 */
 	function loadCard(ref, desc) {
 		// color text
-		desc.nodes = desc.nodes.map(node => node instanceof Array ? node : colorText(node));
+		desc.nodes = desc.nodes.map(node => typeof node === "string" ? colorText(node) : node);
 		// list keywords
 		if (!ref.keywords) ref.keywords = [];
 		for (const eff in EFF) {
-			const regex = new RegExp(EFF_NAME[EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i");
-			if (!ref.keywords.includes(EFF[eff]) && desc.nodes.some(node => regex.test(node))) {
+			if (!ref.keywords.includes(EFF[eff]) && desc.nodes.some(node => node === EFF[eff] || encloses(node, EFF[eff]))) {
 				ref.keywords.push(EFF[eff]);
 			};
 		};
 		for (const eff in CARD_EFF) {
-			if (CARD_EFF[eff] === CARD_EFF.COST_REDUCTION || CARD_EFF[eff] === CARD_EFF.DESC) continue;
-			const regex = new RegExp(EFF_NAME[CARD_EFF[eff]].replace(" ", "\\s").replace("+", "\\+"), "i");
-			if (!ref.keywords.includes(CARD_EFF[eff]) && desc.nodes.some(node => regex.test(node))) {
+			if (CARD_EFF[eff] === CARD_EFF.DESC) continue;
+			if (!ref.keywords.includes(CARD_EFF[eff]) && desc.nodes.some(node => node === CARD_EFF[eff] || encloses(node, CARD_EFF[eff]))) {
 				ref.keywords.push(CARD_EFF[eff]);
 			};
 		};
