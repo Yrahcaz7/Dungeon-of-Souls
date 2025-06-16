@@ -442,49 +442,8 @@ const draw = {
 		if (name.length >= 10) draw.lore(x + 33, y + 44, name, {"text-align": DIR.CENTER, "text-small": true});
 		else if (LOW_CHAR_REGEX.test(name)) draw.lore(x + 32, y + 41, name, {"text-align": DIR.CENTER});
 		else draw.lore(x + 32, y + 42, name, {"text-align": DIR.CENTER});
-		// card description
-		let desc = card.getAttr("desc");
-		let extra = get.extraDamage();
-		let mult = get.dealDamageMult(game.select[0] === S.ATTACK ? game.select[1] : game.enemyAtt[1]);
-		let valueIsLess = false;
-		if (CARDS[card.id].attackEffects !== false && !outside) {
-			if (CARDS[card.id].keywords.includes(CARD_EFF.UNIFORM)) extra = Math.floor(extra / 2);
-			if (extra || mult !== 1) {
-				desc = desc.replace(/(deal\s)(\d+)(\s<#f44>damage<\/#f44>)/gi, (substring, pre, number, post) => {
-					const original = parseInt(number);
-					let damage = Math.ceil((original + extra) * mult);
-					if (damage > original) {
-						return pre + "<#0f0 highlight>" + damage + "</#0f0>" + post;
-					} else if (damage < original) {
-						valueIsLess = true;
-						return pre + "<#fff highlight>" + damage + "</#fff>" + post;
-					} else {
-						return pre + damage + post;
-					};
-				});
-			};
-		};
-		extra = get.extraShield();
-		mult = get.playerShieldMult();
-		if (CARDS[card.id].defendEffects !== false && !outside) {
-			if (CARDS[card.id].keywords.includes(CARD_EFF.UNIFORM)) extra = Math.floor(extra / 2);
-			if (extra || mult !== 1) {
-				desc = desc.replace(/(gain\s)(\d+)(\s<#48f>shield<\/#48f>)/gi, (substring, pre, number, post) => {
-					const original = parseInt(number);
-					let shield = Math.ceil((original + extra) * mult);
-					if (shield > original) {
-						return pre + "<#0f0 highlight>" + shield + "</#0f0>" + post;
-					} else if (shield < original) {
-						valueIsLess = true;
-						return pre + "<#fff highlight>" + shield + "</#fff>" + post;
-					} else {
-						return pre + shield + post;
-					};
-				});
-			};
-		};
 		// card text
-		draw.lore(x + 6, y + 55, desc, {"highlight-color": (valueIsLess ? "#f00" : "#000"), "text-small": true});
+		card.getAttr("desc").draw(x + 6, y + 55, card.id, outside);
 		draw.lore(x + 33, y + 89.5, (RARITY[rarity] || "error") + "|" + type, {"text-align": DIR.CENTER, "text-small": true});
 		// card energy and rarity
 		if (rarity == 2) draw.image(I.card.rarity.rare, x - 1, y - 2);

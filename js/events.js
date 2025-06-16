@@ -89,7 +89,7 @@ const doScreenShake = (() => {
 
 	let screenShakeAnimation = null;
 
-	return (strength, duration, angle = Math.random() * 2 * Math.PI) => {
+	return (strength = 0, duration = 0, angle = Math.random() * 2 * Math.PI) => {
 		if (strength <= 0 || duration <= 0 || !global.options[OPTION.SCREEN_SHAKE]) return;
 		strength = Math.min(strength, 1);
 		let animation = [];

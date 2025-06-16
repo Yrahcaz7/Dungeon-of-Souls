@@ -311,3 +311,6 @@ const REWARD = {GOLD: 2200, CARD: 2201, ARTIFACT: 2202, HEALTH: 2203, PURIFIER: 
 
 // names of rewards
 const REWARD_NAME = {[REWARD.GOLD]: "gold", [REWARD.CARD]: "card", [REWARD.ARTIFACT]: "artifact", [REWARD.HEALTH]: "health", [REWARD.PURIFIER]: "purifier", [REWARD.REFINER]: "refiner", [REWARD.FINISH]: "finish"};
+
+// numeric desc node types
+const DESC = {DAMAGE: 2300, SHIELD: 2301};
