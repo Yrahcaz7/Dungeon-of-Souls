@@ -47,6 +47,7 @@ const I = {
 		rarity: {
 			rare: new Image,
 		},
+		"-1": {},
 		0: {},
 		1: {},
 		2: {},
@@ -63,6 +64,9 @@ const I = {
 			prime: new Image,
 			prime_attack: new Image,
 			prime_defend: new Image,
+			sticky: new Image,
+			sticky_attack: new Image,
+			sticky_defend: new Image,
 		},
 		fragment: {
 			roll: new Image,
@@ -274,9 +278,9 @@ const loadImages = (() => {
 		const loadStartTime = Date.now();
 		// setup cards
 		for (const id in CARDS) {
-			if (CARDS[id].rarity < 0) continue;
+			if (id <= 0) continue;
 			I.card[CARDS[id].rarity][id] = new Image;
-			CARD_IDS[CARDS[id].rarity].push(+id);
+			if (CARDS[id].rarity >= 0) CARD_IDS[CARDS[id].rarity].push(+id);
 		};
 		// setup artifacts
 		for (const id in ARTIFACTS) {

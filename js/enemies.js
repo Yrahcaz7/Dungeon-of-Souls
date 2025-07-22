@@ -50,6 +50,7 @@ class Enemy {
 		this.defendPower = Math.max(Math.round(power * 3), 1);
 		this.intent = this.getIntent(true);
 		this.intentHistory = [this.intent];
+		if (type === SLIME.STICKY) this.eff[ENEMY_EFF.STICKY] = 1;
 		if (type === FRAGMENT && hasArtifact(202)) this.eff[ENEMY_EFF.REWIND] = 1;
 		if (type === SENTRY.BIG || type === SENTRY.SMALL || type === SENTRY.PRIME || type === SINGULARITY) this.eff[EFF.BLAZE] = 99;
 		if (type === SINGULARITY) this.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 3)]] = 1;
@@ -280,7 +281,7 @@ function isEnemyVisible(index) {
 	if (index !== game.enemyNum || game.enemies[index].transition) return true;
 	const type = game.enemies[index].type;
 	const intent = game.enemies[index].intent;
-	if (intent === INTENT.ATTACK) return !(type === SLIME.SMALL || type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && enemyAnim.prime[index] == -1));
+	if (intent === INTENT.ATTACK) return !(type === SLIME.SMALL || (type === SLIME.STICKY && enemyAnim.action[0] < 8) || type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && enemyAnim.prime[index] == -1));
 	if (intent === INTENT.DEFEND) return !(type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && enemyAnim.prime[index] == -1) || type === SINGULARITY);
 	return true;
 };
@@ -300,6 +301,8 @@ function getEnemyIntentPos(index, moving = false) {
 	} else if (type === SLIME.PRIME) {
 		if (enemyAnim.prime[index] == -1) y -= 37;
 		else y -= 17 + Math.max(enemyAnim.prime[index] - 4, 0) * 2.5;
+	} else if (type === SLIME.STICKY) {
+		y -= 7;
 	} else if (type === FRAGMENT) {
 		if (enemyAnim.prime[index] == -1 || enemyAnim.prime[index] > 18) y -= 36;
 		else y = NaN;

@@ -261,10 +261,20 @@ const CARDS = {
 		cost: [3, 2],
 		effect(level = 0) {gainEff(EFF.AURA_BLADE, 4)},
 	},
+	5001: {
+		name: "Sticky Goo",
+		desc: new Desc("Take 1 non-combat\ndamage. Draw a\ncard. ", [CARD_EFF.ONE_USE, true], "."),
+		rarity: -1,
+		cost: [1, 2],
+		effect(level = 0) {
+			takeDamage(1, false);
+			drawCards(1);
+		},
+	},
 };
 
 const RARITY = ["starter", "common", "rare"];
-const CARD_TYPE = ["error", "attack", "defense", "skill", "magic"];
+const CARD_TYPE = ["error", "attack", "defense", "skill", "magic", "curse"];
 
 // Loads all card data.
 (() => {
@@ -328,10 +338,12 @@ class Card {
 	 * Returns a new card.
 	 * @param {number} id - the card's id. Defaults to `0`.
 	 * @param {number} level - the card's level. Defaults to `0`.
+	 * @param {boolean} temp - whether the card is temporary. Defaults to `false`.
 	 */
-	constructor(id = 0, level = 0) {
+	constructor(id = 0, level = 0, temp = false) {
 		this.id = id;
 		this.level = level;
+		if (temp) this.eff[CARD_EFF.TEMP] = 1;
 	};
 	/**
 	 * Returns an object as a card.

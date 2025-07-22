@@ -89,13 +89,14 @@ const SS = {
 const DIR = {UP: 501, LEFT: 502, CENTER: 503, RIGHT: 504, DOWN: 505};
 
 // enemy types
-const SLIME = {BIG: 600, SMALL: 601, PRIME: 602}, FRAGMENT = 603, SENTRY = {BIG: 604, SMALL: 605, PRIME: 606}, SINGULARITY = 607;
+const SLIME = {BIG: 600, SMALL: 601, PRIME: 602, STICKY: 608}, FRAGMENT = 603, SENTRY = {BIG: 604, SMALL: 605, PRIME: 606}, SINGULARITY = 607;
 
 // names of enemy types
 const ENEMY_NAME = {
 	[SLIME.BIG]: "big slime",
 	[SLIME.SMALL]: "small slime",
 	[SLIME.PRIME]: "prime slime",
+	[SLIME.STICKY]: "sticky slime",
 	[FRAGMENT]: "the fragment of time",
 	[SENTRY.BIG]: "big sentry",
 	[SENTRY.SMALL]: "small sentry",
@@ -108,6 +109,7 @@ const PLURAL_ENEMY_NAME = {
 	[SLIME.BIG]: "big slimes",
 	[SLIME.SMALL]: "small slimes",
 	[SLIME.PRIME]: "prime slimes",
+	[SLIME.STICKY]: "sticky slimes",
 	[SENTRY.BIG]: "big sentries",
 	[SENTRY.SMALL]: "small sentries",
 	[SENTRY.PRIME]: "prime sentries",
@@ -118,6 +120,7 @@ const ENEMY_WORTH = {
 	[SLIME.BIG]: 100,
 	[SLIME.SMALL]: 50,
 	[SLIME.PRIME]: 500,
+	[SLIME.STICKY]: 150,
 	[FRAGMENT]: 1000,
 	[SENTRY.BIG]: 150,
 	[SENTRY.SMALL]: 75,
@@ -176,10 +179,10 @@ const OPTION_NAME = {[OPTION.MUSIC]: "Music", [OPTION.SCREEN_SHAKE]: "Screen sha
 const EFF = {AURA_BLADE: 1700, BURN: 1701, REINFORCE: 1702, RESILIENCE: 1703, WEAKNESS: 1704, BLAZE: 1705, ATKUP: 1706, DEFUP: 1707, PULSE: 1708};
 
 // card effects
-const CARD_EFF = {ONE_USE: 1800, UNIFORM: 1801, UNPLAYABLE: 1802, COST_REDUCTION: 1803, RETENTION: 1804, DESC: 1899};
+const CARD_EFF = {ONE_USE: 1800, UNIFORM: 1801, UNPLAYABLE: 1802, COST_REDUCTION: 1803, RETENTION: 1804, TEMP: 1898, DESC: 1899};
 
 // enemy effects
-const ENEMY_EFF = {COUNTDOWN: 1900, REWIND: 1901, SHROUD: 1902, PLAN_ATTACK: 1903, PLAN_SUMMON: 1904, PLAN_DEFEND: 1905, SCRAP_HEAP: 1906};
+const ENEMY_EFF = {COUNTDOWN: 1900, REWIND: 1901, SHROUD: 1902, PLAN_ATTACK: 1903, PLAN_SUMMON: 1904, PLAN_DEFEND: 1905, SCRAP_HEAP: 1906, STICKY: 1907};
 
 // names of effects
 const EFF_NAME = {
@@ -207,14 +210,16 @@ const EFF_NAME = {
 	[ENEMY_EFF.PLAN_SUMMON]: "plan summon",
 	[ENEMY_EFF.PLAN_DEFEND]: "plan defend",
 	[ENEMY_EFF.SCRAP_HEAP]: "scrap heap",
+	[ENEMY_EFF.STICKY]: "sticky",
 };
 
-// descriptions of having permanent effects
+// "has" text for permanent effects
 const PERM_EFF_DESC = {
 	[ENEMY_EFF.PLAN_ATTACK]: "has",
 	[ENEMY_EFF.PLAN_SUMMON]: "has",
 	[ENEMY_EFF.PLAN_DEFEND]: "has",
 	[ENEMY_EFF.SCRAP_HEAP]: "is a",
+	[ENEMY_EFF.STICKY]: "is",
 };
 
 // descriptions of effects
@@ -233,6 +238,7 @@ const EFF_DESC = {
 	[CARD_EFF.ONE_USE]: "When played,\nthe card is sent to the\nvoid. Cards in the void\nstay there until the end\nof the battle.",
 	[CARD_EFF.RETENTION]: "On end of\nturn, the card is not\ndiscarded, then count\ndecreases by 1.",
 	[CARD_EFF.UNIFORM]: "Extra damage\nand extra shield have\nhalf the effect on the\ncard, rounded down.",
+	[CARD_EFF.TEMP]: "This card was added due\nto an effect; it will\nnot stay in your deck\nafter this battle.",
 	[CARD_EFF.DESC]: "After a card leaves\nyour hand, it loses all\nof its applied effects.",
 	// enemy effects
 	[ENEMY_EFF.COUNTDOWN]: "On end of\nturn, intent is set to\nwhat it was on the\n[count]th turn, then\ncount decreases by 1.",
@@ -242,6 +248,7 @@ const EFF_DESC = {
 	[ENEMY_EFF.PLAN_SUMMON]: "If the\nplayer has enough shield\nto block 100% of attack\nor this has shield and\nintends to defend,\nchange intent to summon\nand make a new plan.",
 	[ENEMY_EFF.PLAN_DEFEND]: "If this has\nshield and intends to\ndefend, gain 2 DEF+ and\nmake a new plan. If the\nplayer has enough shield\nto block 100% of attack,\nchange intent to defense\nand make a new plan.",
 	[ENEMY_EFF.SCRAP_HEAP]: "On death,\nno effects trigger.",
+	[ENEMY_EFF.STICKY]: "On attack, add\n2 copies of Sticky Goo\nto the target's deck.",
 };
 
 // numeric desc node types
@@ -259,12 +266,13 @@ const COLOR = {
 	"#665": [EFF.RESILIENCE], // yellowish gray
 	"#655": [EFF.WEAKNESS], // reddish gray
 	"#e50": [EFF.PULSE], // reddish orange
+	"#666": [CARD_EFF.ONE_USE, CARD_EFF.UNIFORM, CARD_EFF.UNPLAYABLE, CARD_EFF.COST_REDUCTION, CARD_EFF.RETENTION], // gray
 	"#a80": ["rewinds", ENEMY_EFF.REWIND], // yellow
 	"#556": [ENEMY_EFF.SHROUD], // bluish gray
 	"#900": [ENEMY_EFF.PLAN_ATTACK], // dark red
 	"#070": [ENEMY_EFF.PLAN_SUMMON], // dark green
 	"#00a": [ENEMY_EFF.PLAN_DEFEND], // dark blue
-	"#666": [CARD_EFF.ONE_USE, CARD_EFF.UNIFORM, CARD_EFF.UNPLAYABLE, CARD_EFF.COST_REDUCTION, CARD_EFF.RETENTION], // gray
+	"#080": ["sticky goo", ENEMY_EFF.STICKY], // dark green
 };
 
 /**

@@ -353,6 +353,7 @@ function takeDamage(amount, attack = true, index = game.enemyNum) {
 	if (attack && index >= 0) {
 		if (game.enemies[index].eff[EFF.BLAZE]) gainEff(EFF.BURN);
 		if (game.enemies[index].eff[EFF.PULSE]) gainEff(EFF.PULSE);
+		if (game.enemies[index].eff[ENEMY_EFF.STICKY]) game.deck.push(new Card(5001, 0, true), new Card(5001, 0, true));
 	};
 };
 
