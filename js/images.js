@@ -198,8 +198,30 @@ const I = {
  * Loads all images.
  */
 const loadImages = (() => {
-	const LOAD_STEPS = 18;
+	const promises = [];
+	let loadSteps = 0;
 	let loadProg = 0;
+	/**
+	 * Counts an image or all images in a folder.
+	 * @param {object} ref - a reference to the image or folder.
+	 * @param {number} countsAs - if `ref` is an image, it counts as this many images.
+	 */
+	function countImages(ref, countsAs = 1) {
+		if (ref instanceof Image) {
+			return countsAs;
+		} else if (ref instanceof Number) {
+			return ref * countsAs;
+		} else {
+			countsAs = 1;
+			if (ref.select && !(ref.select instanceof Image) && !(ref.select instanceof Number)) countsAs++;
+			if (ref.select_blue && !(ref.select_blue instanceof Image) && !(ref.select_blue instanceof Number)) countsAs++;
+			let count = 0;
+			for (const folder in ref) {
+				count += countImages(ref[folder], countsAs);
+			};
+			return count;
+		};
+	};
 	/**
 	 * Loads an image or all images in a folder.
 	 * @param {object} ref - a reference to the containing folder.
@@ -210,29 +232,27 @@ const loadImages = (() => {
 	 */
 	async function loadImage(ref, name, path, select = false, blue = false) {
 		if (ref[name] instanceof Image) {
-			const promises = [];
-			ref[name].src = path + name + ".png";
-			promises.push(new Promise(resolve => ref[name].onload = resolve));
-			if (select) {
+			if (!ref[name].src) {
+				ref[name].src = path + name + ".png";
+				promises.push(new Promise(resolve => ref[name].onload = resolve).then(updateLoadProg));
+			};
+			if (select && !ref.select[name]?.src) {
 				ref.select[name] = new Image;
 				ref.select[name].src = path + "select/" + name + ".png";
-				promises.push(new Promise(resolve => ref.select[name].onload = resolve));
+				promises.push(new Promise(resolve => ref.select[name].onload = resolve).then(updateLoadProg));
 			};
-			if (blue) {
+			if (blue && !ref.select_blue[name]?.src) {
 				ref.select_blue[name] = new Image;
 				ref.select_blue[name].src = path + "select_blue/" + name + ".png";
-				promises.push(new Promise(resolve => ref.select_blue[name].onload = resolve));
+				promises.push(new Promise(resolve => ref.select_blue[name].onload = resolve).then(updateLoadProg));
 			};
-			await Promise.all(promises);
 		} else if (ref[name] instanceof Number) {
-			const promises = [];
 			const num = +ref[name];
 			ref[name] = [];
 			for (let index = 0; index < num; index++) {
 				ref[name].push(new Image);
 				promises.push(loadImage(ref[name], index, path + name + "/"));
 			};
-			await Promise.all(promises);
 		} else {
 			select = ref[name].select && !(ref[name].select instanceof Image) && !(ref[name].select instanceof Number);
 			blue = ref[name].select_blue && !(ref[name].select_blue instanceof Image) && !(ref[name].select_blue instanceof Number);
@@ -246,7 +266,7 @@ const loadImages = (() => {
 	 */
 	async function updateLoadProg() {
 		clearCanvas();
-		draw.lore(200 - 2, 100 - 5.5 * 3, "Loading graphics...\n\n" + (loadProg / LOAD_STEPS * 100).toFixed(0) + "%", {"color": "#fff", "text-align": DIR.CENTER});
+		draw.lore(200 - 2, 100 - 5.5 * 3, "Loading graphics...\n\n" + (loadProg / loadSteps * 100).toFixed(1) + "%", {"color": "#fff", "text-align": DIR.CENTER});
 		loadProg++;
 		await new Promise(resolve => setTimeout(resolve));
 	};
@@ -271,10 +291,14 @@ const loadImages = (() => {
 		for (const eff in ENEMY_EFF) {
 			I.icon[ENEMY_EFF[eff]] = new Image;
 		};
-		// load images
-		const promises = [];
+		// count images
 		for (const folder in I) {
-			promises.push(loadImage(I, folder, "images/").then(updateLoadProg));
+			loadSteps += countImages(I[folder]);
+		};
+		// load images
+		updateLoadProg();
+		for (const folder in I) {
+			loadImage(I, folder, "images/");
 		};
 		await Promise.all(promises);
 		console.log("[images loaded in " + (Date.now() - loadStartTime) + "ms]");
