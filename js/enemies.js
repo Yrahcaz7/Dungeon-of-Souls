@@ -52,7 +52,9 @@ class Enemy {
 		this.intentHistory = [this.intent];
 		if (type === SLIME.STICKY) this.eff[ENEMY_EFF.STICKY] = 1;
 		if (type === FRAGMENT && hasArtifact(202)) this.eff[ENEMY_EFF.REWIND] = 1;
-		if (type === SENTRY.BIG || type === SENTRY.SMALL || type === SENTRY.PRIME || type === SINGULARITY) this.eff[EFF.BLAZE] = 99;
+		if (type === SENTRY.BIG || type === SENTRY.SMALL || type === SENTRY.PRIME || type === SENTRY.FLAMING || type === SINGULARITY) this.eff[EFF.BLAZE] = 99;
+		if (type === SENTRY.FLAMING) this.eff[EFF.HYPERSPEED] = 99;
+		if (type === SENTRY.FLAMING) this.eff[EFF.FIREPROOF] = 1;
 		if (type === SINGULARITY) this.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 3)]] = 1;
 		if (hasArtifact(107)) this.eff[EFF.BURN] = 1;
 	};
@@ -281,7 +283,7 @@ function isEnemyVisible(index) {
 	if (index !== game.enemyNum || game.enemies[index].transition) return true;
 	const type = game.enemies[index].type;
 	const intent = game.enemies[index].intent;
-	if (intent === INTENT.ATTACK) return !(type === SLIME.SMALL || (type === SLIME.STICKY && enemyAnim.action[0] < 8) || type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && enemyAnim.prime[index] == -1));
+	if (intent === INTENT.ATTACK) return !(type === SLIME.SMALL || (type === SLIME.STICKY && enemyAnim.action[0] < 8) || type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && enemyAnim.prime[index] == -1) || type === SENTRY.FLAMING);
 	if (intent === INTENT.DEFEND) return !(type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && enemyAnim.prime[index] == -1) || type === SINGULARITY);
 	return true;
 };
@@ -312,6 +314,8 @@ function getEnemyIntentPos(index, moving = false) {
 		y -= 9;
 	} else if (type === SENTRY.PRIME) {
 		y -= 43;
+	} else if (type === SENTRY.FLAMING) {
+		y -= 37;
 	} else if (type === SINGULARITY) {
 		y -= 40;
 	};

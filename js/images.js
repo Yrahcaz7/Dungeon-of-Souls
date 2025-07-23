@@ -85,6 +85,9 @@ const I = {
 			prime: new Image,
 			prime_attack: new Image,
 			prime_defend: new Image,
+			flaming: new Image,
+			flaming_attack: new Image,
+			flaming_defend: new Image,
 		},
 		singularity: {
 			idle: new Image,

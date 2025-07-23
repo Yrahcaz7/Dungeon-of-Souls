@@ -84,7 +84,7 @@ const GAMEPLAY = ""
 	+ "Then, you can use your new knowledge and cards to reach higher heights next time.";
 const CHANGELOG = ""
 	+ "<b>Version 2.3 - Consecution<s>"
-	+ " - one new enemy and two new effects!\n"
+	+ " - two new enemies and four new effects!\n"
 	+ " - added three new cards (or maybe four?)\n"
 	+ " - adjusted some card graphics\n"
 	+ " - improved most effect descriptions!\n"

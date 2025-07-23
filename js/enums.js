@@ -89,7 +89,7 @@ const SS = {
 const DIR = {UP: 501, LEFT: 502, CENTER: 503, RIGHT: 504, DOWN: 505};
 
 // enemy types
-const SLIME = {BIG: 600, SMALL: 601, PRIME: 602, STICKY: 608}, FRAGMENT = 603, SENTRY = {BIG: 604, SMALL: 605, PRIME: 606}, SINGULARITY = 607;
+const SLIME = {BIG: 600, SMALL: 601, PRIME: 602, STICKY: 608}, FRAGMENT = 603, SENTRY = {BIG: 604, SMALL: 605, PRIME: 606, FLAMING: 609}, SINGULARITY = 607;
 
 // names of enemy types
 const ENEMY_NAME = {
@@ -101,6 +101,7 @@ const ENEMY_NAME = {
 	[SENTRY.BIG]: "big sentry",
 	[SENTRY.SMALL]: "small sentry",
 	[SENTRY.PRIME]: "prime sentry",
+	[SENTRY.FLAMING]: "flaming sentry",
 	[SINGULARITY]: "the singularity",
 };
 
@@ -113,6 +114,7 @@ const PLURAL_ENEMY_NAME = {
 	[SENTRY.BIG]: "big sentries",
 	[SENTRY.SMALL]: "small sentries",
 	[SENTRY.PRIME]: "prime sentries",
+	[SENTRY.FLAMING]: "flaming sentries",
 };
 
 // score worth of enemy types
@@ -125,6 +127,7 @@ const ENEMY_WORTH = {
 	[SENTRY.BIG]: 150,
 	[SENTRY.SMALL]: 75,
 	[SENTRY.PRIME]: 750,
+	[SENTRY.FLAMING]: 225,
 	[SINGULARITY]: 2000,
 };
 
@@ -166,6 +169,11 @@ const BATTLE = {CROWD: 1300, AMBUSH: 1301};
 // characters
 const CHARACTER = {KNIGHT: 1400};
 
+// names of characters
+const CHARACTER_NAME = {
+	[CHARACTER.KNIGHT]: ["the forgotten one", "the true knight"],
+};
+
 // enemy transitions
 const TRANSITION = {SHIELD: 1500};
 
@@ -176,7 +184,7 @@ const OPTION = {MUSIC: 1600, SCREEN_SHAKE: 1601, STICKY_CARDS: 1602, PERFECT_SCR
 const OPTION_NAME = {[OPTION.MUSIC]: "Music", [OPTION.SCREEN_SHAKE]: "Screen shake", [OPTION.STICKY_CARDS]: "Sticky cards", [OPTION.PERFECT_SCREEN]: "Pixel perfect screen", [OPTION.PERFECT_SIZE]: "Pixel perfect size", [OPTION.FAST_MOVEMENT]: "Allow fast movement", [OPTION.AUTO_END_TURN]: "Automatically end turn", [OPTION.END_TURN_CONFIRM]: "End turn confirmation", [OPTION.MUSIC_TRACK]: "Music track"};
 
 // general effects
-const EFF = {AURA_BLADE: 1700, BURN: 1701, REINFORCE: 1702, RESILIENCE: 1703, WEAKNESS: 1704, BLAZE: 1705, ATKUP: 1706, DEFUP: 1707, PULSE: 1708};
+const EFF = {AURA_BLADE: 1700, BURN: 1701, REINFORCE: 1702, RESILIENCE: 1703, WEAKNESS: 1704, BLAZE: 1705, ATKUP: 1706, DEFUP: 1707, PULSE: 1708, HYPERSPEED: 1709, FIREPROOF: 1710};
 
 // card effects
 const CARD_EFF = {ONE_USE: 1800, UNIFORM: 1801, UNPLAYABLE: 1802, COST_REDUCTION: 1803, RETENTION: 1804, TEMP: 1898, DESC: 1899};
@@ -196,6 +204,8 @@ const EFF_NAME = {
 	[EFF.ATKUP]: "ATK+",
 	[EFF.DEFUP]: "DEF+",
 	[EFF.PULSE]: "pulse",
+	[EFF.HYPERSPEED]: "hyperspeed",
+	[EFF.FIREPROOF]: "fireproof",
 	// card effects
 	[CARD_EFF.ONE_USE]: "one use",
 	[CARD_EFF.UNIFORM]: "uniform",
@@ -234,6 +244,8 @@ const EFF_DESC = {
 	[EFF.ATKUP]: "Attack is 25%\ngreater, rounded up.\nCount decreases by 1 at\nend of turn.",
 	[EFF.DEFUP]: "Defense is 25%\ngreater, rounded up.\nCount decreases by 1 at\nend of turn.",
 	[EFF.PULSE]: "On attack, apply\n1 pulse on the target.\nCount decreases by 2 at\nend of turn.",
+	[EFF.HYPERSPEED]: "[On attack]\neffects that do not\ndecrease status counts\ntrigger an additional\ntime.\nCount decreases by 1 at\nend of turn.",
+	[EFF.FIREPROOF]: "On start of\nturn, decrease burn\ncount by [count].",
 	// card effects
 	[CARD_EFF.ONE_USE]: "When played,\nthe card is sent to the\nvoid. Cards in the void\nstay there until the end\nof the battle.",
 	[CARD_EFF.RETENTION]: "On end of\nturn, the card is not\ndiscarded, then count\ndecreases by 1.",
@@ -266,6 +278,8 @@ const COLOR = {
 	"#665": [EFF.RESILIENCE], // yellowish gray
 	"#655": [EFF.WEAKNESS], // reddish gray
 	"#e50": [EFF.PULSE], // reddish orange
+	"#00f": [EFF.HYPERSPEED], // dark blue
+	"#864": [EFF.FIREPROOF], // orangish gray
 	"#666": [CARD_EFF.ONE_USE, CARD_EFF.UNIFORM, CARD_EFF.UNPLAYABLE, CARD_EFF.COST_REDUCTION, CARD_EFF.RETENTION], // gray
 	"#a80": ["rewinds", ENEMY_EFF.REWIND], // yellow
 	"#556": [ENEMY_EFF.SHROUD], // bluish gray

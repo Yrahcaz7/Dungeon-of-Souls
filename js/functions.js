@@ -246,7 +246,7 @@ function drawCards(num) {
 		};
 	};
 	if (num > 0) {
-		game.deck = shuffle(game.discard.slice());
+		game.deck = shuffle(game.discard);
 		game.discard = [];
 		for (; num > 0 && game.deck.length > 0; num--) {
 			game.hand.push(game.deck.shift());
@@ -294,7 +294,7 @@ function getCardCost(cardObj) {
  * @param {number} prevShield - defaults to `game.enemies[index].shield`.
  */
 function startEnemyTransition(index, prevShield = game.enemies[index].shield) {
-	if (game.enemies[index].type !== SENTRY.BIG && game.enemies[index].type !== SENTRY.SMALL && game.enemies[index].type !== SENTRY.PRIME) return;
+	if (game.enemies[index].type !== SENTRY.BIG && game.enemies[index].type !== SENTRY.SMALL && game.enemies[index].type !== SENTRY.PRIME  && game.enemies[index].type !== SENTRY.FLAMING) return;
 	if (prevShield > 0 && game.enemies[index].shield == 0) game.enemies[index].transition = [0, TRANSITION.SHIELD];
 };
 
@@ -324,8 +324,12 @@ function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, 
 	};
 	// additional effects
 	if (attack) {
-		if (game.eff[EFF.BLAZE]) game.enemies[index].gainEff(EFF.BURN);
-		if (game.eff[EFF.PULSE]) game.enemies[index].gainEff(EFF.PULSE);
+		// calculate number of times triggered
+		let triggerNum = 1;
+		if (game.eff[EFF.HYPERSPEED]) triggerNum++;
+		// trigger effects
+		if (game.eff[EFF.BLAZE]) game.enemies[index].gainEff(EFF.BURN, triggerNum);
+		if (game.eff[EFF.PULSE]) game.enemies[index].gainEff(EFF.PULSE, triggerNum);
 	};
 	// transitions
 	startEnemyTransition(index, prevShield);
@@ -351,9 +355,16 @@ function takeDamage(amount, attack = true, index = game.enemyNum) {
 	};
 	// additional effects
 	if (attack && index >= 0) {
-		if (game.enemies[index].eff[EFF.BLAZE]) gainEff(EFF.BURN);
-		if (game.enemies[index].eff[EFF.PULSE]) gainEff(EFF.PULSE);
-		if (game.enemies[index].eff[ENEMY_EFF.STICKY]) game.deck.push(new Card(5001, 0, true), new Card(5001, 0, true));
+		// calculate number of times triggered
+		let triggerNum = 1;
+		if (game.enemies[index].eff[EFF.HYPERSPEED]) triggerNum++;
+		// trigger effects
+		if (game.enemies[index].eff[EFF.BLAZE]) gainEff(EFF.BURN, triggerNum);
+		if (game.enemies[index].eff[EFF.PULSE]) gainEff(EFF.PULSE, triggerNum);
+		if (game.enemies[index].eff[ENEMY_EFF.STICKY]) {
+			game.deck.concat(Array.from({length: 2 * triggerNum}, () => new Card(5001, 0, true)));
+			shuffle(game.deck);
+		};
 	};
 };
 

@@ -109,7 +109,7 @@ class EnemyAnimationSource {
 			if (enemy.shield > 0) {
 				draw.imageSector(I.enemy.sentry.big_defend, Math.floor(this.idle[index] + 7) * 64, 0, 64, 64, x, y + 1);
 			} else if (enemy.transition && enemy.transition[1] === TRANSITION.SHIELD) {
-				draw.imageSector(I.enemy.sentry.big_defend, Math.floor(7 - enemy.transition[0]) * 64, 0, 64, 64, x, y + 1);
+				draw.imageSector(I.enemy.sentry.big_defend, Math.floor(6 - enemy.transition[0]) * 64, 0, 64, 64, x, y + 1);
 				enemy.transition[0]++;
 				if (enemy.transition[0] >= 7) delete enemy.transition;
 			} else {
@@ -119,7 +119,7 @@ class EnemyAnimationSource {
 			if (enemy.shield > 0) {
 				draw.imageSector(I.enemy.sentry.small_defend, Math.floor(this.idle[index] + 5) * 64, 0, 64, 64, x, y);
 			} else if (enemy.transition && enemy.transition[1] === TRANSITION.SHIELD) {
-				draw.imageSector(I.enemy.sentry.small_defend, Math.floor(5 - enemy.transition[0]) * 64, 0, 64, 64, x, y);
+				draw.imageSector(I.enemy.sentry.small_defend, Math.floor(4 - enemy.transition[0]) * 64, 0, 64, 64, x, y);
 				enemy.transition[0]++;
 				if (enemy.transition[0] >= 5) delete enemy.transition;
 			} else {
@@ -129,13 +129,22 @@ class EnemyAnimationSource {
 			if (enemy.shield > 0) {
 				draw.imageSector(I.enemy.sentry.prime_defend, Math.floor(this.idle[index] + 9) * 64, 0, 64, 64, x, y);
 			} else if (enemy.transition && enemy.transition[1] === TRANSITION.SHIELD) {
-				draw.imageSector(I.enemy.sentry.prime_defend, Math.floor(9 - enemy.transition[0]) * 64, 0, 64, 64, x, y);
+				draw.imageSector(I.enemy.sentry.prime_defend, Math.floor(8 - enemy.transition[0]) * 64, 0, 64, 64, x, y);
 				enemy.transition[0]++;
 				if (enemy.transition[0] >= 9) delete enemy.transition;
 			} else if (this.prime[index] == -1 || noPrimeAnim) {
 				draw.imageSector(I.enemy.sentry.prime, Math.floor(this.idle[index]) * 64, 0, 64, 64, x, y);
 			} else {
 				draw.imageSector(I.enemy.sentry.to_prime, Math.floor(this.prime[index]) * 64, 0, 64, 64, x, y);
+			};
+		} else if (enemy.type === SENTRY.FLAMING) {
+			draw.imageSector(I.enemy.sentry.flaming, Math.floor(this.sync % 4) * 64, 0, 64, 64, x, y);
+			if (enemy.shield > 0) {
+				draw.imageSector(I.enemy.sentry.flaming_defend, Math.floor(7 + this.sync % 4) * 72, 0, 72, 67, x - 4, y - 15);
+			} else if (enemy.transition && enemy.transition[1] === TRANSITION.SHIELD) {
+				draw.imageSector(I.enemy.sentry.flaming_defend, Math.floor(6 - enemy.transition[0]) * 72, 0, 72, 67, x - 4, y - 15);
+				enemy.transition[0]++;
+				if (enemy.transition[0] >= 7) delete enemy.transition;
 			};
 		} else if (enemy.type === SINGULARITY) {
 			if (Math.floor(this.idle[index]) == 1) y++;
@@ -346,6 +355,21 @@ class EnemyAnimationSource {
 				} else {
 					game.enemyStage = ANIM.PENDING;
 				};
+			} else if (type === SENTRY.FLAMING) {
+				draw.imageSector(I.enemy.sentry.flaming_attack, Math.floor(this.action[0]) * 364, 0, 364, 128, x - 300, y - 32);
+				if (this.action[1] === ANIM.STARTING) this.action[0]++;
+				else if (this.action[1] === ANIM.ENDING) this.action[0]--;
+				if (this.action[0] >= 4) {
+					this.action[0] = 3;
+					this.action[1] = ANIM.ENDING;
+				} else if (this.action[0] == 2 && this.action[1] === ANIM.ENDING) {
+					game.enemyStage = ANIM.MIDDLE;
+				} else if (this.action[0] < 0) {
+					this.idle[index] = 0;
+					game.enemyStage = ANIM.ENDING;
+				} else {
+					game.enemyStage = ANIM.PENDING;
+				};
 			} else if (type === SINGULARITY) {
 				if (!this.actionData.length) this.actionData = [
 					Math.floor(Math.random() * 4),
@@ -441,6 +465,17 @@ class EnemyAnimationSource {
 					game.enemyStage = ANIM.ENDING;
 				} else if (this.action[0] >= 9) {
 					this.action[0] = 9;
+					game.enemyStage = ANIM.MIDDLE;
+				} else {
+					game.enemyStage = ANIM.PENDING;
+				};
+			} else if (type === SENTRY.FLAMING) {
+				draw.imageSector(I.enemy.sentry.flaming_defend, Math.floor(this.action[0]) * 72, 0, 72, 67, x - 4, y - 15);
+				this.action[0]++;
+				if (game.enemyStage === ANIM.MIDDLE) {
+					game.enemyStage = ANIM.ENDING;
+				} else if (this.action[0] >= 6) {
+					this.action[0] = 6;
 					game.enemyStage = ANIM.MIDDLE;
 				} else {
 					game.enemyStage = ANIM.PENDING;

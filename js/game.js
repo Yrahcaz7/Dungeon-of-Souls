@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_014;
+const VERSION = 2_003_015;
 
 /**
  * Returns the starting global data.
@@ -198,20 +198,22 @@ const startTurn = (() => {
 		// end of enemy turn effects
 		if (!firstTurn) {
 			for (let index = 0; index < game.enemies.length; index++) {
-				if (game.enemies[index].eff[EFF.BURN]) {
-					let damage = game.enemies[index].eff[EFF.BURN];
+				const enemy = game.enemies[index];
+				if (enemy.eff[EFF.BURN]) {
+					let damage = enemy.eff[EFF.BURN];
 					if (hasArtifact(107)) damage += 3;
 					dealDamage(damage, 0, index, false);
-					game.enemies[index].eff[EFF.BURN]--;
+					enemy.eff[EFF.BURN]--;
 				};
-				if (game.enemies[index].eff[EFF.WEAKNESS]) game.enemies[index].eff[EFF.WEAKNESS]--;
-				if (game.enemies[index].eff[EFF.BLAZE]) game.enemies[index].eff[EFF.BLAZE]--;
-				if (game.enemies[index].eff[EFF.ATKUP]) game.enemies[index].eff[EFF.ATKUP]--;
-				if (game.enemies[index].eff[EFF.DEFUP]) game.enemies[index].eff[EFF.DEFUP]--;
-				if (game.enemies[index].eff[EFF.PULSE]) game.enemies[index].eff[EFF.PULSE] = Math.max(game.enemies[index].eff[EFF.PULSE] - 2, 0);
-				if (game.enemies[index].eff[ENEMY_EFF.SHROUD]) {
-					game.enemies[index].eff[ENEMY_EFF.SHROUD]--;
-					if (!game.enemies[index].eff[ENEMY_EFF.SHROUD] && !hasArtifact(204)) {
+				if (enemy.eff[EFF.WEAKNESS]) enemy.eff[EFF.WEAKNESS]--;
+				if (enemy.eff[EFF.BLAZE]) enemy.eff[EFF.BLAZE]--;
+				if (enemy.eff[EFF.ATKUP]) enemy.eff[EFF.ATKUP]--;
+				if (enemy.eff[EFF.DEFUP]) enemy.eff[EFF.DEFUP]--;
+				if (enemy.eff[EFF.PULSE]) enemy.eff[EFF.PULSE] = Math.max(enemy.eff[EFF.PULSE] - 2, 0);
+				if (enemy.eff[EFF.HYPERSPEED]) enemy.eff[EFF.HYPERSPEED]--;
+				if (enemy.eff[ENEMY_EFF.SHROUD]) {
+					enemy.eff[ENEMY_EFF.SHROUD]--;
+					if (!enemy.eff[ENEMY_EFF.SHROUD] && !hasArtifact(204)) {
 						toSelect = [S.CONF_PEARL, 0];
 					};
 				};
@@ -223,6 +225,7 @@ const startTurn = (() => {
 		if (game.eff[EFF.REINFORCE]) game.eff[EFF.REINFORCE]--;
 		else game.shield = 0;
 		if (game.eff[EFF.RESILIENCE]) game.eff[EFF.RESILIENCE]--;
+		if (game.eff[EFF.FIREPROOF] && game.eff[EFF.BURN]) game.eff[EFF.BURN] = Math.max(game.eff[EFF.BURN] - game.eff[EFF.FIREPROOF], 0);
 		game.energy = get.maxEnergy();
 		game.select = toSelect;
 		if (playerAnim[1] !== I.player.idle && playerAnim[1] !== I.player.hit) startAnim.player(I.player.idle);
@@ -247,6 +250,7 @@ function endTurn() {
 		if (game.eff[EFF.ATKUP]) game.eff[EFF.ATKUP]--;
 		if (game.eff[EFF.DEFUP]) game.eff[EFF.DEFUP]--;
 		if (game.eff[EFF.PULSE]) game.eff[EFF.PULSE] = Math.max(game.eff[EFF.PULSE] - 2, 0);
+		if (game.eff[EFF.HYPERSPEED]) game.eff[EFF.HYPERSPEED]--;
 		// activate artifacts
 		activateArtifacts(FUNC.PLAYER_TURN_END);
 		// start of enemy turn effects
@@ -254,10 +258,12 @@ function endTurn() {
 		game.enemyNum = -1;
 		for (let index = 0; index < game.enemies.length; index++) {
 			// effects
-			let prevShield = game.enemies[index].shield;
-			if (game.enemies[index].eff[EFF.REINFORCE]) game.enemies[index].eff[EFF.REINFORCE]--;
-			else game.enemies[index].shield = 0;
-			if (game.enemies[index].eff[EFF.RESILIENCE]) game.enemies[index].eff[EFF.RESILIENCE]--;
+			const enemy = game.enemies[index];
+			let prevShield = enemy.shield;
+			if (enemy.eff[EFF.REINFORCE]) enemy.eff[EFF.REINFORCE]--;
+			else enemy.shield = 0;
+			if (enemy.eff[EFF.RESILIENCE]) enemy.eff[EFF.RESILIENCE]--;
+			if (enemy.eff[EFF.FIREPROOF] && enemy.eff[EFF.BURN]) enemy.eff[EFF.BURN] = Math.max(enemy.eff[EFF.BURN] - enemy.eff[EFF.FIREPROOF], 0);
 			// transitions
 			startEnemyTransition(index, prevShield);
 		};

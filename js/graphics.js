@@ -1275,6 +1275,8 @@ const graphics = {
 				coords = [4, 34, 56, 30];
 			} else if (type === SENTRY.PRIME) {
 				coords = [9, 0, 46, 64];
+			} else if (type === SENTRY.FLAMING) {
+				coords = [7, 6, 50, 58];
 			} else if (type === SINGULARITY) {
 				coords = [8, 3, 48, 61];
 			};
@@ -1295,16 +1297,18 @@ const graphics = {
 				else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-small": true});
 				let x = coords[0] - 5.5;
 				let y = coords[1] - 1;
+				const logged = {};
 				const logEff = type => {
+					logged[type] = true;
 					const height = Math.ceil((EFF_DESC[type].match(/\n/g) || []).length * 5.5 + (game.enemies[game.select[1]].eff[type] > 0 ? 22 : 11));
 					if ((left ? y + 12 : y) + height >= 202 - pos[1]) {
 						y = coords[1] - 1;
 						x -= 77;
 					};
 					y += info.enemy(type, x, (left ? y + 12 : y));
-					if (type === EFF.BLAZE && !game.enemies[game.select[1]].eff[EFF.BURN]) logEff(EFF.BURN);
-					else if (type === ENEMY_EFF.PLAN_ATTACK && !game.enemies[game.select[1]].eff[EFF.ATKUP]) logEff(EFF.ATKUP);
-					else if (type === ENEMY_EFF.PLAN_DEFEND && !game.enemies[game.select[1]].eff[EFF.DEFUP]) logEff(EFF.DEFUP);
+					if ((type === EFF.BLAZE || type === EFF.FIREPROOF) && !logged[EFF.BURN]) logEff(EFF.BURN);
+					else if (type === ENEMY_EFF.PLAN_ATTACK && !logged[EFF.ATKUP]) logEff(EFF.ATKUP);
+					else if (type === ENEMY_EFF.PLAN_DEFEND && !logged[EFF.DEFUP]) logEff(EFF.DEFUP);
 				};
 				for (const key in game.enemies[game.select[1]].eff) {
 					logEff(+key);
@@ -1313,20 +1317,19 @@ const graphics = {
 		} else if (game.select[0] === S.PLAYER) {
 			const coords = [58, 69, 24, 39];
 			draw.selector(coords[0], coords[1], coords[2], coords[3]);
-			if (game.character === CHARACTER.KNIGHT) {
-				if (global.charStage[CHARACTER.KNIGHT] === 0) draw.lore(coords[0] + (coords[2] / 2) - 1, 61.5, "the forgotten one", {"color": "#fff", "text-align": DIR.CENTER, "text-small": true});
-				else if (global.charStage[CHARACTER.KNIGHT] === 1) draw.lore(coords[0] + (coords[2] / 2) - 1, 61.5, "the true knight", {"color": "#fff", "text-align": DIR.CENTER, "text-small": true});
-			};
+			draw.lore(coords[0] + (coords[2] / 2) - 1, 61.5, CHARACTER_NAME[game.character][global.charStage[game.character]], {"color": "#fff", "text-align": DIR.CENTER, "text-small": true});
 			let x = coords[0] + coords[2] - 80;
 			let y = 0;
-			const logEff = (type) => {
+			const logged = {};
+			const logEff = type => {
+				logged[type] = true;
 				let height = Math.ceil((EFF_DESC[type].match(/\n/g) || []).length * 5.5 + (game.eff[type] > 0 ? 22 : 11));
 				if (y + height >= 202 - coords[1]) {
 					y = 0;
 					x += 77;
 				};
 				y += info.player(type, x, y);
-				if (type === EFF.BLAZE && !game.eff[EFF.BURN]) logEff(EFF.BURN);
+				if ((type === EFF.BLAZE || type === EFF.FIREPROOF) && !logged[EFF.BURN]) logEff(EFF.BURN);
 			};
 			for (const key in game.eff) {
 				logEff(+key);
