@@ -175,7 +175,7 @@ const I = {
 		scribbles: new Image,
 		scribble_back: new Image,
 		node: {
-			battle: [3, {wo: [], bo: []}],
+			battle: [4, {wo: [], bo: []}],
 			death_zone: new Image,
 			treasure: new Image,
 			treasure_open: new Image,

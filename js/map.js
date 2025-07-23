@@ -228,6 +228,7 @@ const generateMapPathPoints = (() => {
 const BIG_ENEMIES = [SLIME.BIG, SENTRY.BIG];
 const SMALL_ENEMIES = [SLIME.SMALL, SENTRY.SMALL];
 const PRIME_ENEMIES = [SLIME.PRIME, SENTRY.PRIME];
+const SPECIAL_ENEMIES = [SLIME.STICKY, SLIME.STICKY];
 const BOSS_ENEMIES = [FRAGMENT, SINGULARITY];
 
 /**
@@ -293,8 +294,8 @@ const generateMap = (() => {
 		if (!type || rowNodes[area] === 6) return false;
 		const result = [type, randomInt(-5, 5), randomInt(-5, 5)];
 		if (type === ROOM.BATTLE) {
-			if (row % 10 >= 5) result.push(chance(1/3) ? [BIG_ENEMIES[area]] : (chance(2/3) ? [BIG_ENEMIES[area], getWeakerSmallEnemy(row)] : [SMALL_ENEMIES[area], SMALL_ENEMIES[area]]));
-			else result.push(chance() ? [BIG_ENEMIES[area]] : [SMALL_ENEMIES[area], getWeakerSmallEnemy(row)]);
+			if (row % 10 >= 5) result.push(chance(1/3) ? [(chance() ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]] : (chance() ? [BIG_ENEMIES[area], getWeakerSmallEnemy(row)] : [SMALL_ENEMIES[area], SMALL_ENEMIES[area]]));
+			else result.push(chance() ? [(chance(row/10) ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]] : [SMALL_ENEMIES[area], getWeakerSmallEnemy(row)]);
 			result.push(getGoldReward(row), randomCardSet(5));
 		};
 		return result;
