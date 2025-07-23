@@ -1528,17 +1528,19 @@ const graphics = {
 				let drawX = 25 + ((x - area * 10) * 32) + game.map[x][y][1];
 				let drawY = 18 + (y * 32) + game.map[x][y][2];
 				if (game.map[x][y][0] === ROOM.BATTLE) {
-					let battleName = "battle";
+					let num = -1;
 					if (game.map[x][y][3].length === 1) {
-						if (BIG_ENEMIES.includes(game.map[x][y][3][0])) battleName += "1";
+						if (BIG_ENEMIES.includes(game.map[x][y][3][0])) num = 0;
 					} else if (game.map[x][y][3].length === 2) {
-						if (BIG_ENEMIES.includes(game.map[x][y][3][0])) battleName += "3";
-						else battleName += "2";
+						if (BIG_ENEMIES.includes(game.map[x][y][3][0])) num = 2;
+						else num = 1;
 					};
-					draw.image(I.map.node[battleName], drawX, drawY);
-					if (focused) {
-						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select[battleName], drawX - 1, drawY - 1);
-						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue[battleName], drawX - 1, drawY - 1);
+					if (num >= 0) {
+						draw.image(I.map.node.battle[num], drawX, drawY);
+						if (focused) {
+							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.battle.select[num], drawX - 1, drawY - 1);
+							else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.battle.select_blue[num], drawX - 1, drawY - 1);
+						};
 					};
 				} else if (game.map[x][y][0] === ROOM.PRIME) {
 					draw.image(I.map.node.death_zone, drawX, drawY);

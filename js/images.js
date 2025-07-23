@@ -134,7 +134,7 @@ const I = {
 		item: new Image,
 		item_green: new Image,
 		item_border: new Image,
-		selector: new Number(4),
+		selector: [4],
 	}, extra: {
 		options: new Image,
 		help: new Image,
@@ -156,8 +156,8 @@ const I = {
 	}, artifact: {
 		select: {},
 	}, intent: {
-		defend: new Number(11),
-		attack: new Number(11),
+		defend: [11],
+		attack: [11],
 		buff: new Image,
 		summon: new Image,
 		ritual: new Image,
@@ -175,9 +175,7 @@ const I = {
 		scribbles: new Image,
 		scribble_back: new Image,
 		node: {
-			battle1: new Image,
-			battle2: new Image,
-			battle3: new Image,
+			battle: [3, true, true],
 			death_zone: new Image,
 			treasure: new Image,
 			treasure_open: new Image,
@@ -213,12 +211,12 @@ const loadImages = (() => {
 	function countImages(ref, countsAs = 1) {
 		if (ref instanceof Image) {
 			return countsAs;
-		} else if (ref instanceof Number) {
-			return ref * countsAs;
+		} else if (ref instanceof Array) {
+			return ref[0] * (1 + (ref[1] ? 1 : 0) + (ref[2] ? 1 : 0));
 		} else {
 			countsAs = 1;
-			if (ref.select && !(ref.select instanceof Image) && !(ref.select instanceof Number)) countsAs++;
-			if (ref.select_blue && !(ref.select_blue instanceof Image) && !(ref.select_blue instanceof Number)) countsAs++;
+			if (ref.select && !(ref.select instanceof Image) && !(ref.select instanceof Array)) countsAs++;
+			if (ref.select_blue && !(ref.select_blue instanceof Image) && !(ref.select_blue instanceof Array)) countsAs++;
 			let count = 0;
 			for (const folder in ref) {
 				count += countImages(ref[folder], countsAs);
@@ -250,16 +248,20 @@ const loadImages = (() => {
 				ref.select_blue[name].src = path + "select_blue/" + name + ".png";
 				promises.push(new Promise(resolve => ref.select_blue[name].onload = resolve).then(updateLoadProg));
 			};
-		} else if (ref[name] instanceof Number) {
-			const num = +ref[name];
+		} else if (ref[name] instanceof Array) {
+			const num = ref[name][0];
+			select = ref[name][1];
+			blue = ref[name][2];
 			ref[name] = [];
+			if (select) ref[name].select = [];
+			if (blue) ref[name].select_blue = [];
 			for (let index = 0; index < num; index++) {
 				ref[name].push(new Image);
-				promises.push(loadImage(ref[name], index, path + name + "/"));
+				promises.push(loadImage(ref[name], index, path + name + "/", select, blue));
 			};
 		} else {
-			select = ref[name].select && !(ref[name].select instanceof Image) && !(ref[name].select instanceof Number);
-			blue = ref[name].select_blue && !(ref[name].select_blue instanceof Image) && !(ref[name].select_blue instanceof Number);
+			select = ref[name].select && !(ref[name].select instanceof Image) && !(ref[name].select instanceof Array);
+			blue = ref[name].select_blue && !(ref[name].select_blue instanceof Image) && !(ref[name].select_blue instanceof Array);
 			for (const folder in ref[name]) {
 				await loadImage(ref[name], folder, path + name + "/", select, blue);
 			};
