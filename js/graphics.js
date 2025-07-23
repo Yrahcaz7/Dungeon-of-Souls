@@ -889,13 +889,13 @@ const graphics = {
 		for (let index = 0; index < game.artifacts.length; index++) {
 			if (!ARTIFACTS[game.artifacts[index]].big) continue;
 			draw.image(I.artifact[game.artifacts[index]], (index * 18) - 6, 5);
-			if (game.select[0] === S.ARTIFACTS && game.select[1] === index) draw.image(I.artifact.select[game.artifacts[index]], (index * 18) - 7, 4);
+			if (game.select[0] === S.ARTIFACTS && game.select[1] === index) draw.image(I.artifact._.wo[game.artifacts[index]], (index * 18) - 7, 4);
 		};
 		// small artifacts
 		for (let index = 0; index < game.artifacts.length; index++) {
 			if (ARTIFACTS[game.artifacts[index]].big) continue;
 			draw.image(I.artifact[game.artifacts[index]], (index * 18) + 2, 13);
-			if (game.select[0] === S.ARTIFACTS && game.select[1] === index) draw.image(I.artifact.select[game.artifacts[index]], (index * 18) + 1, 12);
+			if (game.select[0] === S.ARTIFACTS && game.select[1] === index) draw.image(I.artifact._.wo[game.artifacts[index]], (index * 18) + 1, 12);
 		};
 		// selected
 		if (game.select[0] === S.LOOKER) draw.image(I.select.round, 342, 2);
@@ -1449,7 +1449,7 @@ const graphics = {
 		draw.lore(200 - 2, y + 1, "Pick an artifact:", {"text-align": DIR.CENTER});
 		for (let index = 0; index < 3; index++) {
 			draw.image(I.artifact[game.room[6][index]], 160 + (index * 32), 90);
-			if (index === game.select[1]) draw.image(I.artifact.select[game.room[6][index]], 159 + (index * 32), 89);
+			if (index === game.select[1]) draw.image(I.artifact._.wo[game.room[6][index]], 159 + (index * 32), 89);
 		};
 		if (game.select[1] < 0 && focused) draw.rect("#fff", x, y + height - 14, width, 14);
 		draw.box(x + 2, y + height - 12, width - 4, 10);
@@ -1538,48 +1538,48 @@ const graphics = {
 					if (num >= 0) {
 						draw.image(I.map.node.battle[num], drawX, drawY);
 						if (focused) {
-							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.battle.select[num], drawX - 1, drawY - 1);
-							else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.battle.select_blue[num], drawX - 1, drawY - 1);
+							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.battle._.wo[num], drawX - 1, drawY - 1);
+							else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.battle._.bo[num], drawX - 1, drawY - 1);
 						};
 					};
 				} else if (game.map[x][y][0] === ROOM.PRIME) {
 					draw.image(I.map.node.death_zone, drawX, drawY);
 					if (focused) {
-						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.death_zone, drawX - 1, drawY - 1);
-						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.death_zone, drawX - 1, drawY - 1);
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo.death_zone, drawX - 1, drawY - 1);
+						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo.death_zone, drawX - 1, drawY - 1);
 					};
 				} else if (game.map[x][y][0] === ROOM.TREASURE) {
 					if (game.map[x][y][3]) {
 						draw.image(I.map.node.treasure_open, drawX, drawY);
 						if (focused) {
-							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.treasure_open, drawX - 1, drawY - 1);
-							else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.treasure_open, drawX - 1, drawY - 1);
+							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo.treasure_open, drawX - 1, drawY - 1);
+							else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo.treasure_open, drawX - 1, drawY - 1);
 						};
 					} else {
 						draw.image(I.map.node.treasure, drawX, drawY);
 						if (focused) {
-							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.treasure, drawX - 1, drawY - 1);
-							else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.treasure, drawX - 1, drawY - 1);
+							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo.treasure, drawX - 1, drawY - 1);
+							else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo.treasure, drawX - 1, drawY - 1);
 						};
 					};
 				} else if (game.map[x][y][0] === ROOM.ORB) {
 					draw.image(I.map.node.orb, drawX, drawY);
 					if (focused) {
-						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.orb, drawX - 1, drawY - 1);
-						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.orb, drawX - 1, drawY - 1);
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo.orb, drawX - 1, drawY - 1);
+						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo.orb, drawX - 1, drawY - 1);
 					};
 				} else if (game.map[x][y][0] === ROOM.BOSS) {
 					drawX += 10;
 					draw.image(I.map.node.boss, drawX, 90);
 					if (focused) {
-						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.boss, drawX - 1, 90 - 1);
-						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.boss, drawX - 1, 90 - 1);
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo.boss, drawX - 1, 90 - 1);
+						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo.boss, drawX - 1, 90 - 1);
 					};
 				} else if (game.map[x][y][0] === ROOM.EVENT) {
 					draw.image(I.map.node.event, drawX, drawY);
 					if (focused) {
-						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.select.event, drawX - 1, drawY - 1);
-						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.select_blue.event, drawX - 1, drawY - 1);
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo.event, drawX - 1, drawY - 1);
+						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo.event, drawX - 1, drawY - 1);
 					};
 				};
 			};
@@ -1909,13 +1909,13 @@ const graphics = {
 		for (let index = 0; index < artifacts.length; index++) {
 			if (!ARTIFACTS[artifacts[index]].big) continue;
 			draw.image(I.artifact[artifacts[index]], (index * 26) + 3, 16);
-			if (index == menuArtifactSelect && focused) draw.image(I.artifact.select[artifacts[index]], (index * 26) + 2, 15);
+			if (index == menuArtifactSelect && focused) draw.image(I.artifact._.wo[artifacts[index]], (index * 26) + 2, 15);
 		};
 		// small artifacts
 		for (let index = 0; index < artifacts.length; index++) {
 			if (ARTIFACTS[artifacts[index]].big) continue;
 			draw.image(I.artifact[artifacts[index]], (index * 26) + 11, 24);
-			if (index == menuArtifactSelect && focused) draw.image(I.artifact.select[artifacts[index]], (index * 26) + 10, 23);
+			if (index == menuArtifactSelect && focused) draw.image(I.artifact._.wo[artifacts[index]], (index * 26) + 10, 23);
 		};
 		info.artifact(artifacts[menuArtifactSelect], menuArtifactSelect * 26 + 30, 24);
 		draw.rect("#0004", 0, 0, 400, 13);
