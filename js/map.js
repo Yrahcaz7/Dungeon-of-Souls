@@ -277,7 +277,7 @@ const generateMap = (() => {
 	async function getMapNode(row, attribute = -1) {
 		const area = get.area(row + 1);
 		if (attribute === MAP_NODE.FIRST) return [ROOM.BATTLE, 0, 0, [SMALL_ENEMIES[area]], getGoldReward(row), randomCardSet(5)];
-		if (attribute === MAP_NODE.TREASURE) return [ROOM.TREASURE, randomInt(-5, 5), randomInt(-5, 5), false, getGoldReward(row) * 2, randomCardSet(5, 4/10)];
+		if (attribute === MAP_NODE.TREASURE) return [ROOM.TREASURE, randomInt(-5, 5), randomInt(-5, 5), [], getGoldReward(row) * 2, randomCardSet(5, 4/10)];
 		if (attribute === MAP_NODE.PRIME) return [ROOM.PRIME, randomInt(-5, 5), randomInt(-5, 5), [getWeakerSmallEnemy(row), PRIME_ENEMIES[area], getWeakerSmallEnemy(row)], getGoldReward(row) * 2, randomCardSet(5, 9/10), randomArtifactSet(3)];
 		if (attribute === MAP_NODE.EVENT) {
 			let index = randomInt(0, EVENTS.any.length + EVENTS[area].length - 1);

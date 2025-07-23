@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_012;
+const VERSION = 2_003_013;
 
 /**
  * Returns the starting global data.
@@ -374,7 +374,6 @@ function loadRoom() {
 			enterBattle();
 		} else if (type === ROOM.TREASURE) {
 			game.traveled.push(game.location[1]);
-			game.map[game.location[0]][game.location[1]][3] = true;
 			game.select = [S.REWARDS, 0];
 			game.state = STATE.EVENT_FIN;
 			game.rewards = [];

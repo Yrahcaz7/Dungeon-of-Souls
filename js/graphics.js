@@ -1525,62 +1525,36 @@ const graphics = {
 		for (let x = area * 10; x < (area + 1) * 10; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
 				if (!(game.map[x][y] instanceof Object)) continue;
+				const type = +game.map[x][y][0];
 				let drawX = 25 + ((x - area * 10) * 32) + game.map[x][y][1];
 				let drawY = 18 + (y * 32) + game.map[x][y][2];
-				if (game.map[x][y][0] === ROOM.BATTLE) {
+				if (I.map.node[type] instanceof Image) {
+					if (game.map[x][y][0] === ROOM.BOSS) {
+						drawX += 10;
+						drawY = 90;
+					};
+					if (focused) {
+						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo[type], drawX - 1, drawY - 1);
+						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo[type], drawX - 1, drawY - 1);
+					};
+					draw.image(I.map.node[type], drawX, drawY);
+				} else {
 					let num = -1;
-					if (game.map[x][y][3].length === 1) {
-						if (BIG_ENEMIES.includes(game.map[x][y][3][0])) num = 0;
-						else num = 3;
-					} else if (game.map[x][y][3].length === 2) {
-						if (BIG_ENEMIES.includes(game.map[x][y][3][0])) num = 2;
-						else num = 1;
+					if (game.map[x][y][0] === ROOM.BATTLE) {
+						if (game.map[x][y][3].length === 1) {
+							num = (BIG_ENEMIES.includes(game.map[x][y][3][0]) ? 0 : 3);
+						} else if (game.map[x][y][3].length === 2) {
+							num = (BIG_ENEMIES.includes(game.map[x][y][3][0]) ? 2 : 1);
+						};
+					} else if (game.map[x][y][0] === ROOM.TREASURE) {
+						num = (game.traveled[x] == y ? 1 : 0);
 					};
 					if (num >= 0) {
 						if (focused) {
-							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node.battle._.wo[num], drawX - 1, drawY - 1);
-							else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node.battle._.bo[num], drawX - 1, drawY - 1);
+							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node[type]._.wo[num], drawX - 1, drawY - 1);
+							else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node[type]._.bo[num], drawX - 1, drawY - 1);
 						};
-						draw.image(I.map.node.battle[num], drawX, drawY);
-					};
-				} else if (game.map[x][y][0] === ROOM.PRIME) {
-					draw.image(I.map.node.death_zone, drawX, drawY);
-					if (focused) {
-						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo.death_zone, drawX - 1, drawY - 1);
-						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo.death_zone, drawX - 1, drawY - 1);
-					};
-				} else if (game.map[x][y][0] === ROOM.TREASURE) {
-					if (game.map[x][y][3]) {
-						draw.image(I.map.node.treasure_open, drawX, drawY);
-						if (focused) {
-							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo.treasure_open, drawX - 1, drawY - 1);
-							else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo.treasure_open, drawX - 1, drawY - 1);
-						};
-					} else {
-						draw.image(I.map.node.treasure, drawX, drawY);
-						if (focused) {
-							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo.treasure, drawX - 1, drawY - 1);
-							else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo.treasure, drawX - 1, drawY - 1);
-						};
-					};
-				} else if (game.map[x][y][0] === ROOM.ORB) {
-					draw.image(I.map.node.orb, drawX, drawY);
-					if (focused) {
-						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo.orb, drawX - 1, drawY - 1);
-						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo.orb, drawX - 1, drawY - 1);
-					};
-				} else if (game.map[x][y][0] === ROOM.BOSS) {
-					drawX += 10;
-					draw.image(I.map.node.boss, drawX, 90);
-					if (focused) {
-						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo.boss, drawX - 1, 90 - 1);
-						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo.boss, drawX - 1, 90 - 1);
-					};
-				} else if (game.map[x][y][0] === ROOM.EVENT) {
-					draw.image(I.map.node.event, drawX, drawY);
-					if (focused) {
-						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo.event, drawX - 1, drawY - 1);
-						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo.event, drawX - 1, drawY - 1);
+						draw.image(I.map.node[type][num], drawX, drawY);
 					};
 				};
 			};
