@@ -23,7 +23,7 @@ let handPos = [];
 let handSelectPos = [];
 
 let enemyAnim = new EnemyAnimationSource(6, () => game.enemies);
-let menuEnemyAnim = new EnemyAnimationSource(8, [...SMALL_ENEMIES, ...BIG_ENEMIES, ...PRIME_ENEMIES, ...BOSS_ENEMIES]);
+let menuEnemyAnim = new EnemyAnimationSource(10, [...SMALL_ENEMIES, ...BIG_ENEMIES, ...PRIME_ENEMIES, ...SPECIAL_ENEMIES, ...BOSS_ENEMIES]);
 
 let backAnim = [0, 1.5, 3, 0];
 let intentAnim = [0, 1.5, 3, 0.5, 2, 3.5];
@@ -1613,10 +1613,13 @@ const graphics = {
 		};
 		// calculate score factors
 		let factors = [];
-		for (const key in game.kills) {
-			const amt = game.kills[key];
-			if (BOSS_ENEMIES.includes(+key)) factors.push(["Killed " + ENEMY_NAME[+key], ENEMY_WORTH[+key], amt]);
-			else factors.push(["Killed " + amt + " " + (amt > 1 ? PLURAL_ENEMY_NAME : ENEMY_NAME)[+key], ENEMY_WORTH[+key], amt]);
+		for (let index = 0; index < ENEMY_ORDER.length; index++) {
+			const type = ENEMY_ORDER[index];
+			const amt = game.kills[type];
+			if (amt) {
+				if (BOSS_ENEMIES.includes(+type)) factors.push(["Killed " + ENEMY_NAME[+type], ENEMY_WORTH[+type], amt]);
+				else factors.push(["Killed " + amt + " " + (amt > 1 ? PLURAL_ENEMY_NAME : ENEMY_NAME)[+type], ENEMY_WORTH[+type], amt]);
+			};
 		};
 		factors.push(["Saved " + game.gold + " gold", 1, Math.floor(game.gold / 5)]);
 		if (game.select[0] === S.GAME_WON) factors.push(["Saved " + game.health + " health", 5, game.health]);
@@ -1909,19 +1912,28 @@ const graphics = {
 		const kills = global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].kills;
 		const spaceY = 76;
 		let x = 3, y = 16;
-		const categories = [SMALL_ENEMIES, BIG_ENEMIES, PRIME_ENEMIES, BOSS_ENEMIES];
+		const categories = [SMALL_ENEMIES, BIG_ENEMIES, PRIME_ENEMIES, SPECIAL_ENEMIES, BOSS_ENEMIES];
 		for (let category = 0; category < categories.length; category++) {
-			const spaceX = (categories[category] === BOSS_ENEMIES ? 400 - x + 1 : 90);
+			const spaceX = (categories[category] === BOSS_ENEMIES ? 400 - x + 1 : (categories[category] === SPECIAL_ENEMIES ? 80 : 76));
 			for (let index = 0; index < categories[category].length; index++) {
 				const type = categories[category][index];
 				if (!kills[type]) continue;
 				draw.box(x, y, spaceX - 4, spaceY - 4, {"background-color": "#0004", "border-color": "#fff"});
-				menuEnemyAnim.drawEnemy(x + (spaceX - 4) / 2 - 32, y + 1, category * categories[category].length + index, true);
 				draw.rect("#fff", x, y + 66, spaceX - 4, 6);
 				let text = "Killed ";
 				if (categories[category] === BOSS_ENEMIES) text += ENEMY_NAME[type];
 				else text += kills[type] + " " + (kills[type] > 1 ? PLURAL_ENEMY_NAME : ENEMY_NAME)[type];
 				draw.lore(x + (spaceX - 4) / 2 - 1, y + 67, text, {"text-align": DIR.CENTER, "text-small": true});
+				const enemyIndex = category * categories[category].length + index;
+				const posX = x + (spaceX - 4) / 2 - 32;
+				if (menuEnemyAnim.enemies[enemyIndex] === SLIME.STICKY) {
+					draw.image(I.bar.health_full, posX, y - 13 + 65);
+					draw.lore(posX + 31, y - 13 + 67, "??", {"text-align": DIR.LEFT});
+					draw.lore(posX + 34, y - 13 + 67, "??");
+					menuEnemyAnim.drawEnemy(posX, y - 13, enemyIndex, true);
+				} else {
+					menuEnemyAnim.drawEnemy(posX, y + 1, enemyIndex, true);
+				};
 				y += spaceY;
 			};
 			y = 16;
