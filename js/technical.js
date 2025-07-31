@@ -131,6 +131,22 @@ window.onresize = fixCanvas;
 let action = -1;
 let lastAction = -1;
 
+/**
+ * Performs a keyboard shortcut that changes the selection.
+ * @param {number} location - the shortcut changes the selection to `[location, 1]`.
+ */
+function shortcutTo(location) {
+	if (game.select[0] === location && game.select[1]) {
+		if (game.select[2]) game.select = game.select[2];
+		else game.select = [location, 0];
+	} else {
+		if (game.select[2]) game.select = [location, 1, game.select[2]];
+		else game.select = [location, 1, game.select];
+	};
+	action = -1;
+	actionTimer = 2;
+};
+
 document.onkeydown = event => {
 	if (!loaded) return;
 	const key = event.key;
@@ -150,39 +166,15 @@ document.onkeydown = event => {
 		else endTurnConfirm();
 		action = -1;
 	} else if (key === "1" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1) {
-		if (game.select[0] === S.DECK && game.select[1]) {
-			if (game.select[2]) game.select = game.select[2];
-			else game.select = [S.DECK, 0];
-		} else {
-			if (game.select[2]) game.select = [S.DECK, 1, game.select[2]];
-			else game.select = [S.DECK, 1, game.select];
-		};
-		action = -1;
-		actionTimer = 2;
+		shortcutTo(S.DECK);
 	} else if (key === "2" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1) {
-		if (game.select[0] === S.DISCARD && game.select[1]) {
-			if (game.select[2]) game.select = game.select[2];
-			else game.select = [S.DISCARD, 0];
-		} else {
-			if (game.select[2]) game.select = [S.DISCARD, 1, game.select[2]];
-			else game.select = [S.DISCARD, 1, game.select];
-		};
-		action = -1;
-		actionTimer = 2;
+		shortcutTo(S.DISCARD);
 	} else if (key === "3" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1 && game.void.length) {
-		if (game.select[0] === S.VOID && game.select[1]) {
-			if (game.select[2]) game.select = game.select[2];
-			else game.select = [S.VOID, 0];
-		} else {
-			if (game.select[2]) game.select = [S.VOID, 1, game.select[2]];
-			else game.select = [S.VOID, 1, game.select];
-		};
-		action = -1;
-		actionTimer = 2;
+		shortcutTo(S.VOID);
 	} else if (key === "0" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1) {
 		if (game.select[0] === S.CARDS) {
 			if (game.select[2]) game.select = game.select[2];
-			else game.select = [S.MAP, get.availibleLocations().length];
+			else game.select = [S.MAP, get.availableLocations().length];
 		} else {
 			if (game.select[2]) game.select = [S.CARDS, 1, game.select[2]];
 			else game.select = [S.CARDS, 1, game.select];

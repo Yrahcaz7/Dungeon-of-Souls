@@ -204,7 +204,7 @@ const get = {
 	 * @param {number[]} location - The player's location. Defaults to `game.location`.
 	 * @returns {number[][]}
 	 */
-	availibleLocations(location = game.location) {
+	availableLocations(location = game.location) {
 		if (location.length >= 2) return (paths[location[0]] || {})[location[1]] || [];
 		return paths[location[0]] || [];
 	},

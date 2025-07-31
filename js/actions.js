@@ -186,7 +186,7 @@ const selection = (() => {
 			return;
 		};
 		// map
-		const availableLocations = get.availibleLocations();
+		const availableLocations = get.availableLocations();
 		if (game.select[0] === S.MAP && game.state === STATE.EVENT_FIN && availableLocations.length) {
 			if (action === DIR.UP) {
 				if (game.select[1] == -1) {
@@ -802,7 +802,7 @@ const performAction = (() => {
 			return;
 		};
 		// confirmation
-		const availableLocations = get.availibleLocations();
+		const availableLocations = get.availableLocations();
 		if (game.select[0] === S.CONF_END) {
 			if (game.select[1] || back) {
 				game.select = [S.HAND, game.prevCard];
@@ -1001,7 +1001,7 @@ const performAction = (() => {
 		// activate / deactivate extras
 		if (game.select[0] === S.DECK || game.select[0] === S.DISCARD || game.select[0] === S.VOID) {
 			if (game.select[2]) game.select = game.select[2];
-			else if (game.select[1] === 0 && !back) game.select[1] = 1;
+			else if (game.select[1] === 0 && !back) game.select = [game.select[0], 1, game.select];
 			else game.select[1] = 0;
 			actionTimer = 2;
 			return;
@@ -1014,7 +1014,7 @@ const performAction = (() => {
 			actionTimer = 2;
 			return;
 		} else if (game.select[0] === S.MAP && game.select[1] === availableLocations.length) {
-			game.select = [S.CARDS, 0];
+			game.select = [S.CARDS, 0, game.select];
 			actionTimer = 2;
 			return;
 		} else if (game.select[0] === S.CARDS) {

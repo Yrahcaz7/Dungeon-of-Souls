@@ -693,7 +693,7 @@ const info = {
 		} else if (location === DIR.UP) {
 			loc = [377 - index * 19 - desc.length * 6, 5];
 		} else if (location === S.MAP) {
-			const selection = get.availibleLocations()[index];
+			const selection = get.availableLocations()[index];
 			if (selection) {
 				const node = game.map[selection[0]][selection[1]];
 				const area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0));
@@ -1137,13 +1137,13 @@ const graphics = {
 			let maxScroll = Math.max(spaceY * (Math.floor((len - 1) / cols) - 1) + scrollPadding, 0);
 			if (game.deckScroll > maxScroll) game.deckScroll = maxScroll;
 			let selected = [game.cardSelect % cols, Math.floor(game.cardSelect / cols)];
-			for (let x = 0, y = 0; x + (y * cols) < len; x++) {
-				if (x >= cols) {
-					x = 0;
-					y++;
-				};
-				if (x != selected[0] || y != selected[1] || !focused) {
+			for (let x = (len - 1) % cols, y = Math.floor((len - 1) / cols); y >= 0; x--) {
+				if (x !== selected[0] || y !== selected[1] || !focused) {
 					draw.card(deck[x + (y * cols)], startX + (x * spaceX), startY + (y * spaceY) - game.deckScroll, false, inOutsideDeck());
+				};
+				if (x === 0) {
+					x = cols;
+					y--;
 				};
 			};
 			if (focused) {
@@ -1465,7 +1465,7 @@ const graphics = {
 	 */
 	map(focused = true) {
 		// setup
-		const availableLocations = get.availibleLocations();
+		const availableLocations = get.availableLocations();
 		const area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0));
 		// draw map
 		draw.rect("#000");

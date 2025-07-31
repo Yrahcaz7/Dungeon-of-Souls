@@ -265,6 +265,15 @@ const loadSave = (() => {
 				game.select[1] = -game.select[1];
 			};
 		};
+		// version 2.3.21
+		if (version < 2_003_021) {
+			// deck/discard/void viewing now always uses game.select[2]
+			if ((game.select[0] === S.DECK || game.select[0] === S.DISCARD || game.select[0] === S.VOID) && game.select[1] === 1 && !game.select[2]) {
+				game.select[2] = [game.select[0], 0];
+			} else if (game.select[2] && (game.select[2][0] === S.DECK || game.select[2][0] === S.DISCARD || game.select[2][0] === S.VOID) && game.select[2][1] === 1) {
+				game.select[2][1] = 0;
+			};
+		};
 		// reset GAME_OVER and GAME_WON screen fade-in (all versions)
 		if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) game.select[1] = 0;
 		// fix in-progress player attack (all versions)
@@ -277,11 +286,9 @@ const loadSave = (() => {
 		// classify enemies (all versions)
 		game.enemies = game.enemies.map(enemy => Enemy.classify(enemy));
 		// classify cards (all versions)
-		game.cards = game.cards.map(card => Card.classify(card));
-		game.deck = game.deck.map(card => Card.classify(card));
-		game.hand = game.hand.map(card => Card.classify(card));
-		game.discard = game.discard.map(card => Card.classify(card));
-		game.void = game.void.map(card => Card.classify(card));
+		for (const key of ["cards", "deck", "hand", "discard", "void"]) {
+			game[key] = game[key].map(card => Card.classify(card));
+		};
 		game.enemyAtt[2] = Card.classify(game.enemyAtt[2]);
 		global.prevGames = global.prevGames.map(prevGame => {
 			prevGame.cards = prevGame.cards.map(card => Card.classify(card));
