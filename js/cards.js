@@ -212,8 +212,8 @@ const CARDS = {
 		},
 	},
 	3002: {
-		name: "Burn",
-		desc: [new Desc("Apply 1 ", EFF.BURN, " to\nyourself and all\nenemies."), new Desc("Apply 1 ", EFF.BURN, " to\nyourself and apply\n2 ", EFF.BURN, " to all\nenemies.")],
+		name: "Scorch",
+		desc: [new Desc("Gain 1 ", EFF.BURN, ". Apply\n1 ", EFF.BURN, " to all\nenemies."), new Desc("Gain 1 ", EFF.BURN, ". Apply\n2 ", EFF.BURN, " to all\nenemies.")],
 		rarity: 1,
 		cost: 0,
 		effect(level = 0) {
@@ -246,6 +246,13 @@ const CARDS = {
 		rarity: 1,
 		cost: [1, 0],
 		effect(level = 0) {gainEff(EFF.PULSE, 2)},
+	},
+	3005: {
+		name: "Blazing Blades",
+		desc: [new Desc("Gain 2 ", EFF.BLAZE, "."), new Desc("Gain 3 ", EFF.BLAZE, ".")],
+		rarity: 1,
+		cost: 1,
+		effect(level = 0) {gainEff(EFF.BLAZE, (level >= 1 ? 3 : 2))},
 	},
 	4000: {
 		name: "Aura Blade",
