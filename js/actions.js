@@ -66,9 +66,10 @@ const selection = (() => {
 		return false;
 	};
 	return () => {
-		// action timer
+		// timers
 		actionTimer = Math.max(actionTimer, 0) - 1;
-		if (actionTimer > -1) return;
+		if (actionTimer > -1 || holdTimer === 1) return;
+		holdTimer++;
 		// menus
 		if (menuSelect[0] === MENU.MAIN) {
 			if (action === DIR.UP && menuSelect[1] > (game.map.length > 0 ? 0 : 1)) {

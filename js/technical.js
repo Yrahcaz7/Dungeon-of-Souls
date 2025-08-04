@@ -130,6 +130,7 @@ window.onresize = fixCanvas;
 
 let action = -1;
 let lastAction = -1;
+let holdTimer = 0;
 
 /**
  * Performs a keyboard shortcut that changes the selection.
@@ -149,7 +150,8 @@ function shortcutTo(location) {
 
 document.onkeydown = event => {
 	if (!loaded) return;
-	const key = event.key;
+	holdTimer = 0;
+	const key = (event.key.length === 1 ? event.key.toUpperCase() : event.key);
 	if (menuSelect[0] === MENU.ENTER_SEED) {
 		if (key.length === 1 && /[0-9A-F]/i.test(key) && !event.repeat && actionTimer === -1 && newSeed.length < 6) {
 			newSeed += key.toUpperCase();
@@ -161,7 +163,7 @@ document.onkeydown = event => {
 			performAction();
 		};
 		action = -1;
-	} else if ((key === "E" || key === "e") && !event.repeat && menuSelect[0] === -1 && actionTimer === -1 && game.turn === TURN.PLAYER) {
+	} else if (key === "E" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1 && game.turn === TURN.PLAYER) {
 		if (game.select[0] === S.CONF_END) game.select = [S.HAND, game.prevCard];
 		else endTurnConfirm();
 		action = -1;
@@ -181,23 +183,23 @@ document.onkeydown = event => {
 		};
 		action = -1;
 		actionTimer = 2;
-	} else if ((key === "C" || key === "c") && !event.repeat && menuSelect[0] === MENU.PREV_GAMES && actionTimer === -1) {
+	} else if (key === "C" && !event.repeat && menuSelect[0] === MENU.PREV_GAMES && actionTimer === -1) {
 		menuSelect = [MENU.PREV_GAME_SORT, 0];
 		action = -1;
 		actionTimer = 2;
 	} else if ((key === " " || key === "Enter") && !event.repeat && actionTimer === -1) {
 		action = -1;
 		performAction();
-	} else if ((key === "B" || key === "b") && !event.repeat && actionTimer === -1) {
+	} else if (key === "B" && !event.repeat && actionTimer === -1) {
 		action = -1;
 		performAction(true);
-	} else if (key === "W" || key === "w" || key === "ArrowUp") {
+	} else if (key === "W" || key === "ArrowUp") {
 		action = DIR.UP;
-	} else if (key === "A" || key === "a" || key === "ArrowLeft") {
+	} else if (key === "A" || key === "ArrowLeft") {
 		action = DIR.LEFT;
-	} else if (key === "S" || key === "s" || key === "ArrowDown") {
+	} else if (key === "S" || key === "ArrowDown") {
 		action = DIR.DOWN;
-	} else if (key === "D" || key === "d" || key === "ArrowRight") {
+	} else if (key === "D" || key === "ArrowRight") {
 		action = DIR.RIGHT;
 	} else {
 		action = -1;
@@ -232,6 +234,8 @@ document.onkeydown = event => {
 };
 
 document.onkeyup = event => {
-	const key = event.key;
-	if (key === "W" || key === "w" || key === "ArrowUp" || key === "A" || key === "a" || key === "ArrowLeft" || key === "S" || key === "s" || key === "ArrowDown" || key === "D" || key === "d" || key === "ArrowRight") action = -1;
+	const key = (event.key.length === 1 ? event.key.toUpperCase() : event.key);
+	if (key === "W" || key === "ArrowUp" || key === "A" || key === "ArrowLeft" || key === "S" || key === "ArrowDown" || key === "D" || key === "ArrowRight") {
+		action = -1;
+	};
 };
