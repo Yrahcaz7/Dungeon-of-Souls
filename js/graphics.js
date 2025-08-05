@@ -666,8 +666,8 @@ const info = {
 	 * @param {number} yOveride - overrides the y-coordinate of the infobox.
 	 */
 	artifact(type, xOveride = NaN, yOveride = NaN) {
-		const x = (xOveride === xOveride ? xOveride : 21 + (game.select[1] * 18));
-		const y = (yOveride === yOveride ? yOveride : 13);
+		const x = (xOveride === xOveride ? xOveride : 2 + (game.select[1] * 18));
+		const y = (yOveride === yOveride ? yOveride : 32);
 		const obj = ARTIFACTS[type];
 		if (!obj) return;
 		if (obj.name.length <= 12) {
@@ -691,7 +691,7 @@ const info = {
 		} else if (location === DIR.RIGHT) {
 			loc = [377 - desc.length * 6, 184 - index * 19];
 		} else if (location === DIR.UP) {
-			loc = [377 - index * 19 - desc.length * 6, 5];
+			loc = [396 - index * 19 - desc.length * 6, 22];
 		} else if (location === S.MAP) {
 			const selection = get.availableLocations()[index];
 			if (selection) {
@@ -1066,8 +1066,8 @@ const graphics = {
 		};
 		draw.lore(1, 12 - infoPos, 'Source can be found at "https://github.com/Yrahcaz7/Dungeon-of-Souls"', {"color": "#f44", "text-small": true});
 		if (infoLimit > 0) {
-			draw.lore(366, 26, "Scrollable", {"color": "#fff", "text-align": DIR.LEFT});
-			draw.image(I.extra.arrows, 367, 22);
+			draw.lore(366, 40, "Scrollable", {"color": "#fff", "text-align": DIR.LEFT});
+			draw.image(I.extra.arrows, 367, 36);
 		};
 	},
 	/**
@@ -1337,7 +1337,7 @@ const graphics = {
 		} else if (game.select[0] === S.ARTIFACTS) {
 			info.artifact(game.artifacts[game.select[1]]);
 		} else if (game.select[0] === S.ARTIFACT_REWARD) {
-			info.artifact(game.room[6][game.select[1]], 179 + (game.select[1] * 32), 90);
+			info.artifact(game.room[6][game.select[1]], 160 + (game.select[1] * 32), 109);
 		} else if (game.select[0] === S.CARD_REWARD && game.select[1] > -1 && game.select[1] < get.cardRewardChoices()) {
 			graphics.cardInfo("reward", new Card(game.room[5][game.select[1]]));
 		} else if (game.select[0] === S.LOOKER) {
@@ -1899,7 +1899,7 @@ const graphics = {
 			draw.image(I.artifact[artifacts[index]], (index * 26) + 11, 24);
 			if (index == menuArtifactSelect && focused) draw.image(I.artifact._.wo[artifacts[index]], (index * 26) + 10, 23);
 		};
-		info.artifact(artifacts[menuArtifactSelect], menuArtifactSelect * 26 + 30, 24);
+		info.artifact(artifacts[menuArtifactSelect], menuArtifactSelect * 26 + 11, 43);
 		draw.rect("#0004", 0, 0, 400, 13);
 		draw.lore(200 - 2, 1, "Artifacts From Game #" + (sortedPrevGames[Math.floor(menuSelect[1] / 3)] + 1), {"color": "#fff", "text-align": DIR.CENTER});
 		draw.rect("#fff", 1, 12, 398, 1);
