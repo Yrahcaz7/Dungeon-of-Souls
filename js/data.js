@@ -84,6 +84,7 @@ const GAMEPLAY = ""
 	+ "Then, you can use your new knowledge and cards to reach higher heights next time.";
 const CHANGELOG = ""
 	+ "<b>Version 2.3 - Consecution<s>"
+	+ " - finally added the ACT 2 boss music!\n"
 	+ " - two new enemies and four new effects!\n"
 	+ " - added four new cards (or maybe five?)\n"
 	+ " - adjusted some card graphics\n"

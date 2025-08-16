@@ -62,7 +62,7 @@ function resetVars(prevGamesMenu = false) {
 	infoPos = 0;
 	infoLimit = 0;
 	updateRandom();
-	changeMusic();
+	fadeMusic();
 };
 
 /**
@@ -74,7 +74,7 @@ async function hardReset() {
 	game = getStartGameData();
 	global = getStartGlobalData();
 	fixCanvas(true);
-	resetVars();
+	resetVars(true);
 	loaded = true;
 	save();
 	console.log("[hard reset done in " + (Date.now() - startTime) + "ms]");

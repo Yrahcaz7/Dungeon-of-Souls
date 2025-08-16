@@ -102,6 +102,15 @@ const get = {
 		return choices;
 	},
 	/**
+	 * Gets the player's hand size.
+	 */
+	handSize() {
+		let size = 5;
+		if (hasArtifact(104)) size--;
+		if (hasArtifact(205)) size++;
+		return size;
+	},
+	/**
 	 * Gets the player's maximum health.
 	 */
 	maxHealth() {

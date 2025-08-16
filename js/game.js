@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_023;
+const VERSION = 2_003_024;
 
 /**
  * Returns the starting global data.
@@ -105,6 +105,8 @@ let menuArtifactSelect = 0;
 let prevGamesSort = [0, true];
 let sortedPrevGames = [];
 
+let musicDuration = 0;
+
 /**
  * Creates a popup.
  * @param {string} type - the type of the popup.
@@ -129,15 +131,12 @@ function createPopup(type, description, secondLine = "", action = null) {
  * Creates the current music popup.
  */
 function musicPopup() {
-	let src = "" + document.getElementById("music").src;
-	if (!global.options[OPTION.MUSIC]) {
+	if (global.options[OPTION.MUSIC]) {
+		const track = /.+\/(.+)\.wav/.exec(document.getElementById("music").src)[1];
+		if (track) createPopup("music", track.replace(/_/g, " "));
+		else createPopup("music", "music is on");
+	} else {
 		createPopup("music", "music is off");
-	} else if (/Ruins_of_Caelum/.test(src)) {
-		createPopup("music", "Ruins of Caelum");
-	} else if (/The_Final_Ruins/.test(src)) {
-		createPopup("music", "The Final Ruins");
-	} else if (/Future_Dungeon/.test(src)) {
-		createPopup("music", "Future Dungeon");
 	};
 };
 
@@ -149,20 +148,39 @@ function mapPopup() {
 };
 
 /**
+ * Gets the name and duration of the appropriate music track.
+ * @returns {[string, number]}
+ */
+const getMusicTrack = () => {
+	const TRACK_DURATION = {
+		Ruins_of_Caelum: 48,
+		The_Final_Ruins: 43.2,
+		Future_Dungeon: 50.4,
+		The_Singularity: 48,
+	};
+	return (() => {
+		let name = "";
+		if (global.options[OPTION.MUSIC_TRACK] && global.options[OPTION.MUSIC_TRACK] != "default") name = ("" + global.options[OPTION.MUSIC_TRACK]).replace(/\s/g, "_");
+		else if (game.floor == 20) name = "The_Singularity";
+		else if (get.area() == 1) name = "Future_Dungeon";
+		else if (game.floor == 10) name = "The_Final_Ruins";
+		else name = "Ruins_of_Caelum";
+		return [name, TRACK_DURATION[name] ?? NaN];
+	})();
+};
+
+/**
  * Changes the music track to the appropriate one.
  */
 function changeMusic() {
-	if (global.options[OPTION.MUSIC_TRACK] == "Future Dungeon") document.getElementById("music").src = "music/Future_Dungeon.wav";
-	else if (global.options[OPTION.MUSIC_TRACK] == "The Final Ruins") document.getElementById("music").src = "music/The_Final_Ruins.wav";
-	else if (global.options[OPTION.MUSIC_TRACK] == "Ruins of Caelum") document.getElementById("music").src = "music/Ruins_of_Caelum.wav";
-	else if (get.area() == 1) document.getElementById("music").src = "music/Future_Dungeon.wav";
-	else if (game.floor == 10) document.getElementById("music").src = "music/The_Final_Ruins.wav";
-	else document.getElementById("music").src = "music/Ruins_of_Caelum.wav";
+	const track = getMusicTrack();
+	document.getElementById("music").src = "music/" + track[0] + ".wav";
+	musicDuration = track[1];
 	musicPopup();
 };
 
 /**
- * Fades out the music, then changes it.
+ * Fades out the music, then changes it to the appropriate one.
  */
 function fadeMusic() {
 	if (!document.getElementById("music") || document.getElementById("music").volume < 1) return;
@@ -183,54 +201,43 @@ function fadeMusic() {
  * Starts the player's turn.
  * @param {boolean} firstTurn - if true, it is the player's first turn.
  */
-const startTurn = (() => {
-	/**
-	 * Gets the player's hand size.
-	 */
-	function getHandSize() {
-		let size = 5;
-		if (hasArtifact(104)) size--;
-		if (hasArtifact(205)) size++;
-		return size;
-	};
-	return (firstTurn = false) => {
-		let toSelect = [S.HAND, 0];
-		// end of enemy turn effects
-		if (!firstTurn) {
-			for (let index = 0; index < game.enemies.length; index++) {
-				const enemy = game.enemies[index];
-				if (enemy.eff[EFF.BURN]) {
-					let damage = enemy.eff[EFF.BURN];
-					if (hasArtifact(107)) damage += 3;
-					dealDamage(damage, 0, index, false);
-					enemy.eff[EFF.BURN]--;
-				};
-				if (enemy.eff[EFF.WEAKNESS]) enemy.eff[EFF.WEAKNESS]--;
-				if (enemy.eff[EFF.BLAZE]) enemy.eff[EFF.BLAZE]--;
-				if (enemy.eff[EFF.ATKUP]) enemy.eff[EFF.ATKUP]--;
-				if (enemy.eff[EFF.DEFUP]) enemy.eff[EFF.DEFUP]--;
-				if (enemy.eff[EFF.PULSE]) enemy.eff[EFF.PULSE] = Math.max(enemy.eff[EFF.PULSE] - 2, 0);
-				if (enemy.eff[EFF.HYPERSPEED]) enemy.eff[EFF.HYPERSPEED]--;
-				if (enemy.eff[ENEMY_EFF.SHROUD]) {
-					enemy.eff[ENEMY_EFF.SHROUD]--;
-					if (!enemy.eff[ENEMY_EFF.SHROUD] && !hasArtifact(204)) {
-						toSelect = [S.CONF_PEARL, 0];
-					};
+function startTurn(firstTurn = false) {
+	let toSelect = [S.HAND, 0];
+	// end of enemy turn effects
+	if (!firstTurn) {
+		for (let index = 0; index < game.enemies.length; index++) {
+			const enemy = game.enemies[index];
+			if (enemy.eff[EFF.BURN]) {
+				let damage = enemy.eff[EFF.BURN];
+				if (hasArtifact(107)) damage += 3;
+				dealDamage(damage, 0, index, false);
+				enemy.eff[EFF.BURN]--;
+			};
+			if (enemy.eff[EFF.WEAKNESS]) enemy.eff[EFF.WEAKNESS]--;
+			if (enemy.eff[EFF.BLAZE]) enemy.eff[EFF.BLAZE]--;
+			if (enemy.eff[EFF.ATKUP]) enemy.eff[EFF.ATKUP]--;
+			if (enemy.eff[EFF.DEFUP]) enemy.eff[EFF.DEFUP]--;
+			if (enemy.eff[EFF.PULSE]) enemy.eff[EFF.PULSE] = Math.max(enemy.eff[EFF.PULSE] - 2, 0);
+			if (enemy.eff[EFF.HYPERSPEED]) enemy.eff[EFF.HYPERSPEED]--;
+			if (enemy.eff[ENEMY_EFF.SHROUD]) {
+				enemy.eff[ENEMY_EFF.SHROUD]--;
+				if (!enemy.eff[ENEMY_EFF.SHROUD] && !hasArtifact(204)) {
+					toSelect = [S.CONF_PEARL, 0];
 				};
 			};
 		};
-		// start of player turn effects
-		drawCards(getHandSize());
-		game.turn = TURN.PLAYER;
-		if (game.eff[EFF.REINFORCE]) game.eff[EFF.REINFORCE]--;
-		else game.shield = 0;
-		if (game.eff[EFF.RESILIENCE]) game.eff[EFF.RESILIENCE]--;
-		if (game.eff[EFF.FIREPROOF] && game.eff[EFF.BURN]) game.eff[EFF.BURN] = Math.max(game.eff[EFF.BURN] - game.eff[EFF.FIREPROOF], 0);
-		game.energy = get.maxEnergy();
-		game.select = toSelect;
-		if (playerAnim[1] !== I.player.idle && playerAnim[1] !== I.player.hit) startAnim.player(I.player.idle);
 	};
-})();
+	// start of player turn effects
+	drawCards(get.handSize());
+	game.turn = TURN.PLAYER;
+	if (game.eff[EFF.REINFORCE]) game.eff[EFF.REINFORCE]--;
+	else game.shield = 0;
+	if (game.eff[EFF.RESILIENCE]) game.eff[EFF.RESILIENCE]--;
+	if (game.eff[EFF.FIREPROOF] && game.eff[EFF.BURN]) game.eff[EFF.BURN] = Math.max(game.eff[EFF.BURN] - game.eff[EFF.FIREPROOF], 0);
+	game.energy = get.maxEnergy();
+	game.select = toSelect;
+	if (playerAnim[1] !== I.player.idle && playerAnim[1] !== I.player.hit) startAnim.player(I.player.idle);
+};
 
 /**
  * Ends the player's turn.
@@ -540,7 +547,7 @@ const MUSIC_LOOP = setInterval(() => {
 		const time = document.getElementById("music").currentTime;
 		if (time === 0 && !inMenu()) {
 			document.getElementById("music").play();
-		} else if (time > document.getElementById("music").duration - 1.005) {
+		} else if (time + 0.005 > musicDuration) {
 			document.getElementById("music").currentTime = 0;
 		};
 	};

@@ -545,7 +545,7 @@ const selection = (() => {
  */
 const performAction = (() => {
 	const PIXEL_SIZES = [1, 2, 0.5];
-	const MUSIC_TRACKS = ["default", "Ruins of Caelum", "The Final Ruins", "Future Dungeon"];
+	const MUSIC_TRACKS = ["default", "Ruins of Caelum", "The Final Ruins", "Future Dungeon", "The Singularity"];
 	/**
 	 * Returns the sort value of the previous game.
 	 * @param {{result: number, difficulty: number, floor: number, health: number, gold: number, score: number, seed: string, cards: Card[], artifacts: number[], kills: {}}} prevGame - The previous game to get the sort value of.
