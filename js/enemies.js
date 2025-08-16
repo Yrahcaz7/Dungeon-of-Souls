@@ -132,7 +132,7 @@ class Enemy {
 			takeDamage(this.getTotalAttackPower());
 			if (game.health < prevHealth && this.type !== FRAGMENT) {
 				startAnim.player(I.player.hit);
-			} else if (game.shield == 0 && playerAnim[1] !== I.player.idle) {
+			} else if (game.shield === 0 && playerAnim[1] !== I.player.idle) {
 				startAnim.player(I.player.idle);
 			};
 			this.done = true;

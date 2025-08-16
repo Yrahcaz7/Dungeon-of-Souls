@@ -174,7 +174,7 @@ const generateMapPathPoints = (() => {
 					visualArr.push([arr[path][index][0] + 300, arr[path][index][1]]);
 					visualArr.push([arr[path][index][0] + 600, arr[path][index][1]]);
 					break;
-				} else if (index == 0) {
+				} else if (index === 0) {
 					visualArr.push([16, 18 + (y * 32) + 8 + game.map[x][y][2]]);
 					visualArr.push([17, 18 + (y * 32) + 8 + game.map[x][y][2]]);
 				} else {
@@ -479,7 +479,7 @@ const generateMap = (() => {
 	function addScribbles() {
 		let available = [0, 1, 2, 3, 4];
 		for (let x = 0; x < game.map.length - 1; x++) {
-			const offset = (x % 10 == 0 ? 1 : 0);
+			const offset = (x % 10 === 0 ? 1 : 0);
 			for (let y = offset; y < game.map[x].length - (offset + 1); y++) {
 				if (mapHasNode(x, y, true)
 					|| mapHasNode(x + 1, y, true)

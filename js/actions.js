@@ -101,7 +101,7 @@ const selection = (() => {
 				menuSelect[1] = Math.min(menuSelect[1] + 3, global.prevGames.length * 3 - 1);
 				actionTimer = 1;
 			};
-		} else if (menuSelect[0] === MENU.PREV_GAME_INFO && menuSelect[1] % 3 == 0) {
+		} else if (menuSelect[0] === MENU.PREV_GAME_INFO && menuSelect[1] % 3 === 0) {
 			deckSelection();
 		} else if (menuSelect[0] === MENU.PREV_GAME_INFO && menuSelect[1] % 3 == 1) {
 			const len = global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].artifacts.length;
@@ -112,7 +112,7 @@ const selection = (() => {
 				menuArtifactSelect++;
 				actionTimer = 1;
 			};
-		} else if (menuSelect[0] === MENU.PREV_GAME_SORT && menuSelect[1] == 0) {
+		} else if (menuSelect[0] === MENU.PREV_GAME_SORT && menuSelect[1] === 0) {
 			if (action === DIR.UP && prevGamesSort[0] > 0) {
 				prevGamesSort[0]--;
 				actionTimer = 1;
@@ -194,7 +194,7 @@ const selection = (() => {
 					game.select[1] = availableLocations.length - 1;
 					actionTimer = 1;
 					return;
-				} else if (game.select[1] == 0) {
+				} else if (game.select[1] === 0) {
 					game.select[1] = availableLocations.length;
 					actionTimer = 1;
 					return;
@@ -605,7 +605,7 @@ const performAction = (() => {
 			actionTimer = 2;
 		} else if (menuSelect[0] === MENU.MAIN) {
 			if (back) return;
-			if (menuSelect[1] == 0) {
+			if (menuSelect[1] === 0) {
 				if (game.map.length > 0) menuSelect = [-1, 0];
 			} else if (menuSelect[1] == 1) {
 				if (game.map.length > 0) {
@@ -1059,8 +1059,8 @@ const performAction = (() => {
 				game.select = [S.CONF_SURRENDER, 1];
 			};
 			if (option === OPTION.MUSIC) {
-				if (global.options[OPTION.MUSIC]) document.getElementById("music").play();
-				else document.getElementById("music").pause();
+				if (global.options[OPTION.MUSIC]) musicElement.play();
+				else musicElement.pause();
 				musicPopup();
 			} else if (option === OPTION.PERFECT_SCREEN || option === OPTION.PERFECT_SIZE) {
 				fixCanvas(true);

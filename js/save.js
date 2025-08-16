@@ -361,13 +361,12 @@ const loadSave = (() => {
 document.onvisibilitychange = (() => {
 	let musicPausedOnHide = false;
 	return () => {
-		const music = document.getElementById("music");
 		if (document.hidden) {
-			musicPausedOnHide = !music.paused;
-			music.pause();
+			musicPausedOnHide = !musicElement.paused;
+			musicElement.pause();
 			if (loaded) save();
 		} else if (musicPausedOnHide) {
-			music.play();
+			musicElement.play();
 		};
 	};
 })();

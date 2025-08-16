@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_024;
+const VERSION = 2_003_025;
 
 /**
  * Returns the starting global data.
@@ -105,7 +105,12 @@ let menuArtifactSelect = 0;
 let prevGamesSort = [0, true];
 let sortedPrevGames = [];
 
+let musicElement;
 let musicDuration = 0;
+
+document.addEventListener("DOMContentLoaded", () => {
+	musicElement = document.getElementById("music");
+});
 
 /**
  * Creates a popup.
@@ -132,7 +137,7 @@ function createPopup(type, description, secondLine = "", action = null) {
  */
 function musicPopup() {
 	if (global.options[OPTION.MUSIC]) {
-		const track = /.+\/(.+)\.wav/.exec(document.getElementById("music").src)[1];
+		const track = /^.+\/(.+)\.wav$/.exec(musicElement.src)[1];
 		if (track) createPopup("music", track.replace(/_/g, " "));
 		else createPopup("music", "music is on");
 	} else {
@@ -174,7 +179,7 @@ const getMusicTrack = () => {
  */
 function changeMusic() {
 	const track = getMusicTrack();
-	document.getElementById("music").src = "music/" + track[0] + ".wav";
+	musicElement.src = "music/" + track[0] + ".wav";
 	musicDuration = track[1];
 	musicPopup();
 };
@@ -183,14 +188,14 @@ function changeMusic() {
  * Fades out the music, then changes it to the appropriate one.
  */
 function fadeMusic() {
-	if (!document.getElementById("music") || document.getElementById("music").volume < 1) return;
+	if (!musicElement || musicElement.volume < 1) return;
 	let timer = 0;
 	let fade = setInterval(() => {
-		if (document.getElementById("music").volume > 0) {
-			document.getElementById("music").volume = Math.max(document.getElementById("music").volume - 0.0025, 0);
+		if (musicElement.volume > 0) {
+			musicElement.volume = Math.max(musicElement.volume - 0.0025, 0);
 		} else if (timer >= 500) {
 			changeMusic();
-			document.getElementById("music").volume = 1;
+			musicElement.volume = 1;
 			clearInterval(fade);
 		};
 		timer++;
@@ -462,7 +467,7 @@ function updateVisuals() {
 		if (menuSelect[0] === MENU.ENTER_SEED) {
 			graphics.seedInput();
 		} else if (menuSelect[0] === MENU.PREV_GAME_INFO) {
-			if (menuSelect[1] % 3 == 0) graphics.deck();
+			if (menuSelect[1] % 3 === 0) graphics.deck();
 			else if (menuSelect[1] % 3 == 1) graphics.prevGameArtifacts();
 			else if (menuSelect[1] % 3 == 2) graphics.prevGameKills();
 		} else if (menuSelect[0] === MENU.PREV_GAME_SORT) {
@@ -543,12 +548,12 @@ const GAME_LOOP = setInterval(() => {
 }, 100);
 
 const MUSIC_LOOP = setInterval(() => {
-	if (global.options[OPTION.MUSIC] && document.getElementById("music")?.src) {
-		const time = document.getElementById("music").currentTime;
+	if (global.options[OPTION.MUSIC] && musicElement?.src) {
+		const time = +musicElement.currentTime;
 		if (time === 0 && !inMenu()) {
-			document.getElementById("music").play();
+			musicElement.play();
 		} else if (time + 0.005 > musicDuration) {
-			document.getElementById("music").currentTime = 0;
+			musicElement.currentTime = 0;
 		};
 	};
 }, 5);

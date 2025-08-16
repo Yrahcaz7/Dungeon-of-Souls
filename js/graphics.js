@@ -510,7 +510,7 @@ const draw = {
 				draw.image(img, x, y + 89);
 				if (!PERM_EFF_DESC[key]) draw.lore(x + 17, y + 97, enemy.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
 				x += 17;
-				if (x >= enemyPos[index][0] + (index == 0 && game.void.length && game.enemies.length > 2 ?
+				if (x >= enemyPos[index][0] + (index === 0 && game.void.length && game.enemies.length > 2 ?
 					(Object.keys(enemy.eff).length > (game.enemies.length > 3 ? 4 : 6) ? 51 : 34)
 					: 68
 				)) {
@@ -731,7 +731,7 @@ const graphics = {
 				if (!backAnim[col]?.length) backAnim[col] = [];
 				for (let index = 0; index < 9; index++) {
 					if (!backAnim[col][index]?.length) backAnim[col][index] = [0];
-					if (backAnim[col][index][0] == 0 && Math.random() < 1/100) {
+					if (backAnim[col][index][0] === 0 && Math.random() < 1/100) {
 						backAnim[col][index] = [Math.floor(Math.random() * 10) + 10, Math.floor(Math.random() * 6)];
 					};
 				};
@@ -740,7 +740,7 @@ const graphics = {
 				if (!backAnim[col][9]) backAnim[col][9] = [];
 				for (let index = 0; index < 6; index++) {
 					if (!backAnim[col][9][index]) backAnim[col][9][index] = 0;
-					if (backAnim[col][9][index] == 0 && Math.random() < 1/200) {
+					if (backAnim[col][9][index] === 0 && Math.random() < 1/200) {
 						backAnim[col][9][index] = Math.floor(Math.random() * 20) + 20;
 					};
 				};
@@ -827,7 +827,7 @@ const graphics = {
 					ctx.scale(-1, 1);
 					draw.imageSector(I.background.column_debris, (extraAnim[index][2] % 8) * 16, 0, 16, 8, Math.floor(extraAnim[index][1] - 400), Math.floor(extraAnim[index][0]), -16, 8);
 					ctx.scale(-1, 1);
-				} else if (extraAnim[index][2] % 2 == 0) {
+				} else if (extraAnim[index][2] % 2 === 0) {
 					draw.image(I.background.debris, Math.floor(400 - extraAnim[index][1]), Math.floor(extraAnim[index][0] + 1));
 				} else {
 					ctx.scale(-1, 1);
@@ -1109,7 +1109,7 @@ const graphics = {
 		draw.rect("#000c");
 		// setup refinable deck
 		if ((game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) && !refinableDeck.length) {
-			refinableDeck = game.cards.filter(card => card.level == 0);
+			refinableDeck = game.cards.filter(card => card.level === 0);
 			if (!refinableDeck.length) refinableDeck = [new Card()];
 		};
 		// setup for deck drawing
@@ -1482,7 +1482,7 @@ const graphics = {
 				draw.image(I.map.select, 13 + (game.floor % 10 * 32), 12);
 			};
 		} else if (game.floor > 0) {
-			if (game.floor % 10 == 0) {
+			if (game.floor % 10 === 0) {
 				draw.image(I.map.select, 18 + (9 * 32), 12);
 				draw.image(I.map.select, 12 + (10 * 32), 12);
 			} else if (game.floor % 10 == 1) {
@@ -1729,7 +1729,7 @@ const graphics = {
 		draw.lore(x + 1, y + 1, text.join("\n"), {"text-small": true});
 		if (focused) {
 			const select = (menuSelect[0] == -1 ? game.select[1] : menuSelect[1]);
-			if (select == 0) {
+			if (select === 0) {
 				draw.rect("#fff", x, y + height - 14, 23, 14);
 			} else if (select == 1) {
 				if (game.select[0] === S.CONF_PURIFY) draw.rect("#fff", x + 22, y + height - 14, 53, 14);
