@@ -375,15 +375,15 @@ class EnemyAnimationSource {
 					Math.floor(Math.random() * 4),
 					(isDefending(playerAnim[1]) ? (isCrouching(playerAnim[1]) ? 0 : 1) : 2),
 				];
-				pos = [
+				const pos = [
 					[133 + this.actionData[0] * 17, 88],
 					[155 + this.actionData[0] * 17, 79],
 					[142 + this.actionData[0] * 17, 70],
 				][this.actionData[1]];
-				draw.imageSector(I.enemy.singularity.attack, Math.floor(this.action[0]) * 68 + (this.actionData[0] % 2 + (this.actionData[1] % 2 == 1 ? 2 : 0)) * 17, 0, 17, 55, x, y);
-				draw.imageSector(I.enemy.singularity.attack_overlay, Math.floor(this.action[0]) * 34 + (this.actionData[1] % 2 == 1 ? 17 : 0), 0, 17, 55, x, y);
+				draw.imageSector(I.enemy.singularity.attack, Math.floor(this.action[0]) * 68 + (this.actionData[0] % 2 + (this.actionData[1] % 2 == 1 ? 2 : 0)) * 17, 0, 17, 55, pos[0], pos[1]);
+				draw.imageSector(I.enemy.singularity.attack_overlay, Math.floor(this.action[0]) * 34 + (this.actionData[1] % 2 == 1 ? 17 : 0), 0, 17, 55, pos[0], pos[1]);
 				if (this.action[0] >= 8) {
-					const start = [x + 7, y + 5];
+					const start = [pos[0] + 7, pos[1] + 5];
 					const end = [[94, 95], [92, 87], [72, 82]][this.actionData[1]];
 					draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 4);
 				};
