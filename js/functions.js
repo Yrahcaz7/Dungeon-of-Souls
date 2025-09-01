@@ -303,7 +303,7 @@ function getCardCost(cardObj) {
  * @param {number} prevShield - defaults to `game.enemies[index].shield`.
  */
 function startEnemyTransition(index, prevShield = game.enemies[index].shield) {
-	if (game.enemies[index].type !== SENTRY.BIG && game.enemies[index].type !== SENTRY.SMALL && game.enemies[index].type !== SENTRY.PRIME  && game.enemies[index].type !== SENTRY.FLAMING) return;
+	if (game.enemies[index].type !== SENTRY.BIG && game.enemies[index].type !== SENTRY.SMALL && game.enemies[index].type !== SENTRY.PRIME && game.enemies[index].type !== SENTRY.FLAMING) return;
 	if (prevShield > 0 && game.enemies[index].shield === 0) game.enemies[index].transition = [0, TRANSITION.SHIELD];
 };
 

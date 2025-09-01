@@ -199,16 +199,14 @@ const CARDS = {
 	},
 	3001: {
 		name: "Rage",
-		desc: [new Desc("Kill a non-boss\nenemy. Take\nnon-combat damage\nequal to half its\nhealth, rounded up."), new Desc("Kill a non-boss\nenemy. Take\nnon-combat damage\nequal to half its\nhealth, rounded up.\nDraw a card.")],
+		desc: new Desc("Kill a non-boss\nenemy. Take\nnon-combat damage\nequal to half its\nhealth, rounded up.\n", [CARD_EFF.ONE_USE, true], "."),
 		rarity: 1,
-		cost: 0,
+		cost: [1, 0],
 		attackEffects: false,
 		attack(level = 0) {
-			if (!game.enemies[game.enemyAtt[1]].isBoss()) {
-				takeDamage(Math.ceil(game.enemies[game.enemyAtt[1]].health / 2), false);
-				game.enemies[game.enemyAtt[1]].health = 0;
-			};
-			if (level >= 1) drawCards(1);
+			if (game.enemies[game.enemyAtt[1]].isBoss()) return;
+			takeDamage(Math.ceil(game.enemies[game.enemyAtt[1]].health / 2), false);
+			game.enemies[game.enemyAtt[1]].health = 0;
 		},
 	},
 	3002: {
