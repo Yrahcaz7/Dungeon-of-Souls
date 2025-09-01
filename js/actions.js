@@ -947,11 +947,15 @@ const performAction = (() => {
 		if (game.select[0] === S.EVENT && !back) {
 			let event = getCurrentEvent();
 			if (event[game.select[1] + 2]) {
-				const next = event[game.select[1] + 2][1];
-				game.turn = 10000 + (next instanceof Function ? next() : next);
-				event = getCurrentEvent();
-				if (event[0] instanceof Function) event[0]();
-				if (game.select[0] === S.EVENT) game.select[1] = -1;
+				if (typeof event[game.select[1] + 2][1] == "string") {
+					game.select[1] = 0;
+				} else {
+					const next = event[game.select[1] + 2][1];
+					game.turn = 10000 + (next instanceof Function ? next() : next);
+					event = getCurrentEvent();
+					if (event[0] instanceof Function) event[0]();
+					if (game.select[0] === S.EVENT) game.select[1] = -1;
+				};
 				actionTimer = 2;
 				return;
 			};

@@ -274,6 +274,14 @@ const loadSave = (() => {
 				game.select[2][1] = 0;
 			};
 		};
+		// version 2.3.28
+		if (version < 2_003_028) {
+			// events now cannot get stuck on non-numeric paths
+			if (game.select[0] === S.EVENT && typeof game.turn == "string") {
+				const turn = +game.turn.slice(0, -1);
+				game.turn = (isNaN(turn) ? 10000 : Math.max(turn, 10000));
+			};
+		};
 		// reset GAME_OVER and GAME_WON screen fade-in (all versions)
 		if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) game.select[1] = 0;
 		// fix in-progress player attack (all versions)
