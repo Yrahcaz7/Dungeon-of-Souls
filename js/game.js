@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_030;
+const VERSION = 2_003_031;
 
 /**
  * Returns the starting global data.
@@ -250,7 +250,8 @@ function startTurn(firstTurn = false) {
 function endTurn() {
 	if (game.state === STATE.BATTLE) {
 		// end of your turn effects
-		if (game.hand.length) discardHand();
+		game.select = [S.END_TURN, 0];
+		discardHand();
 		cardAnim = [];
 		notif = [-1, 0, "", 0];
 		if (game.eff[EFF.BURN]) {
@@ -286,7 +287,7 @@ function endTurn() {
  * Ends the player's turn (after a confirmation if the player can still play cards).
  */
 function endTurnConfirm() {
-	if (global.options[OPTION.END_TURN_CONFIRM] && areAnyCardsPlayable()) game.select = [S.CONF_END, 0];
+	if (global.options[OPTION.END_TURN_CONFIRM] && areAnyCardsPlayable()) game.select = [S.CONF_END_TURN, 0];
 	else endTurn();
 	actionTimer = 2;
 };
@@ -516,7 +517,7 @@ function updateVisuals() {
 	if (!inDeck()) {
 		graphics.target();
 	};
-	if (game.select[0] === S.CONF_END || game.select[0] === S.CONF_PURIFY || game.select[0] === S.CONF_REFINE || game.select[0] === S.CONF_PEARL) {
+	if (game.select[0] === S.CONF_END_TURN || game.select[0] === S.CONF_PURIFY || game.select[0] === S.CONF_REFINE || game.select[0] === S.CONF_PEARL) {
 		graphics.conf();
 	} else if (game.select[0] === S.CONF_EXIT) {
 		graphics.rewards(false);

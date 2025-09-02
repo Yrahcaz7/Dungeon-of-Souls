@@ -33,8 +33,8 @@ const S = {
 	ATTACK: 303, // N is the index of the selected enemy.
 	LOOKER: 304, // N indicates if the looker is active (1 if it is, 0 if not).
 	HELP: 305, // if N == 0, it indicates that no HELP menu is open; otherwise, it indicates which HELP menu is open.
-	END: 306, // N does not indicate anything.
-	CONF_END: 307, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
+	END_TURN: 306, // N does not indicate anything.
+	CONF_END_TURN: 307, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 	DECK: 308, // N indicates if the respective menu is open (1 if it is, 0 if not).
 	DISCARD: 309, // N indicates if the respective menu is open (1 if it is, 0 if not).
 	MAP: 311, // If N == 0, it indicates that the back button is selected; otherwise, it indicates the index of the selected node in the available locations array if it exists, and otherwise N indicates that the open cards menu button is selected.

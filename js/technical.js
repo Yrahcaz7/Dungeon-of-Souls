@@ -164,7 +164,7 @@ document.onkeydown = event => {
 		};
 		action = -1;
 	} else if (key === "E" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1 && game.turn === TURN.PLAYER) {
-		if (game.select[0] === S.CONF_END) game.select = [S.HAND, game.prevCard];
+		if (game.select[0] === S.CONF_END_TURN) game.select = [S.HAND, game.prevCard];
 		else endTurnConfirm();
 		action = -1;
 	} else if (key === "1" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1) {

@@ -322,6 +322,6 @@ function updateData() {
 	// other
 	if (game.select[0] === S.HAND) {
 		if (game.hand.length) game.prevCard = game.select[1];
-		else game.select = [S.END, 0];
+		else game.select = [S.END_TURN, 0];
 	};
 };

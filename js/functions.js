@@ -371,7 +371,7 @@ function takeDamage(amount, attack = true, index = game.enemyNum) {
 		if (game.enemies[index].eff[EFF.BLAZE]) gainEff(EFF.BURN, triggerNum);
 		if (game.enemies[index].eff[EFF.PULSE]) gainEff(EFF.PULSE, triggerNum);
 		if (game.enemies[index].eff[ENEMY_EFF.STICKY]) {
-			game.deck.concat(Array.from({length: 2 * triggerNum}, () => new Card(5001, 0, true)));
+			game.deck = game.deck.concat(Array.from({length: 2 * triggerNum}, () => new Card(5001, 0, true)));
 			shuffle(game.deck);
 		};
 	};

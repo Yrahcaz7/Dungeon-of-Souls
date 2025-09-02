@@ -902,7 +902,7 @@ const graphics = {
 		if (game.select[0] === S.LOOKER) draw.image(I.select.round, 342, 2);
 		else if (game.select[0] === S.HELP) draw.image(I.select.round, 361, 2);
 		else if (game.select[0] === S.OPTIONS) draw.image(get.area() == 1 ? I.select.options : I.select.options_yellow, 380, 2);
-		else if (game.select[0] === S.END) draw.image(I.select.round, 2, 162);
+		else if (game.select[0] === S.END_TURN) draw.image(I.select.round, 2, 162);
 		else if (game.select[0] === S.DECK && !game.select[1]) draw.image(I.select.deck, 3, 181);
 		else if (game.select[0] === S.VOID && !game.select[1]) draw.image(I.select.round, 380, 162);
 		else if (game.select[0] === S.DISCARD && !game.select[1]) draw.image(I.select.discard, 381, 181);
@@ -1237,7 +1237,7 @@ const graphics = {
 		for (const key in cardObj.eff) {
 			const keyword = +key;
 			if (EFF_DESC[keyword]) {
-				y += info[type]("This has " + cardObj.eff[keyword] + " <#666>" + (EFF_NAME[keyword] || "???") + "</#666>.", x, y);
+				if (EFF_NAME[keyword]) y += info[type]("This has " + cardObj.eff[keyword] + " <#666>" + EFF_NAME[keyword] + "</#666>.", x, y);
 				y += info[type](keyword, x, y);
 				appliedKeywords.push(keyword);
 			};
@@ -1349,7 +1349,7 @@ const graphics = {
 			info.menuItem(DIR.UP, 1, "View Manual");
 		} else if (game.select[0] === S.OPTIONS && game.select[1] <= 1) {
 			info.menuItem(DIR.UP, 0, "Configure Options");
-		} else if (game.select[0] === S.END) {
+		} else if (game.select[0] === S.END_TURN) {
 			info.menuItem(DIR.LEFT, 1, "End Turn");
 		} else if (game.select[0] === S.DECK) {
 			info.menuItem(DIR.LEFT, 0, "View Deck");
@@ -1712,7 +1712,7 @@ const graphics = {
 		if (menuSelect[0] === MENU.NEW_RUN) text = ["Are you sure you want to start a new run?", "If you have an ongoing run, it will be lost forever."];
 		else if (menuSelect[0] === MENU.DIFFICULTY) text = ["Are you sure you want to change the difficulty to " + (game.difficulty ? "easy" : "hard") + "?", "If you have an ongoing run, it will be reset."];
 		else if (menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED) text = ["Are you sure you want to change the seed?", "If you have an ongoing run, it will be reset.", "The new run will also not count towards your high score."];
-		else if (game.select[0] === S.CONF_END) text = ["Are you sure you want to end your turn?"];
+		else if (game.select[0] === S.CONF_END_TURN) text = ["Are you sure you want to end your turn?"];
 		else if (game.select[0] === S.CONF_EXIT) text = ["Are you sure you want to finish collecting rewards?", "There are still rewards left unclaimed."];
 		else if (game.select[0] === S.CONF_SURRENDER) text = ["Are you sure you want to end your current run by surrendering?", "This choice cannot be undone."];
 		else if (game.select[0] === S.CONF_HAND_ALIGN) text = ["Are you sure you want to align the hands of time?", "You will regret it. There is no going back."];

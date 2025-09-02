@@ -131,7 +131,7 @@ const selection = (() => {
 		};
 		if (inMenu()) return;
 		// confirmation
-		if (game.select[0] === S.CONF_END || game.select[0] === S.CONF_EXIT || game.select[0] === S.CONF_SURRENDER || game.select[0] === S.CONF_REFINE || game.select[0] === S.CONF_PEARL) {
+		if (game.select[0] === S.CONF_END_TURN || game.select[0] === S.CONF_EXIT || game.select[0] === S.CONF_SURRENDER || game.select[0] === S.CONF_REFINE || game.select[0] === S.CONF_PEARL) {
 			if (action === DIR.LEFT && game.select[1]) {
 				game.select[1] = 0;
 				actionTimer = 1;
@@ -325,21 +325,21 @@ const selection = (() => {
 		};
 		if (action === DIR.UP || action === DIR.RIGHT) {
 			if (game.select[0] === S.DECK && !game.select[1]) {
-				game.select = [S.END, 0];
+				game.select = [S.END_TURN, 0];
 				actionTimer = 1;
 				return;
-			} else if (game.select[0] === S.END) {
+			} else if (game.select[0] === S.END_TURN) {
 				game.select = [S.PLAYER, 0];
 				actionTimer = 1;
 				return;
 			};
 		} else if (action === DIR.LEFT || action === DIR.DOWN) {
-			if (game.select[0] === S.END) {
+			if (game.select[0] === S.END_TURN) {
 				game.select = [S.DECK, 0];
 				actionTimer = 1;
 				return;
 			} else if (game.select[0] === S.PLAYER) {
-				game.select = [S.END, 0];
+				game.select = [S.END_TURN, 0];
 				actionTimer = 1;
 				return;
 			};
@@ -470,7 +470,7 @@ const selection = (() => {
 		// cards in hand
 		if (game.select[0] === S.HAND) {
 			if (!game.hand) {
-				game.select = [S.END, 0];
+				game.select = [S.END_TURN, 0];
 			} else {
 				if (action === DIR.LEFT) {
 					game.select[1]--;
@@ -804,12 +804,12 @@ const performAction = (() => {
 		};
 		// confirmation
 		const availableLocations = get.availableLocations();
-		if (game.select[0] === S.CONF_END) {
+		if (game.select[0] === S.CONF_END_TURN) {
 			if (game.select[1] || back) {
 				game.select = [S.HAND, game.prevCard];
 			} else {
 				endTurn();
-				game.select = [S.END, 0];
+				game.select = [S.END_TURN, 0];
 			};
 			actionTimer = 2;
 			return;
@@ -1042,7 +1042,7 @@ const performAction = (() => {
 			else game.select[1] = 0;
 			actionTimer = 2;
 			return;
-		} else if (game.select[0] === S.END && game.turn === TURN.PLAYER && !back) {
+		} else if (game.select[0] === S.END_TURN && game.turn === TURN.PLAYER && !back) {
 			endTurnConfirm();
 			return;
 		};
