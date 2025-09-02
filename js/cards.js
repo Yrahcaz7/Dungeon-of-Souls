@@ -266,6 +266,19 @@ const CARDS = {
 		cost: [3, 2],
 		effect(level = 0) {gainEff(EFF.AURA_BLADE, 4)},
 	},
+	4002: {
+		name: "Blade of Memories",
+		desc: new Desc("Gain 1 ", EFF.AURA_BLADE, ".\nApply 1 ", CARD_EFF.RETENTION, "\nto all cards in\nyour hand."),
+		rarity: 1,
+		cost: [2, 1],
+		effect(level = 0) {
+			gainEff(EFF.AURA_BLADE);
+			for (let index = 0; index < game.hand.length; index++) {
+				if (game.hand[index].eff[CARD_EFF.RETENTION]) game.hand[index].eff[CARD_EFF.RETENTION]++;
+				else game.hand[index].eff[CARD_EFF.RETENTION] = 1;
+			};
+		},
+	},
 	5001: {
 		name: "Sticky Goo",
 		desc: new Desc("Take 1 non-combat\ndamage. Draw a\ncard. ", [CARD_EFF.ONE_USE, true], "."),

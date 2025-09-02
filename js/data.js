@@ -86,10 +86,10 @@ const CHANGELOG = ""
 	+ "<b>Version 2.3 - Consecution<s>"
 	+ " - finally added the ACT 2 boss music!\n"
 	+ " - two new enemies and four new effects!\n"
-	+ " - added four new cards (or maybe five?)\n"
+	+ " - added five new cards (or maybe six?)\n"
 	+ " - adjusted some card graphics\n"
 	+ " - improved most effect descriptions!\n"
-	+ " - fixed a few bugs\n"
+	+ " - fixed many bugs\n"
 	+ "<b>Version 2.2 - Convolution<s>"
 	+ " - finally added a way to view info on past runs!\n"
 	+ " - added a way to play runs with custom seeds!\n"
@@ -216,6 +216,11 @@ function updateData() {
 	for (let index = 0; index < game.enemies.length; index++) {
 		for (const eff in game.enemies[index].eff) {
 			if (!game.enemies[index].eff[eff]) delete game.enemies[index].eff[eff];
+		};
+	};
+	for (let index = 0; index < game.hand.length; index++) {
+		for (const eff in game.hand[index].eff) {
+			if (!game.hand[index].eff[eff]) delete game.hand[index].eff[eff];
 		};
 	};
 	// fixes

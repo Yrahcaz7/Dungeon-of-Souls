@@ -1232,18 +1232,21 @@ const graphics = {
 	 */
 	cardInfo(type, cardObj) {
 		const keywords = CARDS[cardObj.id]?.keywords || [];
+		const appliedKeywords = [];
 		let x = 0, y = 0;
 		for (const key in cardObj.eff) {
-			if (EFF_DESC[key]) {
-				if (EFF_NAME[key]) y += info[type]("This has " + cardObj.eff[key] + " <#666>" + EFF_NAME[key] + "</#666>.", x, y);
-				if (!keywords.includes(key)) y += info[type](key, x, y);
+			const keyword = +key;
+			if (EFF_DESC[keyword]) {
+				y += info[type]("This has " + cardObj.eff[keyword] + " <#666>" + (EFF_NAME[keyword] || "???") + "</#666>.", x, y);
+				y += info[type](keyword, x, y);
+				appliedKeywords.push(keyword);
 			};
 		};
 		for (let index = 0; index < keywords.length; index++) {
+			if (appliedKeywords.includes(keywords[index])) continue;
 			y += info[type](keywords[index], x, y);
 			if (keywords[index] === EFF.BLAZE && !keywords.includes(EFF.BURN)) y += info[type](EFF.BURN, x, y);
 		};
-		if (keywords.length === 0 && (x > 0 || y > 0)) y += info[type](CARD_EFF.DESC, x, y);
 	},
 	/**
 	 * Draws the selector and the info it targets on the canvas.
