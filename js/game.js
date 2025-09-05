@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_031;
+const VERSION = 2_003_032;
 
 /**
  * Returns the starting global data.
@@ -43,53 +43,53 @@ function getStartGlobalData() {
 
 /**
  * Returns the starting game data.
+ * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, floor: number, gold: number, location: number[], rewards: (number | boolean)[], state: number, turn: number, select: number[], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyStage: number, enemyAtt: (number | boolean | Card)[], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {}, room: (number | (number | number[])[])[], firstRoom: (number | number[])[], map: (number | boolean | (number | (number | number[])[])[])[][], traveled: number[], seed: string, randomState: number[], version: number}}
  */
-function getStartGameData() {
-	return {
-		character: CHARACTER.KNIGHT,
-		difficulty: 0,
-		health: 60,
-		shield: 0,
-		energy: 3,
-		floor: 0,
-		gold: 0,
-		location: [-1],
-		rewards: [],
-		state: STATE.ENTER,
-		turn: -1,
-		select: [S.WELCOME, 0],
-		prevCard: -1,
-		cardSelect: 0,
-		kills: {},
-		enemies: [],
-		enemyNum: -1,
-		enemyStage: ANIM.STARTING,
-		enemyAtt: [-1, 0, new Card(), false],
-		attackEffects: [],
-		artifacts: [200, 201],
-		cards: [new Card(1000), new Card(1000), new Card(1000), new Card(1000), new Card(2000), new Card(2000), new Card(2000), new Card(2000), new Card(2001), new Card(4000)],
-		deck: [],
-		deckScroll: 0,
-		hand: [],
-		discard: [],
-		void: [],
-		eventLog: {},
-		eff: {},
-		room: [],
-		firstRoom: [],
-		map: [],
-		traveled: [],
-		seed: (() => {
-			let arr = (Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase().split("");
-			for (let index = arr.length - 1; index > 0; index--) {
-				let rand = Math.floor(Math.random() * (index + 1));
-				[arr[index], arr[rand]] = [arr[rand], arr[index]];
-			};
-			return arr.join("");
-		})(),
-		version: VERSION,
-	};
-};
+function getStartGameData() { return {
+	character: CHARACTER.KNIGHT,
+	difficulty: 0,
+	health: 60,
+	shield: 0,
+	energy: 3,
+	floor: 0,
+	gold: 0,
+	location: [-1],
+	rewards: [],
+	state: STATE.ENTER,
+	turn: -1,
+	select: [S.WELCOME, 0],
+	prevCard: -1,
+	cardSelect: 0,
+	kills: {},
+	enemies: [],
+	enemyNum: -1,
+	enemyStage: ANIM.STARTING,
+	enemyAtt: [-1, 0, new Card(), false],
+	attackEffects: [],
+	artifacts: [200, 201],
+	cards: [1000, 1000, 1000, 1000, 2000, 2000, 2000, 2000, 2001, 4000].map(id => new Card(id)),
+	deck: [],
+	deckScroll: 0,
+	hand: [],
+	discard: [],
+	void: [],
+	eventLog: {},
+	eff: {},
+	room: [],
+	firstRoom: [],
+	map: [],
+	traveled: [],
+	seed: (() => {
+		let arr = (Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase().split("");
+		for (let index = arr.length - 1; index > 0; index--) {
+			let rand = Math.floor(Math.random() * (index + 1));
+			[arr[index], arr[rand]] = [arr[rand], arr[index]];
+		};
+		return arr.join("");
+	})(),
+	randomState: [],
+	version: VERSION,
+}};
 
 let global = getStartGlobalData();
 let game = getStartGameData();

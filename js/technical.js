@@ -17,38 +17,39 @@
 
 /**
  * Updates the random number generator to use the current seed.
+ * @param {boolean} updateState - whether to update the random state. Defaults to `game.randomState.length == 0`.
  */
-function updateRandom() {
-	let h = 2166136261 >>> 0;
-	for (let i = 0; i < game.seed.length; i++) {
-		let k = Math.imul(game.seed.charCodeAt(i), 3432918353);
-		k = k << 15 | k >>> 17;
-		h ^= Math.imul(k, 461845907);
-		h = h << 13 | h >>> 19;
-		h = Math.imul(h, 5) + 3864292196 | 0;
+function updateRandom(updateState = (game.randomState.length == 0)) {
+	if (updateState) {
+		let h = 2166136261 >>> 0;
+		for (let i = 0; i < game.seed.length; i++) {
+			let k = Math.imul(game.seed.charCodeAt(i), 3432918353);
+			k = k << 15 | k >>> 17;
+			h ^= Math.imul(k, 461845907);
+			h = h << 13 | h >>> 19;
+			h = Math.imul(h, 5) + 3864292196 | 0;
+		};
+		h ^= game.seed.length;
+		const seed = () => {
+			h ^= h >>> 16;
+			h = Math.imul(h, 2246822507);
+			h ^= h >>> 13;
+			h = Math.imul(h, 3266489909);
+			h ^= h >>> 16;
+			return h >>> 0;
+		};
+		game.randomState = [seed(), seed(), seed(), seed()];
 	};
-	h ^= game.seed.length;
-
-	const seed = () => {
-		h ^= h >>> 16;
-		h = Math.imul(h, 2246822507);
-		h ^= h >>> 13;
-		h = Math.imul(h, 3266489909);
-		h ^= h >>> 16;
-		return h >>> 0;
-	};
-
-	let a = seed(), b = seed(), c = seed(), d = seed();
-
 	random = () => {
-		let t = b << 9, r = b * 5;
+		const t = game.randomState[1] << 9;
+		let r = game.randomState[1] * 5;
 		r = (r << 7 | r >>> 25) * 9;
-		c ^= a;
-		d ^= b;
-		b ^= c;
-		a ^= d;
-		c ^= t;
-		d = d << 11 | d >>> 21;
+		game.randomState[2] ^= game.randomState[0];
+		game.randomState[3] ^= game.randomState[1];
+		game.randomState[1] ^= game.randomState[2];
+		game.randomState[0] ^= game.randomState[3];
+		game.randomState[2] ^= t;
+		game.randomState[3] = game.randomState[3] << 11 | game.randomState[3] >>> 21;
 		return (r >>> 0) / 4294967296;
 	};
 };

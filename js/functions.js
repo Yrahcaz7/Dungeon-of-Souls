@@ -249,16 +249,14 @@ function shuffle(deck) {
  * @param {number} num - the number of cards to draw.
  */
 function drawCards(num) {
-	if (game.deck.length) {
-		for (; num > 0 && game.deck.length > 0; num--) {
-			game.hand.push(game.deck.shift());
-		};
+	for (; num > 0 && game.deck.length > 0; num--) {
+		game.hand.push(game.deck.pop());
 	};
 	if (num > 0) {
 		game.deck = shuffle(game.discard);
 		game.discard = [];
 		for (; num > 0 && game.deck.length > 0; num--) {
-			game.hand.push(game.deck.shift());
+			game.hand.push(game.deck.pop());
 		};
 	};
 };
