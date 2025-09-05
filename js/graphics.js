@@ -495,6 +495,16 @@ const draw = {
 		return height + 4;
 	},
 	/**
+	 * Draws a top bar on the canvas.
+	 * @param {string} title - the title displayed on the bar.
+	 * @param {number} width - the width of the bar. Defaults to `398`.
+	 */
+	topBar(title, width = 398) {
+		draw.rect("#0008", 0, 0, 400, 13);
+		draw.lore(200 - 2, 1, title, {"color": "#fff", "text-align": DIR.CENTER});
+		draw.rect("#fff", 1, 12, width, 1);
+	},
+	/**
 	 * Draw's an enemy's icons on the canvas.
 	 * @param {number} index - the index of the enemy.
 	 */
@@ -1093,9 +1103,7 @@ const graphics = {
 		if (game.select[1] - 2 === options.length && focused) text += "\n<#ff0>SURRENDER</#ff0>";
 		else text += "\nSURRENDER";
 		draw.rect("#000c");
-		draw.rect("#0004", 0, 0, 400, 13);
-		draw.lore(200 - 2, 1, "Options", {"color": "#fff", "text-align": DIR.CENTER});
-		draw.rect("#fff", 1, 12, 378, 1);
+		draw.topBar("Options", 378);
 		draw.lore(200 - 2, 15, text.trim().replace(/_/g, " "), {"color": "#fff", "text-align": DIR.CENTER});
 		draw.image(I.extra.options, 380, 2);
 		if (game.select[1] === 1 && focused) draw.image(get.area() === 1 ? I.select.options : I.select.options_yellow, 380, 2);
@@ -1157,15 +1165,13 @@ const graphics = {
 			};
 		};
 		// draw top bar
-		draw.rect("#0004", 0, 0, 400, 13);
-		if (menuSelect[0] === MENU.PREV_GAME_INFO) draw.lore(200 - 2, 1, "Cards From Game #" + (sortedPrevGames[Math.floor(menuSelect[1] / 3)] + 1), {"color": "#fff", "text-align": DIR.CENTER});
-		else if (game.select[0] === S.DECK) draw.lore(200 - 2, 1, "Deck", {"color": "#fff", "text-align": DIR.CENTER});
-		else if (game.select[0] === S.DISCARD) draw.lore(200 - 2, 1, "Discard", {"color": "#fff", "text-align": DIR.CENTER});
-		else if (game.select[0] === S.VOID) draw.lore(200 - 2, 1, "Void", {"color": "#fff", "text-align": DIR.CENTER});
-		else if (game.select[0] === S.CARDS) draw.lore(200 - 2, 1, "Cards", {"color": "#fff", "text-align": DIR.CENTER});
-		else if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY) draw.lore(200 - 2, 1, "Purifier: Pick a Card to Destroy", {"color": "#fff", "text-align": DIR.CENTER});
-		else if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) draw.lore(200 - 2, 1, "Refiner: Pick a Card to Improve", {"color": "#fff", "text-align": DIR.CENTER});
-		draw.rect("#fff", 1, 12, 398, 1);
+		if (menuSelect[0] === MENU.PREV_GAME_INFO) draw.topBar("Cards From Run #" + (sortedPrevGames[Math.floor(menuSelect[1] / 3)] + 1));
+		else if (game.select[0] === S.DECK) draw.topBar("Deck");
+		else if (game.select[0] === S.DISCARD) draw.topBar("Discard");
+		else if (game.select[0] === S.VOID) draw.topBar("Void");
+		else if (game.select[0] === S.CARDS) draw.topBar("Cards");
+		else if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY) draw.topBar("Purifier: Pick a Card to Destroy");
+		else if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) draw.topBar("Refiner: Pick a Card to Improve");
 	},
 	/**
 	 * Draws the player's hand on the canvas.
@@ -1221,9 +1227,7 @@ const graphics = {
 		if (game.select[1] >= 0 && game.select[1] < game.hand.length - 1) {
 			draw.card(game.hand[game.select[1] >= game.enemyAtt[0] ? game.select[1] + 1 : game.select[1]], handSelectPos[game.select[1]], 17, true);
 		};
-		draw.rect("#0004", 0, 0, 400, 13);
-		draw.lore(200 - 2, 1, "Select a Card", {"color": "#fff", "text-align": DIR.CENTER});
-		draw.rect("#fff", 1, 12, 398, 1);
+		draw.topBar("Select a Card");
 	},
 	/**
 	 * Draws the info of a card on the canvas.
@@ -1788,7 +1792,7 @@ const graphics = {
 		draw.rect("#000c");
 		// draw right bar
 		draw.rect("#fff", 327, 14, 1, 185);
-		draw.lore(333, 18, "Press B to go back\nto the main menu.\n\nPress space or enter\nto view the details\nof the selected\naspect of a game.\n\nPress C to change the\nsorting of the list.", {"color": "#fff", "text-small": true});
+		draw.lore(333, 18, "Press B to go back\nto the main menu.\n\nPress space or enter\nto view the details\nof the selected\naspect of a run.\n\nPress C to change the\nsorting of the list.", {"color": "#fff", "text-small": true});
 		const spaceY = 49;
 		// initialize sorted previous games
 		if (!sortedPrevGames.length) {
@@ -1803,7 +1807,7 @@ const graphics = {
 			let x = 5;
 			let y = 18 + (index * spaceY) - menuScroll;
 			draw.box(x - 2, y - 2, 321, 45, {"background-color": "#0004", "border-color": "#fff"});
-			draw.lore(x, y, "<#000 highlight>Game #" + (sortedPrevGames[index] + 1) + "</#000>", {"color": "#000", "highlight-color": "#fff"});
+			draw.lore(x, y, "<#000 highlight>Run #" + (sortedPrevGames[index] + 1) + "</#000>", {"color": "#000", "highlight-color": "#fff"});
 			x += 6 * 10;
 			if (prevGame.result === GAME_RESULT.DEFEAT) draw.lore(x, y, "Result: <#f00>Defeat</#f00>", {"color": "#fff"});
 			else if (prevGame.result === GAME_RESULT.VICTORY) draw.lore(x, y, "Result: <#0f0>Victory</#0f0>", {"color": "#fff"});
@@ -1878,9 +1882,7 @@ const graphics = {
 			else if (menuScroll < 0) menuScroll = 0;
 		};
 		// draw top bar
-		draw.rect("#0004", 0, 0, 400, 13);
-		draw.lore(200 - 2, 1, "Previous Games", {"color": "#fff", "text-align": DIR.CENTER});
-		draw.rect("#fff", 1, 12, 398, 1);
+		draw.topBar("Previous Runs");
 	},
 	/**
 	 * Draws the previous game artifact layer on the canvas.
@@ -1903,9 +1905,7 @@ const graphics = {
 			if (index == menuArtifactSelect && focused) draw.image(I.artifact._.wo[artifacts[index]], (index * 26) + 10, 23);
 		};
 		info.artifact(artifacts[menuArtifactSelect], menuArtifactSelect * 26 + 11, 43);
-		draw.rect("#0004", 0, 0, 400, 13);
-		draw.lore(200 - 2, 1, "Artifacts From Game #" + (sortedPrevGames[Math.floor(menuSelect[1] / 3)] + 1), {"color": "#fff", "text-align": DIR.CENTER});
-		draw.rect("#fff", 1, 12, 398, 1);
+		draw.topBar("Artifacts From Run #" + (sortedPrevGames[Math.floor(menuSelect[1] / 3)] + 1));
 	},
 	/**
 	 * Draws the previous game kills layer on the canvas.
@@ -1942,9 +1942,7 @@ const graphics = {
 			y = 16;
 			x += spaceX;
 		};
-		draw.rect("#0004", 0, 0, 400, 13);
-		draw.lore(200 - 2, 1, "Enemies Killed From Game #" + (sortedPrevGames[Math.floor(menuSelect[1] / 3)] + 1), {"color": "#fff", "text-align": DIR.CENTER});
-		draw.rect("#fff", 1, 12, 398, 1);
+		draw.topBar("Enemies Killed From Run #" + (sortedPrevGames[Math.floor(menuSelect[1] / 3)] + 1));
 		menuEnemyAnim.progressAnimations();
 	},
 	/**
@@ -1965,9 +1963,7 @@ const graphics = {
 			};
 		};
 		draw.lore(2, 15, text, {"color": "#fff"});
-		draw.rect("#0004", 0, 0, 400, 13);
-		draw.lore(200 - 2, 1, "Sort by...", {"color": "#fff", "text-align": DIR.CENTER});
-		draw.rect("#fff", 1, 12, 398, 1);
+		draw.topBar(menuSelect[1] ? "Sort in..." : "Sort by...");
 	},
 };
 

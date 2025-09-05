@@ -15,31 +15,30 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_032;
+const VERSION = 2_003_033;
 
 /**
  * Returns the starting global data.
+ * @returns {{options: {}, highScore: number, prevGames: {character: number, difficulty: number, health: number, floor: number, gold: number, kills: {}, artifacts: number[], cards: Card[], seed: string, startVersion: number, endVersion: number, result: number, score: number, newHighScore: true | undefined, cheat: true | undefined}[], charStage: {}, version: number}}
  */
-function getStartGlobalData() {
-	return {
-		options: {
-			[OPTION.MUSIC]: true,
-			[OPTION.SCREEN_SHAKE]: true,
-			[OPTION.STICKY_CARDS]: false,
-			[OPTION.PERFECT_SCREEN]: false,
-			[OPTION.PERFECT_SIZE]: 1,
-			[OPTION.FAST_MOVEMENT]: true,
-			[OPTION.AUTO_END_TURN]: false,
-			[OPTION.END_TURN_CONFIRM]: true,
-		},
-		highScore: 0,
-		prevGames: [],
-		charStage: {
-			[CHARACTER.KNIGHT]: 0,
-		},
-		version: VERSION,
-	};
-};
+function getStartGlobalData() { return {
+	options: {
+		[OPTION.MUSIC]: true,
+		[OPTION.SCREEN_SHAKE]: true,
+		[OPTION.STICKY_CARDS]: false,
+		[OPTION.PERFECT_SCREEN]: false,
+		[OPTION.PERFECT_SIZE]: 1,
+		[OPTION.FAST_MOVEMENT]: true,
+		[OPTION.AUTO_END_TURN]: false,
+		[OPTION.END_TURN_CONFIRM]: true,
+	},
+	highScore: 0,
+	prevGames: [],
+	charStage: {
+		[CHARACTER.KNIGHT]: 0,
+	},
+	version: VERSION,
+}};
 
 /**
  * Returns the starting game data.

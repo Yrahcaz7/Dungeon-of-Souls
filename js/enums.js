@@ -77,7 +77,7 @@ const MENU = {
 const MAIN_MENU_OPTIONS = ["Resume run", "Start new run", "Change difficulty", "Change seed", "View past runs"];
 
 // previous game sort options
-const PREV_GAMES_SORT_NAMES = ["Game number", "Result type", "Difficulty", "Highest floor", "Remaining health", "Remaining gold", "Total score", "Seed string", "Number of cards", "Number of artifacts", "Number of enemies killed"];
+const PREV_GAMES_SORT_NAMES = ["Run number", "Result type", "Difficulty", "Highest floor", "Remaining health", "Remaining gold", "Total score", "Seed string", "Number of cards", "Number of artifacts", "Number of enemies killed"];
 
 // special selects from card effects - used in `game.select` as [S, N] or [S, N, [S_PREV, N_PREV]]
 // N is an integer (which defaults to 0) and is defined differently for each following S:
