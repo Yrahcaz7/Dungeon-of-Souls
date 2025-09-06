@@ -245,7 +245,73 @@ function shuffle(deck) {
 };
 
 /**
- * Draws cards.
+ * Updates the positions of the cards in hand.
+ */
+function updateHandPos() {
+	// calculate handPos
+	//console.log(handPos, game.hand.length, discardState);
+	const discarding = discardState.reduce((acc, state) => acc + (state ? 1 : 0), 0);
+	handPos = get.handPos(game.hand.length - discarding);
+	//console.log(handPos, game.hand.length, discardState);
+	// disregard prevHandPos while loading
+	if (!loaded) prevHandPos = handPos;
+	// discard extra cards
+	if (game.hand.length > handPos.length && game.hand.length > prevHandPos.length) {
+		const extraCards = game.hand.splice(handPos.length);
+		for (const card of extraCards) {
+			game.discard.push(new Card(card.id, card.level));
+		};
+	};
+	// delay for card draw animation
+	if (handPos.length != prevHandPos.length && !(hidden() || game.select[0] === S.ATTACK || game.select[0] === S.PLAYER || game.select[0] === S.ENEMY)) {
+		actionTimer = 10;
+	};
+};
+
+/**
+ * Gets the card positions for the animated hand. Also ends hand animations when they are done.
+ * @returns {number[][]}
+ */
+function getAnimatedHandPos() {
+	if (handPos.length != prevHandPos.length) {
+		if (actionTimer > 0) {
+			const positions = [];
+			let discarding = 0;
+			for (let index = 0; index < game.hand.length; index++) {
+				positions[index] = [];
+				const effIndex = index - discarding;
+				if (prevHandPos[index]) {
+					if (discardState[index]) {
+						positions[index][0] = prevHandPos[index];
+						if (discardState[index] == 2) positions[index][1] = 200 + 5;
+						else positions[index][1] = Math.round((200 + 5 - 146) * (1 - actionTimer / 10) + 146);
+						discarding++;
+					} else {
+						positions[index][0] = Math.round(handPos[effIndex] * (1 - actionTimer / 10) + prevHandPos[index] * (actionTimer / 10));
+					};
+				} else {
+					positions[index][0] = handPos[effIndex];
+					positions[index][1] = Math.round((146 + 100) * (1 - actionTimer / 10) - 100);
+				};
+			};
+			//actionTimer++;
+			return positions;
+		} else {
+			prevHandPos = handPos;
+			for (let index = discardState.length - 1; index >= 0; index--) {
+				if (discardState[index]) {
+					game.hand.splice(index, 1);
+					cardAnim.splice(index, 1);
+				};
+			};
+			discardState = [];
+		};
+	};
+	return handPos.map(x => [x]);
+};
+
+/**
+ * Queues the drawing of cards.
  * @param {number} num - the number of cards to draw.
  */
 function drawCards(num) {
@@ -259,25 +325,30 @@ function drawCards(num) {
 			game.hand.push(game.deck.pop());
 		};
 	};
+	updateHandPos();
 };
 
 /**
- * Adds a new temporary card to the hand.
+ * Queues the adding of a new temporary card to hand.
  * @param {number} id - the card's id. Defaults to 0.
  * @param {number} level - the card's level. Defaults to 0.
  */
 function addCard(id = 0, level = 0) {
 	game.hand.push(new Card(id, level, true));
+	updateHandPos();
 };
 
 /**
- * Discards a card, not including removing the card from the hand.
- * @param {Card} cardObj - the card object.
+ * Queues the discarding of a card.
+ * @param {number} index - the index of the card.
  * @param {boolean} used - whether the card was used. Defaults to `false`.
  */
-function discardCard(cardObj, used = false) {
+function discardCard(index, used = false) {
+	const cardObj = game.hand[index];
 	if (used && CARDS[cardObj.id].keywords.includes(CARD_EFF.ONE_USE)) game.void.push(new Card(cardObj.id, cardObj.level));
 	else game.discard.push(new Card(cardObj.id, cardObj.level));
+	discardState[index] = (used ? 2 : 1);
+	updateHandPos();
 };
 
 /**
@@ -289,7 +360,7 @@ function discardHand(force = false) {
 		if (game.hand[index].eff[CARD_EFF.RETENTION] && !force) {
 			game.hand[index].eff[CARD_EFF.RETENTION]--;
 		} else {
-			discardCard(game.hand.splice(index, 1)[0]);
+			discardCard(index);
 		};
 	};
 };

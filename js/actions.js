@@ -712,13 +712,13 @@ const performAction = (() => {
 				if (back) {
 					game.select = [S.HAND, game.enemyAtt[0]];
 					game.enemyAtt = [-1, -1, new Card(), false];
+					actionTimer = 4;
 				} else {
 					const id = game.enemyAtt[2].id;
 					game.energy -= getCardCost(game.enemyAtt[2]);
 					activateAttackEffects(id);
 					game.enemyAtt[3] = true;
-					discardCard(game.hand.splice(game.enemyAtt[0], 1)[0], true);
-					cardAnim.splice(game.enemyAtt[0], 1);
+					discardCard(game.enemyAtt[0], true);
 					activateArtifacts(FUNC.PLAY_CARD, game.enemyAtt[2]);
 					game.enemyAtt[0] = -1;
 					game.enemyAtt[1] = game.select[1];
@@ -727,7 +727,6 @@ const performAction = (() => {
 					updateData();
 					if (CARDS[id].attackEffects === false) postCardActivation();
 				};
-				actionTimer = 4;
 				return;
 			};
 			// activate special selection effect
@@ -736,13 +735,13 @@ const performAction = (() => {
 					handSelectPos = [];
 					game.select = [S.HAND, game.enemyAtt[0]];
 					game.enemyAtt = [-1, -1, new Card(), false];
+					actionTimer = 4;
 				} else {
 					handSelectPos = [];
 					if (CARDS[game.enemyAtt[2].id].effectAnim) startAnim.effect(CARDS[game.enemyAtt[2].id].effectAnim);
 					if (CARDS[game.enemyAtt[2].id].effect) CARDS[game.enemyAtt[2].id].effect(game.enemyAtt[2].level);
 					game.energy -= getCardCost(game.enemyAtt[2]);
-					discardCard(game.hand.splice(game.enemyAtt[0], 1)[0], true);
-					cardAnim.splice(game.enemyAtt[0], 1);
+					discardCard(game.enemyAtt[0], true);
 					activateArtifacts(FUNC.PLAY_CARD, game.enemyAtt[2]);
 					if (game.enemyAtt[0]) game.select = [S.HAND, game.enemyAtt[0] - 1];
 					else game.select = [S.HAND, 0];
@@ -750,7 +749,6 @@ const performAction = (() => {
 					updateData();
 					postCardActivation();
 				};
-				actionTimer = 4;
 				return;
 			};
 			// play card
@@ -776,13 +774,10 @@ const performAction = (() => {
 						if (CARDS[id].effectAnim) startAnim.effect(CARDS[id].effectAnim);
 						CARDS[id].effect(selected.level);
 						game.energy -= getCardCost(selected);
-						const cardObj = game.hand.splice(game.select[1], 1)[0];
-						discardCard(cardObj, true);
-						cardAnim.splice(game.select[1], 1);
-						activateArtifacts(FUNC.PLAY_CARD, cardObj);
+						discardCard(game.select[1], true);
+						activateArtifacts(FUNC.PLAY_CARD, game.hand[game.select[1]]);
 						if (game.prevCard) game.select = [S.HAND, game.prevCard - 1];
 						else game.select = [S.HAND, 0];
-						actionTimer = 4;
 						updateData();
 						postCardActivation();
 					} else if (CARDS[id].damage || CARDS[id].attack) { // effects of attack cards
@@ -791,13 +786,10 @@ const performAction = (() => {
 							game.enemyAtt[2] = game.hand[game.select[1]];
 							activateAttackEffects(id);
 							game.enemyAtt[3] = true;
-							const cardObj = game.hand.splice(game.select[1], 1)[0];
-							discardCard(cardObj, true);
-							cardAnim.splice(game.select[1], 1);
-							activateArtifacts(FUNC.PLAY_CARD, cardObj);
+							discardCard(game.select[1], true);
+							activateArtifacts(FUNC.PLAY_CARD, game.hand[game.select[1]]);
 							if (game.prevCard) game.select = [S.HAND, game.prevCard - 1];
 							else game.select = [S.HAND, 0];
-							actionTimer = 4;
 							updateData();
 							if (CARDS[id].attackEffects === false) postCardActivation();
 						} else {

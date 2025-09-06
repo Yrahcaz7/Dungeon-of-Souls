@@ -168,7 +168,7 @@ const CHANGELOG = ""
 	+ "<b>Version 0.1 - Realization<s>"
 	+ " - many optimizations and code improvements\n"
 	+ " - a lot more cool visuals and animations\n"
-	+ " - some new options and a help page\n"
+	+ " - some new UI items and a help page\n"
 	+ " - added custom music, made by myself\n"
 	+ " - you can now view your deck and discard\n"
 	+ " - a new card, with a totally new effect\n"
@@ -194,18 +194,6 @@ function updateData() {
 		else if (game.enemies.length == 5) enemyPos = [[400 - 70, 80], [400 - 140, 80], [400 - 100, 14], [400 - 170, 14], [400 - 210, 80]];
 		else if (game.enemies.length == 6) enemyPos = [[400 - 70, 80], [400 - 140, 80], [400 - 100, 14], [400 - 170, 14], [400 - 210, 80], [400 - 240, 14]];
 		else enemyPos = [];
-	};
-	// handPos
-	if (game.hand.length !== handPos.length) {
-		// calculate handPos
-		handPos = get.handPos();
-		// discard extra cards
-		if (game.hand.length > handPos.length) {
-			const extraCards = game.hand.splice(handPos.length);
-			for (const card of extraCards) {
-				discardCard(card);
-			};
-		};
 	};
 	// info scroll
 	if (infoPos < 0) infoPos = 0;

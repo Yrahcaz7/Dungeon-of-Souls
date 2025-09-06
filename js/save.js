@@ -369,6 +369,7 @@ const loadSave = (() => {
 		if (game.map.length > 0) {
 			calculateMapPaths();
 			await generateMapPathPoints();
+			updateHandPos();
 		} else {
 			menuSelect = [MENU.MAIN, 1];
 		};

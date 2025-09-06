@@ -20,10 +20,14 @@ const AURA_BLADE_POS = [[65, 10], [80, 25], [42, 0], [28, 35]];
 
 /** @type {number[][]} */
 let enemyPos = [];
-/** @type {number[][]} */
+/** @type {number[]} */
+let prevHandPos = [];
+/** @type {number[]} */
 let handPos = [];
-/** @type {number[][]} */
+/** @type {number[]} */
 let handSelectPos = [];
+/** @type {number[]} */
+let discardState = []; // TODO: put discardState in game object & handle it on load
 /** @type {EnemyAnimationSource} */
 let enemyAnim = new EnemyAnimationSource(6, () => game.enemies);
 /** @type {EnemyAnimationSource} */
@@ -1196,6 +1200,7 @@ const graphics = {
 			return;
 		};
 		let temp = -1;
+		const positions = getAnimatedHandPos();
 		for (let index = 0; index < game.hand.length; index++) {
 			if (!cardAnim[index]) cardAnim[index] = 0;
 			if ((game.select[0] === S.HAND && game.select[1] == index) || (index == game.prevCard && global.options[OPTION.STICKY_CARDS])) {
@@ -1203,16 +1208,16 @@ const graphics = {
 			} else {
 				if (cardAnim[index] > 0) cardAnim[index] -= 6 + Math.random();
 				if (cardAnim[index] < 0) cardAnim[index] = 0;
-				draw.card(game.hand[index], handPos[index], 146 - Math.floor(cardAnim[index]));
+				draw.card(game.hand[index], positions[index][0], positions[index][1] ?? (146 - Math.floor(cardAnim[index])));
 			};
 		};
 		if (temp !== -1) {
 			if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
 			if (cardAnim[temp] > 44) cardAnim[temp] = 44;
-			draw.card(game.hand[temp], handPos[temp], 146 - Math.floor(cardAnim[temp]), true);
+			draw.card(game.hand[temp], positions[temp][0], positions[temp][1] ?? (146 - Math.floor(cardAnim[temp])), true);
 		};
 		if (notif[0] !== -1) {
-			draw.lore(handPos[notif[0]] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1] + notif[3], notif[2], {
+			draw.lore(positions[notif[0]][0] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1] + notif[3], notif[2], {
 				"color": "#ff" + ["4444", "cccc"][get.area()] + Math.min(16 - notif[1], 15).toString(16) + "f",
 				"text-align": DIR.CENTER,
 			});
