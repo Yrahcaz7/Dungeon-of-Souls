@@ -1165,7 +1165,7 @@ const graphics = {
 			};
 		};
 		// draw top bar
-		if (menuSelect[0] === MENU.PREV_GAME_INFO) draw.topBar("Cards From Run #" + (sortedPrevGames[Math.floor(menuSelect[1] / 3)] + 1));
+		if (menuSelect[0] === MENU.PREV_GAME_INFO) draw.topBar("Cards From Run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].num);
 		else if (game.select[0] === S.DECK) draw.topBar("Deck");
 		else if (game.select[0] === S.DISCARD) draw.topBar("Discard");
 		else if (game.select[0] === S.VOID) draw.topBar("Void");
@@ -1713,9 +1713,10 @@ const graphics = {
 	 */
 	conf(focused = true) {
 		let text = ["Are you sure?"];
-		if (menuSelect[0] === MENU.NEW_RUN) text = ["Are you sure you want to start a new run?", "If you have an ongoing run, it will be lost forever."];
-		else if (menuSelect[0] === MENU.DIFFICULTY) text = ["Are you sure you want to change the difficulty to " + (game.difficulty ? "easy" : "hard") + "?", "If you have an ongoing run, it will be reset."];
+		if (menuSelect[0] === MENU.START_NEW_RUN) text = ["Are you sure you want to start a new run?", "If you have an ongoing run, it will be lost forever."];
+		else if (menuSelect[0] === MENU.CHANGE_DIFFICULTY) text = ["Are you sure you want to change the difficulty to " + (game.difficulty ? "easy" : "hard") + "?", "If you have an ongoing run, it will be reset."];
 		else if (menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED) text = ["Are you sure you want to change the seed?", "If you have an ongoing run, it will be reset.", "The new run will also not count towards your high score."];
+		else if (menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) text = ["Are you sure you want to remove run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[2][1] / 3)]].num + " from the list?", "This will permanently remove all of its information."];
 		else if (game.select[0] === S.CONF_END_TURN) text = ["Are you sure you want to end your turn?"];
 		else if (game.select[0] === S.CONF_EXIT) text = ["Are you sure you want to finish collecting rewards?", "There are still rewards left unclaimed."];
 		else if (game.select[0] === S.CONF_SURRENDER) text = ["Are you sure you want to end your current run by surrendering?", "This choice cannot be undone."];
@@ -1792,13 +1793,26 @@ const graphics = {
 		draw.rect("#000c");
 		// draw right bar
 		draw.rect("#fff", 327, 14, 1, 185);
-		draw.lore(333, 18, "Press B to go back\nto the main menu.\n\nPress space or enter\nto view the details\nof the selected\naspect of a run.\n\nPress C to change the\nsorting of the list.", {"color": "#fff", "text-small": true});
+		draw.lore(333, 18, "Press B to go back\nto the main menu.\n\nPress space or enter\nto view the details\nof the selected\naspect of a run.\n\nPress C to change the\nsorting of the list.\n\nPress R to remove the\nselected run from the\nlist permanently.", {"color": "#fff", "text-small": true});
 		const spaceY = 49;
 		// initialize sorted previous games
 		if (!sortedPrevGames.length) {
 			for (let index = global.prevGames.length - 1; index >= 0; index--) {
 				sortedPrevGames.push(index);
 			};
+		};
+		// scrolling
+		if (focused) {
+			const scrollPadding = 11;
+			const selected = Math.floor(menuSelect[1] / 3);
+			if (menuScroll >= spaceY * selected) {
+				menuScroll -= Math.min(10, Math.abs(menuScroll - (spaceY * selected)));
+			} else if (menuScroll <= (spaceY * (selected - 3)) + scrollPadding) {
+				menuScroll += Math.min(10, Math.abs(menuScroll - ((spaceY * (selected - 3)) + scrollPadding)));
+			};
+			const maxScroll = Math.max(spaceY * (global.prevGames.length - 4) + scrollPadding, 0);
+			if (menuScroll > maxScroll) menuScroll = maxScroll;
+			else if (menuScroll < 0) menuScroll = 0;
 		};
 		// draw previous games
 		for (let index = 0; index < sortedPrevGames.length; index++) {
@@ -1807,7 +1821,7 @@ const graphics = {
 			let x = 5;
 			let y = 18 + (index * spaceY) - menuScroll;
 			draw.box(x - 2, y - 2, 321, 45, {"background-color": "#0004", "border-color": "#fff"});
-			draw.lore(x, y, "<#000 highlight>Run #" + (sortedPrevGames[index] + 1) + "</#000>", {"color": "#000", "highlight-color": "#fff"});
+			draw.lore(x, y, "<#000 highlight>Run #" + prevGame.num + "</#000>", {"color": "#000", "highlight-color": "#fff"});
 			x += 6 * 10;
 			if (prevGame.result === GAME_RESULT.DEFEAT) draw.lore(x, y, "Result: <#f00>Defeat</#f00>", {"color": "#fff"});
 			else if (prevGame.result === GAME_RESULT.VICTORY) draw.lore(x, y, "Result: <#0f0>Victory</#0f0>", {"color": "#fff"});
@@ -1868,19 +1882,6 @@ const graphics = {
 			x -= I.player.head.width;
 			draw.image(I.player.head, x, y - 1);
 		};
-		// scrolling
-		if (focused) {
-			const scrollPadding = 11;
-			const selected = Math.floor(menuSelect[1] / 3);
-			if (menuScroll >= spaceY * selected) {
-				menuScroll -= Math.min(10, Math.abs(menuScroll - (spaceY * selected)));
-			} else if (menuScroll <= (spaceY * (selected - 3)) + scrollPadding) {
-				menuScroll += Math.min(10, Math.abs(menuScroll - ((spaceY * (selected - 3)) + scrollPadding)));
-			};
-			const maxScroll = Math.max(spaceY * (global.prevGames.length - 3) + scrollPadding, 0);
-			if (menuScroll > maxScroll) menuScroll = maxScroll;
-			else if (menuScroll < 0) menuScroll = 0;
-		};
 		// draw top bar
 		draw.topBar("Previous Runs");
 	},
@@ -1890,29 +1891,29 @@ const graphics = {
 	 */
 	prevGameArtifacts(focused = true) {
 		draw.rect("#000c");
-		const artifacts = global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].artifacts;
-		if (menuArtifactSelect > artifacts.length - 1) menuArtifactSelect = artifacts.length - 1;
+		const prevGame = global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]];
+		if (menuArtifactSelect > prevGame.artifacts.length - 1) menuArtifactSelect = prevGame.artifacts.length - 1;
 		// big artifacts
-		for (let index = 0; index < artifacts.length; index++) {
-			if (!ARTIFACTS[artifacts[index]].big) continue;
-			draw.image(I.artifact[artifacts[index]], (index * 26) + 3, 16);
-			if (index == menuArtifactSelect && focused) draw.image(I.artifact._.wo[artifacts[index]], (index * 26) + 2, 15);
+		for (let index = 0; index < prevGame.artifacts.length; index++) {
+			if (!ARTIFACTS[prevGame.artifacts[index]].big) continue;
+			draw.image(I.artifact[prevGame.artifacts[index]], (index * 26) + 3, 16);
+			if (index == menuArtifactSelect && focused) draw.image(I.artifact._.wo[prevGame.artifacts[index]], (index * 26) + 2, 15);
 		};
 		// small artifacts
-		for (let index = 0; index < artifacts.length; index++) {
-			if (ARTIFACTS[artifacts[index]].big) continue;
-			draw.image(I.artifact[artifacts[index]], (index * 26) + 11, 24);
-			if (index == menuArtifactSelect && focused) draw.image(I.artifact._.wo[artifacts[index]], (index * 26) + 10, 23);
+		for (let index = 0; index < prevGame.artifacts.length; index++) {
+			if (ARTIFACTS[prevGame.artifacts[index]].big) continue;
+			draw.image(I.artifact[prevGame.artifacts[index]], (index * 26) + 11, 24);
+			if (index == menuArtifactSelect && focused) draw.image(I.artifact._.wo[prevGame.artifacts[index]], (index * 26) + 10, 23);
 		};
-		info.artifact(artifacts[menuArtifactSelect], menuArtifactSelect * 26 + 11, 43);
-		draw.topBar("Artifacts From Run #" + (sortedPrevGames[Math.floor(menuSelect[1] / 3)] + 1));
+		info.artifact(prevGame.artifacts[menuArtifactSelect], menuArtifactSelect * 26 + 11, 43);
+		draw.topBar("Artifacts From Run #" + prevGame.num);
 	},
 	/**
 	 * Draws the previous game kills layer on the canvas.
 	 */
 	prevGameKills() {
 		draw.rect("#000c");
-		const kills = global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].kills;
+		const prevGame = global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]];
 		const spaceY = 76;
 		let x = 3, y = 16;
 		const categories = [SMALL_ENEMIES, BIG_ENEMIES, PRIME_ENEMIES, SPECIAL_ENEMIES, BOSS_ENEMIES];
@@ -1920,12 +1921,12 @@ const graphics = {
 			const spaceX = (categories[category] === BOSS_ENEMIES ? 400 - x + 1 : (categories[category] === SPECIAL_ENEMIES ? 80 : 76));
 			for (let index = 0; index < categories[category].length; index++) {
 				const type = categories[category][index];
-				if (!kills[type]) continue;
+				if (!prevGame.kills[type]) continue;
 				draw.box(x, y, spaceX - 4, spaceY - 4, {"background-color": "#0004", "border-color": "#fff"});
 				draw.rect("#fff", x, y + 66, spaceX - 4, 6);
 				let text = "Killed ";
 				if (categories[category] === BOSS_ENEMIES) text += ENEMY_NAME[type];
-				else text += kills[type] + " " + (kills[type] > 1 ? PLURAL_ENEMY_NAME : ENEMY_NAME)[type];
+				else text += prevGame.kills[type] + " " + (prevGame.kills[type] > 1 ? PLURAL_ENEMY_NAME : ENEMY_NAME)[type];
 				draw.lore(x + (spaceX - 4) / 2 - 1, y + 67, text, {"text-align": DIR.CENTER, "text-small": true});
 				const enemyIndex = category * categories[category].length + index;
 				const posX = x + (spaceX - 4) / 2 - 32;
@@ -1942,7 +1943,7 @@ const graphics = {
 			y = 16;
 			x += spaceX;
 		};
-		draw.topBar("Enemies Killed From Run #" + (sortedPrevGames[Math.floor(menuSelect[1] / 3)] + 1));
+		draw.topBar("Enemies Killed From Run #" + prevGame.num);
 		menuEnemyAnim.progressAnimations();
 	},
 	/**

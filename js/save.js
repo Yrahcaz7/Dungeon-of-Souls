@@ -89,7 +89,7 @@ async function endRun(startNewRun = false, newDifficulty = game.difficulty) {
 	// setup
 	loaded = false;
 	// record previous run
-	let prevGame = {};
+	const prevGame = {};
 	prevGame.character = game.character;
 	prevGame.difficulty = game.difficulty;
 	prevGame.health = game.health;
@@ -120,6 +120,8 @@ async function endRun(startNewRun = false, newDifficulty = game.difficulty) {
 	};
 	if (game.cheat) prevGame.cheat = game.cheat;
 	if (game.map.length > 0) {
+		prevGame.num = global.nextGameNum;
+		global.nextGameNum++;
 		global.prevGames.push(prevGame);
 	};
 	// start new run
@@ -282,6 +284,14 @@ const loadSave = (() => {
 				game.turn = (isNaN(turn) ? 10000 : Math.max(turn, 10000));
 			};
 		};
+		// version 2.3.34
+		if (version < 2_003_034) {
+			// previous games can now be deleted, so their numbers must be stored so they don't change
+			for (let index = 0; index < global.prevGames.length; index++) {
+				global.prevGames[index].num = index + 1;
+			};
+			global.nextGameNum = global.prevGames.length + 1;
+		};
 		// reset GAME_OVER and GAME_WON screen fade-in (all versions)
 		if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) game.select[1] = 0;
 		// fix in-progress player attack (all versions)
@@ -298,10 +308,9 @@ const loadSave = (() => {
 			game[key] = game[key].map(card => Card.classify(card));
 		};
 		game.enemyAtt[2] = Card.classify(game.enemyAtt[2]);
-		global.prevGames = global.prevGames.map(prevGame => {
+		for (const prevGame of global.prevGames) {
 			prevGame.cards = prevGame.cards.map(card => Card.classify(card));
-			return prevGame;
-		});
+		};
 	};
 	return async () => {
 		const startTime = Date.now();

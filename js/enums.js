@@ -60,17 +60,18 @@ const S = {
 	CONF_PEARL: 332, // N indicates which button is selected (1 for the decline button, 0 for the accept button).
 };
 
-// menu selections - used in `menuSelect` as [S, N]
+// menu selections - used in `menuSelect` as [S, N] or [S, N, [S_PREV, N_PREV]]
 // N is an integer (which defaults to 0) and is defined differently for each following S:
 const MENU = {
 	MAIN: 400, // N is the index of the selected main menu option.
-	DIFFICULTY: 401, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
-	NEW_RUN: 402, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
+	CHANGE_DIFFICULTY: 401, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
+	START_NEW_RUN: 402, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 	PREV_GAMES: 403, // N is three times the index of the selected past run in the current sort plus the index of the selected aspect (0 is cards, 1 is artifacts, and 2 is enemies killed).
 	PREV_GAME_INFO: 404, // N is three times the index of the selected past run in the current sort plus the index of the selected aspect (0 is cards, 1 is artifacts, and 2 is enemies killed).
 	PREV_GAME_SORT: 405, // N indicates which PREV_GAME_SORT menu is open.
 	CHANGE_SEED: 406, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 	ENTER_SEED: 407, // N does not indicate anything.
+	CONF_REMOVE_PREV_GAME: 408, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 };
 
 // main menu options

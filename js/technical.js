@@ -185,7 +185,11 @@ document.onkeydown = event => {
 		action = -1;
 		actionTimer = 2;
 	} else if (key === "C" && !event.repeat && menuSelect[0] === MENU.PREV_GAMES && actionTimer === -1) {
-		menuSelect = [MENU.PREV_GAME_SORT, 0];
+		menuSelect = [MENU.PREV_GAME_SORT, 0, menuSelect];
+		action = -1;
+		actionTimer = 2;
+	} else if (key === "R" && !event.repeat && menuSelect[0] === MENU.PREV_GAMES && actionTimer === -1) {
+		menuSelect = [MENU.CONF_REMOVE_PREV_GAME, 1, menuSelect];
 		action = -1;
 		actionTimer = 2;
 	} else if ((key === " " || key === "Enter") && !event.repeat && actionTimer === -1) {

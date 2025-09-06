@@ -15,11 +15,11 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_033;
+const VERSION = 2_003_034;
 
 /**
  * Returns the starting global data.
- * @returns {{options: {}, highScore: number, prevGames: {character: number, difficulty: number, health: number, floor: number, gold: number, kills: {}, artifacts: number[], cards: Card[], seed: string, startVersion: number, endVersion: number, result: number, score: number, newHighScore: true | undefined, cheat: true | undefined}[], charStage: {}, version: number}}
+ * @returns {{options: {}, highScore: number, prevGames: {character: number, difficulty: number, health: number, floor: number, gold: number, kills: {}, artifacts: number[], cards: Card[], seed: string, startVersion: number, endVersion: number, result: number, score: number, newHighScore: true | undefined, cheat: true | undefined, num: number}[], nextGameNum: number, charStage: {}, version: number}}
  */
 function getStartGlobalData() { return {
 	options: {
@@ -34,6 +34,7 @@ function getStartGlobalData() { return {
 	},
 	highScore: 0,
 	prevGames: [],
+	nextGameNum: 1,
 	charStage: {
 		[CHARACTER.KNIGHT]: 0,
 	},
@@ -92,18 +93,20 @@ function getStartGameData() { return {
 
 let global = getStartGlobalData();
 let game = getStartGameData();
+/** @type {(string | function)[]} */
 let popups = [];
 let notif = [-1, 0, "", 0];
+/** @type {Card[]} */
 let refinableDeck = [];
 let winAnim = 0;
-
 let menuSelect = [MENU.MAIN, 0];
 let newSeed = "";
 let menuScroll = 0;
 let menuArtifactSelect = 0;
 let prevGamesSort = [0, true];
+/** @type {number[]} */
 let sortedPrevGames = [];
-
+/** @type {HTMLAudioElement} */
 let musicElement;
 let musicDuration = 0;
 
@@ -459,9 +462,7 @@ function updateVisuals() {
 			draw.box(80 + 2, 83, 240 - 4, 34);
 			if (game.difficulty === 0) draw.lore(200 - 1, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the \"?\" at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
 			else draw.lore(200 - 1, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start much stronger from the beginning.\nAnd by much stronger, I mean <#f00>MUCH STRONGER</#f00>.\nOtherwise, it is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
-		} else if (menuSelect[0] === MENU.NEW_RUN || menuSelect[0] === MENU.DIFFICULTY || menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED) {
-			graphics.conf(menuSelect[0] !== MENU.ENTER_SEED);
-		} else if (menuSelect[0] === MENU.PREV_GAMES || menuSelect[0] === MENU.PREV_GAME_INFO || menuSelect[0] === MENU.PREV_GAME_SORT) {
+		} else if (menuSelect[0] === MENU.PREV_GAMES || menuSelect[0] === MENU.PREV_GAME_INFO || menuSelect[0] === MENU.PREV_GAME_SORT || menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
 			graphics.prevGames(menuSelect[0] === MENU.PREV_GAMES);
 		};
 		if (menuSelect[0] === MENU.ENTER_SEED) {
@@ -473,6 +474,9 @@ function updateVisuals() {
 		} else if (menuSelect[0] === MENU.PREV_GAME_SORT) {
 			graphics.prevGameSort();
 		}
+		if (menuSelect[0] === MENU.START_NEW_RUN || menuSelect[0] === MENU.CHANGE_DIFFICULTY || menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED || menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
+			graphics.conf(menuSelect[0] !== MENU.ENTER_SEED);
+		};
 		if (hasArtifact(202) && game.floor == 10 && transition < 100) transition++;
 		return;
 	};

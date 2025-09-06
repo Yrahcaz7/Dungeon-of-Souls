@@ -79,7 +79,7 @@ const selection = (() => {
 				menuSelect[1]++;
 				actionTimer = 1;
 			};
-		} else if (menuSelect[0] === MENU.NEW_RUN || menuSelect[0] === MENU.DIFFICULTY || menuSelect[0] === MENU.CHANGE_SEED) {
+		} else if (menuSelect[0] === MENU.START_NEW_RUN || menuSelect[0] === MENU.CHANGE_DIFFICULTY || menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
 			if (action === DIR.LEFT && menuSelect[1]) {
 				menuSelect[1] = 0;
 				actionTimer = 1;
@@ -609,21 +609,21 @@ const performAction = (() => {
 				if (game.map.length > 0) menuSelect = [-1, 0];
 			} else if (menuSelect[1] == 1) {
 				if (game.map.length > 0) {
-					menuSelect = [MENU.NEW_RUN, 1];
+					menuSelect = [MENU.START_NEW_RUN, 1];
 				} else {
 					menuSelect = [-1, 0];
 					generateMap();
 					return;
 				};
 			} else if (menuSelect[1] == 2) {
-				menuSelect = [MENU.DIFFICULTY, 1];
+				menuSelect = [MENU.CHANGE_DIFFICULTY, 1];
 			} else if (menuSelect[1] == 3) {
 				menuSelect = [MENU.CHANGE_SEED, 1];
 			} else if (menuSelect[1] == 4) {
 				if (global.prevGames.length > 0) menuSelect = [MENU.PREV_GAMES, 0];
 			};
 			actionTimer = 2;
-		} else if (menuSelect[0] === MENU.NEW_RUN) {
+		} else if (menuSelect[0] === MENU.START_NEW_RUN) {
 			if (!menuSelect[1] && !back) {
 				endRun(true);
 				return;
@@ -631,7 +631,7 @@ const performAction = (() => {
 				menuSelect = [MENU.MAIN, 1];
 				actionTimer = 2;
 			};
-		} else if (menuSelect[0] === MENU.DIFFICULTY) {
+		} else if (menuSelect[0] === MENU.CHANGE_DIFFICULTY) {
 			if (!menuSelect[1] && !back) {
 				endRun(false, 1 - game.difficulty);
 				return;
@@ -660,8 +660,8 @@ const performAction = (() => {
 			actionTimer = 2;
 		} else if (menuSelect[0] === MENU.PREV_GAME_SORT) {
 			if (back) {
-				menuSelect = [MENU.PREV_GAMES, 0];
-				menuScroll = 0;
+				if (menuSelect[1]) menuSelect[1]--;
+				else menuSelect = menuSelect[2];
 			} else if (menuSelect[1]) {
 				menuSelect = [MENU.PREV_GAMES, 0];
 				menuScroll = 0;
@@ -682,6 +682,24 @@ const performAction = (() => {
 			} else {
 				menuSelect[1]++;
 			};
+			actionTimer = 2;
+		} else if (menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
+			if (!menuSelect[1] && !back) {
+				if (global.prevGames.length <= 1) {
+					global.prevGames = [];
+					sortedPrevGames = [];
+					menuSelect = [MENU.MAIN, 3];
+					actionTimer = 2;
+					return;
+				};
+				const sortIndex = Math.floor(menuSelect[2][1] / 3);
+				const index = sortedPrevGames[sortIndex];
+				global.prevGames = global.prevGames.slice(0, index).concat(global.prevGames.slice(index + 1));
+				sortedPrevGames = sortedPrevGames.slice(0, sortIndex).concat(sortedPrevGames.slice(sortIndex + 1));
+				sortedPrevGames = sortedPrevGames.map(val => (val > index ? val - 1 : val));
+				if (sortIndex == sortedPrevGames.length) menuSelect[2][1] -= 3;
+			};
+			menuSelect = menuSelect[2];
 			actionTimer = 2;
 		};
 		if (inMenu() || actionTimer > -1) return;
