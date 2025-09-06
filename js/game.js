@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_034;
+const VERSION = 2_003_035;
 
 /**
  * Returns the starting global data.
@@ -40,10 +40,11 @@ function getStartGlobalData() { return {
 	},
 	version: VERSION,
 }};
+let global = getStartGlobalData();
 
 /**
  * Returns the starting game data.
- * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, floor: number, gold: number, location: number[], rewards: (number | boolean)[], state: number, turn: number, select: number[], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyStage: number, enemyAtt: (number | boolean | Card)[], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {}, room: (number | (number | number[])[])[], firstRoom: (number | number[])[], map: (number | boolean | (number | (number | number[])[])[])[][], traveled: number[], seed: string, randomState: number[], version: number}}
+ * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, floor: number, gold: number, location: number[], rewards: (number | boolean)[], state: number, turn: number, select: [number, number, number[] | undefined], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyStage: number, enemyAtt: [number, number, Card, boolean], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {}, room: (number | (number | number[])[])[], firstRoom: (number | number[])[], map: (number | boolean | (number | (number | number[])[])[])[][], traveled: number[], seed: string, randomState: number[], version: number}}
  */
 function getStartGameData() { return {
 	character: CHARACTER.KNIGHT,
@@ -90,24 +91,31 @@ function getStartGameData() { return {
 	randomState: [],
 	version: VERSION,
 }};
-
-let global = getStartGlobalData();
 let game = getStartGameData();
-/** @type {(string | function)[]} */
+
+/** @type {[string, string, string, function | null][]} */
 let popups = [];
+/** @type {[number, number, string, number]} */
 let notif = [-1, 0, "", 0];
 /** @type {Card[]} */
 let refinableDeck = [];
+/** @type {number} */
 let winAnim = 0;
+/** @type {[number, number, number[] | undefined]} */
 let menuSelect = [MENU.MAIN, 0];
+/** @type {string} */
 let newSeed = "";
+/** @type {number} */
 let menuScroll = 0;
+/** @type {number} */
 let menuArtifactSelect = 0;
+/** @type {[number, boolean]} */
 let prevGamesSort = [0, true];
 /** @type {number[]} */
 let sortedPrevGames = [];
 /** @type {HTMLAudioElement} */
 let musicElement;
+/** @type {number} */
 let musicDuration = 0;
 
 document.addEventListener("DOMContentLoaded", () => {

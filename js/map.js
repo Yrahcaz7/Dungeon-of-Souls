@@ -90,6 +90,7 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 	};
 };
 
+/** @type {{}[]} */
 let mapPathPoints = [];
 
 /**
@@ -133,8 +134,8 @@ const generateMapPathPoints = (() => {
 				pathPoints[subdivisionIndex + sub + 1][1] = 0.5 * (ay * tCubed[sub] + by * tSquared[sub] + cy * t[sub] + dy);
 			};
 		};
-		pathPoints.push(points[points.length - 2]);
-		pathPoints.push(points[points.length - 1]);
+		pathPoints.push(points.at(-2));
+		pathPoints.push(points.at(-1));
 		return pathPoints;
 	};
 	/**
@@ -142,7 +143,6 @@ const generateMapPathPoints = (() => {
 	 * @param {number} area - the area to get the visual map paths of.
 	 */
 	async function getVisualMapPaths(area = get.area()) {
-		const startTime = Date.now();
 		// start the generation of paths from the start of the area.
 		const start = (area > 0 ? paths[area * 10 - 1][2] : paths[-1]);
 		let arr = [];
@@ -153,7 +153,7 @@ const generateMapPathPoints = (() => {
 		for (let iteration = 0; iteration < 9; iteration++) {
 			let nextArr = [];
 			for (let path = 0; path < arr.length; path++) {
-				const lastNode = arr[path][arr[path].length - 1];
+				const lastNode = arr[path].at(-1);
 				for (let index = 0; index < paths[lastNode[0]][lastNode[1]].length; index++) {
 					const node = paths[lastNode[0]][lastNode[1]][index];
 					let innerArr = arr[path].slice();

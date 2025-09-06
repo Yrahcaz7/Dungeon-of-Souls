@@ -694,8 +694,8 @@ const performAction = (() => {
 				};
 				const sortIndex = Math.floor(menuSelect[2][1] / 3);
 				const index = sortedPrevGames[sortIndex];
-				global.prevGames = global.prevGames.slice(0, index).concat(global.prevGames.slice(index + 1));
-				sortedPrevGames = sortedPrevGames.slice(0, sortIndex).concat(sortedPrevGames.slice(sortIndex + 1));
+				global.prevGames.splice(index, 1);
+				sortedPrevGames.splice(sortIndex, 1);
 				sortedPrevGames = sortedPrevGames.map(val => (val > index ? val - 1 : val));
 				if (sortIndex == sortedPrevGames.length) menuSelect[2][1] -= 3;
 			};

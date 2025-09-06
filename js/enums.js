@@ -325,9 +325,9 @@ for (const key in EFF_DESC) {
 	const num = +key;
 	if (EFF_NAME[num]) {
 		if (EFF_COLOR[num]) {
-			EFF_DESC[num] = "<" + EFF_COLOR[num] + ">" + EFF_NAME[num].at(0).toUpperCase() + EFF_NAME[num].slice(1) + "</" + EFF_COLOR[num] + ">: " + colorText(EFF_DESC[num]);
+			EFF_DESC[num] = "<" + EFF_COLOR[num] + ">" + EFF_NAME[num][0].toUpperCase() + EFF_NAME[num].slice(1) + "</" + EFF_COLOR[num] + ">: " + colorText(EFF_DESC[num]);
 		} else {
-			EFF_DESC[num] = EFF_NAME[num].at(0).toUpperCase() + EFF_NAME[num].slice(1) + ": " + colorText(EFF_DESC[num]);
+			EFF_DESC[num] = EFF_NAME[num][0].toUpperCase() + EFF_NAME[num].slice(1) + ": " + colorText(EFF_DESC[num]);
 		};
 	};
 };

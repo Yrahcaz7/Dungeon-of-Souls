@@ -235,7 +235,7 @@ function updateData() {
 	};
 	// kill enemies
 	let healAll = false;
-	for (let index = 0; index < game.enemies.length; index++) {
+	for (let index = game.enemies.length - 1; index >= 0; index--) {
 		if (game.enemies[index].health <= 0) {
 			if (game.enemies[index].eff[ENEMY_EFF.REWIND] && !game.enemies[index].eff[ENEMY_EFF.COUNTDOWN]) {
 				game.enemies[index].eff[ENEMY_EFF.REWIND]++;
@@ -250,7 +250,6 @@ function updateData() {
 				};
 				game.enemies.splice(index, 1);
 				if (game.enemyNum >= index) game.enemyNum--;
-				index--;
 			};
 		};
 	};

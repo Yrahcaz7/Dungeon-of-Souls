@@ -276,12 +276,11 @@ function discardCard(cardObj, used = false) {
  * @param {boolean} force - if true, no effect can prevent the discard.
  */
 function discardHand(force = false) {
-	for (let index = 0; index < game.hand.length; index++) {
+	for (let index = game.hand.length - 1; index >= 0; index--) {
 		if (game.hand[index].eff[CARD_EFF.RETENTION] && !force) {
 			game.hand[index].eff[CARD_EFF.RETENTION]--;
 		} else {
 			discardCard(game.hand.splice(index, 1)[0]);
-			index--;
 		};
 	};
 };

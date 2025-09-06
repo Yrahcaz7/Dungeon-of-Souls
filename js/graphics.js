@@ -18,23 +18,35 @@
 const NO_ANTIALIASING_FILTER = `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="discrete" tableValues="0 1"/></feComponentTransfer></filter></svg>#filter')`;
 const AURA_BLADE_POS = [[65, 10], [80, 25], [42, 0], [28, 35]];
 
+/** @type {number[][]} */
 let enemyPos = [];
+/** @type {number[][]} */
 let handPos = [];
+/** @type {number[][]} */
 let handSelectPos = [];
-
+/** @type {EnemyAnimationSource} */
 let enemyAnim = new EnemyAnimationSource(6, () => game.enemies);
+/** @type {EnemyAnimationSource} */
 let menuEnemyAnim = new EnemyAnimationSource(10, [...SMALL_ENEMIES, ...BIG_ENEMIES, ...PRIME_ENEMIES, ...SPECIAL_ENEMIES, ...BOSS_ENEMIES]);
-
+/** @type {(number | (number | number[])[])[]} */
 let backAnim = [0, 1.5, 3, 0];
+/** @type {number[]} */
 let intentAnim = [0, 1.5, 3, 0.5, 2, 3.5];
+/** @type {number[]} */
 let cardAnim = [];
+/** @type {[number, HTMLImageElement | null]} */
 let effAnim = [0, null];
+/** @type {[number, HTMLImageElement]} */
 let playerAnim = [0, I.player.idle];
+/** @type {number[][]} */
 let extraAnim = [];
+/** @type {number} */
 let transition = 0;
+/** @type {number[]} */
 let auraBladeAnim = [0, 3, 6, 1];
-
+/** @type {number} */
 let infoPos = 0;
+/** @type {number} */
 let infoLimit = 0;
 
 const draw = {

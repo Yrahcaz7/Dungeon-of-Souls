@@ -86,7 +86,7 @@ const SCALE = 2;
 let canvas;
 /** @type {CanvasRenderingContext2D} */
 let ctx;
-
+/** @type {boolean} */
 let loaded = false;
 
 window.onload = async function() {

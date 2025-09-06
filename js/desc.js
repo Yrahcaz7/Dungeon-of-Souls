@@ -54,7 +54,7 @@ class Desc {
 						const name = (typeof nodes[index][1] === "string" ?
 							EFF_NAME[nodes[index][0]] + nodes[index][1]
 							: (nodes[index][1] === true ?
-								EFF_NAME[nodes[index][0]].at(0).toUpperCase() + EFF_NAME[nodes[index][0]].slice(1)
+								EFF_NAME[nodes[index][0]][0].toUpperCase() + EFF_NAME[nodes[index][0]].slice(1)
 								: EFF_NAME[nodes[index][0]]
 						));
 						const color = EFF_COLOR[nodes[index][0]];
