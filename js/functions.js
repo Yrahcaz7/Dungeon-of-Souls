@@ -223,7 +223,7 @@ const get = {
 	 */
 	handPos(size = game.hand.length) {
 		let positions = [];
-		const margin = [-4, -4, -4, -4, -4, 8, 16, 24, 28, 32, 36, 38, 40, 42, 44, 46, 46, 48, 48, 50, 50, 52, 52, 52, 52];
+		const margin = [-4, -4, -4, -4, -4, 8, 16, 24, 28, 32, 36, 38, 40, 42, 44, 46, 46, 48, 48, 50, 50, 52, 52, 52, 52, 54, 54, 54, 54];
 		if (size > margin.length) size = margin.length;
 		for (let index = 0; index < size; index++) {
 			positions.push(198 + (index - (size / 2)) * 64 - (index - ((size - 1) / 2)) * margin[size - 1]);
@@ -259,6 +259,15 @@ function drawCards(num) {
 			game.hand.push(game.deck.pop());
 		};
 	};
+};
+
+/**
+ * Adds a new temporary card to the hand.
+ * @param {number} id - the card's id. Defaults to 0.
+ * @param {number} level - the card's level. Defaults to 0.
+ */
+function addCard(id = 0, level = 0) {
+	game.hand.push(new Card(id, level, true));
 };
 
 /**

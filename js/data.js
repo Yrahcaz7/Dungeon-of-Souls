@@ -200,10 +200,10 @@ function updateData() {
 		// calculate handPos
 		handPos = get.handPos();
 		// discard extra cards
-		if (game.hand.length > handPos) {
-			const extraCards = game.hand.splice(handPos);
-			for (const key of extraCards) {
-				discardCard(key);
+		if (game.hand.length > handPos.length) {
+			const extraCards = game.hand.splice(handPos.length);
+			for (const card of extraCards) {
+				discardCard(card);
 			};
 		};
 	};

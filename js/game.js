@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_035;
+const VERSION = 2_003_036;
 
 /**
  * Returns the starting global data.
@@ -93,7 +93,7 @@ function getStartGameData() { return {
 }};
 let game = getStartGameData();
 
-/** @type {[string, string, string, function | null][]} */
+/** @type {[string, string, number, string, function | null][]} */
 let popups = [];
 /** @type {[number, number, string, number]} */
 let notif = [-1, 0, "", 0];
