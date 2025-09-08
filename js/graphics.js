@@ -26,6 +26,12 @@ let handPos = [];
 let handSelectPos = [];
 /** @type {[number, Card[], number[], number[]][]} */
 let handAnim = [];
+/** @type {number[][]} */
+let handAnimPositions = [];
+/** @type {number[]} */
+let handAnimOffsets = [];
+/** @type {Card[]} */
+let handAnimCards = [];
 /** @type {EnemyAnimationSource} */
 let enemyAnim = new EnemyAnimationSource(6, () => game.enemies);
 /** @type {EnemyAnimationSource} */
@@ -555,10 +561,11 @@ const info = {
 	 */
 	card(type, xPlus = 0, yPlus = 0) {
 		if (typeof type === "number" && !EFF_DESC[type]) return 0;
-		let x = handPos[game.prevCard] + 69 + xPlus;
-		const y = 147 - Math.floor(cardAnim[game.prevCard]) + yPlus;
+		const effIndex = game.prevCard - (handAnimOffsets[game.prevCard] || 0);
+		let x = handAnimPositions[game.prevCard][0] + 69 + xPlus;
+		const y = (handAnimPositions[game.prevCard][1] ?? (146 - Math.floor(cardAnim[effIndex]))) + 1 + yPlus;
 		if (x + 24 * 3 + 2 > 400) {
-			const ref = CARDS[game.hand[game.prevCard].id];
+			const ref = CARDS[handAnimCards[game.prevCard].id];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
 			else x -= 145;
 			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
@@ -1197,39 +1204,37 @@ const graphics = {
 		} else if (game.select[0] === S.PLAYER || game.select[0] === S.ENEMY) {
 			return;
 		};
+		[handAnimPositions, handAnimOffsets] = getAnimatedHandData();
 		let temp = -1;
-		const positions = getAnimatedHandPos();
-		let hand = game.hand;
+		handAnimCards = game.hand;
 		for (let index = 0; index < handAnim.length; index++) {
 			if (handAnim[index][1].length > (handAnim[index + 1] ? handAnim[index + 1][1] : game.hand).length) {
-				hand = handAnim[index][1];
+				handAnimCards = handAnim[index][1];
 				break;
 			};
 		};
-		let offset = [0];
-		for (let index = 0; index < hand.length && index < positions.length; index++) {
-			if (positions[index][1] !== undefined) offset[index]++;
-			offset[index + 1] = offset[index];
-			const offIndex = index - offset[index];
-			if (offIndex >= 0 && !cardAnim[offIndex]) cardAnim[offIndex] = 0;
-			if (((game.select[0] === S.HAND && game.select[1] == offIndex) || (offIndex == game.prevCard && global.options[OPTION.STICKY_CARDS])) && positions[index][1] === undefined) {
+		for (let index = 0; index < handAnimCards.length && index < handAnimPositions.length; index++) {
+			const effIndex = index - (handAnimOffsets[index] || 0);
+			if (effIndex >= 0 && !cardAnim[effIndex]) cardAnim[effIndex] = 0;
+			if (((game.select[0] === S.HAND && game.select[1] == effIndex) || (effIndex == game.prevCard && global.options[OPTION.STICKY_CARDS])) && handAnimPositions[index][1] === undefined) {
 				temp = index;
 			} else {
-				if (positions[index][1] === undefined) {
-					if (cardAnim[offIndex] > 0) cardAnim[offIndex] -= 6 + Math.random();
-					if (cardAnim[offIndex] < 0) cardAnim[offIndex] = 0;
+				if (handAnimPositions[index][1] === undefined) {
+					if (cardAnim[effIndex] > 0) cardAnim[effIndex] -= 6 + Math.random();
+					if (cardAnim[effIndex] < 0) cardAnim[effIndex] = 0;
 				};
-				draw.card(hand[index], positions[index][0], positions[index][1] ?? (146 - Math.floor(cardAnim[offIndex])));
+				draw.card(handAnimCards[index], handAnimPositions[index][0], handAnimPositions[index][1] ?? (146 - Math.floor(cardAnim[effIndex])));
 			};
 		};
 		if (temp !== -1) {
-			const offTemp = temp - offset[temp];
+			const offTemp = temp - (handAnimOffsets[temp] || 0);
 			if (cardAnim[offTemp] < 44) cardAnim[offTemp] += 7 + Math.random();
 			if (cardAnim[offTemp] > 44) cardAnim[offTemp] = 44;
-			draw.card(hand[temp], positions[temp][0], positions[temp][1] ?? (146 - Math.floor(cardAnim[offTemp])), true);
+			draw.card(handAnimCards[temp], handAnimPositions[temp][0], handAnimPositions[temp][1] ?? (146 - Math.floor(cardAnim[offTemp])), true);
 		};
 		if (notif[0] !== -1) {
-			draw.lore(positions[notif[0]][0] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0] - offset[notif[0]]]) - notif[1] + notif[3], notif[2], {
+			const anim = cardAnim[notif[0] - (handAnimOffsets[notif[0]] || 0)];
+			draw.lore(handAnimPositions[notif[0]][0] + 32, 146 - 9 - Math.ceil(anim) - notif[1] + notif[3], notif[2], {
 				"color": "#ff" + ["4444", "cccc"][get.area()] + Math.min(16 - notif[1], 15).toString(16) + "f",
 				"text-align": DIR.CENTER,
 			});

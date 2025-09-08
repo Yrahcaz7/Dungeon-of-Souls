@@ -262,26 +262,17 @@ function updateHandPos(prevHand = game.hand, discardIndex = -1, discardY = 146) 
 		};
 	};
 	// start card draw/discard animation
-	if (loaded && handPos.length != prevHandPos.length && !(hidden() || game.select[0] === S.PLAYER || game.select[0] === S.ENEMY)) {
-		if (handAnim.length > 0 && handAnim[0][0] == 10 && (
-			(handPos.length > prevHandPos.length && prevHandPos.length > handAnim[0][2].length) ||
-			(handPos.length < prevHandPos.length && prevHandPos.length < handAnim[0][2].length)
-		)) {
-			handAnim[0][1] = prevHand;
-			handAnim[0][2] = prevHandPos;
-			if (discardIndex >= 0) handAnim[0][3][discardIndex] = discardY;
-		} else {
-			handAnim.push([10, prevHand, prevHandPos, []]);
-			if (discardIndex >= 0) handAnim.at(-1)[3][discardIndex] = discardY;
-		};
+	if (loaded && handPos.length != prevHandPos.length && !hidden() && game.select[0] !== S.PLAYER && game.select[0] !== S.ENEMY && (handAnim.length == 0 || handAnim.at(-1)[0] < 10 || Math.sign(handPos.length - prevHandPos.length) != Math.sign(prevHandPos.length - handAnim.at(-1)[2].length))) {
+		handAnim.push([10, prevHand, prevHandPos, []]);
+		if (discardIndex >= 0) handAnim.at(-1)[3][discardIndex] = discardY;
 	};
 };
 
 /**
- * Gets the card positions for the animated hand. Also progresses the current hand animation.
- * @returns {number[][]}
+ * Gets the card positions and index offsets for the animated hand. Also progresses the current hand animation.
+ * @returns {[number[][], number[]]}
  */
-function getAnimatedHandPos() {
+function getAnimatedHandData() {
 	if (handAnim.length > 0) {
 		handAnim[0][0]--;
 		if (handAnim[0][0] > 0) {
@@ -289,18 +280,18 @@ function getAnimatedHandPos() {
 			const nextHand = (handAnim[1] ? handAnim[1][1] : game.hand);
 			const prevHandPos = handAnim[0][2];
 			const nextHandPos = (handAnim[1] ? handAnim[1][2] : handPos);
-			const len = Math.max(prevHand.length, nextHand.length);
 			const positions = [];
-			let discarding = 0;
+			const offsets = [0];
+			const len = Math.max(prevHand.length, nextHand.length);
 			for (let index = 0; index < len; index++) {
 				positions[index] = [];
-				const effIndex = index - discarding;
+				const effIndex = index - offsets[index];
 				if (prevHandPos[index]) {
 					if (prevHand[index] != nextHand[effIndex]) {
 						positions[index][0] = prevHandPos[index];
 						const prevY = handAnim[0][3][index] ?? 146;
 						positions[index][1] = Math.round((200 + 5 - prevY) * (1 - handAnim[0][0] / 10) + prevY);
-						discarding++;
+						offsets[index]++;
 					} else {
 						positions[index][0] = Math.round(nextHandPos[effIndex] * (1 - handAnim[0][0] / 10) + prevHandPos[index] * (handAnim[0][0] / 10));
 					};
@@ -308,14 +299,14 @@ function getAnimatedHandPos() {
 					positions[index][0] = nextHandPos[effIndex];
 					positions[index][1] = Math.round((146 + 100) * (1 - handAnim[0][0] / 10) - 100);
 				};
+				offsets[index + 1] = offsets[index];
 			};
-			//handAnim[0][0]++;
-			return positions;
+			return [positions, offsets];
 		} else {
 			handAnim.shift();
 		};
 	};
-	return (handAnim.length > 0 ? handAnim[0][2] : handPos).map(x => [x]);
+	return [(handAnim.length > 0 ? handAnim[0][2] : handPos).map(x => [x]), []];
 };
 
 /**
