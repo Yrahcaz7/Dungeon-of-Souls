@@ -21,13 +21,11 @@ const AURA_BLADE_POS = [[65, 10], [80, 25], [42, 0], [28, 35]];
 /** @type {number[][]} */
 let enemyPos = [];
 /** @type {number[]} */
-let prevHandPos = [];
-/** @type {number[]} */
 let handPos = [];
 /** @type {number[]} */
 let handSelectPos = [];
-/** @type {number[]} */
-let discardState = []; // TODO: put discardState in game object & handle it on load
+/** @type {[number, Card[], number[], number[]][]} */
+let handAnim = [];
 /** @type {EnemyAnimationSource} */
 let enemyAnim = new EnemyAnimationSource(6, () => game.enemies);
 /** @type {EnemyAnimationSource} */
@@ -1201,23 +1199,37 @@ const graphics = {
 		};
 		let temp = -1;
 		const positions = getAnimatedHandPos();
-		for (let index = 0; index < game.hand.length; index++) {
-			if (!cardAnim[index]) cardAnim[index] = 0;
-			if ((game.select[0] === S.HAND && game.select[1] == index) || (index == game.prevCard && global.options[OPTION.STICKY_CARDS])) {
+		let hand = game.hand;
+		for (let index = 0; index < handAnim.length; index++) {
+			if (handAnim[index][1].length > (handAnim[index + 1] ? handAnim[index + 1][1] : game.hand).length) {
+				hand = handAnim[index][1];
+				break;
+			};
+		};
+		let offset = [0];
+		for (let index = 0; index < hand.length && index < positions.length; index++) {
+			if (positions[index][1] !== undefined) offset[index]++;
+			offset[index + 1] = offset[index];
+			const offIndex = index - offset[index];
+			if (offIndex >= 0 && !cardAnim[offIndex]) cardAnim[offIndex] = 0;
+			if (((game.select[0] === S.HAND && game.select[1] == offIndex) || (offIndex == game.prevCard && global.options[OPTION.STICKY_CARDS])) && positions[index][1] === undefined) {
 				temp = index;
 			} else {
-				if (cardAnim[index] > 0) cardAnim[index] -= 6 + Math.random();
-				if (cardAnim[index] < 0) cardAnim[index] = 0;
-				draw.card(game.hand[index], positions[index][0], positions[index][1] ?? (146 - Math.floor(cardAnim[index])));
+				if (positions[index][1] === undefined) {
+					if (cardAnim[offIndex] > 0) cardAnim[offIndex] -= 6 + Math.random();
+					if (cardAnim[offIndex] < 0) cardAnim[offIndex] = 0;
+				};
+				draw.card(hand[index], positions[index][0], positions[index][1] ?? (146 - Math.floor(cardAnim[offIndex])));
 			};
 		};
 		if (temp !== -1) {
-			if (cardAnim[temp] < 44) cardAnim[temp] += 7 + Math.random();
-			if (cardAnim[temp] > 44) cardAnim[temp] = 44;
-			draw.card(game.hand[temp], positions[temp][0], positions[temp][1] ?? (146 - Math.floor(cardAnim[temp])), true);
+			const offTemp = temp - offset[temp];
+			if (cardAnim[offTemp] < 44) cardAnim[offTemp] += 7 + Math.random();
+			if (cardAnim[offTemp] > 44) cardAnim[offTemp] = 44;
+			draw.card(hand[temp], positions[temp][0], positions[temp][1] ?? (146 - Math.floor(cardAnim[offTemp])), true);
 		};
 		if (notif[0] !== -1) {
-			draw.lore(positions[notif[0]][0] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0]]) - notif[1] + notif[3], notif[2], {
+			draw.lore(positions[notif[0]][0] + 32, 146 - 9 - Math.ceil(cardAnim[notif[0] - offset[notif[0]]]) - notif[1] + notif[3], notif[2], {
 				"color": "#ff" + ["4444", "cccc"][get.area()] + Math.min(16 - notif[1], 15).toString(16) + "f",
 				"text-align": DIR.CENTER,
 			});

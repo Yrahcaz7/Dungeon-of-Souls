@@ -68,7 +68,7 @@ const selection = (() => {
 	return () => {
 		// timers
 		actionTimer = Math.max(actionTimer, 0) - 1;
-		if (actionTimer > -1 || holdTimer === 1) return;
+		if (actionTimer > -1 || holdTimer === 1 || handAnim.length > 0) return;
 		holdTimer++;
 		// menus
 		if (menuSelect[0] === MENU.MAIN) {
@@ -598,7 +598,7 @@ const performAction = (() => {
 	};
 	return (back = false) => {
 		// action timer
-		if (actionTimer > -1) return;
+		if (actionTimer > -1 || handAnim.length > 0) return;
 		// menus
 		if (game.select[0] === S.WELCOME) {
 			game.select = [-1, 0];
@@ -756,11 +756,11 @@ const performAction = (() => {
 				const selected = game.hand[game.select[1]];
 				const id = selected.id;
 				if (CARDS[id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
-					if (CARDS[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
+					if (CARDS[selected.id].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
 					else notif = [game.select[1], 0, "unplayable", 0];
 					actionTimer = 1;
 				} else if (CARDS[id].can && !CARDS[id].can(selected.level)) {
-					if (CARDS[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, selected.getAttr("cannotMessage"), -2];
+					if (CARDS[selected.id].rarity == 2) notif = [game.select[1], 0, selected.getAttr("cannotMessage"), -2];
 					else notif = [game.select[1], 0, selected.getAttr("cannotMessage"), 0];
 					actionTimer = 1;
 				} else if (game.energy >= getCardCost(selected)) {
@@ -775,7 +775,7 @@ const performAction = (() => {
 						CARDS[id].effect(selected.level);
 						game.energy -= getCardCost(selected);
 						discardCard(game.select[1], true);
-						activateArtifacts(FUNC.PLAY_CARD, game.hand[game.select[1]]);
+						activateArtifacts(FUNC.PLAY_CARD, selected);
 						if (game.prevCard) game.select = [S.HAND, game.prevCard - 1];
 						else game.select = [S.HAND, 0];
 						updateData();
@@ -783,11 +783,11 @@ const performAction = (() => {
 					} else if (CARDS[id].damage || CARDS[id].attack) { // effects of attack cards
 						if (CARDS[id].target === false) {
 							game.energy -= getCardCost(selected);
-							game.enemyAtt[2] = game.hand[game.select[1]];
+							game.enemyAtt[2] = selected;
 							activateAttackEffects(id);
 							game.enemyAtt[3] = true;
 							discardCard(game.select[1], true);
-							activateArtifacts(FUNC.PLAY_CARD, game.hand[game.select[1]]);
+							activateArtifacts(FUNC.PLAY_CARD, selected);
 							if (game.prevCard) game.select = [S.HAND, game.prevCard - 1];
 							else game.select = [S.HAND, 0];
 							updateData();
@@ -800,7 +800,7 @@ const performAction = (() => {
 						};
 					};
 				} else {
-					if (CARDS[game.hand[game.select[1]].id].rarity == 2) notif = [game.select[1], 0, "not enough energy", -2];
+					if (CARDS[selected.id].rarity == 2) notif = [game.select[1], 0, "not enough energy", -2];
 					else notif = [game.select[1], 0, "not enough energy", 0];
 					actionTimer = 1;
 				};
