@@ -275,7 +275,7 @@ function updateHandPos(prevHand = game.hand, discardIndex = -1, discardY = 146) 
 function getAnimatedHandData() {
 	if (handAnim.length > 0) {
 		handAnim[0][0]--;
-		if (handAnim[0][0] > 0) {
+		if (handAnim[0][0] > 0 || handAnim.length > 1) {
 			const prevHand = handAnim[0][1];
 			const nextHand = (handAnim[1] ? handAnim[1][1] : game.hand);
 			const prevHandPos = handAnim[0][2];
@@ -294,6 +294,12 @@ function getAnimatedHandData() {
 						offsets[index]++;
 					} else {
 						positions[index][0] = Math.round(nextHandPos[effIndex] * (1 - handAnim[0][0] / 10) + prevHandPos[index] * (handAnim[0][0] / 10));
+						for (let anim = 0; anim < handAnim.length; anim++) {
+							if (handAnim[anim][3][index]) {
+								positions[index][1] = handAnim[anim][3][index];
+								break;
+							};
+						};
 					};
 				} else {
 					positions[index][0] = nextHandPos[effIndex];
@@ -301,12 +307,13 @@ function getAnimatedHandData() {
 				};
 				offsets[index + 1] = offsets[index];
 			};
+			if (handAnim[0][0] == 0) handAnim.shift();
 			return [positions, offsets];
 		} else {
 			handAnim.shift();
 		};
 	};
-	return [(handAnim.length > 0 ? handAnim[0][2] : handPos).map(x => [x]), []];
+	return [handPos.map(x => [x]), []];
 };
 
 /**
