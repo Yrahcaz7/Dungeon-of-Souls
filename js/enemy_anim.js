@@ -74,23 +74,31 @@ class EnemyAnimationSource {
 	drawEnemy(x, y, index, noPrimeAnim = false) {
 		let enemy = this.getEnemies()[index];
 		if (!(enemy instanceof Object)) enemy = new Enemy(enemy, NaN);
-		if (enemy.type === SLIME.BIG) {
-			if (enemy.shield > 0) draw.imageSector(I.enemy.slime.big_defend, Math.floor(this.idle[index]) * 64, 0, 64, 64, x, y);
-			else draw.imageSector(I.enemy.slime.big, Math.floor(this.idle[index]) * 64, 0, 64, 64, x, y);
-		} else if (enemy.type === SLIME.SMALL) {
-			if (enemy.shield > 0) draw.imageSector(I.enemy.slime.small_defend, Math.floor(this.idle[index]) * 64, 0, 64, 64, x, y);
-			else draw.imageSector(I.enemy.slime.small, Math.floor(this.idle[index]) * 64, 0, 64, 64, x, y);
-		} else if (enemy.type === SLIME.PRIME) {
-			if (this.prime[index] == -1 || noPrimeAnim) {
-				if (enemy.shield > 0) draw.imageSector(I.enemy.slime.prime_defend, Math.floor(this.idle[index]) * 64, 0, 64, 64, x, y + 1);
-				else draw.imageSector(I.enemy.slime.prime, Math.floor(this.idle[index]) * 64, 0, 64, 64, x, y + 1);
-			} else {
-				if (enemy.shield > 0) draw.imageSector(I.enemy.slime.to_prime_defend, Math.floor(this.prime[index]) * 64, 0, 64, 64, x, y + 1);
-				else draw.imageSector(I.enemy.slime.to_prime, Math.floor(this.prime[index]) * 64, 0, 64, 64, x, y + 1);
+		if (enemy.type === SLIME.BIG || enemy.type === SLIME.SMALL || enemy.type === SLIME.PRIME || enemy.type === SLIME.STICKY) {
+			const type = (enemy.type === SLIME.BIG ? "big" : (enemy.type === SLIME.SMALL ? "small" : (enemy.type === SLIME.PRIME ? ((this.prime[index] == -1 || noPrimeAnim) ? "prime" : "to_prime") : "sticky")));
+			const animType = ((enemy.type !== SLIME.PRIME || this.prime[index] == -1 || noPrimeAnim) ? "idle" : "prime");
+			let width = 64;
+			let height = 64;
+			if (enemy.type === SLIME.PRIME) {
+				y++;
+			} else if (enemy.type === SLIME.STICKY) {
+				width = 66;
+				height = 70;
+				x--;
+				y++;
 			};
-		} else if (enemy.type === SLIME.STICKY) {
-			if (enemy.shield > 0) draw.imageSector(I.enemy.slime.sticky_defend, Math.floor(this.idle[index]) * 66, 0, 66, 70, x - 1, y + 1);
-			else draw.imageSector(I.enemy.slime.sticky, Math.floor(this.idle[index]) * 66, 0, 66, 70, x - 1, y + 1);
+			if (enemy.shield > 0) {
+				draw.imageSector(I.enemy.slime[type + "_defend"], Math.floor(this[animType][index]) * width, 0, width, height, x, y);
+			} else {
+				draw.imageSector(I.enemy.slime[type], Math.floor(this[animType][index]) * width, 0, width, height, x, y);
+				if (enemy.transition && enemy.transition[1] === TRANSITION.SHIELD) {
+					ctx.globalAlpha = 1 - (enemy.transition[0] + 1) / 15;
+					draw.imageSector(I.enemy.slime[type + "_defend"], Math.floor(this[animType][index]) * width, 0, width, height, x, y);
+					ctx.globalAlpha = 1;
+					enemy.transition[0]++;
+					if (enemy.transition[0] >= 15) delete enemy.transition;
+				};
+			};
 		} else if (enemy.type === FRAGMENT) {
 			if (this.prime[index] == -1 || noPrimeAnim) {
 				draw.imageSector(I.enemy.fragment.idle, Math.floor(this.idle[index]) * 64, 0, 64, 64, x, y + 1);

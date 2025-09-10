@@ -1537,7 +1537,7 @@ const graphics = {
 		if (game.select[1] === availableLocations.length && focused) draw.image(I.select.deck, 21, 15);
 		draw.image(I.extra.end, 22, 179);
 		if (game.select[1] === -1 && focused) draw.image(I.select.round, 21, 178);
-		draw.lore(1, 1, "Floor " + game.floor + " - " + game.gold + " gold", {"color": "#f44"});
+		draw.lore(1, 1, "Floor " + game.floor + " - " + game.gold + " gold", {"color": "#fff"});
 		draw.lore(399, 1, "Seed: " + game.seed, {"color": "#fff", "text-align": DIR.LEFT});
 		// draw scribbles
 		for (let x = area * 10; x < (area + 1) * 10; x++) {
@@ -1632,7 +1632,7 @@ const graphics = {
 		if (game.select[1] < 50) game.select[1]++;
 		draw.rect("#000");
 		if (game.select[0] === S.GAME_WON) {
-			draw.image(I.background.victorious, 168, 42 + Math.round(Math.abs(winAnim - 4) - 2), I.background.victorious.width * 2, I.background.victorious.height * 2);
+			draw.image(I.player.victorious, 168, 42 + Math.round(Math.abs(winAnim - 4) - 2), I.player.victorious.width * 2, I.player.victorious.height * 2);
 			winAnim += Math.random() * 0.05 + 0.05;
 			if (winAnim >= 8) winAnim -= 8;
 			draw.rect("#0004");

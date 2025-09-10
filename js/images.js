@@ -29,6 +29,7 @@ const I = {
 		hit: new Image,
 		death: new Image,
 		head: new Image,
+		victorious: new Image,
 	}, card: {
 		energy: new Image,
 		green_energy: new Image,
@@ -111,7 +112,6 @@ const I = {
 		panel: new Image,
 		panel_cover: new Image,
 		tiles: new Image,
-		victorious: new Image,
 	}, bar: {
 		health_empty: new Image,
 		health_full: new Image,
