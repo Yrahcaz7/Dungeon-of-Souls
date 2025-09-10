@@ -938,7 +938,7 @@ const graphics = {
 		else if (game.select[0] === S.VOID && !game.select[1]) draw.image(I.select.round, 380, 162);
 		else if (game.select[0] === S.DISCARD && !game.select[1]) draw.image(I.select.discard, 381, 181);
 		// info
-		draw.lore(1, 1, "Floor " + game.floor + " - " + game.gold + " gold", {"color": (get.area() == 1 ? "#000" : "#f44")});
+		draw.lore(1, 1, "Floor " + game.floor + " - " + game.gold + " gold", {"color": (get.area() == 1 ? "#000" : "#fff")});
 		// intents
 		if (!hidden() && !(game.select[0] === S.LOOKER || game.select[0] === S.HELP || game.select[0] === S.OPTIONS)) {
 			for (let index = 0; index < game.enemies.length; index++) {

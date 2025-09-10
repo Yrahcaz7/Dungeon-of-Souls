@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_038;
+const VERSION = 2_003_039;
 
 /**
  * Returns the starting global data.
@@ -460,7 +460,7 @@ function updateVisuals() {
 	if (inMenu()) {
 		graphics.middleLayer();
 		draw.image(I.title, (400 - I.title.width) / 2, 0);
-		draw.lore(390, 51, "Version " + get.versionDisplay(), {"color": (get.area() == 1 ? "#fcc" : "#f00"), "text-align": DIR.LEFT, "text-small": true});
+		draw.lore(390, 51, "Version " + get.versionDisplay(), {"color": (get.area() == 1 ? "#fcc" : "#f66"), "text-align": DIR.LEFT, "text-small": true});
 		draw.lore(1, 1, "HIGH SCORE: " + global.highScore + " points", {"color": "#fff", "text-small": true});
 		if (hasArtifact(202) && game.floor == 10) draw.lore(200 - 2, 53, "Secret Act: When the Hands Align", {"color": "#f44", "text-align": DIR.CENTER});
 		else if (get.area() == 1) draw.lore(200 - 2, 53, "Act 2: The Color of the Soul", {"color": "#fcc", "text-align": DIR.CENTER});
