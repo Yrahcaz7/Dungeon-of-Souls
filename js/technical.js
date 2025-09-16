@@ -230,11 +230,7 @@ document.onkeydown = event => {
 			document.body.msRequestFullscreen();
 		};
 	};
-	if (!event.repeat && lastAction === action && global.options[OPTION.FAST_MOVEMENT]) {
-		if (!inMenu()) manageGameplay();
-		selection();
-		updateVisuals();
-	};
+	if (!event.repeat && lastAction === action && global.options[OPTION.FAST_MOVEMENT]) gameTick();
 	if (action !== -1) lastAction = action;
 };
 

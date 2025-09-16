@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_041;
+const VERSION = 2_003_042;
 
 /**
  * Returns the starting global data.
@@ -262,7 +262,6 @@ function endTurn() {
 		// end of your turn effects
 		game.select = [S.END_TURN, 0];
 		discardHand();
-		cardAnim = [];
 		notif = [-1, 0, "", 0];
 		if (game.eff[EFF.BURN]) {
 			takeDamage(game.eff[EFF.BURN], false);
@@ -340,7 +339,6 @@ function endBattle() {
 	if (game.state === STATE.BATTLE && !game.enemies.length) {
 		// normal stuff
 		discardHand(true);
-		cardAnim = [];
 		notif = [-1, 0, "", 0];
 		game.select = [S.REWARDS, 0];
 		game.state = STATE.EVENT_FIN;
@@ -386,6 +384,7 @@ function loadRoom() {
 		game.discard = [];
 		game.void = [];
 		game.eff = {};
+		cardAnim = [];
 		// enter room
 		const type = (game.location[0] === -1 ? ROOM.BATTLE : game.map[game.location[0]][game.location[1]][0]);
 		if (type === ROOM.BATTLE || type === ROOM.PRIME || type === ROOM.BOSS) {
@@ -547,17 +546,18 @@ function updateVisuals() {
 	if (hasArtifact(202) && game.floor == 10 && transition < 100) transition++;
 };
 
-const GAME_LOOP = setInterval(() => {
+/**
+ * Performs a game tick.
+ */
+function gameTick() {
 	if (!loaded) return;
-	// gameplay
 	if (!inMenu()) manageGameplay();
-	// selection
 	selection();
-	// visuals
 	updateVisuals();
-	// save
 	save();
-}, 100);
+};
+
+const GAME_LOOP = setInterval(gameTick, 100);
 
 const MUSIC_LOOP = setInterval(() => {
 	if (global.options[OPTION.MUSIC] && musicElement?.src) {

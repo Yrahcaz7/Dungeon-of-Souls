@@ -561,11 +561,12 @@ const info = {
 	 */
 	card(type, xPlus = 0, yPlus = 0) {
 		if (typeof type === "number" && !EFF_DESC[type]) return 0;
-		const effIndex = game.prevCard - (handAnimOffsets[game.prevCard] || 0);
-		let x = handAnimPositions[game.prevCard][0] + 69 + xPlus;
-		const y = (handAnimPositions[game.prevCard][1] ?? (146 - Math.floor(cardAnim[effIndex]))) + 1 + yPlus;
+		const normIndex = (game.prevCard == 0 && handAnim.length > 0 ? handAnimCards.indexOf(game.hand[game.prevCard]) : game.prevCard);
+		const effIndex = normIndex - (handAnimOffsets[game.prevCard] || 0);
+		let x = handAnimPositions[normIndex][0] + 69 + xPlus;
+		const y = (handAnimPositions[normIndex][1] ?? (146 - Math.floor(cardAnim[effIndex]))) + 1 + yPlus;
 		if (x + 24 * 3 + 2 > 400) {
-			const ref = CARDS[handAnimCards[game.prevCard].id];
+			const ref = CARDS[handAnimCards[normIndex].id];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
 			else x -= 145;
 			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
@@ -1204,15 +1205,8 @@ const graphics = {
 		} else if (game.select[0] === S.PLAYER || game.select[0] === S.ENEMY) {
 			return;
 		};
-		[handAnimPositions, handAnimOffsets] = getAnimatedHandData();
+		updateAnimatedHandData();
 		let temp = -1;
-		handAnimCards = game.hand;
-		for (let index = 0; index < handAnim.length; index++) {
-			if (handAnim[index][1].length > (handAnim[index + 1] ? handAnim[index + 1][1] : game.hand).length) {
-				handAnimCards = handAnim[index][1];
-				break;
-			};
-		};
 		for (let index = 0; index < handAnimCards.length && index < handAnimPositions.length; index++) {
 			const effIndex = index - (handAnimOffsets[index] || 0);
 			if (effIndex >= 0 && !cardAnim[effIndex]) cardAnim[effIndex] = 0;
