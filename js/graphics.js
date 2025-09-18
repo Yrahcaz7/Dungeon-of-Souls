@@ -26,12 +26,12 @@ let handPos = [];
 let handSelectPos = [];
 /** @type {[number, Card[], number[], number[]][]} */
 let handAnim = [];
+/** @type {Card[]} */
+let handAnimCards = [];
 /** @type {number[][]} */
 let handAnimPositions = [];
 /** @type {number[]} */
 let handAnimOffsets = [];
-/** @type {Card[]} */
-let handAnimCards = [];
 /** @type {EnemyAnimationSource} */
 let enemyAnim = new EnemyAnimationSource(6, () => game.enemies);
 /** @type {EnemyAnimationSource} */
@@ -562,6 +562,7 @@ const info = {
 	card(type, xPlus = 0, yPlus = 0) {
 		if (typeof type === "number" && !EFF_DESC[type]) return 0;
 		const normIndex = (game.prevCard == 0 && handAnim.length > 0 ? handAnimCards.indexOf(game.hand[game.prevCard]) : game.prevCard);
+		if (normIndex < 0) return 0;
 		const effIndex = normIndex - (handAnimOffsets[game.prevCard] || 0);
 		let x = handAnimPositions[normIndex][0] + 69 + xPlus;
 		const y = (handAnimPositions[normIndex][1] ?? (146 - Math.floor(cardAnim[effIndex]))) + 1 + yPlus;
@@ -601,9 +602,10 @@ const info = {
 	 */
 	reward(type, xPlus = 0, yPlus = 0) {
 		if (typeof type === "number" && !EFF_DESC[type]) return 0;
-		let x = handPos[game.select[1]] + 69 + xPlus;
+		const choices = get.cardRewardChoices();
+		let x = (199 - (choices * 68 / 2)) + 70 + (game.select[1] * 68) + xPlus;
 		const y = 51 + yPlus;
-		if (game.select[1] == get.cardRewardChoices() - 1 && get.cardRewardChoices() >= 4) {
+		if (game.select[1] == choices - 1 && choices >= 4) {
 			const ref = CARDS[game.room[5][game.select[1]]];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
 			else x -= 145;
@@ -1464,12 +1466,10 @@ const graphics = {
 		draw.box(x, y, width, height, {"background-color": "#aaa"});
 		if (choices === 1) draw.lore(200 - 2, y + 1, "Take the\ncard?", {"text-align": DIR.CENTER});
 		else draw.lore(200 - 2, y + 1, "Pick a card:", {"text-align": DIR.CENTER});
-		handPos = [];
 		for (let index = 0; index < choices; index++) {
-			handPos.push((199 - (choices * 68 / 2)) + 1 + (index * 68));
-			if (index !== game.select[1] || !focused) draw.card(game.room[5][index], handPos[index], 50, false, true);
+			if (index !== game.select[1] || !focused) draw.card(game.room[5][index], (199 - (choices * 68 / 2)) + 1 + (index * 68), 50, false, true);
 		};
-		if (game.select[1] >= 0 && focused) draw.card(game.room[5][game.select[1]], handPos[game.select[1]], 50, true, true);
+		if (game.select[1] >= 0 && focused) draw.card(game.room[5][game.select[1]], (199 - (choices * 68 / 2)) + 1 + (game.select[1] * 68), 50, true, true);
 		if (game.select[1] < 0 && focused) draw.rect("#fff", x, y + height - 14, width, 14);
 		draw.box(x + 2, y + height - 12, width - 4, 10);
 		draw.lore(x + 3, y + height - 11, "Go back");

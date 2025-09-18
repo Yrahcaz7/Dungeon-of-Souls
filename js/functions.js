@@ -319,7 +319,7 @@ function updateAnimatedHandData() {
 			handAnim.shift();
 		};
 	};
-	handAnimPositions = handPos.map(x => [x])
+	handAnimPositions = handPos.map(x => [x]);
 	handAnimOffsets = [];
 };
 

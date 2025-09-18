@@ -68,7 +68,7 @@ const selection = (() => {
 	return () => {
 		// timers
 		actionTimer = Math.max(actionTimer, 0) - 1;
-		if (actionTimer > -1 || holdTimer === 1 || handAnim.length > 0) return;
+		if (actionTimer > -1 || holdTimer === 1 || (handAnim.length > 0 && game.state !== STATE.EVENT_FIN)) return;
 		holdTimer++;
 		// menus
 		if (menuSelect[0] === MENU.MAIN) {
@@ -598,7 +598,7 @@ const performAction = (() => {
 	};
 	return (back = false) => {
 		// action timer
-		if (actionTimer > -1 || handAnim.length > 0) return;
+		if (actionTimer > -1 || (handAnim.length > 0 && game.state !== STATE.EVENT_FIN)) return;
 		// menus
 		if (game.select[0] === S.WELCOME) {
 			game.select = [-1, 0];

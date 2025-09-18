@@ -138,15 +138,10 @@ class Enemy {
 			this.done = true;
 		} else if (this.intent === INTENT.DEFEND) {
 			enemyGainShield(this.getTotalDefendPower());
-			if (this.type === FRAGMENT) {
-				this.finishAction();
-			};
-			this.done = true;
+			if (this.type === FRAGMENT) this.finishAction();
+			else this.done = true;
 		} else if (this.intent === INTENT.BUFF) {
-			if (this.type === FRAGMENT) {
-				if (this.eff[EFF.RESILIENCE]) this.eff[EFF.RESILIENCE] += 3;
-				else this.eff[EFF.RESILIENCE] = 3;
-			};
+			if (this.type === FRAGMENT) this.gainEff(EFF.RESILIENCE, 3);
 			this.finishAction();
 		} else if (this.intent === INTENT.SUMMON) {
 			if (game.enemies.length >= 6) {
