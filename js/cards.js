@@ -58,14 +58,14 @@ const CARDS = {
 	},
 	1003: {
 		name: "Bladestorm",
-		desc: new Desc("Use all ", [EFF.AURA_BLADE, "s"], "\nto deal ", [0, DESC.DAMAGE], " to\nall enemies per\n", EFF.AURA_BLADE, ".\n", [CARD_EFF.UNIFORM, true], "."),
+		desc: new Desc("Use all ", [EFF.AURA_BLADE, "s"], "\nto deal ", [1, DESC.DAMAGE], " to\nall enemies per\n", EFF.AURA_BLADE, ".\n", [CARD_EFF.UNIFORM, true], "."),
 		rarity: 2,
 		cost: [2, 1],
 		attackAnim: I.player.attack_2,
 		target: false,
 		attack(level = 0) {
 			for (let index = 0; index < game.enemies.length; index++) {
-				let amount = 0;
+				let amount = 1;
 				amount += Math.floor(get.extraDamage(true) * 0.5);
 				amount = Math.ceil(amount * get.dealDamageMult(index));
 				dealDamage(amount * ((game.eff[EFF.AURA_BLADE] || 0) + 1), 0, index, true, false);
