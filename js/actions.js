@@ -606,7 +606,9 @@ const performAction = (() => {
 		} else if (menuSelect[0] === MENU.MAIN) {
 			if (back) return;
 			if (menuSelect[1] === 0) {
-				if (game.map.length > 0) menuSelect = [-1, 0];
+				if (game.map.length > 0) {
+					menuSelect = [-1, 0];
+				};
 			} else if (menuSelect[1] == 1) {
 				if (game.map.length > 0) {
 					menuSelect = [MENU.START_NEW_RUN, 1];
@@ -620,7 +622,10 @@ const performAction = (() => {
 			} else if (menuSelect[1] == 3) {
 				menuSelect = [MENU.CHANGE_SEED, 1];
 			} else if (menuSelect[1] == 4) {
-				if (global.prevGames.length > 0) menuSelect = [MENU.PREV_GAMES, 0];
+				if (global.prevGames.length > 0) {
+					menuSelect = [MENU.PREV_GAMES, 0];
+					menuScroll = 0;
+				};
 			};
 			actionTimer = 2;
 		} else if (menuSelect[0] === MENU.START_NEW_RUN) {

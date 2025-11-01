@@ -48,13 +48,16 @@ function inDeck() {
  * @returns {Card[]}
  */
 function currentDeck() {
-	if (menuSelect[0] === MENU.PREV_GAME_INFO) return global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].cards;
-	if (game.select[0] === S.DECK && game.select[1]) return Card.sort(game.deck.slice());
-	if (game.select[0] === S.DISCARD && game.select[1]) return game.discard;
-	if (game.select[0] === S.VOID && game.select[1]) return game.void;
-	if (game.select[0] === S.CARDS) return game.cards;
-	if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY) return game.cards;
-	if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) return refinableDeck;
+	if (inMenu()) {
+		if (menuSelect[0] === MENU.PREV_GAME_INFO) return global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].cards;
+	} else {
+		if (game.select[0] === S.DECK && game.select[1]) return Card.sort(game.deck.slice());
+		if (game.select[0] === S.DISCARD && game.select[1]) return game.discard;
+		if (game.select[0] === S.VOID && game.select[1]) return game.void;
+		if (game.select[0] === S.CARDS) return game.cards;
+		if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY) return game.cards;
+		if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) return refinableDeck;
+	};
 	return [];
 };
 
