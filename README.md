@@ -2,9 +2,7 @@
 
 > Copyright (C) 2025 Yrahcaz7
 >
-> GNU General Public License (version 3)
->
-> Copyright details are [**here**](https://github.com/Yrahcaz7/Dungeon-of-Souls/blob/main/LICENSE.txt).
+> [GNU General Public License (version 3)](./LICENSE.txt)
 
 ## Storyline
 
@@ -50,8 +48,8 @@ Note: go to the "?" at the top-right of the screen in-game for more details.
 
 Inspired by *Slay the Spire* and *Die in the Dungeon*.
 
-Most player sprites are taken from or based off of the ones found [**here**](https://aamatniekss.itch.io/fantasy-knight-free-pixelart-animated-character) (made by Nauris Amatnieks).
+Most player sprites are taken from or based off of the sprites in [**this asset pack made by Nauris Amatnieks**](https://aamatniekss.itch.io/fantasy-knight-free-pixelart-animated-character).
 
 The Act 2 background music, *Future Dungeon*, was made in collaboration with Brian Fitzhenry, Jr.
 
-All other art and music is entirely my original work.
+All other art and music is my original work.
