@@ -126,10 +126,19 @@ const CARDS = {
 	},
 	2002: {
 		name: "Everlasting Shield",
-		desc: new Desc("Gain 3 ", EFF.REINFORCE, "."),
+		desc: [new Desc("Gain ", [2, DESC.SHIELD], ", 2\n", EFF.REINFORCE, ", and 2\n", EFF.LIVING_METAL, "."), new Desc("Gain ", [4, DESC.SHIELD], ", 3\n", EFF.REINFORCE, ", and 2\n", EFF.LIVING_METAL, ".")],
 		rarity: 2,
-		cost: [2, 1],
-		effect(level = 0) {gainEff(EFF.REINFORCE, 3)},
+		cost: 2,
+		effect(level = 0) {
+			if (level >= 1) {
+				playerGainShield(4);
+				gainEff(EFF.REINFORCE, 3);
+			} else {
+				playerGainShield(2);
+				gainEff(EFF.REINFORCE, 2);
+			};
+			gainEff(EFF.LIVING_METAL, 2);
+		},
 	},
 	2003: {
 		name: "Cower",

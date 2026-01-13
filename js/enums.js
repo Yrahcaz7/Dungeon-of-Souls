@@ -188,7 +188,7 @@ const OPTION = {MUSIC: 1600, SCREEN_SHAKE: 1601, STICKY_CARDS: 1602, PERFECT_SCR
 const OPTION_NAME = {[OPTION.MUSIC]: "Music", [OPTION.SCREEN_SHAKE]: "Screen shake", [OPTION.STICKY_CARDS]: "Sticky cards", [OPTION.PERFECT_SCREEN]: "Pixel perfect screen", [OPTION.PERFECT_SIZE]: "Pixel perfect size", [OPTION.FAST_MOVEMENT]: "Allow fast movement", [OPTION.AUTO_END_TURN]: "Automatically end turn", [OPTION.END_TURN_CONFIRM]: "End turn confirmation", [OPTION.MUSIC_TRACK]: "Music track"};
 
 // general effects
-const EFF = {AURA_BLADE: 1700, BURN: 1701, REINFORCE: 1702, RESILIENCE: 1703, WEAKNESS: 1704, BLAZE: 1705, ATKUP: 1706, DEFUP: 1707, PULSE: 1708, HYPERSPEED: 1709, FIREPROOF: 1710};
+const EFF = {AURA_BLADE: 1700, BURN: 1701, REINFORCE: 1702, RESILIENCE: 1703, WEAKNESS: 1704, BLAZE: 1705, ATKUP: 1706, DEFUP: 1707, PULSE: 1708, HYPERSPEED: 1709, FIREPROOF: 1710, LIVING_METAL: 1711};
 
 // card effects
 const CARD_EFF = {ONE_USE: 1800, UNIFORM: 1801, UNPLAYABLE: 1802, COST_REDUCTION: 1803, RETENTION: 1804, TEMP: 1898, DESC: 1899};
@@ -210,6 +210,7 @@ const EFF_NAME = {
 	[EFF.PULSE]: "pulse",
 	[EFF.HYPERSPEED]: "hyperspeed",
 	[EFF.FIREPROOF]: "fireproof",
+	[EFF.LIVING_METAL]: "living metal",
 	// card effects
 	[CARD_EFF.ONE_USE]: "one use",
 	[CARD_EFF.UNIFORM]: "uniform",
@@ -250,6 +251,7 @@ const EFF_DESC = {
 	[EFF.PULSE]: "On attack, apply\n1 pulse on the target.\nCount decreases by 2 at\nend of turn.",
 	[EFF.HYPERSPEED]: "[On attack]\neffects that do not\ndecrease status counts\ntrigger an additional\ntime.\nCount decreases by 1 at\nend of turn.",
 	[EFF.FIREPROOF]: "On start of\nturn, decrease burn\ncount by [count].",
+	[EFF.LIVING_METAL]: "When hit,\ngain [count] shield,\nthen count decreases by\n1.",
 	// card effects
 	[CARD_EFF.ONE_USE]: "When played,\nthe card is sent to the\nvoid. Cards in the void\nstay there until the end\nof the battle.",
 	[CARD_EFF.RETENTION]: "On end of\nturn, the card is not\ndiscarded, then count\ndecreases by 1.",
@@ -283,10 +285,10 @@ const COLOR = {
 	"#655": [EFF.WEAKNESS], // reddish gray
 	"#e50": [EFF.PULSE], // reddish orange
 	"#00f": [EFF.HYPERSPEED], // dark blue
-	"#864": [EFF.FIREPROOF], // orangish gray
+	"#864": [EFF.FIREPROOF], // grayish orange
+	"#556": [EFF.LIVING_METAL, ENEMY_EFF.SHROUD], // bluish gray
 	"#666": [CARD_EFF.ONE_USE, CARD_EFF.UNIFORM, CARD_EFF.UNPLAYABLE, CARD_EFF.COST_REDUCTION, CARD_EFF.RETENTION], // gray
 	"#a80": ["rewinds", ENEMY_EFF.REWIND], // yellow
-	"#556": [ENEMY_EFF.SHROUD], // bluish gray
 	"#900": [ENEMY_EFF.PLAN_ATTACK], // dark red
 	"#070": [ENEMY_EFF.PLAN_SUMMON], // dark green
 	"#00a": [ENEMY_EFF.PLAN_DEFEND], // dark blue

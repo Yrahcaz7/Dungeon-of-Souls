@@ -414,18 +414,19 @@ function startEnemyTransition(index, prevShield = game.enemies[index].shield) {
 function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, mult = true) {
 	if (isNaN(amount)) return;
 	// setup
-	let prevShield = game.enemies[index].shield;
+	const enemy = game.enemies[index];
+	let prevShield = enemy.shield;
 	// increase damage
 	if (attack) amount += Math.floor(get.extraDamage(true) * exMod);
 	// multiply damage
 	if (attack && mult) amount = Math.ceil(amount * get.dealDamageMult(index));
 	// damage enemy
-	if (amount < game.enemies[index].shield) {
-		game.enemies[index].shield -= amount;
+	if (amount < enemy.shield) {
+		enemy.shield -= amount;
 	} else {
-		amount -= game.enemies[index].shield;
-		game.enemies[index].shield = 0;
-		game.enemies[index].health -= amount;
+		amount -= enemy.shield;
+		enemy.shield = 0;
+		enemy.health -= amount;
 	};
 	// additional effects
 	if (attack) {
@@ -433,8 +434,12 @@ function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, 
 		let triggerNum = 1;
 		if (game.eff[EFF.HYPERSPEED]) triggerNum++;
 		// trigger effects
-		if (game.eff[EFF.BLAZE]) game.enemies[index].gainEff(EFF.BURN, triggerNum);
-		if (game.eff[EFF.PULSE]) game.enemies[index].gainEff(EFF.PULSE, triggerNum);
+		if (game.eff[EFF.BLAZE]) enemy.gainEff(EFF.BURN, triggerNum);
+		if (game.eff[EFF.PULSE]) enemy.gainEff(EFF.PULSE, triggerNum);
+	};
+	if (enemy.eff[EFF.LIVING_METAL]) {
+		enemy.shield += enemy.eff[EFF.LIVING_METAL];
+		enemy.eff[EFF.LIVING_METAL]--;
 	};
 	// transitions
 	startEnemyTransition(index, prevShield);
@@ -470,6 +475,10 @@ function takeDamage(amount, attack = true, index = game.enemyNum) {
 			game.deck = game.deck.concat(Array.from({length: 2 * triggerNum}, () => new Card(5001, 0, true)));
 			shuffle(game.deck);
 		};
+	};
+	if (game.eff[EFF.LIVING_METAL]) {
+		game.shield += game.eff[EFF.LIVING_METAL];
+		game.eff[EFF.LIVING_METAL]--;
 	};
 };
 
