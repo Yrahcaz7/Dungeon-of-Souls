@@ -58,6 +58,7 @@ const S = {
 	CONF_REFINE: 330, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 	CARDS: 331, // N indicates if the CARDS menu is on top of the map (0 if it is, 1 if not).
 	CONF_PEARL: 332, // N indicates which button is selected (1 for the decline button, 0 for the accept button).
+	CUTSCENE: 333, // N indicates if the cutscene is over (1 if it is, 0 if not).
 };
 
 // menu selections - used in `menuSelect` as [S, N] or [S, N, [S_PREV, N_PREV]]

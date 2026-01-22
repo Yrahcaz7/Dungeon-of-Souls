@@ -206,13 +206,17 @@ const selection = (() => {
 			} else if (action === DIR.DOWN && game.select[1] != -1) {
 				if (game.select[1] < availableLocations.length - 1) {
 					game.select[1]++;
+					actionTimer = 1;
+					return;
 				} else if (game.select[1] == availableLocations.length) {
 					game.select[1] = 0;
-				} else {
+					actionTimer = 1;
+					return;
+				} else if (!onFloorWithCutscene()) {
 					game.select[1] = -1;
+					actionTimer = 1;
+					return;
 				};
-				actionTimer = 1;
-				return;
 			};
 		} else if (game.select[0] === S.MAP) {
 			if (action === DIR.UP && game.select[1] == -1) {
@@ -596,6 +600,17 @@ const performAction = (() => {
 		// start player animation
 		startAnim.player(CARDS[id].attackAnim ?? I.player.attack);
 	};
+	/**
+	 * Exits the rewards menu.
+	 */
+	function exitRewardsMenu() {
+		if (onFloorWithCutscene()) {
+			game.select = [S.CUTSCENE, 0];
+		} else {
+			game.select = [S.ARTIFACTS, 0];
+			mapPopup();
+		};
+	};
 	return (back = false) => {
 		// action timer
 		if (actionTimer > -1 || (handAnim.length > 0 && game.state !== STATE.EVENT_FIN)) return;
@@ -708,6 +723,15 @@ const performAction = (() => {
 			actionTimer = 2;
 		};
 		if (inMenu() || actionTimer > -1) return;
+		// cutscene
+		const availableLocations = get.availableLocations();
+		if (game.select[0] === S.CUTSCENE) {
+			if (game.select[1] > 0) {
+				game.select = [S.MAP, availableLocations.length];
+				cutsceneAnim = [];
+			};
+			return;
+		};
 		// player turn
 		if (game.turn === TURN.PLAYER) {
 			// only one card can be active
@@ -818,7 +842,6 @@ const performAction = (() => {
 			return;
 		};
 		// confirmation
-		const availableLocations = get.availableLocations();
 		if (game.select[0] === S.CONF_END_TURN) {
 			if (game.select[1] || back) {
 				game.select = [S.HAND, game.prevCard];
@@ -832,8 +855,7 @@ const performAction = (() => {
 			if (game.select[1] || back) {
 				game.select = [S.REWARDS, game.rewards.length - 1];
 			} else {
-				game.select = [S.ARTIFACTS, 0];
-				mapPopup();
+				exitRewardsMenu();
 			};
 			actionTimer = 2;
 			return;
@@ -918,8 +940,7 @@ const performAction = (() => {
 					if (game.rewards.some(arr => arr[0] !== REWARD.FINISH && !arr[2])) {
 						game.select = [S.CONF_EXIT, 1];
 					} else {
-						game.select = [S.ARTIFACTS, 0];
-						mapPopup();
+						exitRewardsMenu();
 					};
 				};
 			};
@@ -1029,7 +1050,7 @@ const performAction = (() => {
 			game.select = [S.MAP, -1];
 			actionTimer = 2;
 			return;
-		} else if (game.select[0] === S.MAP && (game.select[1] === -1 || back)) {
+		} else if (game.select[0] === S.MAP && (game.select[1] === -1 || back) && !onFloorWithCutscene()) {
 			game.select = [S.ARTIFACTS, 0];
 			actionTimer = 2;
 			return;

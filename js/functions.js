@@ -62,6 +62,13 @@ function currentDeck() {
 };
 
 /**
+ * Returns a boolean indicating whether the current floor ends in a cutscene.
+ */
+function onFloorWithCutscene() {
+	return game.floor == 10;
+};
+
+/**
  * Returns a boolean indicating whether the specified player image is defending.
  * @param {HTMLImageElement} image - the player image to check.
  */

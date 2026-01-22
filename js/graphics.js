@@ -51,6 +51,8 @@ let extraAnim = [];
 /** @type {number} */
 let transition = 0;
 /** @type {number[]} */
+let cutsceneAnim = [];
+/** @type {number[]} */
 let auraBladeAnim = [0, 3, 6, 1];
 /** @type {number} */
 let infoPos = 0;
@@ -834,6 +836,22 @@ const graphics = {
 				if (time[0] >= 12) time[0] = time[0] - 12;
 				draw.image(I.background.clock_face, 170, y);
 				draw.clock(170, y, time[0], time[1]);
+			} else if (game.select[0] === S.CUTSCENE && (!inMenu() || game.select[1])) {
+				if (cutsceneAnim.length == 0) cutsceneAnim = [0, 0];
+				const PORTAL_THRESHOLD = 60;
+				const y = 64 - Math.abs(Math.round(backAnim[2]) - 2);
+				if (cutsceneAnim[0] >= PORTAL_THRESHOLD + 2 || game.select[1]) {
+					if (!inMenu()) draw.image(I.background.enter_portal, 185, 31 - Math.abs(Math.round(backAnim[0]) - 2));
+					draw.imageSector(I.background.clock_portal, ((Math.floor(cutsceneAnim[0] / 2) % 12) + 2) * 60, 0, 60, 60, 170, y);
+					game.select[1] = 1;
+				} else if (cutsceneAnim[0] >= PORTAL_THRESHOLD) {
+					draw.imageSector(I.background.clock_portal, (cutsceneAnim[0] - PORTAL_THRESHOLD) * 60, 0, 60, 60, 170, y);
+				} else {
+					draw.image(I.background.clock_outline, 170, y);
+					draw.clock(170, y, Math.floor(cutsceneAnim[1] / 60) % 12, cutsceneAnim[1] % 60);
+				};
+				cutsceneAnim[0]++;
+				cutsceneAnim[1] += 2 ** (cutsceneAnim[0] / 10 + 1);
 			};
 			for (let index = 0; index < 3; index++) {
 				backAnim[index] += (Math.random() + 0.5) * 0.075;
@@ -1529,8 +1547,10 @@ const graphics = {
 		draw.image(I.extra.deck, 22, 16);
 		draw.lore(23, 22, game.cards.length, {"color": "#fff"});
 		if (game.select[1] === availableLocations.length && focused) draw.image(I.select.deck, 21, 15);
-		draw.image(I.extra.end, 22, 179);
-		if (game.select[1] === -1 && focused) draw.image(I.select.round, 21, 178);
+		if (!onFloorWithCutscene()) {
+			draw.image(I.extra.end, 22, 179);
+			if (game.select[1] === -1 && focused) draw.image(I.select.round, 21, 178);
+		};
 		draw.lore(1, 1, "Floor " + game.floor + " - " + game.gold + " gold", {"color": "#fff"});
 		draw.lore(399, 1, "Seed: " + game.seed, {"color": "#fff", "text-align": DIR.LEFT});
 		// draw scribbles
