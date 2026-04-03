@@ -1050,7 +1050,7 @@ const performAction = (() => {
 			game.select = [S.MAP, -1];
 			actionTimer = 2;
 			return;
-		} else if (game.select[0] === S.MAP && (game.select[1] === -1 || back) && !onFloorWithCutscene()) {
+		} else if (game.select[0] === S.MAP && (game.select[1] === -1 || back) && !(game.state === STATE.EVENT_FIN && onFloorWithCutscene())) {
 			game.select = [S.ARTIFACTS, 0];
 			actionTimer = 2;
 			return;

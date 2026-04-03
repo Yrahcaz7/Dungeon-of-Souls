@@ -1547,7 +1547,7 @@ const graphics = {
 		draw.image(I.extra.deck, 22, 16);
 		draw.lore(23, 22, game.cards.length, {"color": "#fff"});
 		if (game.select[1] === availableLocations.length && focused) draw.image(I.select.deck, 21, 15);
-		if (!onFloorWithCutscene()) {
+		if (!(game.state === STATE.EVENT_FIN && onFloorWithCutscene())) {
 			draw.image(I.extra.end, 22, 179);
 			if (game.select[1] === -1 && focused) draw.image(I.select.round, 21, 178);
 		};
