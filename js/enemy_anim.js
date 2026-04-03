@@ -1,3 +1,20 @@
+/*  Dungeon of Souls
+ *  Copyright (C) 2026 Yrahcaz7
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 class EnemyAnimationSource {
 	idle = [];
 	prime = [];
@@ -33,7 +50,7 @@ class EnemyAnimationSource {
 			let enemy = enemies[index];
 			if (!(enemy instanceof Object)) enemy = new Enemy(enemy, NaN);
 			this.idle[index] += (Math.random() + 0.5) * 0.1;
-			if (this.idle[index] >= 4) this.idle[index] -= 4;
+			this.idle[index] %= 4;
 			if (this.prime[index] != -1) {
 				let limit = 0;
 				if (enemy.type === SLIME.PRIME) {
@@ -50,7 +67,7 @@ class EnemyAnimationSource {
 					};
 				} else if (enemy.type === SENTRY.PRIME) {
 					limit = 9;
-					if ((enemy.shield > 0) || (enemy.transition && enemy.transition[1] === TRANSITION.SHIELD)) {
+					if ((enemy.shield > 0) || (enemy.transition && enemy.transition[1] === TRANSITION.FROM_SHIELD)) {
 						this.prime[index] = -1;
 					} else {
 						this.prime[index] += (Math.random() + 0.5) * 0.2;
@@ -91,7 +108,7 @@ class EnemyAnimationSource {
 				draw.imageSector(I.enemy.slime[type + "_defend"], Math.floor(this[animType][index]) * width, 0, width, height, x, y);
 			} else {
 				draw.imageSector(I.enemy.slime[type], Math.floor(this[animType][index]) * width, 0, width, height, x, y);
-				if (enemy.transition && enemy.transition[1] === TRANSITION.SHIELD) {
+				if (enemy.transition && enemy.transition[1] === TRANSITION.FROM_SHIELD) {
 					ctx.globalAlpha = 1 - (enemy.transition[0] + 1) / 15;
 					draw.imageSector(I.enemy.slime[type + "_defend"], Math.floor(this[animType][index]) * width, 0, width, height, x, y);
 					ctx.globalAlpha = 1;
@@ -101,13 +118,26 @@ class EnemyAnimationSource {
 			};
 		} else if (enemy.type === FRAGMENT) {
 			if (this.prime[index] == -1 || noPrimeAnim) {
-				draw.imageSector(I.enemy.fragment.idle, Math.floor(this.idle[index]) * 64, 0, 64, 64, x, y + 1);
-				if (index !== game.enemyNum || enemy.intent !== INTENT.ATTACK) {
+				if (enemy.transition) {
+					let prog = Math.floor(enemy.transition[0]);
+					if (enemy.transition[1] === TRANSITION.FROM_SHIELD) prog = 5 - prog;
+					draw.imageSector(I.enemy.fragment.defend, prog * 64, 0, 64, 64, x, y + 1);
+					enemy.transition[0] += 0.5;
+					enemy.transition[0] = Math.round(enemy.transition[0] * 1e12) / 1e12;
+					if (enemy.transition[0] >= 6) delete enemy.transition;
+					this.idle[index] = 0;
+				} else if (enemy.shield > 0) {
+					draw.imageSector(I.enemy.fragment.defend, Math.floor(this.idle[index] + 6) * 64, 0, 64, 64, x, y + 1);
+				} else {
+					draw.imageSector(I.enemy.fragment.idle, Math.floor(this.idle[index]) * 64, 0, 64, 64, x, y + 1);
+				};
+				if (index !== game.enemyNum || enemy.intent !== INTENT.ATTACK || enemy.transition) {
 					draw.clock(x + 2, y + 5, -1, 2 - Math.abs(Math.floor(this.idle[index]) - 2));
 				};
 			} else if (this.prime[index] >= 18) {
 				draw.imageSector(I.enemy.fragment.open, Math.floor(this.prime[index] - 18) * 64, 0, 64, 64, x, y + 1);
 				draw.clock(x + 2, y + 5, 6, 0, (this.prime[index] - 18) * 5);
+				if (enemy.shield > 0) enemy.transition = [0, TRANSITION.TO_SHIELD];
 			} else {
 				x += (18 - this.prime[index]) * 8;
 				draw.imageSector(I.enemy.fragment.roll, Math.floor(this.prime[index] % 4) * 64, 0, 64, 64, x, y + 1);
@@ -116,8 +146,8 @@ class EnemyAnimationSource {
 		} else if (enemy.type === SENTRY.BIG) {
 			if (enemy.shield > 0) {
 				draw.imageSector(I.enemy.sentry.big_defend, Math.floor(this.idle[index] + 7) * 64, 0, 64, 64, x, y + 1);
-			} else if (enemy.transition && enemy.transition[1] === TRANSITION.SHIELD) {
-				draw.imageSector(I.enemy.sentry.big_defend, Math.floor(6 - enemy.transition[0]) * 64, 0, 64, 64, x, y + 1);
+			} else if (enemy.transition && enemy.transition[1] === TRANSITION.FROM_SHIELD) {
+				draw.imageSector(I.enemy.sentry.big_defend, (6 - Math.floor(enemy.transition[0])) * 64, 0, 64, 64, x, y + 1);
 				enemy.transition[0]++;
 				if (enemy.transition[0] >= 7) delete enemy.transition;
 			} else {
@@ -126,8 +156,8 @@ class EnemyAnimationSource {
 		} else if (enemy.type === SENTRY.SMALL) {
 			if (enemy.shield > 0) {
 				draw.imageSector(I.enemy.sentry.small_defend, Math.floor(this.idle[index] + 5) * 64, 0, 64, 64, x, y);
-			} else if (enemy.transition && enemy.transition[1] === TRANSITION.SHIELD) {
-				draw.imageSector(I.enemy.sentry.small_defend, Math.floor(4 - enemy.transition[0]) * 64, 0, 64, 64, x, y);
+			} else if (enemy.transition && enemy.transition[1] === TRANSITION.FROM_SHIELD) {
+				draw.imageSector(I.enemy.sentry.small_defend, (4 - Math.floor(enemy.transition[0])) * 64, 0, 64, 64, x, y);
 				enemy.transition[0]++;
 				if (enemy.transition[0] >= 5) delete enemy.transition;
 			} else {
@@ -136,8 +166,8 @@ class EnemyAnimationSource {
 		} else if (enemy.type === SENTRY.PRIME) {
 			if (enemy.shield > 0) {
 				draw.imageSector(I.enemy.sentry.prime_defend, Math.floor(this.idle[index] + 9) * 64, 0, 64, 64, x, y);
-			} else if (enemy.transition && enemy.transition[1] === TRANSITION.SHIELD) {
-				draw.imageSector(I.enemy.sentry.prime_defend, Math.floor(8 - enemy.transition[0]) * 64, 0, 64, 64, x, y);
+			} else if (enemy.transition && enemy.transition[1] === TRANSITION.FROM_SHIELD) {
+				draw.imageSector(I.enemy.sentry.prime_defend, (8 - Math.floor(enemy.transition[0])) * 64, 0, 64, 64, x, y);
 				enemy.transition[0]++;
 				if (enemy.transition[0] >= 9) delete enemy.transition;
 			} else if (this.prime[index] == -1 || noPrimeAnim) {
@@ -149,8 +179,8 @@ class EnemyAnimationSource {
 			draw.imageSector(I.enemy.sentry.flaming, Math.floor(this.sync % 4) * 64, 0, 64, 64, x, y);
 			if (enemy.shield > 0) {
 				draw.imageSector(I.enemy.sentry.flaming_defend, Math.floor(7 + this.sync % 4) * 72, 0, 72, 67, x - 4, y - 15);
-			} else if (enemy.transition && enemy.transition[1] === TRANSITION.SHIELD) {
-				draw.imageSector(I.enemy.sentry.flaming_defend, Math.floor(6 - enemy.transition[0]) * 72, 0, 72, 67, x - 4, y - 15);
+			} else if (enemy.transition && enemy.transition[1] === TRANSITION.FROM_SHIELD) {
+				draw.imageSector(I.enemy.sentry.flaming_defend, (6 - Math.floor(enemy.transition[0])) * 72, 0, 72, 67, x - 4, y - 15);
 				enemy.transition[0]++;
 				if (enemy.transition[0] >= 7) delete enemy.transition;
 			};
@@ -444,6 +474,20 @@ class EnemyAnimationSource {
 				} else {
 					game.enemyStage = ANIM.PENDING;
 				};
+			} else if (type === FRAGMENT && this.prime[index] == -1) {
+				draw.imageSector(I.enemy.fragment.defend, Math.floor(this.action[0]) * 64, 0, 64, 64, x, y + 1);
+				draw.clock(x + 2, y + 5, -1, 2 - Math.abs(Math.floor(this.idle[index]) - 2));
+				this.action[0] += 0.5;
+				this.action[0] = Math.round(this.action[0] * 1e12) / 1e12;
+				if (game.enemyStage === ANIM.MIDDLE) {
+					game.enemyStage = ANIM.ENDING;
+				} else if (this.action[0] >= 6) {
+					this.action[0] = 6;
+					game.enemyStage = ANIM.MIDDLE;
+				} else {
+					game.enemyStage = ANIM.PENDING;
+				};
+				this.idle[index] = 0;
 			} else if (type === SENTRY.BIG) {
 				draw.imageSector(I.enemy.sentry.big_defend, Math.floor(this.action[0]) * 64, 0, 64, 64, x, y + 1);
 				this.action[0]++;

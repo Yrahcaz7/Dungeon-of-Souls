@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
+ *  Copyright (C) 2026 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -180,7 +180,7 @@ const CHARACTER_NAME = {
 };
 
 // enemy transitions
-const TRANSITION = {SHIELD: 1500};
+const TRANSITION = {FROM_SHIELD: 1500, TO_SHIELD: 1501};
 
 // options
 const OPTION = {MUSIC: 1600, SCREEN_SHAKE: 1601, STICKY_CARDS: 1602, PERFECT_SCREEN: 1603, PERFECT_SIZE: 1604, FAST_MOVEMENT: 1605, AUTO_END_TURN: 1606, END_TURN_CONFIRM: 1607, MUSIC_TRACK: 1699};

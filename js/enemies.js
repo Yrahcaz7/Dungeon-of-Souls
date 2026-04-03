@@ -115,9 +115,7 @@ class Enemy {
 				else startAnim.player(I.player.shield);
 			};
 		} else if (this.intent === INTENT.DEFEND) {
-			if (this.type === FRAGMENT) {
-				this.middleAction();
-			};
+			return;
 		} else {
 			this.middleAction();
 		};
@@ -138,8 +136,7 @@ class Enemy {
 			this.done = true;
 		} else if (this.intent === INTENT.DEFEND) {
 			enemyGainShield(this.getTotalDefendPower());
-			if (this.type === FRAGMENT) this.finishAction();
-			else this.done = true;
+			this.done = true;
 		} else if (this.intent === INTENT.BUFF) {
 			if (this.type === FRAGMENT) this.gainEff(EFF.RESILIENCE, 3);
 			this.finishAction();

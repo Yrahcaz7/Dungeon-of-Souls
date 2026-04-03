@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
+ *  Copyright (C) 2026 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -406,8 +406,8 @@ function getCardCost(cardObj) {
  * @param {number} prevShield - defaults to `game.enemies[index].shield`.
  */
 function startEnemyTransition(index, prevShield = game.enemies[index].shield) {
-	if (game.enemies[index].type !== SLIME.BIG && game.enemies[index].type !== SLIME.SMALL && game.enemies[index].type !== SLIME.PRIME && game.enemies[index].type !== SLIME.STICKY && game.enemies[index].type !== SENTRY.BIG && game.enemies[index].type !== SENTRY.SMALL && game.enemies[index].type !== SENTRY.PRIME && game.enemies[index].type !== SENTRY.FLAMING) return;
-	if (prevShield > 0 && game.enemies[index].shield === 0) game.enemies[index].transition = [0, TRANSITION.SHIELD];
+	if (game.enemies[index].type === SINGULARITY) return;
+	if (prevShield > 0 && game.enemies[index].shield === 0) game.enemies[index].transition = [0, TRANSITION.FROM_SHIELD];
 };
 
 /**

@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
+ *  Copyright (C) 2026 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_050;
+const VERSION = 2_003_051;
 
 /**
  * Returns the starting global data.
