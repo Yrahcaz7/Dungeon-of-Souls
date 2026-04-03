@@ -268,7 +268,7 @@ const loadImages = (() => {
 		await new Promise(resolve => setTimeout(resolve));
 	};
 	return async () => {
-		const loadStartTime = Date.now();
+		const startTime = performance.now();
 		// setup cards
 		for (const id in CARDS) {
 			if (id <= 0) continue;
@@ -298,6 +298,6 @@ const loadImages = (() => {
 			loadImage(I, folder, "images/");
 		};
 		await Promise.all(promises);
-		console.log("[images loaded in " + (Date.now() - loadStartTime) + "ms]");
+		console.log("[images loaded in " + (performance.now() - startTime) + "ms]");
 	};
 })();

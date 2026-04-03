@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_047;
+const VERSION = 2_003_048;
 
 /**
  * Returns the starting global data.
@@ -81,12 +81,12 @@ function getStartGameData() { return {
 	map: [],
 	traveled: [],
 	seed: (() => {
-		let arr = (Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase().split("");
-		for (let index = arr.length - 1; index > 0; index--) {
+		let str = (Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase();
+		for (let index = str.length - 1; index > 0; index--) {
 			let rand = Math.floor(Math.random() * (index + 1));
-			[arr[index], arr[rand]] = [arr[rand], arr[index]];
+			[str[index], str[rand]] = [str[rand], str[index]];
 		};
-		return arr.join("");
+		return str;
 	})(),
 	randomState: [],
 	version: VERSION,

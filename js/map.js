@@ -218,10 +218,10 @@ const generateMapPathPoints = (() => {
 		};
 	};
 	return async () => {
-		const startTime = Date.now();
+		const startTime = performance.now();
 		mapPathPoints = [];
 		await Promise.all([getVisualMapPaths(0), getVisualMapPaths(1)]);
-		console.log("[map visuals generated in " + (Date.now() - startTime) + "ms]");
+		console.log("[map visuals generated in " + (performance.now() - startTime) + "ms]");
 	};
 })();
 
@@ -500,14 +500,14 @@ const generateMap = (() => {
 		};
 	};
 	return async () => {
-		const startTime = Date.now();
+		const startTime = performance.now();
 		loaded = false;
 		paths = {};
 		game.map = [];
 		await updateGenProg();
 		await Promise.all([(async () => game.firstRoom = await getMapNode(0, MAP_NODE.FIRST))(), generateArea(0), generateArea(1)]);
 		addScribbles();
-		console.log("[map data generated in " + (Date.now() - startTime) + "ms]");
+		console.log("[map data generated in " + (performance.now() - startTime) + "ms]");
 		await generateMapPathPoints();
 		loaded = true;
 	};

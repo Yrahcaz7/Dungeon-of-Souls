@@ -73,7 +73,7 @@ function resetVars(prevGamesMenu = false) {
  * Resets everything. Use carefully!
  */
 async function hardReset() {
-	const startTime = Date.now();
+	const startTime = performance.now();
 	loaded = false;
 	game = getStartGameData();
 	global = getStartGlobalData();
@@ -81,7 +81,7 @@ async function hardReset() {
 	resetVars(true);
 	loaded = true;
 	save();
-	console.log("[hard reset done in " + (Date.now() - startTime) + "ms]");
+	console.log("[hard reset done in " + (performance.now() - startTime) + "ms]");
 };
 
 /**
@@ -317,7 +317,7 @@ const loadSave = (() => {
 		};
 	};
 	return async () => {
-		const startTime = Date.now();
+		const startTime = performance.now();
 		let oldVersion = 0;
 		let newGlobal = false;
 		// load global stuff
@@ -366,7 +366,7 @@ const loadSave = (() => {
 		// save fixed save
 		save();
 		// log time
-		console.log("[save loaded in " + (Date.now() - startTime) + "ms]");
+		console.log("[save loaded in " + (performance.now() - startTime) + "ms]");
 		// setup things based on save
 		updateRandom();
 		changeMusic();
