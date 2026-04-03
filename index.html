@@ -44,6 +44,15 @@
 
 <body>
 	<audio id="music"></audio>
+	<svg id="filters">
+		<defs>
+			<filter id="noAntiAliasingFilter">
+				<feComponentTransfer>
+					<feFuncA type="discrete" tableValues="0 1"/>
+				</feComponentTransfer>
+			</filter>
+		</defs>
+	</svg>
 	<canvas id="canvas" width="800" height="400"></canvas>
 	<noscript>
 		<div class="overlay">To play Dungeon of Souls, you need to have JavaScript enabled in your web browser.</div>

@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const NO_ANTIALIASING_FILTER = `url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><filter id="filter" color-interpolation-filters="sRGB"><feComponentTransfer><feFuncA type="discrete" tableValues="0 1"/></feComponentTransfer></filter></svg>#filter')`;
+const NO_ANTI_ALIASING_FILTER = "url('#noAntiAliasingFilter')";
 const AURA_BLADE_POS = [[65, 10], [80, 25], [42, 0], [28, 35]];
 
 /** @type {number[][]} */
@@ -194,7 +194,7 @@ const draw = {
 	 * @param {number} offsetM - the offset of the minute hand. Defaults to `0`.
 	 */
 	clock(x, y, hours = 0, minutes = 0, offsetH = 0, offsetM = 0) {
-		ctx.filter = NO_ANTIALIASING_FILTER;
+		ctx.filter = NO_ANTI_ALIASING_FILTER;
 		const coords = [(x + 30) * SCALE, (y + 30) * SCALE];
 		if (hours >= 0) {
 			ctx.save();
@@ -1586,7 +1586,7 @@ const graphics = {
 			};
 		};
 		// draw paths
-		ctx.filter = NO_ANTIALIASING_FILTER;
+		ctx.filter = NO_ANTI_ALIASING_FILTER;
 		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
 			for (const node1 in mapPathPoints[row1]) {
 				for (const row2 in mapPathPoints[row1][node1]) {
