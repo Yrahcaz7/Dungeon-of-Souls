@@ -168,6 +168,23 @@ const draw = {
 		if (style["border-width"] > 0) ctx.stroke();
 	},
 	/**
+	 * Draws a circle on the canvas.
+	 * @param {number} x - the x-coordinate of the circle's center.
+	 * @param {number} y - the y-coordinate of the circle's center.
+	 * @param {number} radius - the radius of the circle.
+	 * @param style - the polygon's style object.
+	 */
+	circle(x, y, radius, style = {"background-color": "#000", "border-width": 0, "border-color": "#000"}) {
+		style = Object.assign({"background-color": "#000", "border-width": 0, "border-color": "#000"}, style);
+		ctx.beginPath();
+		ctx.fillStyle = style["background-color"];
+		ctx.strokeStyle = style["border-color"];
+		ctx.lineWidth = style["border-width"] * SCALE;
+		ctx.arc(x * SCALE, y * SCALE, radius * SCALE, 0, 2 * Math.PI, false);
+		ctx.fill();
+		if (style["border-width"] > 0) ctx.stroke();
+	},
+	/**
 	 * Draws a clock's hands and node on the canvas.
 	 * @param {number} x - the x-coordinate of the clock.
 	 * @param {number} y - the y-coordinate of the clock.
@@ -837,21 +854,28 @@ const graphics = {
 				draw.image(I.background.clock_face, 170, y);
 				draw.clock(170, y, time[0], time[1]);
 			} else if (game.select[0] === S.CUTSCENE && (!inMenu() || game.select[1])) {
-				if (cutsceneAnim.length == 0) cutsceneAnim = [0, 0];
-				const PORTAL_THRESHOLD = 60;
+				if (cutsceneAnim.length == 0) cutsceneAnim = [0];
+				const PORTAL_THRESHOLD = 64;
+				const x = 170;
 				const y = 64 - Math.abs(Math.round(backAnim[2]) - 2);
 				if (cutsceneAnim[0] >= PORTAL_THRESHOLD + 2 || game.select[1]) {
 					if (!inMenu()) draw.image(I.background.enter_portal, 185, 31 - Math.abs(Math.round(backAnim[0]) - 2));
-					draw.imageSector(I.background.clock_portal, ((Math.floor(cutsceneAnim[0] / 2) % 12) + 2) * 60, 0, 60, 60, 170, y);
+					draw.imageSector(I.background.clock_portal, ((Math.floor(cutsceneAnim[0] / 2) % 12) + 2) * 60, 0, 60, 60, x, y);
 					game.select[1] = 1;
 				} else if (cutsceneAnim[0] >= PORTAL_THRESHOLD) {
-					draw.imageSector(I.background.clock_portal, (cutsceneAnim[0] - PORTAL_THRESHOLD) * 60, 0, 60, 60, 170, y);
+					draw.imageSector(I.background.clock_portal, (cutsceneAnim[0] - PORTAL_THRESHOLD) * 60, 0, 60, 60, x, y);
 				} else {
-					draw.image(I.background.clock_outline, 170, y);
-					draw.clock(170, y, Math.floor(cutsceneAnim[1] / 60) % 12, cutsceneAnim[1] % 60);
+					const time = (cutsceneAnim[0] / 6 + 1) ** 3 - 1;
+					draw.image(I.background.clock_outline, x, y);
+					draw.clock(x, y, Math.floor(time / 60) % 12, time % 60);
+					if (cutsceneAnim[0] > 25) {
+						ctx.globalAlpha = (cutsceneAnim[0] - 25) / 100;
+						draw.image(I.background.clock_minute_whirl, x + 30 - 16, y + 30 - 16, 32, 32);
+						ctx.globalAlpha = 1;
+					};
+					draw.image(I.background.clock_node, x + 26, y + 26);
 				};
 				cutsceneAnim[0]++;
-				cutsceneAnim[1] += 2 ** (cutsceneAnim[0] / 10 + 1);
 			};
 			for (let index = 0; index < 3; index++) {
 				backAnim[index] += (Math.random() + 0.5) * 0.075;

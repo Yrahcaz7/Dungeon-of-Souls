@@ -108,6 +108,7 @@ const I = {
 		clock_face: new Image,
 		clock_node: new Image,
 		clock_outline: new Image,
+		clock_minute_whirl: new Image,
 		clock_portal: new Image,
 		enter_portal: new Image,
 		tunnel_of_time: new Image,
