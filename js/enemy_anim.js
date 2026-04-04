@@ -143,37 +143,20 @@ class EnemyAnimationSource {
 				draw.imageSector(I.enemy.fragment.roll, Math.floor(this.prime[index] % 4) * 64, 0, 64, 64, x, y + 1);
 				draw.clock(x + 2, y + 5, (4 - Math.floor((this.prime[index] - 2) % 4)) * 3, (4 - Math.floor(this.prime[index] % 4)) * 15);
 			};
-		} else if (enemy.type === SENTRY.BIG) {
+		} else if (enemy.type === SENTRY.BIG || enemy.type === SENTRY.SMALL || enemy.type === SENTRY.PRIME) {
+			let type = (enemy.type === SENTRY.BIG ? "big" : (enemy.type === SENTRY.SMALL ? "small" : "prime"));
+			const shieldFrames = (enemy.type === SENTRY.BIG ? 6 : (enemy.type === SENTRY.SMALL ? 4 : 8));
+			if (enemy.type === SENTRY.BIG) y += 1;
 			if (enemy.shield > 0) {
-				draw.imageSector(I.enemy.sentry.big_defend, Math.floor(this.idle[index] + 7) * 64, 0, 64, 64, x, y + 1);
+				draw.imageSector(I.enemy.sentry[type + "_defend"], Math.floor(this.idle[index] + shieldFrames + 1) * 64, 0, 64, 64, x, y);
 			} else if (enemy.transition && enemy.transition[1] === TRANSITION.FROM_SHIELD) {
-				draw.imageSector(I.enemy.sentry.big_defend, (6 - Math.floor(enemy.transition[0])) * 64, 0, 64, 64, x, y + 1);
+				draw.imageSector(I.enemy.sentry[type + "_defend"], (shieldFrames - Math.floor(enemy.transition[0])) * 64, 0, 64, 64, x, y);
 				enemy.transition[0]++;
-				if (enemy.transition[0] >= 7) delete enemy.transition;
-			} else {
-				draw.imageSector(I.enemy.sentry.big, Math.floor(this.idle[index]) * 64, 0, 64, 64, x, y + 1);
-			};
-		} else if (enemy.type === SENTRY.SMALL) {
-			if (enemy.shield > 0) {
-				draw.imageSector(I.enemy.sentry.small_defend, Math.floor(this.idle[index] + 5) * 64, 0, 64, 64, x, y);
-			} else if (enemy.transition && enemy.transition[1] === TRANSITION.FROM_SHIELD) {
-				draw.imageSector(I.enemy.sentry.small_defend, (4 - Math.floor(enemy.transition[0])) * 64, 0, 64, 64, x, y);
-				enemy.transition[0]++;
-				if (enemy.transition[0] >= 5) delete enemy.transition;
-			} else {
-				draw.imageSector(I.enemy.sentry.small, Math.floor(this.idle[index]) * 64, 0, 64, 64, x, y);
-			};
-		} else if (enemy.type === SENTRY.PRIME) {
-			if (enemy.shield > 0) {
-				draw.imageSector(I.enemy.sentry.prime_defend, Math.floor(this.idle[index] + 9) * 64, 0, 64, 64, x, y);
-			} else if (enemy.transition && enemy.transition[1] === TRANSITION.FROM_SHIELD) {
-				draw.imageSector(I.enemy.sentry.prime_defend, (8 - Math.floor(enemy.transition[0])) * 64, 0, 64, 64, x, y);
-				enemy.transition[0]++;
-				if (enemy.transition[0] >= 9) delete enemy.transition;
-			} else if (this.prime[index] == -1 || noPrimeAnim) {
-				draw.imageSector(I.enemy.sentry.prime, Math.floor(this.idle[index]) * 64, 0, 64, 64, x, y);
-			} else {
+				if (enemy.transition[0] >= shieldFrames + 1) delete enemy.transition;
+			} else if (enemy.type === SENTRY.PRIME && this.prime[index] != -1 && !noPrimeAnim) {
 				draw.imageSector(I.enemy.sentry.to_prime, Math.floor(this.prime[index]) * 64, 0, 64, 64, x, y);
+			} else {
+				draw.imageSector(I.enemy.sentry[type], Math.floor(this.idle[index]) * 64, 0, 64, 64, x, y);
 			};
 		} else if (enemy.type === SENTRY.FLAMING) {
 			draw.imageSector(I.enemy.sentry.flaming, Math.floor(this.sync % 4) * 64, 0, 64, 64, x, y);
