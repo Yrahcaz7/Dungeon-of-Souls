@@ -149,11 +149,11 @@ const MIN_INTENT_DESC = {
 
 // full descriptions of enemy intents
 const FULL_INTENT_DESC = {
-	[INTENT.ATTACK]: "This enemy intends to <#f44>attack</#f44>\nyou on its next turn.",
-	[INTENT.DEFEND]: "This enemy intends to <#48f>defend</#48f>\nitself on its next turn.",
-	[INTENT.BUFF]: "This enemy intends to buff\nitself on its next turn.",
-	[INTENT.SUMMON]: "This enemy intends to summon\na minion on its next turn.",
-	[INTENT.RITUAL]: "This enemy would have\nsummoned a minion on its\nnext turn, but since there\nare already five, it will\nperform a ritual instead.",
+	[INTENT.ATTACK]: "This enemy intends to <#f44>attack</#f44> you on its next turn.",
+	[INTENT.DEFEND]: "This enemy intends to <#48f>defend</#48f> itself on its next turn.",
+	[INTENT.BUFF]: "This enemy intends to buff itself on its next turn.",
+	[INTENT.SUMMON]: "This enemy intends to summon a minion on its next turn.",
+	[INTENT.RITUAL]: "This enemy would have summoned a minion on its next turn, but since there are already five, it will perform a ritual instead.",
 };
 
 // enemy animation states
@@ -326,10 +326,21 @@ const REWARD_NAME = {[REWARD.GOLD]: "gold", [REWARD.CARD]: "card", [REWARD.ARTIF
 function wrapText(text, width, offset = 0) {
 	let spaceIndex = -1;
 	let prevSpaceIndex = -1;
+	let inTag = false;
+	let tagOffset = 0;
 	let result = "";
 	for (let index = 0; index < text.length; index++) {
-		offset++;
-		if (text[index] == " ") {
+		if (text[index] == "<") {
+			inTag = true;
+		};
+		if (inTag) {
+			tagOffset++;
+		} else {
+			offset++;
+		};
+		if (text[index] == ">") {
+			inTag = false;
+		} else if (text[index] == " ") {
 			spaceIndex = index;
 		} else if (text[index] == "\n") {
 			offset = 0;
@@ -343,7 +354,7 @@ function wrapText(text, width, offset = 0) {
 				spaceIndex = index - 1;
 				result += text.slice(prevSpaceIndex + 1, index) + "\n";
 			} else {
-				offset = index - spaceIndex;
+				offset = index - spaceIndex - tagOffset;
 				result += text.slice(prevSpaceIndex + 1, spaceIndex) + "\n";
 			};
 			prevSpaceIndex = spaceIndex;
@@ -372,7 +383,12 @@ const colorText = (() => {
 	};
 })();
 
-// preprocess descriptions
+// preprocess intent descriptions
+for (const key in FULL_INTENT_DESC) {
+	FULL_INTENT_DESC[key] = wrapText(FULL_INTENT_DESC[key], 28);
+};
+
+// preprocess effect descriptions
 for (const key in EFF_DESC) {
 	EFF_DESC[key] = wrapText(EFF_DESC[key], 24, EFF_NAME[key] ? EFF_NAME[key].length + 2 : 0);
 	EFF_DESC[key] = colorText((EFF_NAME[key] ? EFF_NAME[key][0].toUpperCase() + EFF_NAME[key].slice(1) + ": " : "") + EFF_DESC[key]);
