@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
+ *  Copyright (C) 2026 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -512,9 +512,9 @@ const draw = {
 	textBox(x, y, width, str, style = {"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false, "background-color": "#ddd", "border-width": 1, "border-color": "#000"}) {
 		style = Object.assign({"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false, "background-color": "#ddd", "border-width": 1, "border-color": "#000"}, style);
 		const lines = (("" + str).match(/\n/g) || []).length;
-		let height = style["text-small"] ? 7 : 12;
+		let height = NaN;
 		if (style["text-small"]) {
-			width = Math.ceil(width * 3 + 0.5);
+			width = width * 3 + 2;
 			height = Math.ceil(lines * 5.5 + 7);
 		} else {
 			width = width * 6 + 1;
@@ -1382,7 +1382,7 @@ const graphics = {
 					const height = Math.ceil((EFF_DESC[type].match(/\n/g) || []).length * 5.5 + (game.enemies[game.select[1]].eff[type] > 0 ? 22 : 11));
 					if ((left ? y + 12 : y) + height >= 202 - pos[1]) {
 						y = coords[1] - 1;
-						x -= 77;
+						x -= 78;
 					};
 					y += info.enemy(type, x, (left ? y + 12 : y));
 					if ((type === EFF.BLAZE || type === EFF.FIREPROOF) && !logged[EFF.BURN]) logEff(EFF.BURN);
@@ -1405,7 +1405,7 @@ const graphics = {
 				let height = Math.ceil((EFF_DESC[type].match(/\n/g) || []).length * 5.5 + (game.eff[type] > 0 ? 22 : 11));
 				if (y + height >= 202 - coords[1]) {
 					y = 0;
-					x += 77;
+					x += 78;
 				};
 				y += info.player(type, x, y);
 				if ((type === EFF.BLAZE || type === EFF.FIREPROOF) && !logged[EFF.BURN]) logEff(EFF.BURN);

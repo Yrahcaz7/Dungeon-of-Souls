@@ -241,33 +241,33 @@ const PERM_EFF_DESC = {
 // descriptions of effects
 const EFF_DESC = {
 	// general effects
-	[EFF.AURA_BLADE]: "On attack,\ndeal [5 + count] extra\ndamage, then count\ndecreases by 1.",
-	[EFF.BURN]: "On end of turn,\ntake [count] non-combat\ndamage, then count\ndecreases by 1.",
-	[EFF.REINFORCE]: "On start of\nturn, shield is kept,\nthen count decreases by\n1.",
-	[EFF.RESILIENCE]: "Take 25%\nless combat damage,\nrounded up.\nCount decreases by 1 at\nstart of turn.",
-	[EFF.WEAKNESS]: "Attack is 25%\nless, rounded up.\nCount decreases by 1 at\nend of turn.",
-	[EFF.BLAZE]: "On attack, apply\n1 burn on the target.\nCount decreases by 1 at\nend of turn.",
-	[EFF.ATKUP]: "Attack is 25%\ngreater, rounded up.\nCount decreases by 1 at\nend of turn.",
-	[EFF.DEFUP]: "Defense is 25%\ngreater, rounded up.\nCount decreases by 1 at\nend of turn.",
-	[EFF.PULSE]: "On attack, apply\n1 pulse on the target.\nCount decreases by 2 at\nend of turn.",
-	[EFF.HYPERSPEED]: "[On attack]\neffects that do not\ndecrease status counts\ntrigger an additional\ntime.\nCount decreases by 1 at\nend of turn.",
-	[EFF.FIREPROOF]: "On start of\nturn, decrease burn\ncount by [count].",
-	[EFF.LIVING_METAL]: "When hit,\ngain [count] shield,\nthen count decreases by\n1.",
+	[EFF.AURA_BLADE]: "On attack, deal [5 + count] extra damage, then decrease count by 1.",
+	[EFF.BURN]: "On end of turn, take [count] non-combat damage, then decrease count by 1.",
+	[EFF.REINFORCE]: "On start of turn, keep shield, then decrease count by 1.",
+	[EFF.RESILIENCE]: "Take 25% less combat damage, rounded up. On start of turn, decrease count by 1.",
+	[EFF.WEAKNESS]: "Attack is 25% less, rounded up. On end of turn, decrease count by 1.",
+	[EFF.BLAZE]: "On attack, apply 1 burn. On end of turn, decrease count by 1.",
+	[EFF.ATKUP]: "Attack is 25% greater, rounded up. On end of turn, decrease count by 1.",
+	[EFF.DEFUP]: "Defense is 25% greater, rounded up. On end of turn, decrease count by 1.",
+	[EFF.PULSE]: "On attack, apply 1 pulse. On end of turn, decrease count by 2.",
+	[EFF.HYPERSPEED]: "[On attack] effects that do not decrease status counts trigger an additional time. On end of turn, decrease count by 1.",
+	[EFF.FIREPROOF]: "On start of turn, decrease burn count by [count].",
+	[EFF.LIVING_METAL]: "When hit, gain [count] shield, then decrease count by 1.",
 	// card effects
-	[CARD_EFF.ONE_USE]: "When played,\nthe card is sent to the\nvoid. Cards in the void\nstay there until the end\nof the battle.",
-	[CARD_EFF.RETENTION]: "On end of\nturn, the card is not\ndiscarded, then count\ndecreases by 1.",
-	[CARD_EFF.UNIFORM]: "Extra damage\nand extra shield have\nhalf the effect on the\ncard, rounded down.",
-	[CARD_EFF.TEMP]: "This card was added due\nto an effect; it will\nnot stay in your deck\nafter this battle.",
-	[CARD_EFF.DESC]: "After a card leaves\nyour hand, it loses all\nof its applied effects.",
+	[CARD_EFF.ONE_USE]: "When played, the card is sent to the void. Cards in the void stay there until the end of the battle.",
+	[CARD_EFF.RETENTION]: "On end of turn, the card is not discarded, then decrease count by 1.",
+	[CARD_EFF.UNIFORM]: "Extra damage and extra shield have half the effect on the card, rounded down.",
+	[CARD_EFF.TEMP]: "This card was added due to an effect; it will not stay in your deck after this battle.",
+	[CARD_EFF.DESC]: "After a card leaves your hand, it loses all of its applied effects.",
 	// enemy effects
-	[ENEMY_EFF.COUNTDOWN]: "On end of\nturn, intent is set to\nwhat it was on the\n[count]th turn, then\ncount decreases by 1.",
-	[ENEMY_EFF.REWIND]: "Is 20% stronger\nfor each count, rounded\ndown. If this has 0\ncountdown and 0 health,\ngain 1 count, then all\nentities heal fully and\nthe countdown begins.",
-	[ENEMY_EFF.SHROUD]: "Intent is not\nvisible.\nCount decreases by 1 at\nend of turn.",
-	[ENEMY_EFF.PLAN_ATTACK]: "If the\nplayer has enough shield\nto block 100% of attack,\ngain 2 ATK+ and make a\nnew plan. If this has\nshield and intends to\ndefend, change intent to\nattack and make a new\nplan.",
-	[ENEMY_EFF.PLAN_SUMMON]: "If the\nplayer has enough shield\nto block 100% of attack\nor this has shield and\nintends to defend,\nchange intent to summon\nand make a new plan.",
-	[ENEMY_EFF.PLAN_DEFEND]: "If this has\nshield and intends to\ndefend, gain 2 DEF+ and\nmake a new plan. If the\nplayer has enough shield\nto block 100% of attack,\nchange intent to defense\nand make a new plan.",
-	[ENEMY_EFF.SCRAP_HEAP]: "On death,\nno effects trigger.",
-	[ENEMY_EFF.STICKY]: "On attack, add\n2 copies of Sticky Goo\nto the target's deck.",
+	[ENEMY_EFF.COUNTDOWN]: "On end of turn, intent is set to what it was on the [count]th turn, then decrease count by 1.",
+	[ENEMY_EFF.REWIND]: "Is [20 × count]% stronger, rounded down. On death, if this has 0 countdown: gain 1 count, fully heal all entities (including self), and start the countdown.",
+	[ENEMY_EFF.SHROUD]: "Intent is not visible. On end of turn, decrease count by 1.",
+	[ENEMY_EFF.PLAN_ATTACK]: "If the player has enough shield to block 100% of attack, gain 2 ATK+ and make a new plan. If this has shield and intends to defend, change intent to attack and make a new plan.",
+	[ENEMY_EFF.PLAN_SUMMON]: "If the player has enough shield to block 100% of attack or this has shield and intends to defend, change intent to summon and make a new plan.",
+	[ENEMY_EFF.PLAN_DEFEND]: "If this has shield and intends to defend, gain 2 DEF+ and make a new plan. If the player has enough shield to block 100% of attack, change intent to defense and make a new plan.",
+	[ENEMY_EFF.SCRAP_HEAP]: "This dying does not trigger [On death] effects.",
+	[ENEMY_EFF.STICKY]: "On attack, add 2 copies of Sticky Goo to the target's deck.",
 };
 
 // numeric desc node types
@@ -296,6 +296,63 @@ const COLOR = {
 	"#080": ["sticky goo", ENEMY_EFF.STICKY], // dark green
 };
 
+// colors of effects
+const EFF_COLOR = {};
+
+for (const color in COLOR) {
+	for (const key of COLOR[color]) {
+		if (DESC_NAME[key] || EFF_NAME[key]) EFF_COLOR[key] = color;
+	};
+};
+
+// event log types
+const EVENT_LOG = {DAMAGE: 2000};
+
+// game result types
+const GAME_RESULT = {DEFEAT: 2100, VICTORY: 2101, SURRENDER: 2102};
+
+// reward types
+const REWARD = {GOLD: 2200, CARD: 2201, ARTIFACT: 2202, HEALTH: 2203, PURIFIER: 2204, REFINER: 2205, FINISH: 2206};
+
+// names of rewards
+const REWARD_NAME = {[REWARD.GOLD]: "gold", [REWARD.CARD]: "card", [REWARD.ARTIFACT]: "artifact", [REWARD.HEALTH]: "health", [REWARD.PURIFIER]: "purifier", [REWARD.REFINER]: "refiner", [REWARD.FINISH]: "finish"};
+
+/**
+ * Applies word wrap to a string and returns it.
+ * @param {string} text - The text to wrap.
+ * @param {number} width - The width (in characters) of the text's bounding box.
+ * @param {number} offset - The indentation of the first line (in characters).
+ */
+function wrapText(text, width, offset = 0) {
+	let spaceIndex = -1;
+	let prevSpaceIndex = -1;
+	let result = "";
+	for (let index = 0; index < text.length; index++) {
+		offset++;
+		if (text[index] == " ") {
+			spaceIndex = index;
+		} else if (text[index] == "\n") {
+			offset = 0;
+			result += text.slice(prevSpaceIndex + 1, index) + "\n";
+			spaceIndex = index;
+			prevSpaceIndex = index;
+		};
+		if (offset > width) {
+			if (spaceIndex < 0 || index - spaceIndex >= width) {
+				offset = 1;
+				spaceIndex = index - 1;
+				result += text.slice(prevSpaceIndex + 1, index) + "\n";
+			} else {
+				offset = index - spaceIndex;
+				result += text.slice(prevSpaceIndex + 1, spaceIndex) + "\n";
+			};
+			prevSpaceIndex = spaceIndex;
+		};
+	};
+	result += text.slice(prevSpaceIndex + 1);
+	return result;
+};
+
 /**
  * Returns a string formatted with color tags.
  * @param {string} text - the string to color.
@@ -315,34 +372,8 @@ const colorText = (() => {
 	};
 })();
 
-// colors of effects
-const EFF_COLOR = {};
-
-for (const color in COLOR) {
-	COLOR[color].forEach(key => {
-		if (DESC_NAME[key] || EFF_NAME[key]) EFF_COLOR[key] = color;
-	});
-};
-
+// preprocess descriptions
 for (const key in EFF_DESC) {
-	const num = +key;
-	if (EFF_NAME[num]) {
-		if (EFF_COLOR[num]) {
-			EFF_DESC[num] = "<" + EFF_COLOR[num] + ">" + EFF_NAME[num][0].toUpperCase() + EFF_NAME[num].slice(1) + "</" + EFF_COLOR[num] + ">: " + colorText(EFF_DESC[num]);
-		} else {
-			EFF_DESC[num] = EFF_NAME[num][0].toUpperCase() + EFF_NAME[num].slice(1) + ": " + colorText(EFF_DESC[num]);
-		};
-	};
+	EFF_DESC[key] = wrapText(EFF_DESC[key], 24, EFF_NAME[key] ? EFF_NAME[key].length + 2 : 0);
+	EFF_DESC[key] = colorText((EFF_NAME[key] ? EFF_NAME[key][0].toUpperCase() + EFF_NAME[key].slice(1) + ": " : "") + EFF_DESC[key]);
 };
-
-// event log types
-const EVENT_LOG = {DAMAGE: 2000};
-
-// game result types
-const GAME_RESULT = {DEFEAT: 2100, VICTORY: 2101, SURRENDER: 2102};
-
-// reward types
-const REWARD = {GOLD: 2200, CARD: 2201, ARTIFACT: 2202, HEALTH: 2203, PURIFIER: 2204, REFINER: 2205, FINISH: 2206};
-
-// names of rewards
-const REWARD_NAME = {[REWARD.GOLD]: "gold", [REWARD.CARD]: "card", [REWARD.ARTIFACT]: "artifact", [REWARD.HEALTH]: "health", [REWARD.PURIFIER]: "purifier", [REWARD.REFINER]: "refiner", [REWARD.FINISH]: "finish"};

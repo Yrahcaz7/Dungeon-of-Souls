@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
+ *  Copyright (C) 2026 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -836,6 +836,14 @@ const CHARACTERS = {
 		[],
 		[0, 1, 0, 0, 1],
 		[1, 0, 1, 1],
+	], "×": [
+		[],
+		[],
+		[1, 0, 0, 0, 1],
+		[0, 1, 0, 1],
+		[0, 0, 1],
+		[0, 1, 0, 1],
+		[1, 0, 0, 0, 1],
 	],
 };
 

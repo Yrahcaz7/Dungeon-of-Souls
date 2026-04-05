@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
+ *  Copyright (C) 2026 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -225,14 +225,15 @@ function updateData() {
 	let healAll = false;
 	for (let index = game.enemies.length - 1; index >= 0; index--) {
 		if (game.enemies[index].health <= 0) {
-			if (game.enemies[index].eff[ENEMY_EFF.REWIND] && !game.enemies[index].eff[ENEMY_EFF.COUNTDOWN]) {
+			const deathTriggers = !game.enemies[index].eff[ENEMY_EFF.SCRAP_HEAP];
+			if (game.enemies[index].eff[ENEMY_EFF.REWIND] && !game.enemies[index].eff[ENEMY_EFF.COUNTDOWN] && deathTriggers) {
 				game.enemies[index].eff[ENEMY_EFF.REWIND]++;
 				game.enemies[index].eff[ENEMY_EFF.COUNTDOWN] = Math.max(game.enemies[index].intentHistory.length - 1, 0);
 				game.enemies[index].intentHistory.splice(game.enemies[index].intentHistory.length - 1);
 				healAll = true;
 			} else {
 				const type = game.enemies[index].type;
-				if (!game.enemies[index].eff[ENEMY_EFF.SCRAP_HEAP]) {
+				if (deathTriggers) {
 					if (game.kills[type]) game.kills[type]++;
 					else game.kills[type] = 1;
 				};
