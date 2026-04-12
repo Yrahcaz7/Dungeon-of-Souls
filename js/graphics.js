@@ -1436,7 +1436,9 @@ const graphics = {
 		} else if (game.select[0] === S.MAP) {
 			info.menuItem(S.MAP, game.select[1]);
 		};
-		if ((game.select[0] === S.HAND || (game.select[0] !== S.ATTACK && game.select[0] !== S.ENEMY && !hidden() && global.options[OPTION.STICKY_CARDS])) && game.hand.length && game.prevCard < game.hand.length) {
+		if (inMenu()) {
+			return;
+		} else if ((game.select[0] === S.HAND || (game.select[0] !== S.ATTACK && game.select[0] !== S.ENEMY && !hidden() && global.options[OPTION.STICKY_CARDS])) && game.hand.length && game.prevCard < game.hand.length) {
 			graphics.cardInfo("card", game.hand[game.prevCard]);
 		} else if (game.select[0] === SS.SELECT_HAND) {
 			if (game.select[1] >= 0 && game.select[1] < game.hand.length - 1) {
