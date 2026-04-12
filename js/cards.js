@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
+ *  Copyright (C) 2026 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,20 +18,20 @@
 const CARDS = {
 	0: {
 		name: "Error",
-		desc: [new Desc("This card is\nclearly an error.\n", [CARD_EFF.UNPLAYABLE, true], "."), new Desc("Wow! An improved\nerror! Amazing! It\ndefinitely still\nisn't ", CARD_EFF.UNPLAYABLE, ",\nright? That would\nbe ridiculous.")],
+		desc: [new Desc("This card is clearly an error. ", [CARD_EFF.UNPLAYABLE, true], "."), new Desc("Wow! An improved error! Amazing! It definitely still isn't ", CARD_EFF.UNPLAYABLE, ", right? That would be ridiculous.")],
 		rarity: -1,
 		cost: 0,
 	},
 	1000: {
 		name: "Slash",
-		desc: [new Desc("Deal ", [5, DESC.DAMAGE], " to\nan enemy."), new Desc("Deal ", [10, DESC.DAMAGE], " to\nan enemy.")],
+		desc: [new Desc("Deal ", [5, DESC.DAMAGE], " to an enemy."), new Desc("Deal ", [10, DESC.DAMAGE], " to an enemy.")],
 		rarity: 0,
 		cost: 1,
 		damage: [5, 10],
 	},
 	1001: {
 		name: "Heat Wave",
-		desc: [new Desc("Deal ", [7, DESC.DAMAGE], " to\nan enemy and apply\n2 ", EFF.BURN, " to all\nenemies."), new Desc("Deal ", [7, DESC.DAMAGE], " to\nan enemy and apply\n4 ", EFF.BURN, " to all\nenemies.")],
+		desc: [new Desc("Deal ", [7, DESC.DAMAGE], " to an enemy and apply 2 ", EFF.BURN, " to all enemies."), new Desc("Deal ", [7, DESC.DAMAGE], " to an enemy and apply 4 ", EFF.BURN, " to all enemies.")],
 		rarity: 2,
 		cost: 2,
 		damage: 7,
@@ -44,7 +44,7 @@ const CARDS = {
 	},
 	1002: {
 		name: "Sweeping Slash",
-		desc: [new Desc("Deal ", [4, DESC.DAMAGE], " to\nall enemies.\n", [CARD_EFF.UNIFORM, true], "."), new Desc("Deal ", [8, DESC.DAMAGE], " to\nall enemies.\n", [CARD_EFF.UNIFORM, true], ".")],
+		desc: [new Desc("Deal ", [4, DESC.DAMAGE], " to all enemies. ", [CARD_EFF.UNIFORM, true], "."), new Desc("Deal ", [8, DESC.DAMAGE], " to all enemies. ", [CARD_EFF.UNIFORM, true], ".")],
 		rarity: 1,
 		cost: 1,
 		attackAnim: I.player.attack_2,
@@ -58,7 +58,7 @@ const CARDS = {
 	},
 	1003: {
 		name: "Bladestorm",
-		desc: new Desc("Use all ", [EFF.AURA_BLADE, "s"], "\nto deal ", [1, DESC.DAMAGE], " to\nall enemies per\n", EFF.AURA_BLADE, ".\n", [CARD_EFF.UNIFORM, true], "."),
+		desc: new Desc("Use all ", [EFF.AURA_BLADE, "s"], " to deal ", [1, DESC.DAMAGE], " to all enemies per ", EFF.AURA_BLADE, ". ", [CARD_EFF.UNIFORM, true], "."),
 		rarity: 2,
 		cost: [2, 1],
 		attackAnim: I.player.attack_2,
@@ -77,7 +77,7 @@ const CARDS = {
 	},
 	1004: {
 		name: "Gold Slash",
-		desc: [new Desc("Consume 25 gold to\ndeal ", [8, DESC.DAMAGE], " to\nan enemy."), new Desc("Consume 20 gold to\ndeal ", [15, DESC.DAMAGE], " to\nan enemy.")],
+		desc: [new Desc("Consume 25 gold to deal ", [8, DESC.DAMAGE], " to an enemy."), new Desc("Consume 20 gold to deal ", [15, DESC.DAMAGE], " to an enemy.")],
 		rarity: 1,
 		cost: 1,
 		damage: [8, 15],
@@ -87,14 +87,14 @@ const CARDS = {
 	},
 	1005: {
 		name: "Iron Slash",
-		desc: new Desc("Deal ", [12, DESC.DAMAGE], " to\nan enemy."),
+		desc: new Desc("Deal ", [12, DESC.DAMAGE], " to an enemy."),
 		rarity: 1,
 		cost: [2, 1],
 		damage: 12,
 	},
 	1006: {
 		name: "Pulsating Strike",
-		desc: [new Desc("Gain 1 ", EFF.PULSE, ", then\ndeal [", [4, DESC.DAMAGE, [" + ", EFF.PULSE, "]\n"]], " to an enemy."), new Desc("Gain 2 ", EFF.PULSE, ", then\ndeal [", [4, DESC.DAMAGE, [" + ", EFF.PULSE, "]\n"]], " to an enemy.")],
+		desc: [new Desc("Gain 1 ", EFF.PULSE, ", then deal [", [4, DESC.DAMAGE, [" + ", EFF.PULSE, "] "]], " to an enemy."), new Desc("Gain 2 ", EFF.PULSE, ", then deal [", [4, DESC.DAMAGE, [" + ", EFF.PULSE, "] "]], " to an enemy.")],
 		rarity: 1,
 		cost: 1,
 		attack(level = 0) {
@@ -111,7 +111,7 @@ const CARDS = {
 	},
 	2001: {
 		name: "Reinforce",
-		desc: [new Desc("Gain ", [2, DESC.SHIELD], " and\n1 ", EFF.REINFORCE, "."), new Desc("Gain ", [4, DESC.SHIELD], " and\n2 ", EFF.REINFORCE, ".")],
+		desc: [new Desc("Gain ", [2, DESC.SHIELD], " and 1 ", EFF.REINFORCE, "."), new Desc("Gain ", [4, DESC.SHIELD], " and 2 ", EFF.REINFORCE, ".")],
 		rarity: 1,
 		cost: 1,
 		effect(level = 0) {
@@ -126,7 +126,7 @@ const CARDS = {
 	},
 	2002: {
 		name: "Everlasting Shield",
-		desc: [new Desc("Gain ", [2, DESC.SHIELD], ", 2\n", EFF.REINFORCE, ", and 2\n", EFF.LIVING_METAL, "."), new Desc("Gain ", [4, DESC.SHIELD], ", 3\n", EFF.REINFORCE, ", and 2\n", EFF.LIVING_METAL, ".")],
+		desc: [new Desc("Gain ", [2, DESC.SHIELD], ", 2 ", EFF.REINFORCE, ", and 2 ", EFF.LIVING_METAL, "."), new Desc("Gain ", [4, DESC.SHIELD], ", 3 ", EFF.REINFORCE, ", and 2 ", EFF.LIVING_METAL, ".")],
 		rarity: 2,
 		cost: 2,
 		effect(level = 0) {
@@ -142,7 +142,7 @@ const CARDS = {
 	},
 	2003: {
 		name: "Cower",
-		desc: [new Desc("Gain ", [9, DESC.SHIELD], " and\n2 ", EFF.WEAKNESS, "."), new Desc("Gain ", [10, DESC.SHIELD], " and\n1 ", EFF.WEAKNESS, ".")],
+		desc: [new Desc("Gain ", [9, DESC.SHIELD], " and 2 ", EFF.WEAKNESS, "."), new Desc("Gain ", [10, DESC.SHIELD], " and 1 ", EFF.WEAKNESS, ".")],
 		rarity: 1,
 		cost: 1,
 		effect(level = 0) {
@@ -164,7 +164,7 @@ const CARDS = {
 	},
 	2005: {
 		name: "The Eternal Gold",
-		desc: [new Desc("Consume 45 gold\nto gain ", [10, DESC.SHIELD], "\nand 1 ", EFF.REINFORCE, "."), new Desc("Consume 30 gold\nto gain ", [15, DESC.SHIELD], "\nand 1 ", EFF.REINFORCE, ".")],
+		desc: [new Desc("Consume 45 gold to gain ", [10, DESC.SHIELD], " and 1 ", EFF.REINFORCE, "."), new Desc("Consume 30 gold to gain ", [15, DESC.SHIELD], " and 1 ", EFF.REINFORCE, ".")],
 		rarity: 1,
 		cost: 2,
 		effect(level = 0) {
@@ -182,7 +182,7 @@ const CARDS = {
 	},
 	2006: {
 		name: "Pulsating Shield",
-		desc: [new Desc("Gain 1 ", EFF.PULSE, ", then\ngain [", [3, DESC.SHIELD, [" + ", EFF.PULSE, "]\n"]], "."), new Desc("Gain 2 ", EFF.PULSE, ", then\ngain [", [3, DESC.SHIELD, [" + ", EFF.PULSE, "]\n"]], ".")],
+		desc: [new Desc("Gain 1 ", EFF.PULSE, ", then gain [", [3, DESC.SHIELD, [" + ", EFF.PULSE, "] "]], "."), new Desc("Gain 2 ", EFF.PULSE, ", then gain [", [3, DESC.SHIELD, [" + ", EFF.PULSE, "] "]], ".")],
 		rarity: 1,
 		cost: 1,
 		effect(level = 0) {
@@ -192,7 +192,7 @@ const CARDS = {
 	},
 	3000: {
 		name: "War Cry",
-		desc: [new Desc("All non-boss\nenemies switch\ntheir intents to\ndefense. ", [CARD_EFF.ONE_USE, true], "."), new Desc("All non-boss\nenemies switch\ntheir intents to\ndefense. Draw a\ncard. ", [CARD_EFF.ONE_USE, true], ".")],
+		desc: [new Desc("All non-boss enemies switch their intents to defense. ", [CARD_EFF.ONE_USE, true], "."), new Desc("All non-boss enemies switch their intents to defense. Draw a card. ", [CARD_EFF.ONE_USE, true], ".")],
 		rarity: 1,
 		cost: 0,
 		effectAnim: I.effect.war_cry,
@@ -208,7 +208,7 @@ const CARDS = {
 	},
 	3001: {
 		name: "Rage",
-		desc: new Desc("Kill a non-boss\nenemy. Take\nnon-combat damage\nequal to half its\nhealth, rounded up.\n", [CARD_EFF.ONE_USE, true], "."),
+		desc: new Desc("Kill a non-boss enemy. Take non-combat damage equal to half its health, rounded up. ", [CARD_EFF.ONE_USE, true], "."),
 		rarity: 1,
 		cost: [1, 0],
 		attackEffects: false,
@@ -220,7 +220,7 @@ const CARDS = {
 	},
 	3002: {
 		name: "Scorch",
-		desc: [new Desc("Gain 1 ", EFF.BURN, ". Apply\n1 ", EFF.BURN, " to all\nenemies."), new Desc("Gain 1 ", EFF.BURN, ". Apply\n2 ", EFF.BURN, " to all\nenemies.")],
+		desc: [new Desc("Gain 1 ", EFF.BURN, ". Apply 1 ", EFF.BURN, " to all enemies."), new Desc("Gain 1 ", EFF.BURN, ". Apply 2 ", EFF.BURN, " to all enemies.")],
 		rarity: 1,
 		cost: 0,
 		effect(level = 0) {
@@ -233,7 +233,7 @@ const CARDS = {
 	},
 	3003: {
 		name: "Memorize",
-		desc: new Desc("Choose a card from\nyour hand. Apply 1\n", CARD_EFF.COST_REDUCTION, "\nand 1 ", CARD_EFF.RETENTION, " to\nthe chosen card."),
+		desc: new Desc("Choose a card from your hand. Apply 1 ", CARD_EFF.COST_REDUCTION, " and 1 ", CARD_EFF.RETENTION, " to the chosen card."),
 		rarity: 2,
 		cost: [1, 0],
 		select() {return [SS.SELECT_HAND, game.select[1] - 1]},
@@ -270,14 +270,14 @@ const CARDS = {
 	},
 	4001: {
 		name: "Aura Blaze",
-		desc: new Desc("Gain 4 ", [EFF.AURA_BLADE, "s"], ".\n", [CARD_EFF.ONE_USE, true], "."),
+		desc: new Desc("Gain 4 ", [EFF.AURA_BLADE, "s"], ". ", [CARD_EFF.ONE_USE, true], "."),
 		rarity: 2,
 		cost: [3, 2],
 		effect(level = 0) {gainEff(EFF.AURA_BLADE, 4)},
 	},
 	4002: {
 		name: "Blade of Memories",
-		desc: new Desc("Gain 1 ", EFF.AURA_BLADE, ".\nApply 1 ", CARD_EFF.RETENTION, "\nto all cards in\nyour hand."),
+		desc: new Desc("Gain 1 ", EFF.AURA_BLADE, ". Apply 1 ", CARD_EFF.RETENTION, " to all cards in your hand."),
 		rarity: 1,
 		cost: [2, 1],
 		effect(level = 0) {
@@ -290,7 +290,7 @@ const CARDS = {
 	},
 	5001: {
 		name: "Sticky Goo",
-		desc: new Desc("Take 1 non-combat\ndamage. Draw a\ncard. ", [CARD_EFF.ONE_USE, true], "."),
+		desc: new Desc("Take 1 non-combat damage. Draw a card. ", [CARD_EFF.ONE_USE, true], "."),
 		rarity: -1,
 		cost: [1, 2],
 		effect(level = 0) {

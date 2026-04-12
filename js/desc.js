@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
+ *  Copyright (C) 2026 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ class Desc {
 	 * @param {number} y - the y-coordinate to draw the description at.
 	 * @param {number} id - the id of the card to draw the description for.
 	 * @param {boolean} outside - whether the card is outside the battle. Defaults to `false`.
+	 * @param {number} wrapWidth - the wrapping width of the description (in characters). Defaults to `19`.
 	 */
 	draw = (() => {
 		const DESC_EXTRA = {[DESC.DAMAGE]: "extraDamage", [DESC.SHIELD]: "extraShield"};
@@ -88,8 +89,9 @@ class Desc {
 			};
 			return [str, valueIsLess];
 		};
-		return (x = 0, y = 0, id = 0, outside = false) => {
-			const [str, valueIsLess] = getStringFromNodes(this.nodes, id, outside);
+		return (x = 0, y = 0, id = 0, outside = false, wrapWidth = 19) => {
+			let [str, valueIsLess] = getStringFromNodes(this.nodes, id, outside);
+			if (wrapWidth > 0) str = wrapText(str, wrapWidth);
 			return draw.lore(x, y, str, {"highlight-color": (valueIsLess ? "#f00" : "#000"), "text-small": true});
 		};
 	})();

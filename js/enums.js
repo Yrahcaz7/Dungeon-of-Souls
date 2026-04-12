@@ -321,9 +321,10 @@ const REWARD_NAME = {[REWARD.GOLD]: "gold", [REWARD.CARD]: "card", [REWARD.ARTIF
  * Applies word wrap to a string and returns it.
  * @param {string} text - The text to wrap.
  * @param {number} width - The width (in characters) of the text's bounding box.
- * @param {number} offset - The indentation of the first line (in characters).
+ * @param {number} offset - The indentation of the first line (in characters). Defaults to `0`.
  */
-function wrapText(text, width, offset = 0) {
+function wrapText(text, width, offset = 0, debug = false) {
+	//if (debug) console.log(text);
 	let spaceIndex = -1;
 	let prevSpaceIndex = -1;
 	let inTag = false;
@@ -335,29 +336,35 @@ function wrapText(text, width, offset = 0) {
 		};
 		if (inTag) {
 			tagOffset++;
+			if (text[index] == ">") {
+				inTag = false;
+			};
 		} else {
 			offset++;
-		};
-		if (text[index] == ">") {
-			inTag = false;
-		} else if (text[index] == " ") {
-			spaceIndex = index;
-		} else if (text[index] == "\n") {
-			offset = 0;
-			result += text.slice(prevSpaceIndex + 1, index) + "\n";
-			spaceIndex = index;
-			prevSpaceIndex = index;
-		};
-		if (offset > width) {
-			if (spaceIndex < 0 || index - spaceIndex >= width) {
-				offset = 1;
-				spaceIndex = index - 1;
+			if (text[index] == " ") {
+				spaceIndex = index;
+				tagOffset = 0;
+			} else if (text[index] == "\n") {
+				offset = 0;
+				tagOffset = 0;
 				result += text.slice(prevSpaceIndex + 1, index) + "\n";
-			} else {
-				offset = index - spaceIndex - tagOffset;
-				result += text.slice(prevSpaceIndex + 1, spaceIndex) + "\n";
+				spaceIndex = index;
+				prevSpaceIndex = index;
 			};
-			prevSpaceIndex = spaceIndex;
+			if (offset > width) {
+				//if (debug) console.log("index =", index, ". spaceIndex =", spaceIndex, ". tagOffset =", tagOffset);
+				if (spaceIndex < 0 || index - spaceIndex - tagOffset >= width) {
+					offset = 1;
+					spaceIndex = index - 1;
+					result += text.slice(prevSpaceIndex + 1, index) + "\n";
+				} else {
+					offset = index - spaceIndex - tagOffset;
+					result += text.slice(prevSpaceIndex + 1, spaceIndex) + "\n";
+				};
+				//if (debug) console.log(result);
+				tagOffset = 0;
+				prevSpaceIndex = spaceIndex;
+			};
 		};
 	};
 	result += text.slice(prevSpaceIndex + 1);
