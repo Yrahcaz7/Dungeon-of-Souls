@@ -89,7 +89,7 @@ class Desc {
 			};
 			return [str, valueIsLess];
 		};
-		return (x = 0, y = 0, id = 0, outside = false, wrapWidth = 19) => {
+		return (x = 0, y = 0, id = 0, outside = false, wrapWidth = 18) => {
 			let [str, valueIsLess] = getStringFromNodes(this.nodes, id, outside);
 			if (wrapWidth > 0) str = wrapText(str, wrapWidth);
 			return draw.lore(x, y, str, {"highlight-color": (valueIsLess ? "#f00" : "#000"), "text-small": true});

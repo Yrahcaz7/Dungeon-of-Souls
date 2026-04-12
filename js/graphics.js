@@ -482,7 +482,7 @@ const draw = {
 		else if (LOW_CHAR_REGEX.test(name)) draw.lore(x + 32, y + 41, name, {"text-align": DIR.CENTER});
 		else draw.lore(x + 32, y + 42, name, {"text-align": DIR.CENTER});
 		// card text
-		card.getAttr("desc").draw(x + 6, y + 55, card.id, outside);
+		card.getAttr("desc").draw(x + 7, y + 55, card.id, outside);
 		draw.lore(x + 33, y + 89.5, (RARITY[rarity] || "special") + "|" + type, {"text-align": DIR.CENTER, "text-small": true});
 		// card energy and rarity
 		if (rarity == 2) draw.image(I.card.rarity.rare, x - 1, y - 2);
