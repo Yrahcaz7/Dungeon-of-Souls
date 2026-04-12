@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
+ *  Copyright (C) 2026 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -478,23 +478,17 @@ const selection = (() => {
 			} else {
 				if (action === DIR.LEFT) {
 					game.select[1]--;
-					actionTimer = 1;
-					return;
 				} else if (action === DIR.RIGHT) {
 					game.select[1]++;
-					actionTimer = 1;
-					return;
 				} else if (action === DIR.UP) {
-					let to = -1, distance = -1;
+					let to = 0;
 					for (let index = 0; index < game.enemies.length; index++) {
-						if (enemyPos[index][1] > distance) {
-							distance = enemyPos[index][1];
+						if (enemyPos[index][1] > enemyPos[to][1]) {
 							to = index;
 						};
 					};
 					for (let index = 0; index < game.enemies.length; index++) {
-						if (enemyPos[index][0] < distance) {
-							distance = enemyPos[index][0];
+						if (enemyPos[index][0] < enemyPos[to][0]) {
 							to = index;
 						};
 					};
@@ -502,8 +496,11 @@ const selection = (() => {
 					actionTimer = 1;
 					return;
 				};
-				if (game.select[1] < 0) game.select[1] = 0;
-				else if (game.select[1] >= game.hand.length - 1) game.select[1] = game.hand.length - 1;
+				game.select[1] = Math.min(Math.max(game.select[1], 0), game.hand.length - 1);
+				if (action === DIR.LEFT || action === DIR.RIGHT) {
+					actionTimer = 1;
+					return;
+				};
 			};
 		};
 		// hand selection from effect

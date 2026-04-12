@@ -256,7 +256,7 @@ const draw = {
 	 * Draws some lore on the canvas.
 	 * @param {number} x - the x-coordinate to draw the lore at.
 	 * @param {number} y - the y-coordinate to draw the lore at.
-	 * @param {string} str - the string containing the lore.
+	 * @param {string | number} str - the string containing the lore.
 	 * @param style - the lore's style object.
 	 */
 	lore(x, y, str, style = {"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false}) {
@@ -1005,7 +1005,8 @@ const graphics = {
 	 * Draws the player on the canvas.
 	 */
 	player() {
-		let x = 15, y = 27;
+		let x = 15;
+		let y = 27;
 		// aura blades
 		for (let index = 0; index < game.eff[EFF.AURA_BLADE] && index < 4; index++) {
 			draw.image(I.aura_blade, x + AURA_BLADE_POS[index][0], y + AURA_BLADE_POS[index][1] + 4 - Math.abs(Math.round(auraBladeAnim[index]) - 4));
@@ -1026,7 +1027,8 @@ const graphics = {
 				};
 			};
 		};
-		x = 15; y = 27;
+		x = 15;
+		y = 27;
 		// animations
 		draw.imageSector(playerAnim[1], Math.floor(playerAnim[0]) * 120, 0, 120, playerAnim[1].height, x, y, 120);
 		if (playerAnim[1] === I.player.idle) {
@@ -1064,13 +1066,11 @@ const graphics = {
 		};
 		// bars
 		draw.bars(x + 22, y + 15, game.health, get.maxHealth(), game.shield, get.maxShield());
-		let cutoff, energy = game.energy, percentage = energy / get.maxEnergy();
-		if (percentage < 0) cutoff = 0;
-		else if (percentage > 1) cutoff = 30;
-		else cutoff = Math.round(percentage * 30);
+		let energy = game.energy;
 		if (energy < 10 && get.maxEnergy() >= 10) {
 			energy = "0" + energy;
 		};
+		const cutoff = Math.min(Math.max(Math.round(game.energy / get.maxEnergy() * 30), 0), 30);
 		draw.imageSector(I.bar.energy_full, 0, 0, cutoff + 1, 32, x - 1, y + 16);
 		draw.imageSector(I.bar.energy_empty, cutoff + 1, 0, 32 - (cutoff + 1), 32, x + cutoff, y + 16);
 		draw.lore(x + 14, y + 28, energy, {"text-align": DIR.LEFT});
@@ -1208,9 +1208,9 @@ const graphics = {
 		// draw deck
 		if (len > 0) {
 			if (game.cardSelect > len - 1) game.cardSelect = len - 1;
-			let maxScroll = Math.max(spaceY * (Math.floor((len - 1) / cols) - 1) + scrollPadding, 0);
+			const maxScroll = Math.max(spaceY * (Math.floor((len - 1) / cols) - 1) + scrollPadding, 0);
 			if (game.deckScroll > maxScroll) game.deckScroll = maxScroll;
-			let selected = [game.cardSelect % cols, Math.floor(game.cardSelect / cols)];
+			const selected = [game.cardSelect % cols, Math.floor(game.cardSelect / cols)];
 			for (let x = (len - 1) % cols, y = Math.floor((len - 1) / cols); y >= 0; x--) {
 				if (x !== selected[0] || y !== selected[1] || !focused) {
 					draw.card(deck[x + (y * cols)], startX + (x * spaceX), startY + (y * spaceY) - game.deckScroll, false, inOutsideDeck());
@@ -1309,7 +1309,8 @@ const graphics = {
 	cardInfo(type, cardObj) {
 		const keywords = CARDS[cardObj.id]?.keywords || [];
 		const appliedKeywords = [];
-		let x = 0, y = 0;
+		let x = 0;
+		let y = 0;
 		for (const key in cardObj.eff) {
 			const keyword = +key;
 			if (EFF_DESC[keyword]) {
@@ -1989,7 +1990,8 @@ const graphics = {
 		draw.rect("#000c");
 		const prevGame = global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]];
 		const spaceY = 76;
-		let x = 3, y = 16;
+		let x = 3;
+		let y = 16;
 		const categories = [SMALL_ENEMIES, BIG_ENEMIES, PRIME_ENEMIES, SPECIAL_ENEMIES, BOSS_ENEMIES];
 		for (let category = 0; category < categories.length; category++) {
 			const spaceX = (categories[category] === BOSS_ENEMIES ? 400 - x + 1 : (categories[category] === SPECIAL_ENEMIES ? 80 : 76));
