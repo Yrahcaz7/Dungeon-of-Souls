@@ -517,7 +517,7 @@ const draw = {
 			width = width * 3 + 2;
 			height = Math.ceil(lines * 5.5 + 7);
 		} else {
-			width = width * 6 + 1;
+			width = width * 6 + 2;
 			height = lines * 11 + 12;
 		};
 		draw.box(x, y, width, height, style);

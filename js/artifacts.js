@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
+ *  Copyright (C) 2026 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -91,7 +91,7 @@ const ARTIFACTS = {
 	},
 	205: {
 		name: "Corrosion [stage 2]",
-		desc: "You have 1 more max energy, but you\ntake <#0f0 highlight>5</#0f0> combat damage [decay] at the\nend of each of your turns.\nSTAGE 2: Your hand size is 1 larger,\nbut decay damage is increased by 1.",
+		desc: "You have 1 more max energy, but you\ntake <#0f0 highlight>5</#0f0> combat damage (decay) at the\nend of each of your turns.\nSTAGE 2: Your hand size is 1 larger,\nbut decay damage is increased by 1.",
 		big: true,
 		[FUNC.PLAYER_TURN_END]() {
 			takeDamage(5, true, -1);

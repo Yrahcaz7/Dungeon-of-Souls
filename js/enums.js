@@ -278,8 +278,7 @@ const DESC_NAME = {[DESC.DAMAGE]: "damage", [DESC.SHIELD]: "shield"};
 
 // effects and phrases associated with colors
 const COLOR = {
-	"#f44": ["max health", "health", "non-combat damage", "combat damage", "extra damage", "damage", "attacks", "attack", DESC.DAMAGE, EFF.ATKUP, ENEMY_EFF.COUNTDOWN, ENEMY_EFF.SCRAP_HEAP], // red
-	"#48f": ["extra shield", "shield", "defend", "defense", "aura blades", DESC.SHIELD, EFF.AURA_BLADE, EFF.DEFUP], // blue
+	// uncommon
 	"#e70": [EFF.BURN, EFF.BLAZE], // orange
 	"#862": [EFF.REINFORCE], // brown
 	"#665": [EFF.RESILIENCE], // yellowish gray
@@ -294,6 +293,10 @@ const COLOR = {
 	"#070": [ENEMY_EFF.PLAN_SUMMON], // dark green
 	"#00a": [ENEMY_EFF.PLAN_DEFEND], // dark blue
 	"#080": ["sticky goo", ENEMY_EFF.STICKY], // dark green
+	"#80f": ["decay"], // purple
+	// common
+	"#f44": ["max health", "health", "non-combat damage", "combat damage", "extra damage", "damage", "attacks", "attack", DESC.DAMAGE, EFF.ATKUP, ENEMY_EFF.COUNTDOWN, ENEMY_EFF.SCRAP_HEAP], // red
+	"#48f": ["extra shield", "shield", "defend", "defense", "aura blades", DESC.SHIELD, EFF.AURA_BLADE, EFF.DEFUP], // blue
 };
 
 // colors of effects
@@ -378,14 +381,13 @@ function wrapText(text, width, offset = 0, debug = false) {
 const colorText = (() => {
 	const COLOR_REGEX = {};
 	for (const color in COLOR) {
-		COLOR_REGEX[color] = new RegExp("(" + COLOR[color].filter(key => !DESC_NAME[key]).map(key => (EFF_NAME[key] || key).replace(" ", "\\s").replace("+", "\\+")).join("|") + ")", "gi");
+		COLOR_REGEX[color] = new RegExp("(?<!>)(" + COLOR[color].filter(key => !DESC_NAME[key]).map(key => (EFF_NAME[key] || key).replace(" ", "\\s").replace("+", "\\+")).join("|") + ")(?!<)", "gi");
 	};
 	return (text = "") => {
 		for (const color in COLOR_REGEX) {
 			text = text.replace(COLOR_REGEX[color], "<" + color + ">$1</" + color + ">");
 		};
-		text = text.replace(/(magic)(\stype)/gi, "<#f0f>$1</#f0f>$2");
-		text = text.replace(/(\[decay\]|decay)/gi, "<#80f>$1</#80f>");
+		text = text.replace(/(magic)(?=\stype)/gi, "<#f0f>$1</#f0f>");
 		return text;
 	};
 })();
