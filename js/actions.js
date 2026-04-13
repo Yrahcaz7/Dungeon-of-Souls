@@ -453,21 +453,20 @@ const selection = (() => {
 		// artifacts
 		if (game.select[0] === S.ARTIFACTS) {
 			if (action === DIR.LEFT) {
-				if (game.select[1] > 0) game.select[1]--;
-				actionTimer = 1;
-				return;
+				game.select[1]--;
 			} else if (action === DIR.RIGHT) {
-				if (game.select[1] === game.artifacts.length - 1) game.select = [S.LOOKER, 0];
+				if (game.select[1] >= game.artifacts.length - 1) game.select = [S.LOOKER, 0];
 				else game.select[1]++;
-				actionTimer = 1;
-				return;
 			} else if (action === DIR.DOWN) {
 				game.select = [S.PLAYER, 0];
+			};
+			if (game.select[0] === S.ARTIFACTS) {
+				game.select[1] = Math.min(Math.max(game.select[1], 0), game.artifacts.length - 1);
+			};
+			if (action === DIR.LEFT || action === DIR.RIGHT || action === DIR.DOWN) {
 				actionTimer = 1;
 				return;
 			};
-			if (game.select[1] < 0) game.select[1] = 0;
-			else if (game.select[1] >= game.artifacts.length - 1) game.select[1] = game.artifacts.length - 1;
 		};
 		// select hand
 		if (game.select[0] === -1) game.select = [S.HAND, 0];
@@ -482,22 +481,17 @@ const selection = (() => {
 					game.select[1]++;
 				} else if (action === DIR.UP) {
 					let to = 0;
-					for (let index = 0; index < game.enemies.length; index++) {
-						if (enemyPos[index][1] > enemyPos[to][1]) {
-							to = index;
-						};
-					};
-					for (let index = 0; index < game.enemies.length; index++) {
-						if (enemyPos[index][0] < enemyPos[to][0]) {
+					for (let index = 1; index < game.enemies.length; index++) {
+						if (enemyPos[index][1] > enemyPos[to][1] || (enemyPos[index][1] == enemyPos[to][1] && enemyPos[index][0] < enemyPos[to][0])) {
 							to = index;
 						};
 					};
 					game.select = [S.ENEMY, to];
-					actionTimer = 1;
-					return;
 				};
-				game.select[1] = Math.min(Math.max(game.select[1], 0), game.hand.length - 1);
-				if (action === DIR.LEFT || action === DIR.RIGHT) {
+				if (game.select[0] === S.HAND) {
+					game.select[1] = Math.min(Math.max(game.select[1], 0), game.hand.length - 1);
+				};
+				if (action === DIR.LEFT || action === DIR.RIGHT || action === DIR.UP) {
 					actionTimer = 1;
 					return;
 				};

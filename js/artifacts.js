@@ -18,44 +18,44 @@
 const ARTIFACTS = {
 	0: {
 		name: "Error",
-		desc: "This artifact is clearly\nan error. It does\nabsolutely nothing.",
+		desc: "This artifact is clearly an error. It does absolutely nothing.",
 	},
 	100: {
 		name: "Supershield",
-		desc: "All cards that give you\nshield give you 2 extra.",
+		desc: "All cards that gain shield gain 2 extra.",
 	},
 	101: {
 		name: "Gem of Rage",
-		desc: "All cards that deal\ndamage deal 2 extra.",
+		desc: "All cards that deal damage deal 2 extra.",
 	},
 	102: {
 		name: "Candy",
-		desc: "You have 15 less max\nhealth, but you gain 3\nhealth each time you\nclear a floor.",
+		desc: "You have 15 less max health. On floor clear, gain 3 health.",
 		[FUNC.FLOOR_CLEAR]() {
 			game.health += 3;
 		},
 	},
 	103: {
 		name: "Corrosion",
-		desc: "You have 1 more max\nenergy, but you take 4\ncombat damage at the end\nof each of your turns.",
+		desc: "You have 1 more max energy. On end of turn, take 4 decay combat damage.",
 		[FUNC.PLAYER_TURN_END]() {
 			takeDamage(4, true, -1);
 		},
 	},
 	104: {
 		name: "Card Charm",
-		desc: "You get 1 extra card\nreward choice, but your\nhand size is 1 smaller.",
+		desc: "You get 1 extra card reward choice. Your hand size is 1 smaller.",
 	},
 	105: {
 		name: "Nutritious Meal",
-		desc: "You have 15 more max health.\nOn pickup, you gain 10 health.",
+		desc: "You have 15 more max health. On pickup, gain 10 health.",
 		[FUNC.PICKUP]() {
 			game.health += 10;
 		},
 	},
 	106: {
 		name: "Magic Book",
-		desc: "You draw 2 cards each\ntime you play a magic\ntype card.",
+		desc: "When you play a magic type card, draw 2 cards.",
 		[FUNC.PLAY_CARD](cardObj) {
 			if (Math.floor(cardObj.id / 1000) == 4) {
 				drawCards(2);
@@ -64,34 +64,34 @@ const ARTIFACTS = {
 	},
 	107: {
 		name: "Bottled Fire",
-		desc: "Enemies start with 1\nburn and burn deals 3\nextra damage to enemies.",
+		desc: "Enemies start with 1 burn. Burn deals 3 extra damage to enemies.",
 	},
 	200: {
 		name: "The Map",
-		desc: "You can choose where\nto go next each time\nyou clear a floor.\nInteract to open.",
+		desc: "On floor clear, you can choose where to go next. Interact to open.",
 	},
 	201: {
 		name: "Iron Will",
-		desc: "You gain 2 health each\ntime you clear a floor.",
+		desc: "On floor clear, gain 2 health.",
 		[FUNC.FLOOR_CLEAR]() {
 			game.health += 2;
 		},
 	},
 	202: {
 		name: "Determination",
-		desc: "As you confront your\ngreatest challenge yet,\nyou are filled with\na familiar feeling...",
+		desc: "As you confront your greatest challenge yet, you are filled with a familiar feeling...",
 	},
 	203: {
 		name: "Warped Essence",
-		desc: "You have 1 more max energy,\nbut you take 25% more\ncombat damage, rounded up.",
+		desc: "You have 1 more max energy. You take 25% more combat damage, rounded up.",
 	},
 	204: {
 		name: "Shrouded Pearl",
-		desc: "Non-boss enemies cannot\nattack on their first turn.",
+		desc: "Non-boss enemies cannot attack on their first turn.",
 	},
 	205: {
 		name: "Corrosion [stage 2]",
-		desc: "You have 1 more max energy, but you\ntake <#0f0 highlight>5</#0f0> combat damage (decay) at the\nend of each of your turns.\nSTAGE 2: Your hand size is 1 larger,\nbut decay damage is increased by 1.",
+		desc: "You have 1 more max energy. On end of turn, take <#0f0 highlight>5</#0f0> decay combat damage.\nSTAGE 2: Your hand size is 1 larger, but decay damage is increased by 1.",
 		big: true,
 		[FUNC.PLAYER_TURN_END]() {
 			takeDamage(5, true, -1);
@@ -100,6 +100,7 @@ const ARTIFACTS = {
 };
 
 for (const key in ARTIFACTS) {
+	ARTIFACTS[key].desc = wrapText(ARTIFACTS[key].desc, Math.max(ARTIFACTS[key].name.length, 12) * 2, 0, key == 205);
 	ARTIFACTS[key].desc = colorText(ARTIFACTS[key].desc);
 };
 
