@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_061;
+const VERSION = 2_003_062;
 
 /**
  * Returns the starting global data.
@@ -93,7 +93,7 @@ function getStartGameData() { return {
 }};
 let game = getStartGameData();
 
-/** @type {[string, string, number, string, function | null][]} */
+/** @type {[string, string, number, string, (() => void) | null][]} */
 let popups = [];
 /** @type {[number, number, string, number]} */
 let notif = [-1, 0, "", 0];
@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
  * @param {string} type - the type of the popup.
  * @param {string} description - the description of the popup.
  * @param {string} secondLine - the second line of the popup, if any.
- * @param {function} action - the action to perform when the popup is interacted with.
+ * @param {(() => void) | null} action - the action to perform when the popup is interacted with.
  */
 function createPopup(type, description, secondLine = "", action = null) {
 	let oldest = 0;
