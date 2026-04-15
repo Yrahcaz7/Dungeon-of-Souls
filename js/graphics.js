@@ -1788,19 +1788,38 @@ const graphics = {
 	 */
 	conf(focused = true) {
 		let text = ["Are you sure?"];
-		if (menuSelect[0] === MENU.START_NEW_RUN) text = ["Are you sure you want to start a new run?", "If you have an ongoing run, it will be lost forever."];
-		else if (menuSelect[0] === MENU.CHANGE_DIFFICULTY) text = ["Are you sure you want to change the difficulty to " + (game.difficulty ? "easy" : "hard") + "?", "If you have an ongoing run, it will be reset."];
-		else if (menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED) text = ["Are you sure you want to change the seed?", "If you have an ongoing run, it will be reset.", "The new run will also not count towards your high score."];
-		else if (menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) text = ["Are you sure you want to remove run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[2][1] / 3)]].num + " from the list?", "This will permanently remove all of its information."];
-		else if (menuSelect[0] === MENU.OLD_SAVE_ALERT) text = ["ALERT: You have an old save from version " + get.versionDisplay(parseSave(localStorage.getItem(ID + "/old/global"))?.version) + ", do you want to keep it?"];
-		else if (menuSelect[0] === MENU.OLD_SAVE_COPY_FAILED) text = ["The old save could not be copied. Make sure this page has clipboard permissions.", "Try to copy old save again?"];
-		else if (game.select[0] === S.CONF_END_TURN) text = ["Are you sure you want to end your turn?"];
-		else if (game.select[0] === S.CONF_EXIT) text = ["Are you sure you want to finish collecting rewards?", "There are still rewards left unclaimed."];
-		else if (game.select[0] === S.CONF_SURRENDER) text = ["Are you sure you want to end your current run by surrendering?", "This choice cannot be undone."];
-		else if (game.select[0] === S.CONF_HAND_ALIGN) text = ["Are you sure you want to align the hands of time?", "You will regret it. There is no going back."];
-		else if (game.select[0] === S.CONF_PURIFY) text = ["Are you sure you want to destroy the card " + game.cards[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only destroy one copy of the card."];
-		else if (game.select[0] === S.CONF_REFINE) text = ["Are you sure you want to improve the card " + refinableDeck[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only improve one copy of the card."];
-		else if (game.select[0] === S.CONF_PEARL) text = ["As the dark cloud clears, you see a strange pearl resting on the ground.", "Will you pick it up? This will consume 1 energy."];
+		let options = ["YES", "NO"];
+		if (menuSelect[0] === MENU.START_NEW_RUN) {
+			text = ["Are you sure you want to start a new run?", "If you have an ongoing run, it will be lost forever."];
+		} else if (menuSelect[0] === MENU.CHANGE_DIFFICULTY) {
+			text = ["Are you sure you want to change the difficulty to " + (game.difficulty ? "easy" : "hard") + "?", "If you have an ongoing run, it will be reset."];
+		} else if (menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED) {
+			text = ["Are you sure you want to change the seed?", "If you have an ongoing run, it will be reset.", "The new run will also not count towards your high score."];
+		} else if (menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
+			text = ["Are you sure you want to remove run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[2][1] / 3)]].num + " from the list?", "This will permanently remove all of its information."];
+		} else if (menuSelect[0] === MENU.OLD_SAVE_ALERT) {
+			text = ["ALERT: You have an old save from version " + get.versionDisplay(parseSave(localStorage.getItem(ID + "/old/global"))?.version || 0) + ", do you want to keep it?"];
+			options = ["DISMISS", "COPY SAVE", "REMOVE SAVE"];
+		} else if (menuSelect[0] === MENU.OLD_SAVE_COPY_FAILED) {
+			text = ["The old save could not be copied. Make sure this page has clipboard permissions.", "Try to copy old save again?"];
+		} else if (game.select[0] === S.CONF_END_TURN) {
+			text = ["Are you sure you want to end your turn?"];
+		} else if (game.select[0] === S.CONF_EXIT) {
+			text = ["Are you sure you want to finish collecting rewards?", "There are still rewards left unclaimed."];
+		} else if (game.select[0] === S.CONF_SURRENDER) {
+			text = ["Are you sure you want to end your current run by surrendering?", "This choice cannot be undone."];
+		} else if (game.select[0] === S.CONF_HAND_ALIGN) {
+			text = ["Are you sure you want to align the hands of time?", "You will regret it. There is no going back."];
+			options = ["YES", "NO", "BACK"];
+		} else if (game.select[0] === S.CONF_PURIFY) {
+			text = ["Are you sure you want to destroy the card " + game.cards[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only destroy one copy of the card."];
+			options = ["YES", "RESELECT", "BACK"];
+		} else if (game.select[0] === S.CONF_REFINE) {
+			text = ["Are you sure you want to improve the card " + refinableDeck[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only improve one copy of the card."];
+			options = ["YES", "BACK"];
+		} else if (game.select[0] === S.CONF_PEARL) {
+			text = ["As the dark cloud clears, you see a strange pearl resting on the ground.", "Will you pick it up? This will consume 1 energy."];
+		};
 		let width = 39;
 		for (let index = 0; index < text.length; index++) {
 			const size = text[index].length * 3 + 2;
@@ -1814,53 +1833,24 @@ const graphics = {
 		draw.lore(x + 1, y + 1, text.join("\n"), {"text-small": true});
 		if (focused) {
 			const select = (menuSelect[0] == -1 ? game.select[1] : menuSelect[1]);
-			if (menuSelect[0] === MENU.OLD_SAVE_ALERT) {
-				if (select === 0) draw.rect("#fff", x, y + height - 14, (7 * 6 + 1) + 4, 14);
-				else if (select === 1) draw.rect("#fff", x + (7 * 6 + 1) + 3, y + height - 14, (9 * 6 + 1) + 4, 14);
-				else draw.rect("#fff", x + (7 * 6 + 1) + 3 + (9 * 6 + 1) + 3, y + height - 14, (11 * 6 + 1) + 4, 14);
-			} else if (select === 0) {
-				draw.rect("#fff", x, y + height - 14, (3 * 6 + 1) + 4, 14);
-			} else if (select == 1) {
-				if (game.select[0] === S.CONF_PURIFY) draw.rect("#fff", x + 22, y + height - 14, 53, 14);
-				else if (game.select[0] === S.CONF_REFINE) draw.rect("#fff", x + 22, y + height - 14, 29, 14);
-				else draw.rect("#fff", x + 22, y + height - 14, 17, 14);
-			} else {
-				if (game.select[0] === S.CONF_HAND_ALIGN) draw.rect("#fff", x + 38, y + height - 14, 29, 14);
-				else if (game.select[0] === S.CONF_PURIFY) draw.rect("#fff", x + 74, y + height - 14, 29, 14);
+			let offset = 0;
+			for (let index = 0; index < options.length; index++) {
+				const boxWidth = options[index].length * 6 + 1;
+				if (select === index) draw.rect("#fff", x + offset, y + height - 14, boxWidth + 4, 14);
+				offset += boxWidth + 3;
 			};
 		};
-		if (menuSelect[0] === MENU.OLD_SAVE_ALERT) {
-			let offset = 0;
-			draw.box(x + 2 + offset, y + height - 12, 7 * 6 + 1, 10);
-			draw.lore(x + 3 + offset, y + height - 11, "DISMISS ALERT");
-			offset += 3 + (7 * 6 + 1);
-			draw.box(x + 2 + offset, y + height - 12, 9 * 6 + 1, 10);
-			draw.lore(x + 3 + offset, y + height - 11, "COPY SAVE");
-			offset += 3 + (9 * 6 + 1);
-			draw.box(x + 2 + offset, y + height - 12, 11 * 6 + 1, 10);
-			draw.lore(x + 3 + offset, y + height - 11, "REMOVE SAVE");
-			return;
+		let offset = 0;
+		for (let index = 0; index < options.length; index++) {
+			const boxWidth = options[index].length * 6 + 1;
+			draw.box(x + 2 + offset, y + height - 12, boxWidth, 10);
+			draw.lore(x + 3 + offset, y + height - 11, options[index]);
+			offset += boxWidth + 3;
 		};
-		draw.box(x + 2, y + height - 12, 3 * 6 + 1, 10);
-		draw.lore(x + 3, y + height - 11, "YES");
-		if (game.select[0] === S.CONF_PURIFY) {
-			draw.box(x + 24, y + height - 12, 49, 10);
-			draw.lore(x + 25, y + height - 11, "RESELECT");
-			draw.box(x + 76, y + height - 12, 25, 10);
-			draw.lore(x + 77, y + height - 11, "BACK");
-		} else if (game.select[0] === S.CONF_REFINE) {
-			draw.box(x + 24, y + height - 12, 25, 10);
-			draw.lore(x + 25, y + height - 11, "BACK");
+		if (game.select[0] === S.CONF_REFINE) {
 			draw.card(refinableDeck[game.cardSelect], 100, 51, true, true);
 			draw.card(new Card(refinableDeck[game.cardSelect].id, 1), 234, 51, true, true);
 			draw.image(I.card.refine, 200 - I.card.refine.width / 2, 95);
-		} else {
-			draw.box(x + 2 + (3 * 6 + 1) + 3, y + height - 12, 2 * 6 + 1, 10);
-			draw.lore(x + 3 + (3 * 6 + 1) + 3, y + height - 11, "NO");
-		};
-		if (game.select[0] === S.CONF_HAND_ALIGN) {
-			draw.box(x + 40, y + height - 12, 25, 10);
-			draw.lore(x + 41, y + height - 11, "BACK");
 		};
 	},
 	/**
