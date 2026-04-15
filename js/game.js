@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_062;
+const VERSION = 3_000_000;
 
 /**
  * Returns the starting global data.
@@ -481,7 +481,9 @@ function updateVisuals() {
 		} else if (menuSelect[0] === MENU.PREV_GAME_SORT) {
 			graphics.prevGameSort();
 		}
-		if (menuSelect[0] === MENU.START_NEW_RUN || menuSelect[0] === MENU.CHANGE_DIFFICULTY || menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED || menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
+		if (game.select[0] === S.WELCOME) {
+			return;
+		} else if (menuSelect[0] === MENU.START_NEW_RUN || menuSelect[0] === MENU.CHANGE_DIFFICULTY || menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED || menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME || menuSelect[0] === MENU.OLD_SAVE_ALERT || menuSelect[0] === MENU.OLD_SAVE_COPY_FAILED) {
 			graphics.conf(menuSelect[0] !== MENU.ENTER_SEED);
 		};
 		if (hasArtifact(202) && game.floor == 10 && transition < 100) transition++;

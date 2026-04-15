@@ -79,7 +79,7 @@ const selection = (() => {
 				menuSelect[1]++;
 				actionTimer = 1;
 			};
-		} else if (menuSelect[0] === MENU.START_NEW_RUN || menuSelect[0] === MENU.CHANGE_DIFFICULTY || menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
+		} else if (menuSelect[0] === MENU.START_NEW_RUN || menuSelect[0] === MENU.CHANGE_DIFFICULTY || menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME || menuSelect[0] === MENU.OLD_SAVE_COPY_FAILED) {
 			if (action === DIR.LEFT && menuSelect[1]) {
 				menuSelect[1] = 0;
 				actionTimer = 1;
@@ -103,7 +103,7 @@ const selection = (() => {
 			};
 		} else if (menuSelect[0] === MENU.PREV_GAME_INFO && menuSelect[1] % 3 === 0) {
 			deckSelection();
-		} else if (menuSelect[0] === MENU.PREV_GAME_INFO && menuSelect[1] % 3 == 1) {
+		} else if (menuSelect[0] === MENU.PREV_GAME_INFO && menuSelect[1] % 3 === 1) {
 			const len = global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].artifacts.length;
 			if (action === DIR.LEFT && menuArtifactSelect > 0) {
 				menuArtifactSelect--;
@@ -120,12 +120,20 @@ const selection = (() => {
 				prevGamesSort[0]++;
 				actionTimer = 1;
 			};
-		} else if (menuSelect[0] === MENU.PREV_GAME_SORT && menuSelect[1] == 1) {
+		} else if (menuSelect[0] === MENU.PREV_GAME_SORT && menuSelect[1] === 1) {
 			if (action === DIR.UP && prevGamesSort[1]) {
 				prevGamesSort[1] = false;
 				actionTimer = 1;
 			} else if (action === DIR.DOWN && !prevGamesSort[1]) {
 				prevGamesSort[1] = true;
+				actionTimer = 1;
+			};
+		} else if (menuSelect[0] === MENU.OLD_SAVE_ALERT) {
+			if (action === DIR.LEFT && menuSelect[1] > 0) {
+				menuSelect[1]--;
+				actionTimer = 1;
+			} else if (action === DIR.RIGHT && menuSelect[1] < 2) {
+				menuSelect[1]++;
 				actionTimer = 1;
 			};
 		};
@@ -577,6 +585,34 @@ const performAction = (() => {
 		return 0;
 	};
 	/**
+	 * Attempts to copy the player's old save.
+	 */
+	function tryCopyOldSave() {
+		try {
+			if (navigator.clipboard) {
+				const obj = {
+					global: parseSave(localStorage.getItem(ID + "/old/global")),
+					run: parseSave(localStorage.getItem(ID + "/old/run")),
+				};
+				navigator.clipboard.writeText(btoa(JSON.stringify(obj))).then(
+					() => {
+						menuSelect = [MENU.OLD_SAVE_ALERT, 0];
+					},
+					error => {
+						console.warn(error);
+						menuSelect = [MENU.OLD_SAVE_COPY_FAILED, 0];
+					},
+				);
+			} else {
+				console.warn("Error: navigator.clipboard is not available in this context.");
+				menuSelect = [MENU.OLD_SAVE_COPY_FAILED, 0];
+			};
+		} catch (error) {
+			console.warn(error);
+			menuSelect = [MENU.OLD_SAVE_COPY_FAILED, 0];
+		};
+	}
+	/**
 	 * Activates the attack effects of a card.
 	 * @param {number} id - the id of the card.
 	 */
@@ -711,6 +747,24 @@ const performAction = (() => {
 				if (sortIndex == sortedPrevGames.length) menuSelect[2][1] -= 3;
 			};
 			menuSelect = menuSelect[2];
+			actionTimer = 2;
+		} else if (menuSelect[0] === MENU.OLD_SAVE_ALERT) {
+			if (menuSelect[1] === 0 || back) {
+				menuSelect = [MENU.MAIN, (game.map.length > 0 ? 0 : 1)];
+			} else if (menuSelect[1] === 1) {
+				tryCopyOldSave();
+			} else {
+				localStorage.removeItem(ID + "/old/global");
+				localStorage.removeItem(ID + "/old/run");
+				menuSelect = [MENU.MAIN, (game.map.length > 0 ? 0 : 1)];
+			};
+			actionTimer = 2;
+		} else if (menuSelect[0] === MENU.OLD_SAVE_COPY_FAILED) {
+			if (!menuSelect[1] && !back) {
+				tryCopyOldSave();
+			} else {
+				menuSelect = [MENU.OLD_SAVE_ALERT, 1];
+			};
 			actionTimer = 2;
 		};
 		if (inMenu() || actionTimer > -1) return;
