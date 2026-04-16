@@ -236,7 +236,7 @@ const BOSS_ENEMIES = [FRAGMENT, SINGULARITY];
  * Generates a map and saves it.
  */
 const generateMap = (() => {
-	const GEN_STEPS = 100;
+	const GEN_STEPS = 20;
 	let genProg = 0;
 	let rowFalses = [0, 0];
 	let rowNodes = [0, 0];
@@ -276,7 +276,7 @@ const generateMap = (() => {
 	 * @param {number} y - the column of the map node.
 	 * @param {number} attribute - the attribute of the map node, if any.
 	 */
-	async function getMapNode(x, y, attribute = -1) {
+	function getMapNode(x, y, attribute = -1) {
 		const area = get.area(x + 1);
 		let pos = [25 + ((x - area * 10) * 32), 18 + (y * 32)];
 		if (attribute === MAP_NODE.FIRST) return [ROOM.BATTLE, 0, 0, [SMALL_ENEMIES[area]], getGoldReward(x), randomCardSet(5)];
@@ -288,7 +288,6 @@ const generateMap = (() => {
 			if (index >= EVENTS.any.length) index += 100 - EVENTS.any.length;
 			return [ROOM.EVENT, ...pos, index, getGoldReward(x), randomCardSet(5)];
 		};
-		await updateGenProg();
 		if (attribute === MAP_NODE.ORB) return [ROOM.ORB, ...pos];
 		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, pos[0] + 10, 90, [BOSS_ENEMIES[area]], getGoldReward(x) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
 		let type = (chance(3/5) ? ROOM.BATTLE : false);
@@ -308,22 +307,22 @@ const generateMap = (() => {
 	 * Returns a map row.
 	 * @param {number} row - the row number.
 	 */
-	async function getMapRow(row) {
+	function getMapRow(row) {
 		const area = get.area(row + 1);
 		rowFalses[area] = 0;
 		rowNodes[area] = 0;
-		if (row % 10 === 0) return [false, await getMapNode(row, 1), await getMapNode(row, 2), await getMapNode(row, 3), await getMapNode(row, 4), false];
+		if (row % 10 === 0) return [false, getMapNode(row, 1), getMapNode(row, 2), getMapNode(row, 3), getMapNode(row, 4), false];
 		if (row % 10 === 8) {
 			if (chance()) {
-				if (chance()) return [await getMapNode(row, 0, MAP_NODE.ORB), false, await getMapNode(row, 2, MAP_NODE.ORB), false, false, await getMapNode(row, 5, MAP_NODE.ORB)];
-				else return [await getMapNode(row, 0, MAP_NODE.ORB), false, await getMapNode(row, 2, MAP_NODE.ORB), false, await getMapNode(row, 4, MAP_NODE.ORB), false];
+				if (chance()) return [getMapNode(row, 0, MAP_NODE.ORB), false, getMapNode(row, 2, MAP_NODE.ORB), false, false, getMapNode(row, 5, MAP_NODE.ORB)];
+				else return [getMapNode(row, 0, MAP_NODE.ORB), false, getMapNode(row, 2, MAP_NODE.ORB), false, getMapNode(row, 4, MAP_NODE.ORB), false];
 			} else {
-				if (chance()) return [await getMapNode(row, 0, MAP_NODE.ORB), false, false, await getMapNode(row, 3, MAP_NODE.ORB), false, await getMapNode(row, 5, MAP_NODE.ORB)];
-				else return [false, await getMapNode(row, 1, MAP_NODE.ORB), false, await getMapNode(row, 3, MAP_NODE.ORB), false, await getMapNode(row, 5, MAP_NODE.ORB)];
+				if (chance()) return [getMapNode(row, 0, MAP_NODE.ORB), false, false, getMapNode(row, 3, MAP_NODE.ORB), false, getMapNode(row, 5, MAP_NODE.ORB)];
+				else return [false, getMapNode(row, 1, MAP_NODE.ORB), false, getMapNode(row, 3, MAP_NODE.ORB), false, getMapNode(row, 5, MAP_NODE.ORB)];
 			};
 		};
-		if (row % 10 === 9) return [false, false, await getMapNode(row, 2, MAP_NODE.BOSS), false, false, false];
-		return [await getMapNode(row, 0), await getMapNode(row, 1), await getMapNode(row, 2), await getMapNode(row, 3), await getMapNode(row, 4), await getMapNode(row, 5)];
+		if (row % 10 === 9) return [false, false, getMapNode(row, 2, MAP_NODE.BOSS), false, false, false];
+		return Array.from({length: 6}, (v, i) => getMapNode(row, i));
 	};
 	/**
 	 * Calculates the path types of a map row.
@@ -401,7 +400,7 @@ const generateMap = (() => {
 					let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 					while (true) {
 						if (newRow[rand] && !pathHasTypes([rowNum, rand], [ROOM.TREASURE, ROOM.PRIME])) {
-							newRow[rand] = await getMapNode(rowNum, rand, MAP_NODE.TREASURE);
+							newRow[rand] = getMapNode(rowNum, rand, MAP_NODE.TREASURE);
 							calculatePathTypes(rowNum);
 							break;
 						} else if (available.length) {
@@ -417,7 +416,7 @@ const generateMap = (() => {
 					let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 					while (true) {
 						if (newRow[rand] && newRow[rand][0] !== ROOM.TREASURE && !pathHasTypes([rowNum, rand], [ROOM.TREASURE, ROOM.PRIME])) {
-							newRow[rand] = await getMapNode(rowNum, rand, MAP_NODE.PRIME);
+							newRow[rand] = getMapNode(rowNum, rand, MAP_NODE.PRIME);
 							deathZones++;
 							calculatePathTypes(rowNum);
 							break;
@@ -434,7 +433,7 @@ const generateMap = (() => {
 					let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 					while (true) {
 						if (newRow[rand] && newRow[rand][0] !== ROOM.TREASURE && newRow[rand][0] !== ROOM.PRIME && !pathHasTypes([rowNum, rand], [ROOM.EVENT])) {
-							newRow[rand] = await getMapNode(rowNum, rand, MAP_NODE.EVENT);
+							newRow[rand] = getMapNode(rowNum, rand, MAP_NODE.EVENT);
 							calculatePathTypes(rowNum);
 							break;
 						} else if (available.length) {
@@ -445,6 +444,7 @@ const generateMap = (() => {
 					};
 				};
 			};
+			await updateGenProg();
 		};
 		// add death zone (no calculatePathTypes is needed after this, as this is the last usage of pathHasTypes in this area)
 		let row = 3 + area * 10;
@@ -453,7 +453,7 @@ const generateMap = (() => {
 			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 			while (true) {
 				if (game.map[row][rand] && (game.map[row][rand][0] === ROOM.TREASURE || (row % 10 == 2 && game.map[row][rand][0] === ROOM.BATTLE)) && !pathHasTypes([row, rand], [ROOM.TREASURE, ROOM.PRIME], true)) {
-					game.map[row][rand] = await getMapNode(row, rand, MAP_NODE.PRIME);
+					game.map[row][rand] = getMapNode(row, rand, MAP_NODE.PRIME);
 					deathZones++;
 					break;
 				} else if (available.length) {
@@ -509,7 +509,8 @@ const generateMap = (() => {
 		paths = {};
 		game.map = [];
 		await updateGenProg();
-		await Promise.all([(async () => game.firstRoom = await getMapNode(0, 0, MAP_NODE.FIRST))(), generateArea(0), generateArea(1)]);
+		game.firstRoom = getMapNode(0, 0, MAP_NODE.FIRST);
+		await Promise.all([generateArea(0), generateArea(1)]);
 		addScribbles();
 		console.log("[map data generated in " + (performance.now() - startTime) + "ms]");
 		await generateMapPathPoints();
