@@ -742,15 +742,15 @@ const info = {
 		if (location === DIR.LEFT) {
 			loc = [22, 184 - index * 19];
 		} else if (location === DIR.RIGHT) {
-			loc = [377 - desc.length * 6, 184 - index * 19];
+			loc = [376 - desc.length * 6, 184 - index * 19];
 		} else if (location === DIR.UP) {
-			loc = [396 - index * 19 - desc.length * 6, 22];
+			loc = [395 - index * 19 - desc.length * 6, 22];
 		} else if (location === S.MAP) {
 			const selection = get.availableLocations()[index];
 			if (selection !== undefined) {
 				const node = game.map[(game.floor - 1) + 1][selection];
 				const area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0));
-				if (node[0] === ROOM.BOSS) loc = [259, 100];
+				if (node[0] === ROOM.BOSS) loc = [258, 100];
 				else loc = [node[1] + 19, node[2] + 2];
 				if (node[0] === ROOM.BATTLE) desc = "Enter Battle";
 				else if (node[0] === ROOM.TREASURE) desc = "Claim Treasure";
@@ -768,7 +768,7 @@ const info = {
 			};
 		} else if (location === DIR.CENTER) {
 			if (index === 0) loc = [22, 60];
-			else loc = [376 - desc.length * 6, 60];
+			else loc = [375 - desc.length * 6, 60];
 		};
 		draw.textBox(loc[0], loc[1], desc.length, desc);
 	},
