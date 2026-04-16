@@ -49,31 +49,31 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 			if (!paths[coords[0]]) paths[coords[0]] = {};
 			if (!paths[coords[0]][coords[1]]) paths[coords[0]][coords[1]] = [];
 			if (!paths[coords[0]][coords[1]].some(location => location[0] === coords[2] && location[1] === coords[3])) {
-				paths[coords[0]][coords[1]].push([coords[2], coords[3]]);
+				paths[coords[0]][coords[1]].push(coords[3]);
 			};
 		} else if (coords[0] > coords[2]) {
 			if (!paths[coords[2]]) paths[coords[2]] = {};
 			if (!paths[coords[2]][coords[3]]) paths[coords[2]][coords[3]] = [];
 			if (!paths[coords[2]][coords[3]].some(location => location[0] === coords[0] && location[1] === coords[1])) {
-				paths[coords[2]][coords[3]].push([coords[0], coords[1]]);
+				paths[coords[2]][coords[3]].push(coords[1]);
 			};
 		};
 		if (coords[0] === 0) {
 			if (!paths[-1]) paths[-1] = [];
 			if (!paths[-1].some(location => location[0] === coords[0] && location[1] === coords[1])) {
-				paths[-1].push([coords[0], coords[1]]);
+				paths[-1].push(coords[1]);
 			};
 		} else if (coords[0] === 10) {
 			if (!paths[9]) paths[9] = {};
 			if (!paths[9][2]) paths[9][2] = [];
 			if (!paths[9][2].some(location => location[0] === coords[0] && location[1] === coords[1])) {
-				paths[9][2].push([coords[0], coords[1]]);
+				paths[9][2].push(coords[1]);
 			};
 		};
 	};
 	// sort paths
 	for (const x in paths) {
-		if (x === -1) {
+		if (x == -1) {
 			paths[x].sort();
 		} else {
 			for (const y in paths[x]) {
@@ -137,10 +137,11 @@ const generateMapPathPoints = (() => {
 	 */
 	async function getVisualMapPaths(area = get.area()) {
 		// start the generation of paths from the start of the area.
-		const start = (area > 0 ? paths[area * 10 - 1][2] : paths[-1]);
+		const startRow = (area > 0 ? area * 10 - 1 : -1);
+		const start = (area > 0 ? paths[startRow][0] : paths[-1]);
 		let arr = [];
 		for (let index = 0; index < start.length; index++) {
-			arr.push([[start[index][0], start[index][1]], [start[index][0], start[index][1]]]);
+			arr.push([[startRow + 1, start[index]], [startRow + 1, start[index]]]);
 		};
 		// iterate through the area, generating all of the possible paths.
 		for (let iteration = 0; iteration < 9; iteration++) {
@@ -150,7 +151,7 @@ const generateMapPathPoints = (() => {
 				for (let index = 0; index < paths[lastNode[0]][lastNode[1]].length; index++) {
 					const node = paths[lastNode[0]][lastNode[1]][index];
 					let innerArr = arr[path].slice();
-					innerArr.push([node[0], node[1]]);
+					innerArr.push([lastNode[0] + 1, node]);
 					nextArr.push(innerArr);
 				};
 			};
@@ -306,8 +307,8 @@ const generateMap = (() => {
 		let nodes = [];
 		if (row % 10 === 0) {
 			nodes.push(...[randomInt(1, 2), randomInt(3, 4)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.BATTLE)));
-			//if (row === 0) paths[-1] = [[row, 0], [row, 1]];
-			//else paths[row - 1][0] = [[row, 0], [row, 1]];
+			//if (row === 0) paths[-1] = [0, 1];
+			//else paths[row - 1][0] = [0, 1];
 		} else if (row % 10 === 8) {
 			if (chance()) {
 				nodes.push(...[0, 2, (chance() ? 4 : 5)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB)));
@@ -373,9 +374,9 @@ const generateMap = (() => {
 			if (types.includes(game.map[loc[0]][loc[1]][0])) {
 				return true;
 			};
-			let availableLocations = get.availableLocations(loc);
+			let availableLocations = get.availableLocations(loc[0], loc[1]);
 			for (let i2 = 0; i2 < availableLocations.length; i2++) {
-				if (get.availableLocations(availableLocations[i2]).length) locations.push(availableLocations[i2]);
+				if (get.availableLocations(loc[0] + 1, availableLocations[i2]).length) locations.push([loc[0] + 1, availableLocations[i2]]);
 			};
 		};
 		return false;

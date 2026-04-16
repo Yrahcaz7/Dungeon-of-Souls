@@ -906,12 +906,12 @@ const performAction = (() => {
 			if (game.select[1] === 2 || back) {
 				game.select = [S.MAP, 0];
 			} else {
+				game.floor++;
 				game.location = availableLocations[0];
 				if (game.select[1] === 0) game.artifacts.push(202);
-				game.room = game.map[game.location[0]][game.location[1]];
+				game.room = game.map[game.floor - 1][game.location];
 				game.select = [-1, 0];
 				game.state = STATE.ENTER;
-				game.floor++;
 			};
 			actionTimer = 2;
 			return;
@@ -1000,16 +1000,16 @@ const performAction = (() => {
 			return;
 		};
 		// map
-		if (game.select[0] === S.MAP && game.state === STATE.EVENT_FIN && availableLocations[game.select[1]] && !back) {
+		if (game.select[0] === S.MAP && game.state === STATE.EVENT_FIN && availableLocations[game.select[1]] !== undefined && !back) {
 			const now = new Date();
 			if (game.floor === 9 && game.difficulty === 1 && ((now.getHours() % 12 === 11 && now.getMinutes() >= 59) || (now.getHours() % 12 === 0 && now.getMinutes() <= 1))) {
 				game.select = [S.CONF_HAND_ALIGN, 2];
 			} else {
+				game.floor++;
 				game.location = availableLocations[game.select[1]];
-				game.room = game.map[game.location[0]][game.location[1]];
+				game.room = game.map[game.floor - 1][game.location];
 				game.select = [-1, 0];
 				game.state = STATE.ENTER;
-				game.floor++;
 			};
 			actionTimer = 1;
 			return;

@@ -747,8 +747,8 @@ const info = {
 			loc = [396 - index * 19 - desc.length * 6, 22];
 		} else if (location === S.MAP) {
 			const selection = get.availableLocations()[index];
-			if (selection) {
-				const node = game.map[selection[0]][selection[1]];
+			if (selection !== undefined) {
+				const node = game.map[(game.floor - 1) + 1][selection];
 				const area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0));
 				if (node[0] === ROOM.BOSS) loc = [259, 100];
 				else loc = [node[1] + 19, node[2] + 2];
@@ -1483,7 +1483,7 @@ const graphics = {
 	 */
 	rewards(focused = true) {
 		draw.box(145, 20, 110, 160, {"background-color": "#aaa"});
-		const type = (game.location[0] === -1 ? ROOM.BATTLE : game.map[game.location[0]][game.location[1]][0]);
+		const type = (game.floor === 0 ? ROOM.BATTLE : game.map[game.floor - 1][game.location][0]);
 		if (type === ROOM.BATTLE) draw.lore(200 - 2, 21, "Battle Loot!", {"text-align": DIR.CENTER});
 		else if (type === ROOM.TREASURE) draw.lore(200 - 2, 21, "Treasure!", {"text-align": DIR.CENTER});
 		else if (type === ROOM.ORB) draw.lore(200 - 2, 21, "Healing!", {"text-align": DIR.CENTER});
@@ -1606,8 +1606,8 @@ const graphics = {
 		};
 		ctx.filter = "none";
 		// draw nodes
-		const coordSel = availableLocations[game.select[1]] ? availableLocations[game.select[1]] : [];
-		const coordOn = game.location ? game.location : [];
+		const coordSel = [(game.floor - 1) + 1, availableLocations[game.select[1]]];
+		const coordOn = [game.floor - 1, game.location];
 		for (let x = area * 10; x < (area + 1) * 10; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
 				if (!(game.map[x][y] instanceof Object)) continue;
