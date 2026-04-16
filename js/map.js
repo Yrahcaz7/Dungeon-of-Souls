@@ -29,22 +29,15 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 		const bossRow = (x % 10 == 9);
 		for (let y = (bossRow ? 2 : 0); y < (bossRow ? 3 : game.map[x].length); y++) {
 			if (!bossRow && !(game.map[x][y] instanceof Object)) continue;
-			for (num = 0; num < game.map[x + 1]?.length; num++) {
-				if (game.map[x + 1][y - num] instanceof Object) {
-					store.push([x, y, x + 1, y - num]);
-					break;
-				} else if (game.map[x + 1][y + num] instanceof Object) {
-					store.push([x, y, x + 1, y + num]);
-					break;
-				};
-			};
-			for (num = 0; num < game.map[x - 1]?.length; num++) {
-				if (game.map[x - 1][y - num] instanceof Object) {
-					store.push([x, y, x - 1, y - num]);
-					break;
-				} else if (game.map[x - 1][y + num] instanceof Object) {
-					store.push([x, y, x - 1, y + num]);
-					break;
+			for (const row of [x - 1, x + 1]) {
+				for (let num = 0; num < game.map[row]?.length; num++) {
+					if (game.map[row][y - num] instanceof Object) {
+						store.push([x, y, row, y - num]);
+						break;
+					} else if (game.map[row][y + num] instanceof Object) {
+						store.push([x, y, row, y + num]);
+						break;
+					};
 				};
 			};
 		};

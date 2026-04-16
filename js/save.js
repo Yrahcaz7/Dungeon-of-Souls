@@ -325,12 +325,17 @@ const loadSave = (() => {
 		if (get && atob(get) && JSON.parse(atob(get))) {
 			let obj = JSON.parse(atob(get));
 			if (obj.version) {
-				oldVersion = obj.version;
-				obj.version = global.version;
-				const defaultOptions = global.options;
-				Object.assign(global, obj);
-				global.options = defaultOptions;
-				Object.assign(global.options, obj.options);
+				if (obj.version <= VERSION) {
+					oldVersion = obj.version;
+					obj.version = global.version;
+					const defaultOptions = global.options;
+					Object.assign(global, obj);
+					global.options = defaultOptions;
+					Object.assign(global.options, obj.options);
+				} else {
+					console.log("global save has future version number. creating new save...");
+					newGlobal = true;
+				};
 			} else {
 				console.log("global save has no version number. creating new save...");
 				newGlobal = true;
