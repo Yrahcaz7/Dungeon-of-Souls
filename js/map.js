@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
+ *  Copyright (C) 2026 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -272,36 +272,43 @@ const generateMap = (() => {
 	};
 	/**
 	 * Returns a map node.
-	 * @param {number} x - the row of the map node.
-	 * @param {number} y - the column of the map node.
+	 * @param {number} row - the row of the map node.
+	 * @param {number} y - the y-coordinate of the map node.
 	 * @param {number} attribute - the attribute of the map node, if any.
 	 */
-	function getMapNode(x, y, attribute = -1) {
-		const area = get.area(x + 1);
-		let pos = [25 + ((x - area * 10) * 32), 18 + (y * 32)];
-		if (attribute === MAP_NODE.FIRST) return [ROOM.BATTLE, 0, 0, [SMALL_ENEMIES[area]], getGoldReward(x), randomCardSet(5)];
-		pos = pos.map(num => num + randomInt(-5, 5));
-		if (attribute === MAP_NODE.TREASURE) return [ROOM.TREASURE, ...pos, [], getGoldReward(x) * 2, randomCardSet(5, 4/10)];
-		if (attribute === MAP_NODE.PRIME) return [ROOM.PRIME, ...pos, [getWeakerSmallEnemy(x), PRIME_ENEMIES[area], getWeakerSmallEnemy(x)], getGoldReward(x) * 2, randomCardSet(5, 9/10), randomArtifactSet(3)];
+	function getMapNode(row, y, attribute = -1) {
+		const area = get.area(row + 1);
+		const x = 25 + ((row - area * 10) * 32) + randomInt(-5, 5);
+		if (attribute === MAP_NODE.FIRST) return [ROOM.BATTLE, 0, 0, [SMALL_ENEMIES[area]], getGoldReward(row), randomCardSet(5)];
+		if (attribute === MAP_NODE.TREASURE) return [ROOM.TREASURE, x, y, [], getGoldReward(row) * 2, randomCardSet(5, 4/10)];
+		if (attribute === MAP_NODE.PRIME) return [ROOM.PRIME, x, y, [getWeakerSmallEnemy(row), PRIME_ENEMIES[area], getWeakerSmallEnemy(row)], getGoldReward(row) * 2, randomCardSet(5, 9/10), randomArtifactSet(3)];
 		if (attribute === MAP_NODE.EVENT) {
 			let index = randomInt(0, EVENTS.any.length + EVENTS[area].length - 1);
 			if (index >= EVENTS.any.length) index += 100 - EVENTS.any.length;
-			return [ROOM.EVENT, ...pos, index, getGoldReward(x), randomCardSet(5)];
+			return [ROOM.EVENT, x, y, index, getGoldReward(row), randomCardSet(5)];
 		};
-		if (attribute === MAP_NODE.ORB) return [ROOM.ORB, ...pos];
-		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, pos[0] + 10, 90, [BOSS_ENEMIES[area]], getGoldReward(x) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
+		if (attribute === MAP_NODE.ORB) return [ROOM.ORB, x, y];
+		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, 25 + ((row - area * 10) * 32) + 10, 90, [BOSS_ENEMIES[area]], getGoldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
 		let type = (chance(3/5) ? ROOM.BATTLE : false);
-		if (rowFalses[area] >= 3 || (x % 10 === 0 && rowFalses[area] >= 2) || (rowNodes[area] + rowFalses[area] === 2 && rowFalses[area] === 2)) type = ROOM.BATTLE;
+		if (rowFalses[area] >= 3 || (row % 10 === 0 && rowFalses[area] >= 2) || (rowNodes[area] + rowFalses[area] === 2 && rowFalses[area] === 2)) type = ROOM.BATTLE;
 		if (type) rowNodes[area]++;
 		else rowFalses[area]++;
 		if (!type || rowNodes[area] === 6) return false;
-		let result = [type, ...pos];
+		let result = [type, x, y];
 		if (type === ROOM.BATTLE) {
-			if (x % 10 >= 5) result.push(chance(1/3) ? [(chance() ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]] : (chance() ? [BIG_ENEMIES[area], getWeakerSmallEnemy(x)] : [SMALL_ENEMIES[area], SMALL_ENEMIES[area]]));
-			else result.push(chance() ? [(chance(x/10 - area) ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]] : [SMALL_ENEMIES[area], getWeakerSmallEnemy(x)]);
-			result.push(getGoldReward(x), randomCardSet(5));
+			if (row % 10 >= 5) result.push(chance(1/3) ? [(chance() ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]] : (chance() ? [BIG_ENEMIES[area], getWeakerSmallEnemy(row)] : [SMALL_ENEMIES[area], SMALL_ENEMIES[area]]));
+			else result.push(chance() ? [(chance(row/10 - area) ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]] : [SMALL_ENEMIES[area], getWeakerSmallEnemy(row)]);
+			result.push(getGoldReward(row), randomCardSet(5));
 		};
 		return result;
+	};
+	/**
+	 * Returns an orb map node.
+	 * @param {number} row - the row of the map node.
+	 * @param {number} col - the column of the map node.
+	 */
+	function getOrbNode(row, col) {
+		return getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB);
 	};
 	/**
 	 * Returns a map row.
@@ -311,18 +318,18 @@ const generateMap = (() => {
 		const area = get.area(row + 1);
 		rowFalses[area] = 0;
 		rowNodes[area] = 0;
-		if (row % 10 === 0) return [false, getMapNode(row, 1), getMapNode(row, 2), getMapNode(row, 3), getMapNode(row, 4), false];
+		if (row % 10 === 0) return Array.from({length: 6}, (v, i) => (i >= 1 && i <= 4 ? getMapNode(row, 18 + (i * 32) + randomInt(-5, 5)) : false));
 		if (row % 10 === 8) {
 			if (chance()) {
-				if (chance()) return [getMapNode(row, 0, MAP_NODE.ORB), false, getMapNode(row, 2, MAP_NODE.ORB), false, false, getMapNode(row, 5, MAP_NODE.ORB)];
-				else return [getMapNode(row, 0, MAP_NODE.ORB), false, getMapNode(row, 2, MAP_NODE.ORB), false, getMapNode(row, 4, MAP_NODE.ORB), false];
+				if (chance()) return [getOrbNode(row, 0), false, getOrbNode(row, 2), false, false, getOrbNode(row, 5)];
+				else return [getOrbNode(row, 0), false, getOrbNode(row, 2), false, getOrbNode(row, 4), false];
 			} else {
-				if (chance()) return [getMapNode(row, 0, MAP_NODE.ORB), false, false, getMapNode(row, 3, MAP_NODE.ORB), false, getMapNode(row, 5, MAP_NODE.ORB)];
-				else return [false, getMapNode(row, 1, MAP_NODE.ORB), false, getMapNode(row, 3, MAP_NODE.ORB), false, getMapNode(row, 5, MAP_NODE.ORB)];
+				if (chance()) return [getOrbNode(row, 0), false, false, getOrbNode(row, 3), false, getOrbNode(row, 5)];
+				else return [false, getOrbNode(row, 1), false, getOrbNode(row, 3), false, getOrbNode(row, 5)];
 			};
 		};
-		if (row % 10 === 9) return [false, false, getMapNode(row, 2, MAP_NODE.BOSS), false, false, false];
-		return Array.from({length: 6}, (v, i) => getMapNode(row, i));
+		if (row % 10 === 9) return [false, false, getMapNode(row, 90, MAP_NODE.BOSS), false, false, false];
+		return Array.from({length: 6}, (v, i) => getMapNode(row, 18 + (i * 32) + randomInt(-5, 5)));
 	};
 	/**
 	 * Calculates the path types of a map row.
@@ -400,7 +407,7 @@ const generateMap = (() => {
 					let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 					while (true) {
 						if (newRow[rand] && !pathHasTypes([rowNum, rand], [ROOM.TREASURE, ROOM.PRIME])) {
-							newRow[rand] = getMapNode(rowNum, rand, MAP_NODE.TREASURE);
+							newRow[rand] = getMapNode(rowNum, newRow[rand][2], MAP_NODE.TREASURE);
 							calculatePathTypes(rowNum);
 							break;
 						} else if (available.length) {
@@ -416,7 +423,7 @@ const generateMap = (() => {
 					let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 					while (true) {
 						if (newRow[rand] && newRow[rand][0] !== ROOM.TREASURE && !pathHasTypes([rowNum, rand], [ROOM.TREASURE, ROOM.PRIME])) {
-							newRow[rand] = getMapNode(rowNum, rand, MAP_NODE.PRIME);
+							newRow[rand] = getMapNode(rowNum, newRow[rand][2], MAP_NODE.PRIME);
 							deathZones++;
 							calculatePathTypes(rowNum);
 							break;
@@ -433,7 +440,7 @@ const generateMap = (() => {
 					let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 					while (true) {
 						if (newRow[rand] && newRow[rand][0] !== ROOM.TREASURE && newRow[rand][0] !== ROOM.PRIME && !pathHasTypes([rowNum, rand], [ROOM.EVENT])) {
-							newRow[rand] = getMapNode(rowNum, rand, MAP_NODE.EVENT);
+							newRow[rand] = getMapNode(rowNum, newRow[rand][2], MAP_NODE.EVENT);
 							calculatePathTypes(rowNum);
 							break;
 						} else if (available.length) {
@@ -453,7 +460,7 @@ const generateMap = (() => {
 			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 			while (true) {
 				if (game.map[row][rand] && (game.map[row][rand][0] === ROOM.TREASURE || (row % 10 == 2 && game.map[row][rand][0] === ROOM.BATTLE)) && !pathHasTypes([row, rand], [ROOM.TREASURE, ROOM.PRIME], true)) {
-					game.map[row][rand] = getMapNode(row, rand, MAP_NODE.PRIME);
+					game.map[row][rand] = getMapNode(row, game.map[row][rand][2], MAP_NODE.PRIME);
 					deathZones++;
 					break;
 				} else if (available.length) {
