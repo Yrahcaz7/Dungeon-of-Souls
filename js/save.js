@@ -194,7 +194,7 @@ const loadSave = (() => {
 			prevGame.cards = prevGame.cards.map(card => Card.classify(card));
 		};
 	};
-	const versionCutoff = 3_000_005;
+	const versionCutoff = 3_000_007;
 	let suffix = "";
 	let item = "";
 	let obj = {};
@@ -211,7 +211,7 @@ const loadSave = (() => {
 		const startTime = performance.now();
 		let oldVersion = 0;
 		let newGlobal = false;
-		// load global stuff
+		// load global data
 		{
 			updateData("/v3/global");
 			if (obj) {
@@ -269,14 +269,15 @@ const loadSave = (() => {
 		// setup things based on save
 		updateRandom();
 		changeMusic();
-		if (parseSave(localStorage.getItem(ID + "/old/global")) || parseSave(localStorage.getItem(ID + "/old/run"))) {
-			menuSelect = [MENU.OLD_SAVE_ALERT, 0];
-		} else if (game.map.length > 0) {
+		if (game.map.length > 0) {
 			calculateMapPaths();
 			await generateMapPathPoints();
 			updateHandPos();
 		} else {
 			menuSelect = [MENU.MAIN, 1];
+		};
+		if (parseSave(localStorage.getItem(ID + "/old/global")) || parseSave(localStorage.getItem(ID + "/old/run"))) {
+			menuSelect = [MENU.OLD_SAVE_ALERT, 0];
 		};
 	};
 })();

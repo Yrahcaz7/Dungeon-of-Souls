@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 3_000_005;
+const VERSION = 3_000_007;
 
 /**
  * Returns the starting global data.
@@ -337,14 +337,14 @@ function enterBattle() {
  */
 function endBattle() {
 	if (game.state === STATE.BATTLE && !game.enemies.length) {
-		// normal stuff
+		// normal things
 		discardHand(true);
 		notif = [-1, 0, "", 0];
 		game.select = [S.REWARDS, 0];
 		game.state = STATE.EVENT_FIN;
 		game.turn = -1;
 		game.enemyNum = -1;
-		// activate artifacts
+		// activate artifact effects
 		activateArtifacts(FUNC.FLOOR_CLEAR);
 		// set rewards
 		game.rewards = [];

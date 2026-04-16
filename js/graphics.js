@@ -1612,13 +1612,9 @@ const graphics = {
 			for (let y = 0; y < game.map[x].length; y++) {
 				if (!(game.map[x][y] instanceof Object)) continue;
 				const type = +game.map[x][y][0];
-				let drawX = 25 + ((x - area * 10) * 32) + game.map[x][y][1];
-				let drawY = 18 + (y * 32) + game.map[x][y][2];
+				const drawX = game.map[x][y][1];
+				const drawY = game.map[x][y][2];
 				if (I.map.node[type] instanceof Image) {
-					if (game.map[x][y][0] === ROOM.BOSS) {
-						drawX += 10;
-						drawY = 90;
-					};
 					if (focused) {
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo[type], drawX - 1, drawY - 1);
 						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo[type], drawX - 1, drawY - 1);
@@ -1790,11 +1786,11 @@ const graphics = {
 		let text = ["Are you sure?"];
 		let options = ["YES", "NO"];
 		if (menuSelect[0] === MENU.START_NEW_RUN) {
-			text = ["Are you sure you want to start a new run?", "If you have an ongoing run, it will be lost forever."];
+			text = ["Are you sure you want to start a new run?", "If you have an ongoing run, it will be lost forever!"];
 		} else if (menuSelect[0] === MENU.CHANGE_DIFFICULTY) {
-			text = ["Are you sure you want to change the difficulty to " + (game.difficulty ? "easy" : "hard") + "?", "If you have an ongoing run, it will be reset."];
+			text = ["Are you sure you want to change the difficulty to " + (game.difficulty ? "easy" : "hard") + "?", "If you have an ongoing run, it will be reset!"];
 		} else if (menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED) {
-			text = ["Are you sure you want to change the seed?", "If you have an ongoing run, it will be reset.", "The new run will also not count towards your high score."];
+			text = ["Are you sure you want to change the seed?", "If you have an ongoing run, it will be reset!", "The new run will also not count towards your high score."];
 		} else if (menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
 			text = ["Are you sure you want to remove run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[2][1] / 3)]].num + " from the list?", "This will permanently remove all of its information."];
 		} else if (menuSelect[0] === MENU.OLD_SAVE_ALERT) {
