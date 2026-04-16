@@ -1581,12 +1581,12 @@ const graphics = {
 		draw.lore(1, 1, "Floor " + game.floor + " - " + game.gold + " gold", {"color": "#fff"});
 		draw.lore(399, 1, "Seed: " + game.seed, {"color": "#fff", "text-align": DIR.LEFT});
 		// draw scribbles
-		for (let x = area * 10; x < (area + 1) * 10; x++) {
-			for (let y = 0; y < game.map[x].length; y++) {
-				if (typeof game.map[x][y] != "number") continue;
-				draw.image(I.map.scribble_back, 25 + ((x - area * 10) * 32) + 8 - 4, 18 + (y * 32) + 8 - 3 - 2.5, 80 / 2, 80 / 2);
-				draw.imageSector(I.map.scribbles, game.map[x][y] * 64, 0, 64, 70, 25 + ((x - area * 10) * 32) + 8, 18 + (y * 32) + 8 - 3, 64 / 2, 70 / 2);
-			};
+		for (let index = area * 2; index < (area + 1) * 2 && index < game.scribbles.length; index++) {
+			if (game.scribbles[index] < 0) continue;
+			const x = 35 + 9 * 32;
+			const y = 24.5 + 4 * (index % 2) * 32;
+			draw.image(I.map.scribble_back, x - 4, y - 2.5, 80 / SCALE, 80 / SCALE);
+			draw.imageSector(I.map.scribbles, game.scribbles[index] * 64, 0, 64, 70, x, y, 64 / SCALE, 70 / SCALE);
 		};
 		// draw paths
 		ctx.filter = NO_ANTI_ALIASING_FILTER;

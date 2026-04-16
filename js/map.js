@@ -468,37 +468,18 @@ const generateMap = (() => {
 		};
 	};
 	/**
-	 * Returns a boolean indicating whether the map has a node at the respective coordinates.
-	 * @param {number} x - the x-coordinate to check for a node at.
-	 * @param {number} y - the y-coordinate to check for a node at.
-	 * @param {boolean} loose - if true, considers anything a node.
-	 */
-	function mapHasNode(x, y, loose = false) {
-		if (loose) return typeof game.map[x][y] !== "boolean" || (game.map[x][y - 1] instanceof Object && game.map[x][y - 1][0] === ROOM.BOSS);
-		return game.map[x][y] instanceof Object || (game.map[x][y - 1] instanceof Object && game.map[x][y - 1][0] === ROOM.BOSS);
-	};
-	/**
 	 * Adds scribbles to the map.
 	 */
 	function addScribbles() {
 		let available = [0, 1, 2, 3, 4];
-		for (let x = 0; x < game.map.length - 1; x++) {
-			const offset = (x % 10 === 0 ? 1 : 0);
-			for (let y = offset; y < game.map[x].length - (offset + 1); y++) {
-				if (mapHasNode(x, y, true)
-					|| mapHasNode(x + 1, y, true)
-					|| mapHasNode(x, y + 1, true)
-					|| mapHasNode(x + 1, y + 1, true)
-					|| (!mapHasNode(x, y - 1) && !mapHasNode(x, y - 2) && mapHasNode(x + 1, y - 1))
-					|| (!mapHasNode(x + 1, y - 1) && !mapHasNode(x + 1, y - 2) && mapHasNode(x, y - 1))
-					|| (!mapHasNode(x, y + 2) && !mapHasNode(x, y + 3) && mapHasNode(x + 1, y + 2))
-					|| (!mapHasNode(x + 1, y + 2) && !mapHasNode(x + 1, y + 3) && mapHasNode(x, y + 2))
-					|| (game.map[x - 1] && typeof game.map[x - 1][y] === "number")
-					|| typeof game.map[x][y - 1] === "number"
-					|| typeof game.map[x][y + 1] === "number"
-					|| typeof game.map[x + 1][y] === "number"
-				) continue;
-				game.map[x][y] = available.splice(randomInt(0, available.length - 1), 1)[0];
+		for (let index = 0; index < 2; index++) {
+			if (chance()) {
+				game.scribbles[index * 2] = available.splice(randomInt(0, available.length - 1), 1)[0];
+				if (!available.length) available = [0, 1, 2, 3, 4];
+				game.scribbles[index * 2 + 1] = available.splice(randomInt(0, available.length - 1), 1)[0];
+				if (!available.length) available = [0, 1, 2, 3, 4];
+			} else {
+				game.scribbles[randomInt(index * 2, index * 2 + 1)] = available.splice(randomInt(0, available.length - 1), 1)[0];
 				if (!available.length) available = [0, 1, 2, 3, 4];
 			};
 		};
@@ -508,10 +489,11 @@ const generateMap = (() => {
 		loaded = false;
 		paths = {};
 		game.map = [];
+		game.scribbles = [-1, -1, -1, -1];
 		await updateGenProg();
 		game.firstRoom = getMapNode(0, 0, MAP_NODE.FIRST);
 		await Promise.all([generateArea(0), generateArea(1)]);
-		//addScribbles();
+		addScribbles();
 		console.log("[map data generated in " + (performance.now() - startTime) + "ms]");
 		await generateMapPathPoints();
 		loaded = true;
