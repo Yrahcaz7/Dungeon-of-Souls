@@ -194,32 +194,43 @@ const loadSave = (() => {
 			prevGame.cards = prevGame.cards.map(card => Card.classify(card));
 		};
 	};
+	const versionCutoff = 3_000_005;
+	let suffix = "";
+	let item = "";
+	let obj = {};
+	/**
+	 * Updates `suffix`, `item`, and `obj` according to `newSuffix`.
+	 * @param {string} newSuffix 
+	 */
+	function updateData(newSuffix) {
+		suffix = newSuffix;
+		item = localStorage.getItem(ID + suffix);
+		obj = parseSave(item);
+	};
 	return async () => {
 		const startTime = performance.now();
 		let oldVersion = 0;
 		let newGlobal = false;
 		// load global stuff
 		{
-			let obj = parseSave(localStorage.getItem(ID + "/v3/global"));
+			updateData("/v3/global");
 			if (obj) {
-				if (obj.version) {
-					oldVersion = obj.version;
-					obj.version = global.version;
-					const defaultOptions = global.options;
-					Object.assign(global, obj);
-					global.options = defaultOptions;
-					Object.assign(global.options, obj.options);
-				} else {
-					console.log("global save has no version number. creating new save...");
-					newGlobal = true;
-				};
+				oldVersion = obj.version;
+			};
+			if (obj && oldVersion >= versionCutoff) {
+				obj.version = global.version;
+				const defaultOptions = global.options;
+				Object.assign(global, obj);
+				global.options = defaultOptions;
+				Object.assign(global.options, obj.options);
 			} else {
-				const item = localStorage.getItem(ID + "/master");
-				let obj = parseSave(item);
+				if (!obj) {
+					updateData("/master");
+				};
 				if (obj) {
 					if (obj.version) {
 						localStorage.setItem(ID + "/old/global", item);
-						localStorage.removeItem(ID + "/master");
+						localStorage.removeItem(ID + suffix);
 					} else {
 						console.log("global save has no version number. creating new save...");
 						newGlobal = true;
@@ -232,17 +243,18 @@ const loadSave = (() => {
 		};
 		// load current run
 		if (!newGlobal) {
-			let obj = parseSave(localStorage.getItem(ID + "/v3/run"));
-			if (obj) {
+			updateData("/v3/run");
+			if (obj && oldVersion >= versionCutoff) {
 				const runVersion = obj.version;
 				Object.assign(game, obj);
 				game.version = runVersion ?? 0;
 			} else {
-				const item = localStorage.getItem(ID + "/0");
-				obj = parseSave(item);
+				if (!obj) {
+					updateData("/0");
+				};
 				if (obj) {
 					localStorage.setItem(ID + "/old/run", item);
-					localStorage.removeItem(ID + "/0");
+					localStorage.removeItem(ID + suffix);
 				} else {
 					console.log("no local save found. creating new save...");
 				};

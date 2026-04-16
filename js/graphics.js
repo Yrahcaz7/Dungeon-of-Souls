@@ -1798,8 +1798,8 @@ const graphics = {
 		} else if (menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
 			text = ["Are you sure you want to remove run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[2][1] / 3)]].num + " from the list?", "This will permanently remove all of its information."];
 		} else if (menuSelect[0] === MENU.OLD_SAVE_ALERT) {
-			text = ["ALERT: You have an old save from version " + get.versionDisplay(parseSave(localStorage.getItem(ID + "/old/global"))?.version || 0) + ", do you want to keep it?"];
-			options = ["DISMISS", "COPY SAVE", "REMOVE SAVE"];
+			text = ["ALERT: You have an old save from version " + get.versionDisplay(parseSave(localStorage.getItem(ID + "/old/global"))?.version || 0) + ", do you want to keep it?", "(You can play old versions by downloading the files from GitHub)"];
+			options = ["DISMISS", "COPY SAVE", "DELETE SAVE"];
 		} else if (menuSelect[0] === MENU.OLD_SAVE_COPY_FAILED) {
 			text = ["The old save could not be copied. Make sure this page has clipboard permissions.", "Try to copy old save again?"];
 		} else if (game.select[0] === S.CONF_END_TURN) {
