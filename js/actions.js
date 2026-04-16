@@ -712,20 +712,10 @@ const performAction = (() => {
 			} else if (menuSelect[1]) {
 				menuSelect = [MENU.PREV_GAMES, 0];
 				menuScroll = 0;
-				sortedPrevGames = [];
-				while (sortedPrevGames.length < global.prevGames.length) {
-					let pending = -1;
-					for (let index = 0; index < global.prevGames.length; index++) {
-						if (sortedPrevGames.includes(index)) continue;
-						if (pending == -1 || (prevGamesSort[1] ?
-							getPrevGameSortValue(global.prevGames[index]) >= getPrevGameSortValue(global.prevGames[pending])
-							: getPrevGameSortValue(global.prevGames[index]) < getPrevGameSortValue(global.prevGames[pending])
-						)) {
-							pending = index;
-						};
-					};
-					sortedPrevGames.push(pending);
-				};
+				sortedPrevGames = getSortedIndexes(global.prevGames, (a, b) => (prevGamesSort[1] ?
+					getPrevGameSortValue(b) - getPrevGameSortValue(a)
+					: getPrevGameSortValue(a) - getPrevGameSortValue(b)
+				));
 			} else {
 				menuSelect[1]++;
 			};

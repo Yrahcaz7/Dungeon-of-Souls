@@ -27,24 +27,17 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 	let store = [];
 	for (let x = Math.max(xMin, 0); x < xMax && x < game.map.length; x++) {
 		const bossRow = (x % 10 == 9);
-		for (let y = (bossRow ? 2 : 0); y < (bossRow ? 3 : game.map[x].length); y++) {
+		for (let y = 0; y < (bossRow ? 1 : game.map[x].length); y++) {
 			if (!bossRow && !(game.map[x][y] instanceof Object)) continue;
-			for (num = 0; num < game.map[x + 1]?.length; num++) {
-				if (game.map[x + 1][y - num] instanceof Object) {
-					store.push([x, y, x + 1, y - num]);
-					break;
-				} else if (game.map[x + 1][y + num] instanceof Object) {
-					store.push([x, y, x + 1, y + num]);
-					break;
-				};
-			};
-			for (num = 0; num < game.map[x - 1]?.length; num++) {
-				if (game.map[x - 1][y - num] instanceof Object) {
-					store.push([x, y, x - 1, y - num]);
-					break;
-				} else if (game.map[x - 1][y + num] instanceof Object) {
-					store.push([x, y, x - 1, y + num]);
-					break;
+			const posY = (bossRow ? 90 : game.map[x][y][2]);
+			for (const row of [x - 1, x + 1]) {
+				if (!game.map[row]) continue;
+				let nodeIndexes = getSortedIndexes(game.map[row], (a, b) => Math.abs(a[2] - posY) - Math.abs(b[2] - posY))
+				for (let num = 0; num < nodeIndexes.length; num++) {
+					if (game.map[row][nodeIndexes[num]] instanceof Object) {
+						store.push([x, y, row, nodeIndexes[num]]);
+						break;
+					};
 				};
 			};
 		};
@@ -289,8 +282,8 @@ const generateMap = (() => {
 		};
 		if (attribute === MAP_NODE.ORB) return [ROOM.ORB, x, y];
 		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, 25 + ((row - area * 10) * 32) + 10, 90, [BOSS_ENEMIES[area]], getGoldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
-		let type = (chance(3/5) ? ROOM.BATTLE : false);
-		if (rowFalses[area] >= 3 || (row % 10 === 0 && rowFalses[area] >= 2) || (rowNodes[area] + rowFalses[area] === 2 && rowFalses[area] === 2)) type = ROOM.BATTLE;
+		let type = (attribute === MAP_NODE.BATTLE || chance(3/5) ? ROOM.BATTLE : false);
+		if (rowFalses[area] >= 3 || (rowNodes[area] + rowFalses[area] === 2 && rowFalses[area] === 2)) type = ROOM.BATTLE;
 		if (type) rowNodes[area]++;
 		else rowFalses[area]++;
 		if (!type || rowNodes[area] === 6) return false;
@@ -303,14 +296,6 @@ const generateMap = (() => {
 		return result;
 	};
 	/**
-	 * Returns an orb map node.
-	 * @param {number} row - the row of the map node.
-	 * @param {number} col - the column of the map node.
-	 */
-	function getOrbNode(row, col) {
-		return getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB);
-	};
-	/**
 	 * Returns a map row.
 	 * @param {number} row - the row number.
 	 */
@@ -318,18 +303,26 @@ const generateMap = (() => {
 		const area = get.area(row + 1);
 		rowFalses[area] = 0;
 		rowNodes[area] = 0;
-		if (row % 10 === 0) return Array.from({length: 6}, (v, i) => (i >= 1 && i <= 4 ? getMapNode(row, 18 + (i * 32) + randomInt(-5, 5)) : false));
-		if (row % 10 === 8) {
+		let nodes = [];
+		if (row % 10 === 0) {
+			nodes.push(...[randomInt(1, 2), randomInt(3, 4)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.BATTLE)));
+			//if (row === 0) paths[-1] = [[row, 0], [row, 1]];
+			//else paths[row - 1][0] = [[row, 0], [row, 1]];
+		} else if (row % 10 === 8) {
 			if (chance()) {
-				if (chance()) return [getOrbNode(row, 0), false, getOrbNode(row, 2), false, false, getOrbNode(row, 5)];
-				else return [getOrbNode(row, 0), false, getOrbNode(row, 2), false, getOrbNode(row, 4), false];
+				nodes.push(...[0, 2, (chance() ? 4 : 5)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB)));
 			} else {
-				if (chance()) return [getOrbNode(row, 0), false, false, getOrbNode(row, 3), false, getOrbNode(row, 5)];
-				else return [false, getOrbNode(row, 1), false, getOrbNode(row, 3), false, getOrbNode(row, 5)];
+				nodes.push(...[(chance() ? 0 : 1), 3, 5].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB)));
+			};
+		} else if (row % 10 === 9) {
+			nodes.push(getMapNode(row, 90, MAP_NODE.BOSS));
+		} else {
+			for (let index = 0; index < 6; index++) {
+				const node = getMapNode(row, 18 + (index * 32) + randomInt(-5, 5));
+				if (node) nodes.push(node);
 			};
 		};
-		if (row % 10 === 9) return [false, false, getMapNode(row, 90, MAP_NODE.BOSS), false, false, false];
-		return Array.from({length: 6}, (v, i) => getMapNode(row, 18 + (i * 32) + randomInt(-5, 5)));
+		return nodes;
 	};
 	/**
 	 * Calculates the path types of a map row.
@@ -518,7 +511,7 @@ const generateMap = (() => {
 		await updateGenProg();
 		game.firstRoom = getMapNode(0, 0, MAP_NODE.FIRST);
 		await Promise.all([generateArea(0), generateArea(1)]);
-		addScribbles();
+		//addScribbles();
 		console.log("[map data generated in " + (performance.now() - startTime) + "ms]");
 		await generateMapPathPoints();
 		loaded = true;

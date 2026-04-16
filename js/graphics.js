@@ -751,7 +751,7 @@ const info = {
 				const node = game.map[selection[0]][selection[1]];
 				const area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0));
 				if (node[0] === ROOM.BOSS) loc = [259, 100];
-				else loc = [25 + ((selection[0] - area * 10) * 32) + node[1] + 19, 18 + (selection[1] * 32) + node[2] + 2];
+				else loc = [node[1] + 19, node[2] + 2];
 				if (node[0] === ROOM.BATTLE) desc = "Enter Battle";
 				else if (node[0] === ROOM.TREASURE) desc = "Claim Treasure";
 				else if (node[0] === ROOM.PRIME) desc = "Enter Death Zone";
