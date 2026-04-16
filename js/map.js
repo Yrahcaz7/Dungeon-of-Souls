@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
+ *  Copyright (C) 2026 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,24 +27,17 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 	let store = [];
 	for (let x = Math.max(xMin, 0); x < xMax && x < game.map.length; x++) {
 		const bossRow = (x % 10 == 9);
-		for (let y = (bossRow ? 2 : 0); y < (bossRow ? 3 : game.map[x].length); y++) {
+		for (let y = 0; y < (bossRow ? 1 : game.map[x].length); y++) {
 			if (!bossRow && !(game.map[x][y] instanceof Object)) continue;
-			for (num = 0; num < game.map[x + 1]?.length; num++) {
-				if (game.map[x + 1][y - num] instanceof Object) {
-					store.push([x, y, x + 1, y - num]);
-					break;
-				} else if (game.map[x + 1][y + num] instanceof Object) {
-					store.push([x, y, x + 1, y + num]);
-					break;
-				};
-			};
-			for (num = 0; num < game.map[x - 1]?.length; num++) {
-				if (game.map[x - 1][y - num] instanceof Object) {
-					store.push([x, y, x - 1, y - num]);
-					break;
-				} else if (game.map[x - 1][y + num] instanceof Object) {
-					store.push([x, y, x - 1, y + num]);
-					break;
+			const posY = (bossRow ? 90 : game.map[x][y][2]);
+			for (const row of [x - 1, x + 1]) {
+				if (!game.map[row]) continue;
+				let nodeIndexes = getSortedIndexes(game.map[row], (a, b) => Math.abs(a[2] - posY) - Math.abs(b[2] - posY))
+				for (let num = 0; num < nodeIndexes.length; num++) {
+					if (game.map[row][nodeIndexes[num]] instanceof Object) {
+						store.push([x, y, row, nodeIndexes[num]]);
+						break;
+					};
 				};
 			};
 		};
@@ -56,31 +49,31 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 			if (!paths[coords[0]]) paths[coords[0]] = {};
 			if (!paths[coords[0]][coords[1]]) paths[coords[0]][coords[1]] = [];
 			if (!paths[coords[0]][coords[1]].some(location => location[0] === coords[2] && location[1] === coords[3])) {
-				paths[coords[0]][coords[1]].push([coords[2], coords[3]]);
+				paths[coords[0]][coords[1]].push(coords[3]);
 			};
 		} else if (coords[0] > coords[2]) {
 			if (!paths[coords[2]]) paths[coords[2]] = {};
 			if (!paths[coords[2]][coords[3]]) paths[coords[2]][coords[3]] = [];
 			if (!paths[coords[2]][coords[3]].some(location => location[0] === coords[0] && location[1] === coords[1])) {
-				paths[coords[2]][coords[3]].push([coords[0], coords[1]]);
+				paths[coords[2]][coords[3]].push(coords[1]);
 			};
 		};
 		if (coords[0] === 0) {
 			if (!paths[-1]) paths[-1] = [];
 			if (!paths[-1].some(location => location[0] === coords[0] && location[1] === coords[1])) {
-				paths[-1].push([coords[0], coords[1]]);
+				paths[-1].push(coords[1]);
 			};
 		} else if (coords[0] === 10) {
 			if (!paths[9]) paths[9] = {};
 			if (!paths[9][2]) paths[9][2] = [];
 			if (!paths[9][2].some(location => location[0] === coords[0] && location[1] === coords[1])) {
-				paths[9][2].push([coords[0], coords[1]]);
+				paths[9][2].push(coords[1]);
 			};
 		};
 	};
 	// sort paths
 	for (const x in paths) {
-		if (x === -1) {
+		if (x == -1) {
 			paths[x].sort();
 		} else {
 			for (const y in paths[x]) {
@@ -144,10 +137,11 @@ const generateMapPathPoints = (() => {
 	 */
 	async function getVisualMapPaths(area = get.area()) {
 		// start the generation of paths from the start of the area.
-		const start = (area > 0 ? paths[area * 10 - 1][2] : paths[-1]);
+		const startRow = (area > 0 ? area * 10 - 1 : -1);
+		const start = (area > 0 ? paths[startRow][0] : paths[-1]);
 		let arr = [];
 		for (let index = 0; index < start.length; index++) {
-			arr.push([[start[index][0], start[index][1]], [start[index][0], start[index][1]]]);
+			arr.push([[startRow + 1, start[index]], [startRow + 1, start[index]]]);
 		};
 		// iterate through the area, generating all of the possible paths.
 		for (let iteration = 0; iteration < 9; iteration++) {
@@ -157,7 +151,7 @@ const generateMapPathPoints = (() => {
 				for (let index = 0; index < paths[lastNode[0]][lastNode[1]].length; index++) {
 					const node = paths[lastNode[0]][lastNode[1]][index];
 					let innerArr = arr[path].slice();
-					innerArr.push([node[0], node[1]]);
+					innerArr.push([lastNode[0] + 1, node]);
 					nextArr.push(innerArr);
 				};
 			};
@@ -169,16 +163,17 @@ const generateMapPathPoints = (() => {
 			for (let index = 0; index < arr[path].length; index++) {
 				const x = arr[path][index][0];
 				const y = arr[path][index][1];
-				if (game.map[x][y][0] === ROOM.BOSS) {
-					visualArr.push([25 + 10 + 8 + ((x - area * 10) * 32) + 8, 90 + 8]);
-					visualArr.push([arr[path][index][0] + 300, arr[path][index][1]]);
-					visualArr.push([arr[path][index][0] + 600, arr[path][index][1]]);
+				const node = game.map[x][y];
+				if (node[0] === ROOM.BOSS) {
+					visualArr.push([node[1] + 16, node[2] + 16]);
+					visualArr.push([node[1] + 17, node[2] + 16]);
+					visualArr.push([node[1] + 18, node[2] + 16]);
 					break;
 				} else if (index === 0) {
-					visualArr.push([16, 18 + (y * 32) + 8 + game.map[x][y][2]]);
-					visualArr.push([17, 18 + (y * 32) + 8 + game.map[x][y][2]]);
+					visualArr.push([16, node[2] + 8]);
+					visualArr.push([17, node[2] + 8]);
 				} else {
-					visualArr.push([25 + ((x - area * 10) * 32) + 8 + game.map[x][y][1], 18 + (y * 32) + 8 + game.map[x][y][2]]);
+					visualArr.push([node[1] + 8, node[2] + 8]);
 				};
 			};
 			let pathPoints = getSubdividedPath(visualArr);
@@ -235,7 +230,7 @@ const BOSS_ENEMIES = [FRAGMENT, SINGULARITY];
  * Generates a map and saves it.
  */
 const generateMap = (() => {
-	const GEN_STEPS = 100;
+	const GEN_STEPS = 20;
 	let genProg = 0;
 	let rowFalses = [0, 0];
 	let rowNodes = [0, 0];
@@ -272,27 +267,28 @@ const generateMap = (() => {
 	/**
 	 * Returns a map node.
 	 * @param {number} row - the row of the map node.
+	 * @param {number} y - the y-coordinate of the map node.
 	 * @param {number} attribute - the attribute of the map node, if any.
 	 */
-	async function getMapNode(row, attribute = -1) {
+	function getMapNode(row, y, attribute = -1) {
 		const area = get.area(row + 1);
+		const x = 25 + ((row - area * 10) * 32) + randomInt(-5, 5);
 		if (attribute === MAP_NODE.FIRST) return [ROOM.BATTLE, 0, 0, [SMALL_ENEMIES[area]], getGoldReward(row), randomCardSet(5)];
-		if (attribute === MAP_NODE.TREASURE) return [ROOM.TREASURE, randomInt(-5, 5), randomInt(-5, 5), [], getGoldReward(row) * 2, randomCardSet(5, 4/10)];
-		if (attribute === MAP_NODE.PRIME) return [ROOM.PRIME, randomInt(-5, 5), randomInt(-5, 5), [getWeakerSmallEnemy(row), PRIME_ENEMIES[area], getWeakerSmallEnemy(row)], getGoldReward(row) * 2, randomCardSet(5, 9/10), randomArtifactSet(3)];
+		if (attribute === MAP_NODE.TREASURE) return [ROOM.TREASURE, x, y, [], getGoldReward(row) * 2, randomCardSet(5, 4/10)];
+		if (attribute === MAP_NODE.PRIME) return [ROOM.PRIME, x, y, [getWeakerSmallEnemy(row), PRIME_ENEMIES[area], getWeakerSmallEnemy(row)], getGoldReward(row) * 2, randomCardSet(5, 9/10), randomArtifactSet(3)];
 		if (attribute === MAP_NODE.EVENT) {
 			let index = randomInt(0, EVENTS.any.length + EVENTS[area].length - 1);
 			if (index >= EVENTS.any.length) index += 100 - EVENTS.any.length;
-			return [ROOM.EVENT, randomInt(-5, 5), randomInt(-5, 5), index, getGoldReward(row), randomCardSet(5)];
+			return [ROOM.EVENT, x, y, index, getGoldReward(row), randomCardSet(5)];
 		};
-		await updateGenProg();
-		if (attribute === MAP_NODE.ORB) return [ROOM.ORB, randomInt(-5, 5), randomInt(-5, 5)];
-		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, 0, 0, [BOSS_ENEMIES[area]], getGoldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
-		let type = (chance(3/5) ? ROOM.BATTLE : false);
-		if (rowFalses[area] >= 3 || (row % 10 === 0 && rowFalses[area] >= 2) || (rowNodes[area] + rowFalses[area] === 2 && rowFalses[area] === 2)) type = ROOM.BATTLE;
+		if (attribute === MAP_NODE.ORB) return [ROOM.ORB, x, y];
+		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, 25 + ((row - area * 10) * 32) + 10, 90, [BOSS_ENEMIES[area]], getGoldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
+		let type = (attribute === MAP_NODE.BATTLE || chance(3/5) ? ROOM.BATTLE : false);
+		if (rowFalses[area] >= 3 || (rowNodes[area] + rowFalses[area] === 2 && rowFalses[area] === 2)) type = ROOM.BATTLE;
 		if (type) rowNodes[area]++;
 		else rowFalses[area]++;
 		if (!type || rowNodes[area] === 6) return false;
-		const result = [type, randomInt(-5, 5), randomInt(-5, 5)];
+		let result = [type, x, y];
 		if (type === ROOM.BATTLE) {
 			if (row % 10 >= 5) result.push(chance(1/3) ? [(chance() ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]] : (chance() ? [BIG_ENEMIES[area], getWeakerSmallEnemy(row)] : [SMALL_ENEMIES[area], SMALL_ENEMIES[area]]));
 			else result.push(chance() ? [(chance(row/10 - area) ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]] : [SMALL_ENEMIES[area], getWeakerSmallEnemy(row)]);
@@ -304,22 +300,30 @@ const generateMap = (() => {
 	 * Returns a map row.
 	 * @param {number} row - the row number.
 	 */
-	async function getMapRow(row) {
+	function getMapRow(row) {
 		const area = get.area(row + 1);
 		rowFalses[area] = 0;
 		rowNodes[area] = 0;
-		if (row % 10 === 0) return [false, await getMapNode(row), await getMapNode(row), await getMapNode(row), await getMapNode(row), false];
-		if (row % 10 === 8) {
+		let nodes = [];
+		if (row % 10 === 0) {
+			nodes.push(...[randomInt(1, 2), randomInt(3, 4)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.BATTLE)));
+			//if (row === 0) paths[-1] = [0, 1];
+			//else paths[row - 1][0] = [0, 1];
+		} else if (row % 10 === 8) {
 			if (chance()) {
-				if (chance()) return [await getMapNode(row, MAP_NODE.ORB), false, await getMapNode(row, MAP_NODE.ORB), false, false, await getMapNode(row, MAP_NODE.ORB)];
-				else return [await getMapNode(row, MAP_NODE.ORB), false, await getMapNode(row, MAP_NODE.ORB), false, await getMapNode(row, MAP_NODE.ORB), false];
+				nodes.push(...[0, 2, (chance() ? 4 : 5)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB)));
 			} else {
-				if (chance()) return [await getMapNode(row, MAP_NODE.ORB), false, false, await getMapNode(row, MAP_NODE.ORB), false, await getMapNode(row, MAP_NODE.ORB)];
-				else return [false, await getMapNode(row, MAP_NODE.ORB), false, await getMapNode(row, MAP_NODE.ORB), false, await getMapNode(row, MAP_NODE.ORB)];
+				nodes.push(...[(chance() ? 0 : 1), 3, 5].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB)));
+			};
+		} else if (row % 10 === 9) {
+			nodes.push(getMapNode(row, 90, MAP_NODE.BOSS));
+		} else {
+			for (let index = 0; index < 6; index++) {
+				const node = getMapNode(row, 18 + (index * 32) + randomInt(-5, 5));
+				if (node) nodes.push(node);
 			};
 		};
-		if (row % 10 === 9) return [false, false, await getMapNode(row, MAP_NODE.BOSS), false, false, false];
-		return [await getMapNode(row), await getMapNode(row), await getMapNode(row), await getMapNode(row), await getMapNode(row), await getMapNode(row)];
+		return nodes;
 	};
 	/**
 	 * Calculates the path types of a map row.
@@ -370,9 +374,9 @@ const generateMap = (() => {
 			if (types.includes(game.map[loc[0]][loc[1]][0])) {
 				return true;
 			};
-			let availableLocations = get.availableLocations(loc);
+			let availableLocations = get.availableLocations(loc[0], loc[1]);
 			for (let i2 = 0; i2 < availableLocations.length; i2++) {
-				if (get.availableLocations(availableLocations[i2]).length) locations.push(availableLocations[i2]);
+				if (get.availableLocations(loc[0] + 1, availableLocations[i2]).length) locations.push([loc[0] + 1, availableLocations[i2]]);
 			};
 		};
 		return false;
@@ -397,7 +401,7 @@ const generateMap = (() => {
 					let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 					while (true) {
 						if (newRow[rand] && !pathHasTypes([rowNum, rand], [ROOM.TREASURE, ROOM.PRIME])) {
-							newRow[rand] = await getMapNode(rowNum, MAP_NODE.TREASURE);
+							newRow[rand] = getMapNode(rowNum, newRow[rand][2], MAP_NODE.TREASURE);
 							calculatePathTypes(rowNum);
 							break;
 						} else if (available.length) {
@@ -413,7 +417,7 @@ const generateMap = (() => {
 					let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 					while (true) {
 						if (newRow[rand] && newRow[rand][0] !== ROOM.TREASURE && !pathHasTypes([rowNum, rand], [ROOM.TREASURE, ROOM.PRIME])) {
-							newRow[rand] = await getMapNode(rowNum, MAP_NODE.PRIME);
+							newRow[rand] = getMapNode(rowNum, newRow[rand][2], MAP_NODE.PRIME);
 							deathZones++;
 							calculatePathTypes(rowNum);
 							break;
@@ -430,7 +434,7 @@ const generateMap = (() => {
 					let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 					while (true) {
 						if (newRow[rand] && newRow[rand][0] !== ROOM.TREASURE && newRow[rand][0] !== ROOM.PRIME && !pathHasTypes([rowNum, rand], [ROOM.EVENT])) {
-							newRow[rand] = await getMapNode(rowNum, MAP_NODE.EVENT);
+							newRow[rand] = getMapNode(rowNum, newRow[rand][2], MAP_NODE.EVENT);
 							calculatePathTypes(rowNum);
 							break;
 						} else if (available.length) {
@@ -441,6 +445,7 @@ const generateMap = (() => {
 					};
 				};
 			};
+			await updateGenProg();
 		};
 		// add death zone (no calculatePathTypes is needed after this, as this is the last usage of pathHasTypes in this area)
 		let row = 3 + area * 10;
@@ -449,7 +454,7 @@ const generateMap = (() => {
 			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 			while (true) {
 				if (game.map[row][rand] && (game.map[row][rand][0] === ROOM.TREASURE || (row % 10 == 2 && game.map[row][rand][0] === ROOM.BATTLE)) && !pathHasTypes([row, rand], [ROOM.TREASURE, ROOM.PRIME], true)) {
-					game.map[row][rand] = await getMapNode(row, MAP_NODE.PRIME);
+					game.map[row][rand] = getMapNode(row, game.map[row][rand][2], MAP_NODE.PRIME);
 					deathZones++;
 					break;
 				} else if (available.length) {
@@ -464,37 +469,18 @@ const generateMap = (() => {
 		};
 	};
 	/**
-	 * Returns a boolean indicating whether the map has a node at the respective coordinates.
-	 * @param {number} x - the x-coordinate to check for a node at.
-	 * @param {number} y - the y-coordinate to check for a node at.
-	 * @param {boolean} loose - if true, considers anything a node.
-	 */
-	function mapHasNode(x, y, loose = false) {
-		if (loose) return typeof game.map[x][y] !== "boolean" || (game.map[x][y - 1] instanceof Object && game.map[x][y - 1][0] === ROOM.BOSS);
-		return game.map[x][y] instanceof Object || (game.map[x][y - 1] instanceof Object && game.map[x][y - 1][0] === ROOM.BOSS);
-	};
-	/**
 	 * Adds scribbles to the map.
 	 */
 	function addScribbles() {
 		let available = [0, 1, 2, 3, 4];
-		for (let x = 0; x < game.map.length - 1; x++) {
-			const offset = (x % 10 === 0 ? 1 : 0);
-			for (let y = offset; y < game.map[x].length - (offset + 1); y++) {
-				if (mapHasNode(x, y, true)
-					|| mapHasNode(x + 1, y, true)
-					|| mapHasNode(x, y + 1, true)
-					|| mapHasNode(x + 1, y + 1, true)
-					|| (!mapHasNode(x, y - 1) && !mapHasNode(x, y - 2) && mapHasNode(x + 1, y - 1))
-					|| (!mapHasNode(x + 1, y - 1) && !mapHasNode(x + 1, y - 2) && mapHasNode(x, y - 1))
-					|| (!mapHasNode(x, y + 2) && !mapHasNode(x, y + 3) && mapHasNode(x + 1, y + 2))
-					|| (!mapHasNode(x + 1, y + 2) && !mapHasNode(x + 1, y + 3) && mapHasNode(x, y + 2))
-					|| (game.map[x - 1] && typeof game.map[x - 1][y] === "number")
-					|| typeof game.map[x][y - 1] === "number"
-					|| typeof game.map[x][y + 1] === "number"
-					|| typeof game.map[x + 1][y] === "number"
-				) continue;
-				game.map[x][y] = available.splice(randomInt(0, available.length - 1), 1)[0];
+		for (let index = 0; index < 2; index++) {
+			if (chance()) {
+				game.scribbles[index * 2] = available.splice(randomInt(0, available.length - 1), 1)[0];
+				if (!available.length) available = [0, 1, 2, 3, 4];
+				game.scribbles[index * 2 + 1] = available.splice(randomInt(0, available.length - 1), 1)[0];
+				if (!available.length) available = [0, 1, 2, 3, 4];
+			} else {
+				game.scribbles[randomInt(index * 2, index * 2 + 1)] = available.splice(randomInt(0, available.length - 1), 1)[0];
 				if (!available.length) available = [0, 1, 2, 3, 4];
 			};
 		};
@@ -504,8 +490,10 @@ const generateMap = (() => {
 		loaded = false;
 		paths = {};
 		game.map = [];
+		game.scribbles = [-1, -1, -1, -1];
 		await updateGenProg();
-		await Promise.all([(async () => game.firstRoom = await getMapNode(0, MAP_NODE.FIRST))(), generateArea(0), generateArea(1)]);
+		game.firstRoom = getMapNode(0, 0, MAP_NODE.FIRST);
+		await Promise.all([generateArea(0), generateArea(1)]);
 		addScribbles();
 		console.log("[map data generated in " + (performance.now() - startTime) + "ms]");
 		await generateMapPathPoints();

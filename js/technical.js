@@ -240,3 +240,23 @@ document.onkeyup = event => {
 		action = -1;
 	};
 };
+
+/**
+ * Returns a sorted index array.
+ * @param {T[]} arr - The array to sort.
+ * @param {(a: T, b: T) => number} func - Function used to determine the order of the indexes. It should return a negative value if the first argument is less than the second argument, zero if they're equal, and a positive value otherwise. (Use `(a, b) => a - b)` to sort numbers in ascending order.)
+ */
+function getSortedIndexes(arr, func) {
+	let result = [];
+	while (result.length < arr.length) {
+		let pending = -1;
+		for (let index = 0; index < arr.length; index++) {
+			if (result.includes(index)) continue;
+			if (pending === -1 || func(arr[index], arr[pending]) < 0) {
+				pending = index;
+			};
+		};
+		result.push(pending);
+	};
+	return result;
+};

@@ -220,12 +220,13 @@ const get = {
 	},
 	/**
 	 * Returns an array of locations that the player can move to from their current one.
-	 * @param {number[]} location - The player's location. Defaults to `game.location`.
-	 * @returns {number[][]}
+	 * @param {number} floor - What floor the player is on. Defaults to `game.floor`.
+	 * @param {number} location - The player's location. Defaults to `game.location`.
+	 * @returns {number[]}
 	 */
-	availableLocations(location = game.location) {
-		if (location.length >= 2) return (paths[location[0]] || {})[location[1]] || [];
-		return paths[location[0]] || [];
+	availableLocations(floor = game.floor, location = game.location) {
+		if (floor === 0) return paths[-1] || [];
+		return (paths[floor - 1] || {})[location] || [];
 	},
 	/**
 	 * Gets the array of card positions for a hand of a certain size.

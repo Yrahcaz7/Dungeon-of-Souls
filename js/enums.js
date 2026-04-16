@@ -16,7 +16,7 @@
  */
 
 // map node generation attributes
-const MAP_NODE = {FIRST: 0, TREASURE: 1, PRIME: 2, ORB: 3, BOSS: 4, EVENT: 5};
+const MAP_NODE = {FIRST: 0, TREASURE: 1, PRIME: 2, ORB: 3, BOSS: 4, EVENT: 5, BATTLE: 6};
 
 // map room types
 const ROOM = {BATTLE: 100, TREASURE: 101, PRIME: 102, ORB: 103, BOSS: 104, EVENT: 105};
@@ -73,6 +73,8 @@ const MENU = {
 	CHANGE_SEED: 406, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 	ENTER_SEED: 407, // N does not indicate anything.
 	CONF_REMOVE_PREV_GAME: 408, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
+	OLD_SAVE_ALERT: 409, // N indicates which button is selected (2 for the remove button, 1 for the copy button, 0 for the dismiss button).
+	OLD_SAVE_COPY_FAILED: 410, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 };
 
 // main menu options

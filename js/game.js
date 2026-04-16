@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_062;
+const VERSION = 3_000_014;
 
 /**
  * Returns the starting global data.
@@ -44,7 +44,7 @@ let global = getStartGlobalData();
 
 /**
  * Returns the starting game data.
- * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, floor: number, gold: number, location: number[], rewards: (number | boolean)[], state: number, turn: number, select: [number, number, [number, number] | undefined], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyStage: number, enemyAtt: [number, number, Card, boolean], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {}, room: (number | (number | number[])[])[], firstRoom: (number | number[])[], map: (number | boolean | (number | (number | number[])[])[])[][], traveled: number[], seed: string, randomState: number[], version: number}}
+ * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, floor: number, gold: number, location: number, rewards: (number | boolean)[], state: number, turn: number, select: [number, number, [number, number] | undefined], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyStage: number, enemyAtt: [number, number, Card, boolean], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {}, room: (number | (number | number[])[])[], firstRoom: (number | number[])[], map: (number | boolean | (number | (number | number[])[])[])[][], scribbles: number[], traveled: number[], seed: string, randomState: number[], version: number}}
  */
 function getStartGameData() { return {
 	character: CHARACTER.KNIGHT,
@@ -54,7 +54,7 @@ function getStartGameData() { return {
 	energy: 3,
 	floor: 0,
 	gold: 0,
-	location: [-1],
+	location: 0,
 	rewards: [],
 	state: STATE.ENTER,
 	turn: -1,
@@ -79,6 +79,7 @@ function getStartGameData() { return {
 	room: [],
 	firstRoom: [],
 	map: [],
+	scribbles: [],
 	traveled: [],
 	seed: (() => {
 		let str = (Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase();
@@ -337,14 +338,14 @@ function enterBattle() {
  */
 function endBattle() {
 	if (game.state === STATE.BATTLE && !game.enemies.length) {
-		// normal stuff
+		// normal things
 		discardHand(true);
 		notif = [-1, 0, "", 0];
 		game.select = [S.REWARDS, 0];
 		game.state = STATE.EVENT_FIN;
 		game.turn = -1;
 		game.enemyNum = -1;
-		// activate artifacts
+		// activate artifact effects
 		activateArtifacts(FUNC.FLOOR_CLEAR);
 		// set rewards
 		game.rewards = [];
@@ -386,10 +387,10 @@ function loadRoom() {
 		game.eff = {};
 		cardAnim = [];
 		// enter room
-		const type = (game.location[0] === -1 ? ROOM.BATTLE : game.map[game.location[0]][game.location[1]][0]);
+		const type = (game.location[0] === -1 ? ROOM.BATTLE : game.map[game.floor - 1][game.location][0]);
 		if (type === ROOM.BATTLE || type === ROOM.PRIME || type === ROOM.BOSS) {
-			if (game.location[0] === -1) game.room = game.firstRoom;
-			else game.traveled.push(game.location[1]);
+			if (game.floor === 0) game.room = game.firstRoom;
+			else game.traveled.push(game.location);
 			for (let index = 0; index < game.room[3].length; index++) {
 				const enemy = game.room[3][index];
 				if (enemy instanceof Array) {
@@ -401,7 +402,7 @@ function loadRoom() {
 			if (type === ROOM.BOSS || (game.floor > 10 && game.floor % 10 == 1)) fadeMusic();
 			enterBattle();
 		} else if (type === ROOM.TREASURE) {
-			game.traveled.push(game.location[1]);
+			game.traveled.push(game.location);
 			game.select = [S.REWARDS, 0];
 			game.state = STATE.EVENT_FIN;
 			game.rewards = [];
@@ -410,7 +411,7 @@ function loadRoom() {
 			game.rewards.push([REWARD.FINISH]);
 			activateArtifacts(FUNC.FLOOR_CLEAR);
 		} else if (type === ROOM.ORB) {
-			game.traveled.push(game.location[1]);
+			game.traveled.push(game.location);
 			game.select = [S.REWARDS, 0];
 			game.state = STATE.EVENT_FIN;
 			game.rewards = [[REWARD.HEALTH, Math.floor(get.maxHealth() * 0.5)], [REWARD.PURIFIER]];
@@ -418,7 +419,7 @@ function loadRoom() {
 			game.rewards.push([REWARD.FINISH]);
 			activateArtifacts(FUNC.FLOOR_CLEAR);
 		} else if (type === ROOM.EVENT) {
-			game.traveled.push(game.location[1]);
+			game.traveled.push(game.location);
 			game.select = [S.EVENT, -1];
 			game.state = STATE.EVENT;
 			game.rewards = [];
@@ -481,7 +482,9 @@ function updateVisuals() {
 		} else if (menuSelect[0] === MENU.PREV_GAME_SORT) {
 			graphics.prevGameSort();
 		}
-		if (menuSelect[0] === MENU.START_NEW_RUN || menuSelect[0] === MENU.CHANGE_DIFFICULTY || menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED || menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
+		if (game.select[0] === S.WELCOME) {
+			return;
+		} else if (menuSelect[0] === MENU.START_NEW_RUN || menuSelect[0] === MENU.CHANGE_DIFFICULTY || menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED || menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME || menuSelect[0] === MENU.OLD_SAVE_ALERT || menuSelect[0] === MENU.OLD_SAVE_COPY_FAILED) {
 			graphics.conf(menuSelect[0] !== MENU.ENTER_SEED);
 		};
 		if (hasArtifact(202) && game.floor == 10 && transition < 100) transition++;
