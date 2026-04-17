@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-let paths = {};
+let paths = [];
 
 /**
  * Calculates the paths of a map region.
@@ -28,17 +28,11 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 	for (let x = Math.max(xMin, 0); x < xMax && x < game.map.length; x++) {
 		const bossRow = (x > 0 && x % 10 === 0);
 		for (let y = 0; y < (bossRow ? 1 : game.map[x].length); y++) {
-			if (!bossRow && !(game.map[x][y] instanceof Object)) continue;
 			const posY = (bossRow ? 90 : game.map[x][y][2]);
 			for (const row of [x - 1, x + 1]) {
 				if (!game.map[row]) continue;
-				let nodeIndexes = getSortedIndexes(game.map[row], (a, b) => Math.abs(a[2] - posY) - Math.abs(b[2] - posY))
-				for (let num = 0; num < nodeIndexes.length; num++) {
-					if (game.map[row][nodeIndexes[num]] instanceof Object) {
-						store.push([x, y, row, nodeIndexes[num]]);
-						break;
-					};
-				};
+				const nodeIndexes = getSortedIndexes(game.map[row], (a, b) => Math.abs(a[2] - posY) - Math.abs(b[2] - posY))
+				store.push([x, y, row, nodeIndexes[0]]);
 			};
 		};
 	};
@@ -46,20 +40,20 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 	for (let index = 0; index < store.length; index++) {
 		const coords = store[index];
 		if (coords[2] > coords[0]) {
-			if (!paths[coords[0]]) paths[coords[0]] = {};
+			if (!paths[coords[0]]) paths[coords[0]] = [];
 			if (!paths[coords[0]][coords[1]]) paths[coords[0]][coords[1]] = [];
 			if (!paths[coords[0]][coords[1]].some(location => location === coords[1])) {
 				paths[coords[0]][coords[1]].push(coords[3]);
 			};
 		} else if (coords[0] > coords[2]) {
-			if (!paths[coords[2]]) paths[coords[2]] = {};
+			if (!paths[coords[2]]) paths[coords[2]] = [];
 			if (!paths[coords[2]][coords[3]]) paths[coords[2]][coords[3]] = [];
 			if (!paths[coords[2]][coords[3]].some(location => location === coords[1])) {
 				paths[coords[2]][coords[3]].push(coords[1]);
 			};
 		};
 		if (coords[0] > 1 && coords[0] % 10 === 1) {
-			if (!paths[coords[0] - 1]) paths[coords[0] - 1] = {};
+			if (!paths[coords[0] - 1]) paths[coords[0] - 1] = [];
 			if (!paths[coords[0] - 1][0]) paths[coords[0] - 1][0] = [];
 			if (!paths[coords[0] - 1][0].some(location => location === coords[1])) {
 				paths[coords[0] - 1][0].push(coords[1]);
@@ -164,12 +158,11 @@ const generateMapPathPoints = (() => {
 			let pathPoints = getSubdividedPath(visualArr);
 			for (let index = 1; index < visualArr.length - 3; index++) {
 				const subdivisionIndex = 1 + (index - 1) * (MAP_PATH_SUBDIVISIONS + 1);
-				if (!mapPathPoints[arr[path][index - 1][0]]) mapPathPoints[arr[path][index - 1][0]] = {};
+				if (!mapPathPoints[arr[path][index - 1][0]]) mapPathPoints[arr[path][index - 1][0]] = [];
 				if (!mapPathPoints[arr[path][index - 1][0]][arr[path][index - 1][1]]) mapPathPoints[arr[path][index - 1][0]][arr[path][index - 1][1]] = {};
 				const firstNode = mapPathPoints[arr[path][index - 1][0]][arr[path][index - 1][1]];
-				if (!firstNode[arr[path][index][0]]) firstNode[arr[path][index][0]] = {};
-				if (!firstNode[arr[path][index][0]][arr[path][index][1]]) firstNode[arr[path][index][0]][arr[path][index][1]] = [];
-				const nodePair = firstNode[arr[path][index][0]][arr[path][index][1]];
+				if (!firstNode[arr[path][index][1]]) firstNode[arr[path][index][1]] = [];
+				const nodePair = firstNode[arr[path][index][1]];
 				for (let sub = 0; sub < MAP_PATH_SUBDIVISIONS + 2; sub++) {
 					if (!nodePair[sub]) nodePair[sub] = [];
 					nodePair[sub].push(pathPoints[subdivisionIndex + sub]);
@@ -179,8 +172,8 @@ const generateMapPathPoints = (() => {
 		// average the points in `mapPathPoints` for each subdivision for each node pair.
 		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
 			for (const node1 in mapPathPoints[row1]) {
-				for (const node2 in mapPathPoints[row1][node1][row1 + 1]) {
-					const nodePair = mapPathPoints[row1][node1][row1 + 1][node2];
+				for (const node2 in mapPathPoints[row1][node1]) {
+					const nodePair = mapPathPoints[row1][node1][node2];
 					let averagePath = [];
 					for (let sub = 0; sub < nodePair.length; sub++) {
 						let total = [0, 0];
@@ -190,7 +183,7 @@ const generateMapPathPoints = (() => {
 						};
 						averagePath.push([total[0] / nodePair[sub].length, total[1] / nodePair[sub].length]);
 					};
-					mapPathPoints[row1][node1][row1 + 1][node2] = averagePath;
+					mapPathPoints[row1][node1][node2] = averagePath;
 				};
 			};
 		};

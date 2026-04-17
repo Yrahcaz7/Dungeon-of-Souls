@@ -1592,15 +1592,15 @@ const graphics = {
 		ctx.filter = NO_ANTI_ALIASING_FILTER;
 		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
 			for (const node1 in mapPathPoints[row1]) {
-				for (const node2 in mapPathPoints[row1][node1][row1 + 1]) {
-					if (game.traveled[row1] == node1 && game.traveled[row1 + 1] == node2) continue;
-					draw.polyline(mapPathPoints[row1][node1][row1 + 1][node2], "#b84", 3);
+				for (const node2 in mapPathPoints[row1][node1]) {
+					if (game.traveled[row1] == node1 && game.traveled == node2) continue;
+					draw.polyline(mapPathPoints[row1][node1][node2], "#b84", 3);
 				};
 			};
 		};
 		// draw traveled path
 		for (let index = area * 10 + 1; index <= (area + 1) * 10 && index < game.traveled.length; index++) {
-			draw.polyline(mapPathPoints[index - 1][game.traveled[index - 1]][index][game.traveled[index]], "#842", 3);
+			draw.polyline(mapPathPoints[index - 1][game.traveled[index - 1]][game.traveled[index]], "#842", 3);
 		};
 		ctx.filter = "none";
 		// draw nodes
@@ -1608,7 +1608,6 @@ const graphics = {
 		const coordOn = [game.floor, game.location];
 		for (let x = area * 10 + 1; x <= (area + 1) * 10; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
-				if (!(game.map[x][y] instanceof Object)) continue;
 				const type = +game.map[x][y][0];
 				const drawX = game.map[x][y][1];
 				const drawY = game.map[x][y][2];
