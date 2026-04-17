@@ -1602,7 +1602,7 @@ const graphics = {
 		};
 		// draw traveled path
 		for (let index = area * 10 + 1; index <= (area + 1) * 10 && index < game.traveled.length; index++) {
-			draw.polyline(mapPathPoints[Math.max(index - 1, area * 10)][game.traveled[Math.max(index - 1, area * 10)]][index][game.traveled[index]], "#842", 3);
+			draw.polyline(mapPathPoints[Math.max(index - 1, area * 10 + 1)][game.traveled[Math.max(index - 1, area * 10 + 1)]][index][game.traveled[index]], "#842", 3);
 		};
 		ctx.filter = "none";
 		// draw nodes
