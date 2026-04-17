@@ -1590,19 +1590,17 @@ const graphics = {
 		};
 		// draw paths
 		ctx.filter = NO_ANTI_ALIASING_FILTER;
-		for (let row1 = area * 10 + 1; row1 <= (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
+		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
 			for (const node1 in mapPathPoints[row1]) {
-				for (const row2 in mapPathPoints[row1][node1]) {
-					for (const node2 in mapPathPoints[row1][node1][row2]) {
-						if (game.traveled[row1] == node1 && game.traveled[row2] == node2) continue;
-						draw.polyline(mapPathPoints[row1][node1][row2][node2], "#b84", 3);
-					};
+				for (const node2 in mapPathPoints[row1][node1][row1 + 1]) {
+					if (game.traveled[row1] == node1 && game.traveled[row1 + 1] == node2) continue;
+					draw.polyline(mapPathPoints[row1][node1][row1 + 1][node2], "#b84", 3);
 				};
 			};
 		};
 		// draw traveled path
 		for (let index = area * 10 + 1; index <= (area + 1) * 10 && index < game.traveled.length; index++) {
-			draw.polyline(mapPathPoints[Math.max(index - 1, area * 10 + 1)][game.traveled[Math.max(index - 1, area * 10 + 1)]][index][game.traveled[index]], "#842", 3);
+			draw.polyline(mapPathPoints[index - 1][game.traveled[index - 1]][index][game.traveled[index]], "#842", 3);
 		};
 		ctx.filter = "none";
 		// draw nodes

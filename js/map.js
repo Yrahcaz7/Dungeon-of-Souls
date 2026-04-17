@@ -128,14 +128,9 @@ const generateMapPathPoints = (() => {
 	 */
 	async function getVisualMapPaths(area = get.area()) {
 		// start the generation of paths from the start of the area.
-		const startRow = area * 10;
-		const start = paths[startRow][0];
-		let arr = [];
-		for (let index = 0; index < start.length; index++) {
-			arr.push([[startRow + 1, start[index]], [startRow + 1, start[index]]]);
-		};
+		let arr = [[[area * 10, 0]]];
 		// iterate through the area, generating all of the possible paths.
-		for (let iteration = 0; iteration < 9; iteration++) {
+		for (let iteration = 0; iteration < 10; iteration++) {
 			let nextArr = [];
 			for (let path = 0; path < arr.length; path++) {
 				const lastNode = arr[path].at(-1);
@@ -148,21 +143,20 @@ const generateMapPathPoints = (() => {
 			};
 			arr = nextArr;
 		};
-		// calculate all possible visual paths for each node pair and log them in `nodePaths`.
+		// calculate all possible visual paths for each node pair and log them in `mapPathPoints`.
 		for (let path = 0; path < arr.length; path++) {
 			let visualArr = [];
 			for (let index = 0; index < arr[path].length; index++) {
-				const x = arr[path][index][0];
-				const y = arr[path][index][1];
-				const node = game.map[x][y];
-				if (node[0] === ROOM.BOSS) {
+				const node = game.map[arr[path][index][0]][arr[path][index][1]];
+				if (index === 0) {
+					const nextNode = game.map[arr[path][index + 1][0]][arr[path][index + 1][1]];
+					visualArr.push([16, nextNode[2] + 8]);
+					visualArr.push([17, nextNode[2] + 8]);
+				} else if (node[0] === ROOM.BOSS) {
 					visualArr.push([node[1] + 16, node[2] + 16]);
 					visualArr.push([node[1] + 17, node[2] + 16]);
 					visualArr.push([node[1] + 18, node[2] + 16]);
 					break;
-				} else if (index === 0) {
-					visualArr.push([16, node[2] + 8]);
-					visualArr.push([17, node[2] + 8]);
 				} else {
 					visualArr.push([node[1] + 8, node[2] + 8]);
 				};
@@ -182,23 +176,21 @@ const generateMapPathPoints = (() => {
 				};
 			};
 		};
-		// average the points in `nodePaths` for each subdivision for each node pair.
-		for (let row1 = area * 10 + 1; row1 <= (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
+		// average the points in `mapPathPoints` for each subdivision for each node pair.
+		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
 			for (const node1 in mapPathPoints[row1]) {
-				for (const row2 in mapPathPoints[row1][node1]) {
-					for (const node2 in mapPathPoints[row1][node1][row2]) {
-						const nodePair = mapPathPoints[row1][node1][row2][node2];
-						let averagePath = [];
-						for (let sub = 0; sub < nodePair.length; sub++) {
-							let total = [0, 0];
-							for (let index = 0; index < nodePair[sub].length; index++) {
-								total[0] += nodePair[sub][index][0];
-								total[1] += nodePair[sub][index][1];
-							};
-							averagePath.push([total[0] / nodePair[sub].length, total[1] / nodePair[sub].length]);
+				for (const node2 in mapPathPoints[row1][node1][row1 + 1]) {
+					const nodePair = mapPathPoints[row1][node1][row1 + 1][node2];
+					let averagePath = [];
+					for (let sub = 0; sub < nodePair.length; sub++) {
+						let total = [0, 0];
+						for (let index = 0; index < nodePair[sub].length; index++) {
+							total[0] += nodePair[sub][index][0];
+							total[1] += nodePair[sub][index][1];
 						};
-						mapPathPoints[row1][node1][row2][node2] = averagePath;
+						averagePath.push([total[0] / nodePair[sub].length, total[1] / nodePair[sub].length]);
 					};
+					mapPathPoints[row1][node1][row1 + 1][node2] = averagePath;
 				};
 			};
 		};
