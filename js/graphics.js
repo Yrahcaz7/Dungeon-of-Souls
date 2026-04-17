@@ -748,7 +748,7 @@ const info = {
 		} else if (location === S.MAP) {
 			const selection = get.availableLocations()[index];
 			if (selection !== undefined) {
-				const node = game.map[(game.floor - 1) + 1][selection];
+				const node = game.map[game.floor + 1][selection];
 				const area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0));
 				if (node[0] === ROOM.BOSS) loc = [258, 100];
 				else loc = [node[1] + 19, node[2] + 2];
@@ -1483,7 +1483,7 @@ const graphics = {
 	 */
 	rewards(focused = true) {
 		draw.box(145, 20, 110, 160, {"background-color": "#aaa"});
-		const type = (game.floor === 0 ? ROOM.BATTLE : game.map[game.floor - 1][game.location][0]);
+		const type = game.map[game.floor][game.location][0];
 		if (type === ROOM.BATTLE) draw.lore(200 - 2, 21, "Battle Loot!", {"text-align": DIR.CENTER});
 		else if (type === ROOM.TREASURE) draw.lore(200 - 2, 21, "Treasure!", {"text-align": DIR.CENTER});
 		else if (type === ROOM.ORB) draw.lore(200 - 2, 21, "Healing!", {"text-align": DIR.CENTER});
@@ -1590,7 +1590,7 @@ const graphics = {
 		};
 		// draw paths
 		ctx.filter = NO_ANTI_ALIASING_FILTER;
-		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
+		for (let row1 = area * 10 + 1; row1 <= (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
 			for (const node1 in mapPathPoints[row1]) {
 				for (const row2 in mapPathPoints[row1][node1]) {
 					for (const node2 in mapPathPoints[row1][node1][row2]) {
@@ -1601,14 +1601,14 @@ const graphics = {
 			};
 		};
 		// draw traveled path
-		for (let index = area * 10; index < (area + 1) * 10 && index < game.traveled.length; index++) {
+		for (let index = area * 10 + 1; index <= (area + 1) * 10 && index < game.traveled.length; index++) {
 			draw.polyline(mapPathPoints[Math.max(index - 1, area * 10)][game.traveled[Math.max(index - 1, area * 10)]][index][game.traveled[index]], "#842", 3);
 		};
 		ctx.filter = "none";
 		// draw nodes
-		const coordSel = [(game.floor - 1) + 1, availableLocations[game.select[1]]];
-		const coordOn = [game.floor - 1, game.location];
-		for (let x = area * 10; x < (area + 1) * 10; x++) {
+		const coordSel = [game.floor + 1, availableLocations[game.select[1]]];
+		const coordOn = [game.floor, game.location];
+		for (let x = area * 10 + 1; x <= (area + 1) * 10; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
 				if (!(game.map[x][y] instanceof Object)) continue;
 				const type = +game.map[x][y][0];

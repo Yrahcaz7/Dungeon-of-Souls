@@ -909,7 +909,7 @@ const performAction = (() => {
 				game.floor++;
 				game.location = availableLocations[0];
 				if (game.select[1] === 0) game.artifacts.push(202);
-				game.room = game.map[game.floor - 1][game.location];
+				game.room = game.map[game.floor][game.location];
 				game.select = [-1, 0];
 				game.state = STATE.ENTER;
 			};
@@ -1007,7 +1007,7 @@ const performAction = (() => {
 			} else {
 				game.floor++;
 				game.location = availableLocations[game.select[1]];
-				game.room = game.map[game.floor - 1][game.location];
+				game.room = game.map[game.floor][game.location];
 				game.select = [-1, 0];
 				game.state = STATE.ENTER;
 			};

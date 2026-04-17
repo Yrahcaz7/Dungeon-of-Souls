@@ -26,7 +26,7 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 	// calculate connections
 	let store = [];
 	for (let x = Math.max(xMin, 0); x < xMax && x < game.map.length; x++) {
-		const bossRow = (x % 10 == 9);
+		const bossRow = (x > 0 && x % 10 === 0);
 		for (let y = 0; y < (bossRow ? 1 : game.map[x].length); y++) {
 			if (!bossRow && !(game.map[x][y] instanceof Object)) continue;
 			const posY = (bossRow ? 90 : game.map[x][y][2]);
@@ -48,37 +48,28 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 		if (coords[2] > coords[0]) {
 			if (!paths[coords[0]]) paths[coords[0]] = {};
 			if (!paths[coords[0]][coords[1]]) paths[coords[0]][coords[1]] = [];
-			if (!paths[coords[0]][coords[1]].some(location => location[0] === coords[2] && location[1] === coords[3])) {
+			if (!paths[coords[0]][coords[1]].some(location => location === coords[1])) {
 				paths[coords[0]][coords[1]].push(coords[3]);
 			};
 		} else if (coords[0] > coords[2]) {
 			if (!paths[coords[2]]) paths[coords[2]] = {};
 			if (!paths[coords[2]][coords[3]]) paths[coords[2]][coords[3]] = [];
-			if (!paths[coords[2]][coords[3]].some(location => location[0] === coords[0] && location[1] === coords[1])) {
+			if (!paths[coords[2]][coords[3]].some(location => location === coords[1])) {
 				paths[coords[2]][coords[3]].push(coords[1]);
 			};
 		};
-		if (coords[0] === 0) {
-			if (!paths[-1]) paths[-1] = [];
-			if (!paths[-1].some(location => location[0] === coords[0] && location[1] === coords[1])) {
-				paths[-1].push(coords[1]);
-			};
-		} else if (coords[0] === 10) {
-			if (!paths[9]) paths[9] = {};
-			if (!paths[9][2]) paths[9][2] = [];
-			if (!paths[9][2].some(location => location[0] === coords[0] && location[1] === coords[1])) {
-				paths[9][2].push(coords[1]);
+		if (coords[0] > 1 && coords[0] % 10 === 1) {
+			if (!paths[coords[0] - 1]) paths[coords[0] - 1] = {};
+			if (!paths[coords[0] - 1][0]) paths[coords[0] - 1][0] = [];
+			if (!paths[coords[0] - 1][0].some(location => location === coords[1])) {
+				paths[coords[0] - 1][0].push(coords[1]);
 			};
 		};
 	};
 	// sort paths
 	for (const x in paths) {
-		if (x == -1) {
-			paths[x].sort();
-		} else {
-			for (const y in paths[x]) {
-				paths[x][y].sort();
-			};
+		for (const y in paths[x]) {
+			paths[x][y].sort();
 		};
 	};
 };
@@ -137,8 +128,8 @@ const generateMapPathPoints = (() => {
 	 */
 	async function getVisualMapPaths(area = get.area()) {
 		// start the generation of paths from the start of the area.
-		const startRow = (area > 0 ? area * 10 - 1 : -1);
-		const start = (area > 0 ? paths[startRow][0] : paths[-1]);
+		const startRow = area * 10;
+		const start = paths[startRow][0];
 		let arr = [];
 		for (let index = 0; index < start.length; index++) {
 			arr.push([[startRow + 1, start[index]], [startRow + 1, start[index]]]);
@@ -192,7 +183,7 @@ const generateMapPathPoints = (() => {
 			};
 		};
 		// average the points in `nodePaths` for each subdivision for each node pair.
-		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
+		for (let row1 = area * 10 + 1; row1 <= (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
 			for (const node1 in mapPathPoints[row1]) {
 				for (const row2 in mapPathPoints[row1][node1]) {
 					for (const node2 in mapPathPoints[row1][node1][row2]) {
@@ -240,15 +231,15 @@ const generateMap = (() => {
 	 * @param {number} row - the row the enemy will be contained in.
 	 */
 	function getWeakerSmallEnemy(row) {
-		const area = get.area(row + 1);
-		return [SMALL_ENEMIES[area], Math.round(((row - game.difficulty * 12 + (1 - area) * 10) * 0.05) * 100) / 100];
+		const area = get.area(row);
+		return [SMALL_ENEMIES[area], Math.round(((row - 1 - game.difficulty * 12 + (1 - area) * 10) * 0.05) * 100) / 100];
 	};
 	/**
 	 * Gets the base gold reward for a room.
 	 * @param {number} row - the row the room is in.
 	 */
 	function getGoldReward(row) {
-		return randomInt(25, 50) + (row * 2);
+		return randomInt(25, 50) + (row - 1) * 2;
 	};
 	/**
 	 * Updates the map generation progress.
@@ -271,8 +262,8 @@ const generateMap = (() => {
 	 * @param {number} attribute - the attribute of the map node, if any.
 	 */
 	function getMapNode(row, y, attribute = -1) {
-		const area = get.area(row + 1);
-		const x = 25 + ((row - area * 10) * 32) + randomInt(-5, 5);
+		const area = get.area(row);
+		const x = ((row - area * 10) * 32) - 7 + randomInt(-5, 5);
 		if (attribute === MAP_NODE.FIRST) return [ROOM.BATTLE, 0, 0, [SMALL_ENEMIES[area]], getGoldReward(row), randomCardSet(5)];
 		if (attribute === MAP_NODE.TREASURE) return [ROOM.TREASURE, x, y, [], getGoldReward(row) * 2, randomCardSet(5, 4/10)];
 		if (attribute === MAP_NODE.PRIME) return [ROOM.PRIME, x, y, [getWeakerSmallEnemy(row), PRIME_ENEMIES[area], getWeakerSmallEnemy(row)], getGoldReward(row) * 2, randomCardSet(5, 9/10), randomArtifactSet(3)];
@@ -282,7 +273,7 @@ const generateMap = (() => {
 			return [ROOM.EVENT, x, y, index, getGoldReward(row), randomCardSet(5)];
 		};
 		if (attribute === MAP_NODE.ORB) return [ROOM.ORB, x, y];
-		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, 25 + ((row - area * 10) * 32) + 10, 90, [BOSS_ENEMIES[area]], getGoldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
+		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, ((row - area * 10) * 32) + 3, 90, [BOSS_ENEMIES[area]], getGoldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
 		let type = (attribute === MAP_NODE.BATTLE || chance(3/5) ? ROOM.BATTLE : false);
 		if (rowFalses[area] >= 3 || (rowNodes[area] + rowFalses[area] === 2 && rowFalses[area] === 2)) type = ROOM.BATTLE;
 		if (type) rowNodes[area]++;
@@ -290,8 +281,8 @@ const generateMap = (() => {
 		if (!type || rowNodes[area] === 6) return false;
 		let result = [type, x, y];
 		if (type === ROOM.BATTLE) {
-			if (row % 10 >= 5) result.push(chance(1/3) ? [(chance() ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]] : (chance() ? [BIG_ENEMIES[area], getWeakerSmallEnemy(row)] : [SMALL_ENEMIES[area], SMALL_ENEMIES[area]]));
-			else result.push(chance() ? [(chance(row/10 - area) ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]] : [SMALL_ENEMIES[area], getWeakerSmallEnemy(row)]);
+			if (row % 10 >= 6) result.push(chance(1/3) ? [(chance() ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]] : (chance() ? [BIG_ENEMIES[area], getWeakerSmallEnemy(row)] : [SMALL_ENEMIES[area], SMALL_ENEMIES[area]]));
+			else result.push(chance() ? [(chance((row - 1) / 10 - area) ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]] : [SMALL_ENEMIES[area], getWeakerSmallEnemy(row)]);
 			result.push(getGoldReward(row), randomCardSet(5));
 		};
 		return result;
@@ -301,21 +292,20 @@ const generateMap = (() => {
 	 * @param {number} row - the row number.
 	 */
 	function getMapRow(row) {
-		const area = get.area(row + 1);
+		const area = get.area(row);
 		rowFalses[area] = 0;
 		rowNodes[area] = 0;
 		let nodes = [];
-		if (row % 10 === 0) {
+		if (row % 10 === 1) {
 			nodes.push(...[randomInt(1, 2), randomInt(3, 4)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.BATTLE)));
-			//if (row === 0) paths[-1] = [0, 1];
-			//else paths[row - 1][0] = [0, 1];
-		} else if (row % 10 === 8) {
+			//paths[row - 1][0] = [0, 1];
+		} else if (row % 10 === 9) {
 			if (chance()) {
 				nodes.push(...[0, 2, (chance() ? 4 : 5)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB)));
 			} else {
 				nodes.push(...[(chance() ? 0 : 1), 3, 5].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB)));
 			};
-		} else if (row % 10 === 9) {
+		} else if (row % 10 === 0) {
 			nodes.push(getMapNode(row, 90, MAP_NODE.BOSS));
 		} else {
 			for (let index = 0; index < 6; index++) {
@@ -327,7 +317,7 @@ const generateMap = (() => {
 	};
 	/**
 	 * Calculates the path types of a map row.
-	 * @param {number} row - the row number.
+	 * @param {number} row - the row number. Defaults to `pathTypes.length`.
 	 */
 	function calculatePathTypes(row = pathTypes.length) {
 		if (!game.map[row]) return;
@@ -338,10 +328,10 @@ const generateMap = (() => {
 				continue;
 			};
 			const types = [game.map[row][num][0]];
-			if (row % 10 > 0) {
+			if (row % 10 > 1) {
 				const x = row - 1;
 				for (const y in paths[x]) {
-					if (paths[x][y].some(location => location[0] === row && location[1] === num)) {
+					if (paths[x][y].some(location => location === num)) {
 						for (let index = 0; index < pathTypes[x][y].length; index++) {
 							if (!types.includes(pathTypes[x][y][index])) types.push(pathTypes[x][y][index]);
 						};
@@ -356,7 +346,7 @@ const generateMap = (() => {
 	 * Checks if a map path has any nodes of specified types.
 	 * @param {number[]} coords - the coordinates of the node to start searching from.
 	 * @param {number[]} types - an array of the node types to check for.
-	 * @param {boolean} front - whether to seach the front instead of the back.
+	 * @param {boolean} front - if true, searches from the front instead of the back.
 	 */
 	function pathHasTypes(coords, types, front = false) {
 		if (!front) {
@@ -388,15 +378,15 @@ const generateMap = (() => {
 	async function generateArea(area) {
 		let deathZones = 0;
 		const eventShift = randomInt(0, 1);
-		for (let index = 0; index < 10; index++) {
+		for (let index = 1; index <= 10; index++) {
 			const rowNum = index + area * 10;
 			game.map[rowNum] = await getMapRow(rowNum);
 			calculateMapPaths(rowNum - 1, rowNum + 1);
 			calculatePathTypes(rowNum);
-			if (rowNum % 10 > 0 && rowNum % 10 < 8) {
+			if (rowNum % 10 > 1 && rowNum % 10 < 9) {
 				let newRow = game.map[rowNum];
 				// add treasure
-				if (rowNum % 10 >= 2) {
+				if (rowNum % 10 >= 3) {
 					let available = [0, 1, 2, 3, 4, 5];
 					let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 					while (true) {
@@ -412,7 +402,7 @@ const generateMap = (() => {
 					};
 				};
 				// add death zone
-				if (rowNum % 10 >= 3 && deathZones < 2) {
+				if (rowNum % 10 >= 4 && deathZones < 2) {
 					let available = [0, 1, 2, 3, 4, 5];
 					let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 					while (true) {
@@ -429,7 +419,7 @@ const generateMap = (() => {
 					};
 				};
 				// add event
-				if (rowNum % 2 == eventShift && rowNum % 10 < 7) {
+				if (rowNum % 2 == eventShift && rowNum % 10 < 8) {
 					let available = [0, 1, 2, 3, 4, 5];
 					let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 					while (true) {
@@ -447,13 +437,13 @@ const generateMap = (() => {
 			};
 			await updateGenProg();
 		};
-		// add death zone (no calculatePathTypes is needed after this, as this is the last usage of pathHasTypes in this area)
-		let row = 3 + area * 10;
+		// add death zone (no `calculatePathTypes()` is needed after this, as this is the last usage of pathHasTypes in this area)
+		let row = 4 + area * 10;
 		while (deathZones === 0) {
 			let available = [0, 1, 2, 3, 4, 5];
 			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
 			while (true) {
-				if (game.map[row][rand] && (game.map[row][rand][0] === ROOM.TREASURE || (row % 10 == 2 && game.map[row][rand][0] === ROOM.BATTLE)) && !pathHasTypes([row, rand], [ROOM.TREASURE, ROOM.PRIME], true)) {
+				if (game.map[row][rand] && (game.map[row][rand][0] === ROOM.TREASURE || (row % 10 === 3 && game.map[row][rand][0] === ROOM.BATTLE)) && !pathHasTypes([row, rand], [ROOM.TREASURE, ROOM.PRIME], true)) {
 					game.map[row][rand] = getMapNode(row, game.map[row][rand][2], MAP_NODE.PRIME);
 					deathZones++;
 					break;
@@ -463,8 +453,8 @@ const generateMap = (() => {
 					break;
 				};
 			};
-			if (row % 10 >= 7) row = 2 + area * 10;
-			else if (row % 10 == 2) break;
+			if (row % 10 >= 7) row = 3 + area * 10;
+			else if (row % 10 === 3) break;
 			else row++;
 		};
 	};
@@ -492,7 +482,8 @@ const generateMap = (() => {
 		game.map = [];
 		game.scribbles = [-1, -1, -1, -1];
 		await updateGenProg();
-		game.firstRoom = getMapNode(0, 0, MAP_NODE.FIRST);
+		game.map[0] = [getMapNode(0, 0, MAP_NODE.FIRST)];
+		game.room = game.map[0][0];
 		await Promise.all([generateArea(0), generateArea(1)]);
 		addScribbles();
 		console.log("[map data generated in " + (performance.now() - startTime) + "ms]");
