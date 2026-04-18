@@ -1593,7 +1593,7 @@ const graphics = {
 		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
 			for (const node1 in mapPathPoints[row1]) {
 				for (const node2 in mapPathPoints[row1][node1]) {
-					if (game.traveled[row1] == node1 && game.traveled == node2) continue;
+					if (game.traveled[row1] == node1 && game.traveled[row1 + 1] == node2) continue;
 					draw.polyline(mapPathPoints[row1][node1][node2], "#b84", 3);
 				};
 			};

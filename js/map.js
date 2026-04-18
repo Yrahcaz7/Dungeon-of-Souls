@@ -52,13 +52,6 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 				paths[coords[2]][coords[3]].push(coords[1]);
 			};
 		};
-		if (coords[0] > 1 && coords[0] % 10 === 1) {
-			if (!paths[coords[0] - 1]) paths[coords[0] - 1] = [];
-			if (!paths[coords[0] - 1][0]) paths[coords[0] - 1][0] = [];
-			if (!paths[coords[0] - 1][0].some(location => location === coords[1])) {
-				paths[coords[0] - 1][0].push(coords[1]);
-			};
-		};
 	};
 	// sort paths
 	for (const x in paths) {
