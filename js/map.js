@@ -16,12 +16,26 @@
  */
 
 /**
+ * Adds the specified path to `game.paths` if it does not already exist.
+ * @param {number} fromRow - The row that the path starts from.
+ * @param {number} fromIndex - The index of the node that the path starts from.
+ * @param {number} toIndex - The index of the node that the path ends at.
+ */
+function addPath(fromRow, fromIndex, toIndex) {
+	if (!game.paths[fromRow]) game.paths[fromRow] = [];
+	if (!game.paths[fromRow][fromIndex]) game.paths[fromRow][fromIndex] = [];
+	if (!game.paths[fromRow][fromIndex].some(location => location === toIndex)) {
+		game.paths[fromRow][fromIndex].push(toIndex);
+	};
+};
+
+/**
  * Calculates the paths of a map region.
  * @param {number} xMin - the inclusive start of the map region to calculate paths for. Defaults to `0`.
  * @param {number} xMax - the exclusive end of the map region to calculate paths for. Defaults to `Infinity`.
  */
 function calculateMapPaths(xMin = 0, xMax = Infinity) {
-	// calculate connections
+	// create paths
 	let store = [];
 	for (let x = Math.max(xMin, 0); x < xMax && x < game.map.length; x++) {
 		const bossRow = (x > 0 && x % 10 === 0);
@@ -29,25 +43,10 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 			const posY = (bossRow ? 90 : game.map[x][y][2]);
 			for (const row of [x - 1, x + 1]) {
 				if (!game.map[row]) continue;
-				const nodeIndexes = getSortedIndexes(game.map[row], (a, b) => Math.abs(a[2] - posY) - Math.abs(b[2] - posY))
-				store.push([x, y, row, nodeIndexes[0]]);
-			};
-		};
-	};
-	// create paths
-	for (let index = 0; index < store.length; index++) {
-		const coords = store[index];
-		if (coords[2] > coords[0]) {
-			if (!game.paths[coords[0]]) game.paths[coords[0]] = [];
-			if (!game.paths[coords[0]][coords[1]]) game.paths[coords[0]][coords[1]] = [];
-			if (!game.paths[coords[0]][coords[1]].some(location => location === coords[1])) {
-				game.paths[coords[0]][coords[1]].push(coords[3]);
-			};
-		} else if (coords[0] > coords[2]) {
-			if (!game.paths[coords[2]]) game.paths[coords[2]] = [];
-			if (!game.paths[coords[2]][coords[3]]) game.paths[coords[2]][coords[3]] = [];
-			if (!game.paths[coords[2]][coords[3]].some(location => location === coords[1])) {
-				game.paths[coords[2]][coords[3]].push(coords[1]);
+				const nodeIndexes = getSortedIndexes(game.map[row], (a, b) => Math.abs(a[2] - posY) - Math.abs(b[2] - posY));
+				const col = nodeIndexes[0];
+				if (row > x) addPath(x, y, col);
+				else addPath(row, col, y);
 			};
 		};
 	};
@@ -274,7 +273,7 @@ const generateMap = (() => {
 		let nodes = [];
 		if (row % 10 === 1) {
 			nodes.push(...[randomInt(1, 2), randomInt(3, 4)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.BATTLE)));
-			//paths[row - 1][0] = [0, 1];
+			//game.paths[row - 1][0] = [0, 1];
 		} else if (row % 10 === 9) {
 			if (chance()) {
 				nodes.push(...[0, 2, (chance() ? 4 : 5)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB)));
