@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
+ *  Copyright (C) 2026 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -193,7 +193,7 @@ const EVENTS = {
 		}, ["Leave the ruins", 110], ["Investigate more", 120]],
 		110: [null, "Not wanting to waste even more time,\nyou turn around to leave the ruins...\nAnd you see an enemy right next to you!", ["Battle Start!", 111]],
 		111: [() => startEventBattle(BATTLE.AMBUSH, 1.1)],
-		120: [null, 'There seems to be something written on the ground...\nBut you can only make out the word "difficulty".\nThe rest is completely unreadable.\nYou also see gold coins lying around.', ["Leave the ruins", 110], ["Pocket the coins", 121]],
+		120: [null, 'There seems to be something written on the ground,\nbut you can only make out the word "difficulty".\nThe rest is completely unreadable.\nYou also see gold coins lying around.', ["Leave the ruins", 110], ["Pocket the coins", 121]],
 		121: [() => {
 			game.gold += 30;
 			logEventDamage(10, true);

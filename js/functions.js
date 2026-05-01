@@ -225,7 +225,7 @@ const get = {
 	 * @returns {number[]}
 	 */
 	availableLocations(floor = game.floor, location = game.location) {
-		return (paths[floor] || {})[location] || [];
+		return (game.paths[floor] || [])[location] || [];
 	},
 	/**
 	 * Gets the array of card positions for a hand of a certain size.

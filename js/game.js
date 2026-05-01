@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 3_000_020;
+const VERSION = 3_000_021;
 
 /**
  * Returns the starting global data.
@@ -44,7 +44,7 @@ let global = getStartGlobalData();
 
 /**
  * Returns the starting game data.
- * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, floor: number, gold: number, location: number, rewards: (number | boolean)[], state: number, turn: number, select: [number, number, [number, number] | undefined], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyStage: number, enemyAtt: [number, number, Card, boolean], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {}, room: (number | (number | number[])[])[], map: (number | (number | number[])[])[][][], scribbles: number[], traveled: number[], seed: string, randomState: number[], version: number}}
+ * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, floor: number, gold: number, location: number, rewards: (number | boolean)[], state: number, turn: number, select: [number, number, [number, number] | undefined], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyStage: number, enemyAtt: [number, number, Card, boolean], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {}, room: (number | (number | number[])[])[], map: (number | (number | number[])[])[][][], paths: number[][][], traveled: number[], scribbles: number[], seed: string, randomState: number[], version: number}}
  */
 function getStartGameData() { return {
 	character: CHARACTER.KNIGHT,
@@ -78,8 +78,9 @@ function getStartGameData() { return {
 	eff: {},
 	room: [],
 	map: [],
-	scribbles: [],
+	paths: [],
 	traveled: [],
+	scribbles: [],
 	seed: (() => {
 		let str = (Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase();
 		for (let index = str.length - 1; index > 0; index--) {

@@ -15,8 +15,6 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-let paths = [];
-
 /**
  * Calculates the paths of a map region.
  * @param {number} xMin - the inclusive start of the map region to calculate paths for. Defaults to `0`.
@@ -40,23 +38,23 @@ function calculateMapPaths(xMin = 0, xMax = Infinity) {
 	for (let index = 0; index < store.length; index++) {
 		const coords = store[index];
 		if (coords[2] > coords[0]) {
-			if (!paths[coords[0]]) paths[coords[0]] = [];
-			if (!paths[coords[0]][coords[1]]) paths[coords[0]][coords[1]] = [];
-			if (!paths[coords[0]][coords[1]].some(location => location === coords[1])) {
-				paths[coords[0]][coords[1]].push(coords[3]);
+			if (!game.paths[coords[0]]) game.paths[coords[0]] = [];
+			if (!game.paths[coords[0]][coords[1]]) game.paths[coords[0]][coords[1]] = [];
+			if (!game.paths[coords[0]][coords[1]].some(location => location === coords[1])) {
+				game.paths[coords[0]][coords[1]].push(coords[3]);
 			};
 		} else if (coords[0] > coords[2]) {
-			if (!paths[coords[2]]) paths[coords[2]] = [];
-			if (!paths[coords[2]][coords[3]]) paths[coords[2]][coords[3]] = [];
-			if (!paths[coords[2]][coords[3]].some(location => location === coords[1])) {
-				paths[coords[2]][coords[3]].push(coords[1]);
+			if (!game.paths[coords[2]]) game.paths[coords[2]] = [];
+			if (!game.paths[coords[2]][coords[3]]) game.paths[coords[2]][coords[3]] = [];
+			if (!game.paths[coords[2]][coords[3]].some(location => location === coords[1])) {
+				game.paths[coords[2]][coords[3]].push(coords[1]);
 			};
 		};
 	};
 	// sort paths
-	for (const x in paths) {
-		for (const y in paths[x]) {
-			paths[x][y].sort();
+	for (const x in game.paths) {
+		for (const y in game.paths[x]) {
+			game.paths[x][y].sort();
 		};
 	};
 };
@@ -121,8 +119,8 @@ const generateMapPathPoints = (() => {
 			let nextArr = [];
 			for (let path = 0; path < arr.length; path++) {
 				const lastNode = arr[path].at(-1);
-				for (let index = 0; index < paths[lastNode[0]][lastNode[1]].length; index++) {
-					const node = paths[lastNode[0]][lastNode[1]][index];
+				for (let index = 0; index < game.paths[lastNode[0]][lastNode[1]].length; index++) {
+					const node = game.paths[lastNode[0]][lastNode[1]][index];
 					let innerArr = arr[path].slice();
 					innerArr.push([lastNode[0] + 1, node]);
 					nextArr.push(innerArr);
@@ -308,8 +306,8 @@ const generateMap = (() => {
 			const types = [game.map[row][num][0]];
 			if (row % 10 > 1) {
 				const x = row - 1;
-				for (const y in paths[x]) {
-					if (paths[x][y].some(location => location === num)) {
+				for (const y in game.paths[x]) {
+					if (game.paths[x][y].some(location => location === num)) {
 						for (let index = 0; index < pathTypes[x][y].length; index++) {
 							if (!types.includes(pathTypes[x][y][index])) types.push(pathTypes[x][y][index]);
 						};
@@ -456,8 +454,8 @@ const generateMap = (() => {
 	return async () => {
 		const startTime = performance.now();
 		loaded = false;
-		paths = {};
 		game.map = [];
+		game.paths = [];
 		game.scribbles = [-1, -1, -1, -1];
 		await updateGenProg();
 		game.map[0] = [getMapNode(0, 0, MAP_NODE.FIRST)];
