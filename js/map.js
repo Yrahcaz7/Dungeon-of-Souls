@@ -31,9 +31,9 @@ function addPaths(fromRow, fromIndex, toIndexes) {
 	for (const index of toIndexes) {
 		if (!game.paths[fromRow][fromIndex].some(location => location === index)) {
 			game.paths[fromRow][fromIndex].push(index);
-			game.paths[fromRow][fromIndex].sort();
 		};
 	};
+	game.paths[fromRow][fromIndex].sort();
 };
 
 /**
@@ -262,30 +262,33 @@ const generateMap = (() => {
 	 * Returns a map row.
 	 * @param {number} row - the row number.
 	 */
-	function getMapRow(row) {
+	function generateMapRow(row) {
 		const area = get.area(row);
 		rowFalses[area] = 0;
 		rowNodes[area] = 0;
-		let nodes = [];
 		if (row % 10 === 1) {
-			nodes = [randomInt(1, 2), randomInt(3, 4)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.BATTLE));
+			game.map[row] = [randomInt(1, 2), randomInt(3, 4)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.BATTLE));
 			addPaths(row - 1, 0, [0, 1]);
 		} else if (row % 10 === 9) {
 			if (chance()) {
-				nodes = [0, 2, (chance() ? 4 : 5)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB));
+				game.map[row] = [0, 2, (chance() ? 4 : 5)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB));
 			} else {
-				nodes = [(chance() ? 0 : 1), 3, 5].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB));
+				game.map[row] = [(chance() ? 0 : 1), 3, 5].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB));
 			};
+			calculateMapPaths(row);
 		} else if (row % 10 === 0) {
-			nodes.push(getMapNode(row, 90, MAP_NODE.BOSS));
+			game.map[row] = [getMapNode(row, 90, MAP_NODE.BOSS)];
 			game.map[row - 1].forEach((node, index) => addPaths(row - 1, index, [0]));
 		} else {
+			let nodes = [];
 			for (let index = 0; index < 6; index++) {
 				const node = getMapNode(row, 18 + (index * 32) + randomInt(-5, 5));
 				if (node) nodes.push(node);
 			};
+			game.map[row] = nodes;
+			calculateMapPaths(row);
 		};
-		return nodes;
+		calculatePathTypes(row);
 	};
 	/**
 	 * Calculates the path types of a map row.
@@ -352,9 +355,7 @@ const generateMap = (() => {
 		const eventShift = randomInt(0, 1);
 		for (let index = 1; index <= 10; index++) {
 			const rowNum = index + area * 10;
-			game.map[rowNum] = await getMapRow(rowNum);
-			if (rowNum % 10 > 1) calculateMapPaths(rowNum);
-			calculatePathTypes(rowNum);
+			await generateMapRow(rowNum);
 			if (rowNum % 10 > 1 && rowNum % 10 < 9) {
 				let newRow = game.map[rowNum];
 				// add treasure
