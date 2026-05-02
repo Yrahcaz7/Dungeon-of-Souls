@@ -544,6 +544,23 @@ const draw = {
 		draw.rect("#fff", 1, 12, width, 1);
 	},
 	/**
+	 * Draws a row of previous game stats on the canvas.
+	 * @param {number} x - the x-coordinate to draw the row at.
+	 * @param {number} y - the y-coordinate to draw the row at.
+	 * @param {string[]} text - the text of the stats to display.
+	 * @param {string[]} styles - for each element, replaces the default style for the respective text.
+	 * @param {number} endPadding - adds extra padding at the end of the row.
+	 */
+	prevGameRow(x, y, text = [], styles = [], endPadding = 0) {
+		const totalLength = text.reduce((acc, stat) => acc + stat.replace(/<.+?>/g, "").length, 0);
+		let spacing = Math.floor((318 - endPadding - 6 * totalLength) / 3);
+		if (spacing <= 6) spacing = Math.floor((318 - endPadding - 6 * totalLength) / 2);
+		text.forEach((stat, index) => {
+			draw.lore(x + index * spacing, y, stat, styles[index] ?? {"color": "#fff"});
+			x += 6 * stat.replace(/<.+?>/g, "").length;
+		});
+	},
+	/**
 	 * Draw's an enemy's icons on the canvas.
 	 * @param {number} index - the index of the enemy.
 	 */
@@ -1891,72 +1908,64 @@ const graphics = {
 			else if (menuScroll < 0) menuScroll = 0;
 		};
 		// draw previous games
-		for (let index = 0; index < sortedPrevGames.length; index++) {
-			// first row
+		for (let index = Math.max(Math.floor((menuScroll - 18) / spaceY), 0); index < Math.min(Math.floor((menuScroll + 400 - 18) / spaceY), sortedPrevGames.length); index++) {
+			// setup
 			const prevGame = global.prevGames[sortedPrevGames[index]];
-			let x = 5;
-			let y = 18 + (index * spaceY) - menuScroll;
+			const x = 5;
+			const y = 18 + (index * spaceY) - menuScroll;
 			draw.box(x - 2, y - 2, 321, 45, {"background-color": "#0004", "border-color": "#fff"});
-			draw.lore(x, y, "<#000 highlight>Run #" + prevGame.num + "</#000>", {"color": "#000", "highlight-color": "#fff"});
-			x += 6 * 10;
-			if (prevGame.result === GAME_RESULT.DEFEAT) draw.lore(x, y, "Result: <#f00>Defeat</#f00>", {"color": "#fff"});
-			else if (prevGame.result === GAME_RESULT.VICTORY) draw.lore(x, y, "Result: <#0f0>Victory</#0f0>", {"color": "#fff"});
-			else draw.lore(x, y, "Result: <#f00>Surrender</#f00>", {"color": "#fff"});
-			x += 6 * 18;
-			if (prevGame.artifacts.includes(202)) draw.lore(x, y, "Difficulty: <#0f0>Easy</#0f0> <#f00>+ Hard</#f00>", {"color": "#fff"});
-			else if (prevGame.difficulty) draw.lore(x, y, "Difficulty: <#f00>Hard</#f00>", {"color": "#fff"});
-			else draw.lore(x, y, "Difficulty: <#0f0>Easy</#0f0>", {"color": "#fff"});
-			// second row
-			x = 5;
-			y += 11;
-			draw.lore(x, y, "Floor: " + prevGame.floor, {"color": "#fff"});
-			x += 6 * 11;
-			if (prevGame.result === GAME_RESULT.VICTORY) draw.lore(x, y, "Remaining health: <#0f0>" + prevGame.health + "</#0f0>", {"color": "#fff"});
-			else if (prevGame.health > 0) draw.lore(x, y, "Remaining health: <#f00>" + prevGame.health + "</#f00>", {"color": "#fff"});
-			else draw.lore(x, y, "Remaining health: 0", {"color": "#fff"});
-			x += 6 * 22;
-			if (prevGame.gold > 0) draw.lore(x, y, "Remaining gold: <#0f0>" + prevGame.gold + "</#0f0>", {"color": "#fff"});
-			else draw.lore(x, y, "Remaining gold: 0", {"color": "#fff"});
-			// third row
-			x = 5;
-			y += 11;
-			if (prevGame.cheat) draw.lore(x, y, "Score: <#f00>" + prevGame.score + "</#f00>", {"color": "#fff"});
-			else if (prevGame.newHighScore) draw.lore(x, y, "Score: <#0f0>" + prevGame.score + "</#0f0>", {"color": "#fff"});
-			else draw.lore(x, y, "Score: " + prevGame.score, {"color": "#fff"});
-			x += 6 * 14;
-			draw.lore(x, y, "Seed: " + prevGame.seed, {"color": "#fff"});
-			x += 6 * 14;
-			if (prevGame.startVersion == prevGame.endVersion) {
-				if (prevGame.endVersion == global.version) draw.lore(x, y, "Version: <#0f0>" + get.versionDisplay(prevGame.endVersion) + "</#0f0>", {"color": "#fff"});
-				else draw.lore(x, y, "Version: " + get.versionDisplay(prevGame.endVersion), {"color": "#fff"});
-			} else {
-				if (prevGame.endVersion == global.version) draw.lore(x, y, "Version: " + get.versionDisplay(prevGame.startVersion) + " to <#0f0>" + get.versionDisplay(prevGame.endVersion) + "</#0f0>", {"color": "#fff"});
-				else draw.lore(x, y, "Version: " + get.versionDisplay(prevGame.startVersion) + " to " + get.versionDisplay(prevGame.endVersion), {"color": "#fff"});
+			// first row (text)
+			let text = ["<#000 highlight>Run #" + prevGame.num + "</#000>", "Result: ", "Difficulty: "];
+			if (prevGame.result === GAME_RESULT.DEFEAT) text[1] += "<#f00>Defeat</#f00>";
+			else if (prevGame.result === GAME_RESULT.VICTORY) text[1] += "<#0f0>Victory</#0f0>";
+			else text[1] += "<#f00>Surrender</#f00>";
+			if (prevGame.artifacts.includes(202)) text[2] += "<#0f0>Easy</#0f0> <#f00>+ Hard</#f00>";
+			else if (prevGame.difficulty) text[2] += "<#f00>Hard</#f00>";
+			else text[2] += "<#0f0>Easy</#0f0>";
+			draw.prevGameRow(x, y, text, [{"color": "#000", "highlight-color": "#fff"}]);
+			// second row (text)
+			text = ["Floor: " + prevGame.floor, "Remaining health: ", "Remaining gold: "];
+			if (prevGame.result === GAME_RESULT.VICTORY) text[1] += "<#0f0>" + prevGame.health + "</#0f0>";
+			else if (prevGame.health > 0) text[1] += "<#f00>" + prevGame.health + "</#f00>";
+			else text[1] += "0";
+			if (prevGame.gold > 0) text[2] += "<#0f0>" + prevGame.gold + "</#0f0>";
+			else text[2] += "0";
+			draw.prevGameRow(x, y + 11, text);
+			// third row (text)
+			text = ["Score: ", "Seed: " + prevGame.seed, "Version: "];
+			if (prevGame.cheat) text[0] += "<#f00>" + prevGame.score + "</#f00>";
+			else if (prevGame.newHighScore) text[0] += "<#0f0>" + prevGame.score + "</#0f0>";
+			else text[0] += prevGame.score;
+			if (prevGame.startVersion !== prevGame.endVersion) text[2] += get.versionDisplay(prevGame.startVersion) + " to ";
+			if (prevGame.endVersion === global.version) text[2] += "<#0f0>" + get.versionDisplay(prevGame.endVersion) + "</#0f0>";
+			else text[2] += get.versionDisplay(prevGame.endVersion);
+			draw.prevGameRow(x, y + 2 * 11, text);
+			// fourth row (icons)
+			let iconWidth = 0;
+			if (prevGame.cheat) {
+				iconWidth += I.x.width;
+				draw.image(I.x, 323 - iconWidth, y + 3 * 11 - 1);
 			};
-			// fourth row (interactable row)
-			x = 5;
-			y += 11;
-			if (index * 3 == menuSelect[1] && focused) draw.lore(x, y, "> Cards: " + prevGame.cards.length, {"color": "#ff0"});
-			else draw.lore(x, y, "  Cards: " + prevGame.cards.length, {"color": "#fff"});
-			x += 6 * 12;
-			if (index * 3 + 1 == menuSelect[1] && focused) draw.lore(x, y, "> Artifacts: " + prevGame.artifacts.length, {"color": "#ff0"});
-			else draw.lore(x, y, "  Artifacts: " + prevGame.artifacts.length, {"color": "#fff"});
-			x += 6 * 16;
+			if (prevGame.character === CHARACTER.KNIGHT) {
+				iconWidth += I.player.head.width;
+				draw.image(I.player.head, 323 - iconWidth, y + 3 * 11 - 1);
+			};
+			// fourth row (interactable text)
 			let kills = 0;
 			for (const key in prevGame.kills) {
 				kills += prevGame.kills[key];
 			};
-			if (index * 3 + 2 == menuSelect[1] && focused) draw.lore(x, y, "> Enemies killed: " + kills, {"color": "#ff0"});
-			else if (kills > 0) draw.lore(x, y, "  Enemies killed: <#0f0>" + kills + "</#0f0>", {"color": "#fff"});
-			else draw.lore(x, y, "  Enemies killed: 0", {"color": "#fff"});
-			// icons
-			x = 323;
-			if (prevGame.cheat) {
-				x -= I.x.width;
-				draw.image(I.x, x, y - 1);
+			text = ["  Cards: " + prevGame.cards.length, "  Artifacts: " + prevGame.artifacts.length, "  Enemies killed: " + kills];
+			let styles = [];
+			if (focused) {
+				for (let offset = 0; offset < 3; offset++) {
+					if (index * 3 + offset !== menuSelect[1]) continue;
+					text[offset] = text[offset].replace(" ", ">");
+					styles[offset] = {"color": "#ff0"};
+				};
 			};
-			x -= I.player.head.width;
-			draw.image(I.player.head, x, y - 1);
+			if (!styles[2] && kills > 0) text[2] = "  Enemies killed: <#0f0>" + kills + "</#0f0>";
+			draw.prevGameRow(x, y + 3 * 11, text, styles, iconWidth + 6);
 		};
 		// draw top bar
 		draw.topBar("Previous Runs");
