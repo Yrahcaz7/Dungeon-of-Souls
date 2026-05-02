@@ -15,45 +15,6 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * Adds the specified paths to `game.paths` if they do not already exist.
- * @param {number} fromRow - The row that the paths start from.
- * @param {number} fromIndex - The index of the node that the paths start from.
- * @param {number[]} toIndexes - The indexes of the nodes that the paths end at.
- */
-function addPaths(fromRow, fromIndex, toIndexes) {
-	if (!game.paths[fromRow]) {
-		game.paths[fromRow] = [];
-	};
-	if (!game.paths[fromRow][fromIndex]) {
-		game.paths[fromRow][fromIndex] = [];
-	};
-	for (const index of toIndexes) {
-		if (!game.paths[fromRow][fromIndex].includes(index)) {
-			game.paths[fromRow][fromIndex].push(index);
-		};
-	};
-	game.paths[fromRow][fromIndex].sort();
-};
-
-/**
- * Calculates the paths of a map region.
- * @param {number} row - the inclusive start of the map region to calculate paths for.
- */
-function calculateMapPaths(row) {
-	for (let offset = -1; offset <= 0; offset++) {
-		for (let index = 0; index < game.map[row + offset].length; index++) {
-			const y = game.map[row + offset][index][2];
-			const nodeIndexes = getSortedIndexes(game.map[row - 1 - offset], (a, b) => Math.abs(a[2] - y) - Math.abs(b[2] - y));
-			if (offset === -1) {
-				addPaths(row - 1, index, [nodeIndexes[0]]);
-			} else {
-				addPaths(row - 1, nodeIndexes[0], [index]);
-			};
-		};
-	};
-};
-
 /** @type {{}[]} */
 let mapPathPoints = [];
 
@@ -236,8 +197,8 @@ const generateMap = (() => {
 	 */
 	function getMapNode(row, y, attribute = -1) {
 		const area = get.area(row);
-		const x = ((row - area * 10) * 32) - 7 + randomInt(-5, 5);
 		if (attribute === MAP_NODE.FIRST) return [ROOM.BATTLE, 0, 0, [SMALL_ENEMIES[area]], getGoldReward(row), randomCardSet(5)];
+		const x = ((row - area * 10) * 32) - 7 + randomInt(-5, 5);
 		if (attribute === MAP_NODE.TREASURE) return [ROOM.TREASURE, x, y, [], getGoldReward(row) * 2, randomCardSet(5, 4/10)];
 		if (attribute === MAP_NODE.PRIME) return [ROOM.PRIME, x, y, [getWeakerSmallEnemy(row), PRIME_ENEMIES[area], getWeakerSmallEnemy(row)], getGoldReward(row) * 2, randomCardSet(5, 9/10), randomArtifactSet(3)];
 		if (attribute === MAP_NODE.EVENT) {
@@ -247,17 +208,37 @@ const generateMap = (() => {
 		};
 		if (attribute === MAP_NODE.ORB) return [ROOM.ORB, x, y];
 		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, ((row - area * 10) * 32) + 3, 90, [BOSS_ENEMIES[area]], getGoldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
-		let result = [ROOM.BATTLE, x, y];
+		let node = [ROOM.BATTLE, x, y];
 		if (row % 10 >= 6) {
-			if (chance(1/3)) result.push([(chance() ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]]);
-			else if (chance()) result.push([BIG_ENEMIES[area], getWeakerSmallEnemy(row)]);
-			else result.push([SMALL_ENEMIES[area], SMALL_ENEMIES[area]]);
+			if (chance(1/3)) node.push([(chance() ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]]);
+			else if (chance()) node.push([BIG_ENEMIES[area], getWeakerSmallEnemy(row)]);
+			else node.push([SMALL_ENEMIES[area], SMALL_ENEMIES[area]]);
 		} else {
-			if (chance()) result.push([(chance((row - 1) / 10 - area) ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]]);
-			else result.push([SMALL_ENEMIES[area], getWeakerSmallEnemy(row)]);
+			if (chance()) node.push([(chance((row - 1) / 10 - area) ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]]);
+			else node.push([SMALL_ENEMIES[area], getWeakerSmallEnemy(row)]);
 		};
-		result.push(getGoldReward(row), randomCardSet(5));
-		return result;
+		node.push(getGoldReward(row), randomCardSet(5));
+		return node;
+	};
+	/**
+	 * Adds the specified paths to `game.paths` if they do not already exist.
+	 * @param {number} fromRow - The row that the paths start from.
+	 * @param {number} fromIndex - The index of the node that the paths start from.
+	 * @param {number[]} toIndexes - The indexes of the nodes that the paths end at.
+	 */
+	function addPaths(fromRow, fromIndex, toIndexes) {
+		if (!game.paths[fromRow]) {
+			game.paths[fromRow] = [];
+		};
+		if (!game.paths[fromRow][fromIndex]) {
+			game.paths[fromRow][fromIndex] = [];
+		};
+		for (const index of toIndexes) {
+			if (!game.paths[fromRow][fromIndex].includes(index)) {
+				game.paths[fromRow][fromIndex].push(index);
+			};
+		};
+		game.paths[fromRow][fromIndex].sort();
 	};
 	/**
 	 * Returns a map row.
@@ -267,9 +248,6 @@ const generateMap = (() => {
 		if (row % 10 === 1) {
 			game.map[row] = [32, randomInt(64, 96), 128].map(yOffset => getMapNode(row, 18 + yOffset + randomInt(-4, 4)));
 			addPaths(row - 1, 0, Array.from({length: game.map[row].length}, (_, i) => i));
-		} else if (row % 10 === 9) {
-			game.map[row] = [randomInt(16, 32), randomInt(64, 96), randomInt(128, 144)].map(yOffset => getMapNode(row, 18 + yOffset + randomInt(-4, 4), MAP_NODE.ORB));
-			calculateMapPaths(row);
 		} else if (row % 10 === 0) {
 			game.map[row] = [getMapNode(row, 90, MAP_NODE.BOSS)];
 			game.map[row - 1].forEach((node, index) => addPaths(row - 1, index, [0]));
@@ -277,6 +255,7 @@ const generateMap = (() => {
 			game.map[row] = [];
 			game.map[row - 1].forEach((prevNode, prevIndex) => {
 				let newNodeIndexes = ["findLastIndex", "findIndex"].map((method, side) => {
+					if (row % 10 === 9) side = 0.5;
 					let index = game.map[row][method](node => node[2] - prevNode[2] >= MAP_NODE_SPREAD * (side - 1) && node[2] - prevNode[2] <= MAP_NODE_SPREAD * side);
 					if (index === -1) {
 						const min = Math.max(prevNode[2] + MAP_NODE_SPREAD * (side - 1), MAP_NODE_MIN_Y);
@@ -287,17 +266,21 @@ const generateMap = (() => {
 						} else if (max > MAP_NODE_MAX_Y) {
 							y -= MAP_NODE_MAX_Y - max;
 						};
+						if (row % 10 === 9) y = Math.round((2 * y + 90) / 3);
 						index = game.map[row][method](node => Math.abs(node[2] - y) <= MAP_NODE_SPREAD);
 						if (index === -1) {
-							game.map[row].push(getMapNode(row, y));
+							game.map[row].push(getMapNode(row, y, (row % 10 === 9 ? MAP_NODE.ORB : -1)));
 							index = game.map[row].length - 1;
 						};
 					};
 					return index;
 				});
-				if (pathInfo[row - 1][prevIndex][ROOM.BRANCH_INFO] < row - 2 && newNodeIndexes[0] === newNodeIndexes[1]) {
-					game.map[row].push(getMapNode(row, game.map[row][newNodeIndexes[0]][2] + MAP_NODE_SPREAD + randomInt(-4, 4)));
-					newNodeIndexes[1] = game.map[row].length - 1;
+				if (row % 10 < 9 && pathInfo[row - 1][prevIndex][ROOM.BRANCH_INFO] < row - 2 && newNodeIndexes[0] === newNodeIndexes[1]) {
+					const y = game.map[row][newNodeIndexes[0]][2] + MAP_NODE_SPREAD + randomInt(-4, 4);
+					if (y <= MAP_NODE_MAX_Y) {
+						game.map[row].push(getMapNode(row, y));
+						newNodeIndexes[1] = game.map[row].length - 1;
+					};
 				};
 				addPaths(row - 1, prevIndex, newNodeIndexes);
 			});
