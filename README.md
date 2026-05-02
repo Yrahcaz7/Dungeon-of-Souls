@@ -1,6 +1,6 @@
 # Dungeon of Souls
 
-> Copyright (C) 2025 Yrahcaz7
+> Copyright (C) 2022-2026 Yrahcaz7
 >
 > [GNU General Public License (version 3)](./LICENSE.txt)
 
@@ -12,9 +12,9 @@ You are determined to get out, so you pick up some armour and start climbing up 
 
 As you go higher, you get closer to the exit, but the monsters get stronger.
 
-As time goes on, you wonder... what was the reason you were trapped here in the first place?
+As time goes on, you wonder... What was the reason you were trapped here in the first place?
 
-Is there something more to this place than what it seems?
+Is there something more to this dungeon than it seems?
 
 ## Controls
 
