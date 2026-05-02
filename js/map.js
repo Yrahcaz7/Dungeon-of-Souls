@@ -26,6 +26,7 @@ function addPath(fromRow, fromIndex, toIndex) {
 	if (!game.paths[fromRow][fromIndex]) game.paths[fromRow][fromIndex] = [];
 	if (!game.paths[fromRow][fromIndex].some(location => location === toIndex)) {
 		game.paths[fromRow][fromIndex].push(toIndex);
+		game.paths[fromRow][fromIndex].sort();
 	};
 };
 
@@ -35,25 +36,19 @@ function addPath(fromRow, fromIndex, toIndex) {
  * @param {number} xMax - the exclusive end of the map region to calculate paths for. Defaults to `Infinity`.
  */
 function calculateMapPaths(xMin = 0, xMax = Infinity) {
-	// create paths
-	let store = [];
 	for (let x = Math.max(xMin, 0); x < xMax && x < game.map.length; x++) {
 		const bossRow = (x > 0 && x % 10 === 0);
 		for (let y = 0; y < (bossRow ? 1 : game.map[x].length); y++) {
 			const posY = (bossRow ? 90 : game.map[x][y][2]);
-			for (const row of [x - 1, x + 1]) {
-				if (!game.map[row]) continue;
-				const nodeIndexes = getSortedIndexes(game.map[row], (a, b) => Math.abs(a[2] - posY) - Math.abs(b[2] - posY));
-				const col = nodeIndexes[0];
-				if (row > x) addPath(x, y, col);
-				else addPath(row, col, y);
+			const nodeSort = (a, b) => Math.abs(a[2] - posY) - Math.abs(b[2] - posY);
+			if (game.map[x + 1]) {
+				const nodeIndexes = getSortedIndexes(game.map[x + 1], nodeSort);
+				addPath(x, y, nodeIndexes[0]);
 			};
-		};
-	};
-	// sort paths
-	for (const x in game.paths) {
-		for (const y in game.paths[x]) {
-			game.paths[x][y].sort();
+			if (game.map[x - 1]) {
+				const nodeIndexes = getSortedIndexes(game.map[x - 1], nodeSort);
+				addPath(x - 1, nodeIndexes[0], y);
+			};
 		};
 	};
 };
