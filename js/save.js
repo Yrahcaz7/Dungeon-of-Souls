@@ -200,12 +200,20 @@ const loadSave = (() => {
 	let obj = {};
 	/**
 	 * Updates `suffix`, `item`, and `obj` according to `newSuffix`.
-	 * @param {string} newSuffix 
+	 * @param {string} newSuffix - the suffix to use for updating.
 	 */
 	function updateData(newSuffix) {
 		suffix = newSuffix;
 		item = localStorage.getItem(ID + suffix);
 		obj = parseSave(item);
+	};
+	/**
+	 * Archives a save with the specified suffix.
+	 * @param {string} archiveSuffix - the suffix of the archive.
+	 */
+	function archiveSave(archiveSuffix) {
+		localStorage.setItem(ID + archiveSuffix, item);
+		localStorage.removeItem(ID + suffix);
 	};
 	return async () => {
 		const startTime = performance.now();
@@ -223,14 +231,15 @@ const loadSave = (() => {
 				Object.assign(global, obj);
 				global.options = defaultOptions;
 				Object.assign(global.options, obj.options);
+				updateData("/master");
+				if (obj?.version) archiveSave("/old/global");
 			} else {
 				if (!obj) {
 					updateData("/master");
 				};
 				if (obj) {
 					if (obj.version) {
-						localStorage.setItem(ID + "/old/global", item);
-						localStorage.removeItem(ID + suffix);
+						archiveSave("/old/global");
 					} else {
 						console.log("global save has no version number. creating new save...");
 						newGlobal = true;
@@ -248,16 +257,14 @@ const loadSave = (() => {
 				const runVersion = obj.version;
 				Object.assign(game, obj);
 				game.version = runVersion ?? 0;
+				updateData("/0");
+				if (obj) archiveSave("/old/run");
 			} else {
 				if (!obj) {
 					updateData("/0");
 				};
-				if (obj) {
-					localStorage.setItem(ID + "/old/run", item);
-					localStorage.removeItem(ID + suffix);
-				} else {
-					console.log("no local save found. creating new save...");
-				};
+				if (obj) archiveSave("/old/run");
+				else console.log("no local save found. creating new save...");
 			};
 		};
 		// fix old save (this isn't called on saves old enough to not have a version number, as those are reset anyway)
