@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 3_000_030;
+const VERSION = 3_000_031;
 
 /**
  * Returns the starting global data.
@@ -466,22 +466,23 @@ function updateVisuals() {
 			draw.box(80 + 2, 83, 240 - 4, 34);
 			if (game.difficulty === 0) draw.lore(200 - 1, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the \"?\" at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
 			else draw.lore(200 - 1, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start much stronger from the beginning.\nAnd by much stronger, I mean <#f00>MUCH STRONGER</#f00>.\nOtherwise, it is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
-		} else if (menuSelect[0] === MENU.PREV_GAMES || menuSelect[0] === MENU.PREV_GAME_INFO || menuSelect[0] === MENU.PREV_GAME_SORT || menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
+		} else if ([MENU.PREV_GAMES, MENU.PREV_GAME_INFO, MENU.PREV_GAME_SORT, MENU.CONF_REMOVE_PREV_GAME].includes(menuSelect[0])) {
 			graphics.prevGames(menuSelect[0] === MENU.PREV_GAMES);
 		};
-		if (menuSelect[0] === MENU.ENTER_SEED) {
-			graphics.seedInput();
-		} else if (menuSelect[0] === MENU.PREV_GAME_INFO) {
+		if (menuSelect[0] === MENU.PREV_GAME_INFO) {
 			if (menuSelect[1] % 3 === 0) graphics.deck();
 			else if (menuSelect[1] % 3 == 1) graphics.prevGameArtifacts();
 			else if (menuSelect[1] % 3 == 2) graphics.prevGameKills();
 		} else if (menuSelect[0] === MENU.PREV_GAME_SORT) {
 			graphics.prevGameSort();
-		}
+		};
 		if (game.select[0] === S.WELCOME) {
 			return;
-		} else if (menuSelect[0] === MENU.START_NEW_RUN || menuSelect[0] === MENU.CHANGE_DIFFICULTY || menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED || menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME || menuSelect[0] === MENU.OLD_SAVE_ALERT || menuSelect[0] === MENU.OLD_SAVE_COPY_FAILED) {
+		} else if ([MENU.START_NEW_RUN, MENU.CHANGE_DIFFICULTY, MENU.CHANGE_SEED, MENU.ENTER_SEED, MENU.CONF_REMOVE_PREV_GAME, MENU.OLD_SAVE_ALERT, MENU.OLD_SAVE_COPY_FAILED].includes(menuSelect[0])) {
 			graphics.conf(menuSelect[0] !== MENU.ENTER_SEED);
+		};
+		if (menuSelect[0] === MENU.ENTER_SEED) {
+			graphics.seedInput();
 		};
 		if (hasArtifact(202) && game.floor == 10 && transition < 100) transition++;
 		return;

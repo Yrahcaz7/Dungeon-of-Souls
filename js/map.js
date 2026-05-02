@@ -467,7 +467,8 @@ const generateMap = (() => {
 		await updateGenProg();
 		game.map[0] = [getMapNode(0, 0, MAP_NODE.FIRST)];
 		game.room = game.map[0][0];
-		await Promise.all([generateArea(0), generateArea(1)]);
+		await generateArea(0);
+		await generateArea(1);
 		addScribbles();
 		console.log("[map data generated in " + (performance.now() - startTime) + "ms]");
 		await generateMapPathPoints();
