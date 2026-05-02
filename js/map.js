@@ -29,7 +29,7 @@ function addPaths(fromRow, fromIndex, toIndexes) {
 		game.paths[fromRow][fromIndex] = [];
 	};
 	for (const index of toIndexes) {
-		if (!game.paths[fromRow][fromIndex].some(location => location === index)) {
+		if (!game.paths[fromRow][fromIndex].includes(index)) {
 			game.paths[fromRow][fromIndex].push(index);
 		};
 	};
@@ -196,7 +196,9 @@ const generateMap = (() => {
 	let genProg = 0;
 	const MAP_NODE_MIN_Y = 18 - 4;
 	const MAP_NODE_MAX_Y = 18 + 160 + 4;
-	let pathTypes = [];
+	const MAP_NODE_SPREAD = 32;
+	/** @type {{}[][]} */
+	let pathInfo = [];
 	/**
 	 * Gets a weaker small enemy in the map syntax.
 	 * @param {number} row - the row the enemy will be contained in.
@@ -266,64 +268,64 @@ const generateMap = (() => {
 			game.map[row] = [32, randomInt(64, 96), 128].map(yOffset => getMapNode(row, 18 + yOffset + randomInt(-4, 4)));
 			addPaths(row - 1, 0, Array.from({length: game.map[row].length}, (_, i) => i));
 		} else if (row % 10 === 9) {
-			game.map[row] = [randomInt(0, 32), randomInt(64, 96), randomInt(128, 160)].map(yOffset => getMapNode(row, 18 + yOffset + randomInt(-4, 4), MAP_NODE.ORB));
+			game.map[row] = [randomInt(16, 32), randomInt(64, 96), randomInt(128, 144)].map(yOffset => getMapNode(row, 18 + yOffset + randomInt(-4, 4), MAP_NODE.ORB));
 			calculateMapPaths(row);
 		} else if (row % 10 === 0) {
 			game.map[row] = [getMapNode(row, 90, MAP_NODE.BOSS)];
 			game.map[row - 1].forEach((node, index) => addPaths(row - 1, index, [0]));
 		} else {
-			const inc = 32;
 			game.map[row] = [];
 			game.map[row - 1].forEach((prevNode, prevIndex) => {
-				["findLastIndex", "findIndex"].forEach((method, methodIndex) => {
-					let index = game.map[row][method](node => node[2] - prevNode[2] >= inc * (methodIndex - 1) && node[2] - prevNode[2] <= inc * methodIndex);
+				let newNodeIndexes = ["findLastIndex", "findIndex"].map((method, side) => {
+					let index = game.map[row][method](node => node[2] - prevNode[2] >= MAP_NODE_SPREAD * (side - 1) && node[2] - prevNode[2] <= MAP_NODE_SPREAD * side);
 					if (index === -1) {
-						const min = Math.max(prevNode[2] + inc * (methodIndex - 1), MAP_NODE_MIN_Y);
-						const max = Math.min(prevNode[2] + inc * methodIndex, MAP_NODE_MAX_Y);
+						const min = Math.max(prevNode[2] + MAP_NODE_SPREAD * (side - 1), MAP_NODE_MIN_Y);
+						const max = Math.min(prevNode[2] + MAP_NODE_SPREAD * side, MAP_NODE_MAX_Y);
 						let y = randomInt(min, max);
 						if (min < MAP_NODE_MIN_Y) {
 							y += MAP_NODE_MIN_Y - min;
 						} else if (max > MAP_NODE_MAX_Y) {
 							y -= MAP_NODE_MAX_Y - max;
 						};
-						index = game.map[row][method](node => Math.abs(node[2] - y) <= inc);
+						index = game.map[row][method](node => Math.abs(node[2] - y) <= MAP_NODE_SPREAD);
 						if (index === -1) {
 							game.map[row].push(getMapNode(row, y));
 							index = game.map[row].length - 1;
 						};
 					};
-					addPaths(row - 1, prevIndex, [index]);
+					return index;
 				});
+				if (pathInfo[row - 1][prevIndex][ROOM.BRANCH_INFO] < row - 2 && newNodeIndexes[0] === newNodeIndexes[1]) {
+					game.map[row].push(getMapNode(row, game.map[row][newNodeIndexes[0]][2] + MAP_NODE_SPREAD + randomInt(-4, 4)));
+					newNodeIndexes[1] = game.map[row].length - 1;
+				};
+				addPaths(row - 1, prevIndex, newNodeIndexes);
 			});
 		};
-		calculatePathTypes(row);
+		calculatePathInfo(row);
 	};
 	/**
-	 * Calculates the path types of a map row.
-	 * @param {number} row - the row number. Defaults to `pathTypes.length`.
+	 * Calculates the path types and branch info of a map row.
+	 * @param {number} row - the row number.
 	 */
-	function calculatePathTypes(row = pathTypes.length) {
-		if (!game.map[row]) return;
-		const arr = [];
-		for (let num = 0; num < game.map[row].length; num++) {
-			if (!game.map[row][num]) {
-				arr.push([]);
-				continue;
-			};
-			const types = [game.map[row][num][0]];
+	function calculatePathInfo(row) {
+		const area = get.area(row);
+		pathInfo[row] = [];
+		for (let index = 0; index < game.map[row].length; index++) {
+			pathInfo[row][index] = {[game.map[row][index][0]]: row, [ROOM.BRANCH_INFO]: area * 10};
 			if (row % 10 > 1) {
 				const x = row - 1;
-				for (const y in game.paths[x]) {
-					if (game.paths[x][y].some(location => location === num)) {
-						for (let index = 0; index < pathTypes[x][y].length; index++) {
-							if (!types.includes(pathTypes[x][y][index])) types.push(pathTypes[x][y][index]);
+				game.paths[x].forEach((toIndexes, y) => {
+					if (toIndexes.includes(index)) {
+						for (const key in pathInfo[x][y]) {
+							pathInfo[row][index][key] = Math.max(pathInfo[row][index][key], pathInfo[x][y][key]);
 						};
+						if (toIndexes.length > 1) pathInfo[row][index][ROOM.BRANCH_INFO] = row;
+						else pathInfo[row][index][ROOM.BRANCH_INFO] = pathInfo[x][y][ROOM.BRANCH_INFO];
 					};
-				};
+				});
 			};
-			arr.push(types);
 		};
-		pathTypes[row] = arr;
 	};
 	/**
 	 * Checks if a map path has any nodes of specified types.
@@ -334,7 +336,7 @@ const generateMap = (() => {
 	function pathHasTypes(coords, types, front = false) {
 		if (!front) {
 			for (let index = 0; index < types.length; index++) {
-				if (pathTypes[coords[0]][coords[1]].includes(types[index])) return true;
+				if (pathInfo[coords[0]][coords[1]][types[index]] !== undefined) return true;
 			};
 			return false;
 		};
@@ -373,7 +375,7 @@ const generateMap = (() => {
 					while (true) {
 						if (newRow[rand] && !pathHasTypes([rowNum, rand], [ROOM.TREASURE, ROOM.PRIME])) {
 							newRow[rand] = getMapNode(rowNum, newRow[rand][2], MAP_NODE.TREASURE);
-							calculatePathTypes(rowNum);
+							calculatePathInfo(rowNum);
 							break;
 						} else if (available.length) {
 							rand = available.splice(randomInt(0, available.length - 1), 1)[0];
@@ -390,7 +392,7 @@ const generateMap = (() => {
 						if (newRow[rand] && newRow[rand][0] !== ROOM.TREASURE && !pathHasTypes([rowNum, rand], [ROOM.TREASURE, ROOM.PRIME])) {
 							newRow[rand] = getMapNode(rowNum, newRow[rand][2], MAP_NODE.PRIME);
 							deathZones++;
-							calculatePathTypes(rowNum);
+							calculatePathInfo(rowNum);
 							break;
 						} else if (available.length) {
 							rand = available.splice(randomInt(0, available.length - 1), 1)[0];
@@ -406,7 +408,7 @@ const generateMap = (() => {
 					while (true) {
 						if (newRow[rand] && newRow[rand][0] !== ROOM.TREASURE && newRow[rand][0] !== ROOM.PRIME && !pathHasTypes([rowNum, rand], [ROOM.EVENT])) {
 							newRow[rand] = getMapNode(rowNum, newRow[rand][2], MAP_NODE.EVENT);
-							calculatePathTypes(rowNum);
+							calculatePathInfo(rowNum);
 							break;
 						} else if (available.length) {
 							rand = available.splice(randomInt(0, available.length - 1), 1)[0];
