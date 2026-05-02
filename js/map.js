@@ -268,13 +268,13 @@ const generateMap = (() => {
 		rowNodes[area] = 0;
 		let nodes = [];
 		if (row % 10 === 1) {
-			nodes.push(...[randomInt(1, 2), randomInt(3, 4)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.BATTLE)));
+			nodes = [randomInt(1, 2), randomInt(3, 4)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.BATTLE));
 			addPaths(row - 1, 0, [0, 1]);
 		} else if (row % 10 === 9) {
 			if (chance()) {
-				nodes.push(...[0, 2, (chance() ? 4 : 5)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB)));
+				nodes = [0, 2, (chance() ? 4 : 5)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB));
 			} else {
-				nodes.push(...[(chance() ? 0 : 1), 3, 5].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB)));
+				nodes = [(chance() ? 0 : 1), 3, 5].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB));
 			};
 		} else if (row % 10 === 0) {
 			nodes.push(getMapNode(row, 90, MAP_NODE.BOSS));
