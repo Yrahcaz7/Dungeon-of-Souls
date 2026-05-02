@@ -22,7 +22,7 @@ let mapPathPoints = [];
  * Generates the visual points of all paths in the map and saves them.
  */
 const generateMapPathPoints = (() => {
-	const MAP_PATH_SUBDIVISIONS = 32;
+	const PATH_SUBDIVISIONS = 32;
 	/**
 	 * Returns an array of points that represent the subdivided path of `points`.
 	 * @param {number[][]} points - an array of points that represents a path.
@@ -31,15 +31,15 @@ const generateMapPathPoints = (() => {
 		const t = [];
 		const tSquared = [];
 		const tCubed = [];
-		const increment = 1 / (MAP_PATH_SUBDIVISIONS + 1);
-		for (let sub = 0; sub < MAP_PATH_SUBDIVISIONS; sub++) {
+		const increment = 1 / (PATH_SUBDIVISIONS + 1);
+		for (let sub = 0; sub < PATH_SUBDIVISIONS; sub++) {
 			t[sub] = (sub + 1) * increment;
 			tSquared[sub] = t[sub] * t[sub];
 			tCubed[sub] = tSquared[sub] * t[sub];
 		};
 		let pathPoints = [points[0]];
 		for (let index = 1; index < points.length - 2; index++) {
-			const subdivisionIndex = 1 + (index - 1) * (MAP_PATH_SUBDIVISIONS + 1);
+			const subdivisionIndex = 1 + (index - 1) * (PATH_SUBDIVISIONS + 1);
 			pathPoints[subdivisionIndex] = points[index];
 			const p0 = points[index - 1];
 			const p1 = points[index];
@@ -53,7 +53,7 @@ const generateMapPathPoints = (() => {
 			let cy = -p0[1] + p2[1];
 			let dx = 2 * p1[0];
 			let dy = 2 * p1[1];
-			for (let sub = 0; sub < MAP_PATH_SUBDIVISIONS; sub++) {
+			for (let sub = 0; sub < PATH_SUBDIVISIONS; sub++) {
 				pathPoints[subdivisionIndex + sub + 1] = [];
 				pathPoints[subdivisionIndex + sub + 1][0] = 0.5 * (ax * tCubed[sub] + bx * tSquared[sub] + cx * t[sub] + dx);
 				pathPoints[subdivisionIndex + sub + 1][1] = 0.5 * (ay * tCubed[sub] + by * tSquared[sub] + cy * t[sub] + dy);
@@ -104,13 +104,13 @@ const generateMapPathPoints = (() => {
 			};
 			let pathPoints = getSubdividedPath(visualArr);
 			for (let index = 1; index < visualArr.length - 3; index++) {
-				const subdivisionIndex = 1 + (index - 1) * (MAP_PATH_SUBDIVISIONS + 1);
+				const subdivisionIndex = 1 + (index - 1) * (PATH_SUBDIVISIONS + 1);
 				if (!mapPathPoints[arr[path][index - 1][0]]) mapPathPoints[arr[path][index - 1][0]] = [];
 				if (!mapPathPoints[arr[path][index - 1][0]][arr[path][index - 1][1]]) mapPathPoints[arr[path][index - 1][0]][arr[path][index - 1][1]] = {};
 				const firstNode = mapPathPoints[arr[path][index - 1][0]][arr[path][index - 1][1]];
 				if (!firstNode[arr[path][index][1]]) firstNode[arr[path][index][1]] = [];
 				const nodePair = firstNode[arr[path][index][1]];
-				for (let sub = 0; sub < MAP_PATH_SUBDIVISIONS + 2; sub++) {
+				for (let sub = 0; sub < PATH_SUBDIVISIONS + 2; sub++) {
 					if (!nodePair[sub]) nodePair[sub] = [];
 					nodePair[sub].push(pathPoints[subdivisionIndex + sub]);
 				};
@@ -148,6 +148,21 @@ const SMALL_ENEMIES = [SLIME.SMALL, SENTRY.SMALL];
 const PRIME_ENEMIES = [SLIME.PRIME, SENTRY.PRIME];
 const SPECIAL_ENEMIES = [SLIME.STICKY, SENTRY.FLAMING];
 const BOSS_ENEMIES = [FRAGMENT, SINGULARITY];
+
+/**
+ * Returns the type of a battle, or `-1` if the specified node is not a battle.
+ * @param {(number | (number | number[])[])[]} node - the node to get the battle type of.
+ */
+function getBattleType(node) {
+	if (node[0] === ROOM.BATTLE) {
+		if (node[3].length === 1) {
+			return (BIG_ENEMIES.includes(node[3][0]) ? 0 : 3);
+		} else if (node[3].length === 2) {
+			return (BIG_ENEMIES.includes(node[3][0]) ? 2 : 1);
+		};
+	};
+	return -1;
+};
 
 /**
  * Generates a map and saves it.
@@ -296,18 +311,18 @@ const generateMap = (() => {
 		pathInfo[row] = [];
 		for (let index = 0; index < game.map[row].length; index++) {
 			pathInfo[row][index] = {[game.map[row][index][0]]: row, [ROOM.BRANCH_INFO]: area * 10};
-			if (row % 10 > 1) {
-				const x = row - 1;
-				game.paths[x].forEach((toIndexes, y) => {
-					if (toIndexes.includes(index)) {
-						for (const key in pathInfo[x][y]) {
-							pathInfo[row][index][key] = Math.max(pathInfo[row][index][key], pathInfo[x][y][key]);
-						};
-						if (toIndexes.length > 1) pathInfo[row][index][ROOM.BRANCH_INFO] = row;
-						else pathInfo[row][index][ROOM.BRANCH_INFO] = pathInfo[x][y][ROOM.BRANCH_INFO];
+			const battleType = getBattleType(game.map[row][index]);
+			if (battleType >= 0) pathInfo[row][index][ROOM.BATTLE_0 + battleType] = row;
+			if (row % 10 <= 1) continue;
+			const x = row - 1;
+			game.paths[x].forEach((toIndexes, y) => {
+				if (toIndexes.includes(index)) {
+					for (const key in pathInfo[x][y]) {
+						pathInfo[row][index][key] = Math.max(pathInfo[row][index][key], pathInfo[x][y][key]);
 					};
-				});
-			};
+					if (toIndexes.length > 1) pathInfo[row][index][ROOM.BRANCH_INFO] = row;
+				};
+			});
 		};
 	};
 	/**

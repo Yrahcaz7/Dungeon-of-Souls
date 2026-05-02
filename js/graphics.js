@@ -1625,7 +1625,7 @@ const graphics = {
 		const coordOn = [game.floor, game.location];
 		for (let x = area * 10 + 1; x <= (area + 1) * 10; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
-				const type = +game.map[x][y][0];
+				const type = game.map[x][y][0];
 				const drawX = game.map[x][y][1];
 				const drawY = game.map[x][y][2];
 				if (I.map.node[type] instanceof Image) {
@@ -1637,11 +1637,7 @@ const graphics = {
 				} else {
 					let num = -1;
 					if (game.map[x][y][0] === ROOM.BATTLE) {
-						if (game.map[x][y][3].length === 1) {
-							num = (BIG_ENEMIES.includes(game.map[x][y][3][0]) ? 0 : 3);
-						} else if (game.map[x][y][3].length === 2) {
-							num = (BIG_ENEMIES.includes(game.map[x][y][3][0]) ? 2 : 1);
-						};
+						num = getBattleType(game.map[x][y]);
 					} else if (game.map[x][y][0] === ROOM.TREASURE) {
 						num = (game.traveled[x] == y ? 1 : 0);
 					};
