@@ -194,7 +194,7 @@ const loadSave = (() => {
 			prevGame.cards = prevGame.cards.map(card => Card.classify(card));
 		};
 	};
-	const versionCutoff = 3_000_021;
+	const versionCutoff = 3_000_027;
 	let suffix = "";
 	let item = "";
 	let obj = {};

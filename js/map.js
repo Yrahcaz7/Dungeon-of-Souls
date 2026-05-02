@@ -42,13 +42,13 @@ function addPaths(fromRow, fromIndex, toIndexes) {
  */
 function calculateMapPaths(row) {
 	for (let offset = -1; offset <= 0; offset++) {
-		for (let y = 0; y < game.map[row + offset].length; y++) {
-			const posY = game.map[row + offset][y][2];
-			const nodeIndexes = getSortedIndexes(game.map[row - 1 - offset], (a, b) => Math.abs(a[2] - posY) - Math.abs(b[2] - posY));
+		for (let index = 0; index < game.map[row + offset].length; index++) {
+			const y = game.map[row + offset][index][2];
+			const nodeIndexes = getSortedIndexes(game.map[row - 1 - offset], (a, b) => Math.abs(a[2] - y) - Math.abs(b[2] - y));
 			if (offset === -1) {
-				addPaths(row - 1, y, [nodeIndexes[0]]);
+				addPaths(row - 1, index, [nodeIndexes[0]]);
 			} else {
-				addPaths(row - 1, nodeIndexes[0], [y]);
+				addPaths(row - 1, nodeIndexes[0], [index]);
 			};
 		};
 	};
@@ -194,8 +194,8 @@ const BOSS_ENEMIES = [FRAGMENT, SINGULARITY];
 const generateMap = (() => {
 	const GEN_STEPS = 20;
 	let genProg = 0;
-	let rowFalses = [0, 0];
-	let rowNodes = [0, 0];
+	const MAP_NODE_MIN_Y = 18 - 4;
+	const MAP_NODE_MAX_Y = 18 + 160 + 4;
 	let pathTypes = [];
 	/**
 	 * Gets a weaker small enemy in the map syntax.
@@ -245,17 +245,16 @@ const generateMap = (() => {
 		};
 		if (attribute === MAP_NODE.ORB) return [ROOM.ORB, x, y];
 		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, ((row - area * 10) * 32) + 3, 90, [BOSS_ENEMIES[area]], getGoldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
-		let type = (attribute === MAP_NODE.BATTLE || chance(3/5) ? ROOM.BATTLE : false);
-		if (rowFalses[area] >= 3 || (rowNodes[area] + rowFalses[area] === 2 && rowFalses[area] === 2)) type = ROOM.BATTLE;
-		if (type) rowNodes[area]++;
-		else rowFalses[area]++;
-		if (!type || rowNodes[area] === 6) return false;
-		let result = [type, x, y];
-		if (type === ROOM.BATTLE) {
-			if (row % 10 >= 6) result.push(chance(1/3) ? [(chance() ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]] : (chance() ? [BIG_ENEMIES[area], getWeakerSmallEnemy(row)] : [SMALL_ENEMIES[area], SMALL_ENEMIES[area]]));
-			else result.push(chance() ? [(chance((row - 1) / 10 - area) ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]] : [SMALL_ENEMIES[area], getWeakerSmallEnemy(row)]);
-			result.push(getGoldReward(row), randomCardSet(5));
+		let result = [ROOM.BATTLE, x, y];
+		if (row % 10 >= 6) {
+			if (chance(1/3)) result.push([(chance() ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]]);
+			else if (chance()) result.push([BIG_ENEMIES[area], getWeakerSmallEnemy(row)]);
+			else result.push([SMALL_ENEMIES[area], SMALL_ENEMIES[area]]);
+		} else {
+			if (chance()) result.push([(chance((row - 1) / 10 - area) ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]]);
+			else result.push([SMALL_ENEMIES[area], getWeakerSmallEnemy(row)]);
 		};
+		result.push(getGoldReward(row), randomCardSet(5));
 		return result;
 	};
 	/**
@@ -263,30 +262,39 @@ const generateMap = (() => {
 	 * @param {number} row - the row number.
 	 */
 	function generateMapRow(row) {
-		const area = get.area(row);
-		rowFalses[area] = 0;
-		rowNodes[area] = 0;
 		if (row % 10 === 1) {
-			game.map[row] = [randomInt(1, 2), randomInt(3, 4)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.BATTLE));
-			addPaths(row - 1, 0, [0, 1]);
+			game.map[row] = [32, randomInt(64, 96), 128].map(yOffset => getMapNode(row, 18 + yOffset + randomInt(-4, 4)));
+			addPaths(row - 1, 0, Array.from({length: game.map[row].length}, (_, i) => i));
 		} else if (row % 10 === 9) {
-			if (chance()) {
-				game.map[row] = [0, 2, (chance() ? 4 : 5)].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB));
-			} else {
-				game.map[row] = [(chance() ? 0 : 1), 3, 5].map(col => getMapNode(row, 18 + (col * 32) + randomInt(-5, 5), MAP_NODE.ORB));
-			};
+			game.map[row] = [randomInt(0, 32), randomInt(64, 96), randomInt(128, 160)].map(yOffset => getMapNode(row, 18 + yOffset + randomInt(-4, 4), MAP_NODE.ORB));
 			calculateMapPaths(row);
 		} else if (row % 10 === 0) {
 			game.map[row] = [getMapNode(row, 90, MAP_NODE.BOSS)];
 			game.map[row - 1].forEach((node, index) => addPaths(row - 1, index, [0]));
 		} else {
-			let nodes = [];
-			for (let index = 0; index < 6; index++) {
-				const node = getMapNode(row, 18 + (index * 32) + randomInt(-5, 5));
-				if (node) nodes.push(node);
-			};
-			game.map[row] = nodes;
-			calculateMapPaths(row);
+			const inc = 32;
+			game.map[row] = [];
+			game.map[row - 1].forEach((prevNode, prevIndex) => {
+				["findLastIndex", "findIndex"].forEach((method, methodIndex) => {
+					let index = game.map[row][method](node => node[2] - prevNode[2] >= inc * (methodIndex - 1) && node[2] - prevNode[2] <= inc * methodIndex);
+					if (index === -1) {
+						const min = Math.max(prevNode[2] + inc * (methodIndex - 1), MAP_NODE_MIN_Y);
+						const max = Math.min(prevNode[2] + inc * methodIndex, MAP_NODE_MAX_Y);
+						let y = randomInt(min, max);
+						if (min < MAP_NODE_MIN_Y) {
+							y += MAP_NODE_MIN_Y - min;
+						} else if (max > MAP_NODE_MAX_Y) {
+							y -= MAP_NODE_MAX_Y - max;
+						};
+						index = game.map[row][method](node => Math.abs(node[2] - y) <= inc);
+						if (index === -1) {
+							game.map[row].push(getMapNode(row, y));
+							index = game.map[row].length - 1;
+						};
+					};
+					addPaths(row - 1, prevIndex, [index]);
+				});
+			});
 		};
 		calculatePathTypes(row);
 	};
