@@ -747,11 +747,11 @@ const info = {
 			loc = [395 - index * 19 - desc.length * 6, 22];
 		} else if (location === S.MAP) {
 			const selection = get.availableLocations()[index];
-			if (selection) {
-				const node = game.map[selection[0]][selection[1]];
+			if (selection !== undefined) {
+				const node = game.map[game.floor + 1][selection];
 				const area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0));
 				if (node[0] === ROOM.BOSS) loc = [258, 100];
-				else loc = [25 + ((selection[0] - area * 10) * 32) + node[1] + 19, 18 + (selection[1] * 32) + node[2] + 2];
+				else loc = [node[1] + 19, node[2] + 2];
 				if (node[0] === ROOM.BATTLE) desc = "Enter Battle";
 				else if (node[0] === ROOM.TREASURE) desc = "Claim Treasure";
 				else if (node[0] === ROOM.PRIME) desc = "Enter Death Zone";
@@ -1483,7 +1483,7 @@ const graphics = {
 	 */
 	rewards(focused = true) {
 		draw.box(145, 20, 110, 160, {"background-color": "#aaa"});
-		const type = (game.location[0] === -1 ? ROOM.BATTLE : game.map[game.location[0]][game.location[1]][0]);
+		const type = game.map[game.floor][game.location][0];
 		if (type === ROOM.BATTLE) draw.lore(200 - 2, 21, "Battle Loot!", {"text-align": DIR.CENTER});
 		else if (type === ROOM.TREASURE) draw.lore(200 - 2, 21, "Treasure!", {"text-align": DIR.CENTER});
 		else if (type === ROOM.ORB) draw.lore(200 - 2, 21, "Healing!", {"text-align": DIR.CENTER});
@@ -1581,44 +1581,37 @@ const graphics = {
 		draw.lore(1, 1, "Floor " + game.floor + " - " + game.gold + " gold", {"color": "#fff"});
 		draw.lore(399, 1, "Seed: " + game.seed, {"color": "#fff", "text-align": DIR.LEFT});
 		// draw scribbles
-		for (let x = area * 10; x < (area + 1) * 10; x++) {
-			for (let y = 0; y < game.map[x].length; y++) {
-				if (typeof game.map[x][y] != "number") continue;
-				draw.image(I.map.scribble_back, 25 + ((x - area * 10) * 32) + 8 - 4, 18 + (y * 32) + 8 - 3 - 2.5, 80 / 2, 80 / 2);
-				draw.imageSector(I.map.scribbles, game.map[x][y] * 64, 0, 64, 70, 25 + ((x - area * 10) * 32) + 8, 18 + (y * 32) + 8 - 3, 64 / 2, 70 / 2);
-			};
+		for (let index = area * 2; index < (area + 1) * 2 && index < game.scribbles.length; index++) {
+			if (game.scribbles[index] < 0) continue;
+			const x = 35 + 9 * 32;
+			const y = 24.5 + 4 * (index % 2) * 32;
+			draw.image(I.map.scribble_back, x - 4, y - 2.5, 80 / SCALE, 80 / SCALE);
+			draw.imageSector(I.map.scribbles, game.scribbles[index] * 64, 0, 64, 70, x, y, 64 / SCALE, 70 / SCALE);
 		};
 		// draw paths
 		ctx.filter = NO_ANTI_ALIASING_FILTER;
 		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
 			for (const node1 in mapPathPoints[row1]) {
-				for (const row2 in mapPathPoints[row1][node1]) {
-					for (const node2 in mapPathPoints[row1][node1][row2]) {
-						if (game.traveled[row1] == node1 && game.traveled[row2] == node2) continue;
-						draw.polyline(mapPathPoints[row1][node1][row2][node2], "#b84", 3);
-					};
+				for (const node2 in mapPathPoints[row1][node1]) {
+					if (game.traveled[row1] == node1 && game.traveled[row1 + 1] == node2) continue;
+					draw.polyline(mapPathPoints[row1][node1][node2], "#b84", 3);
 				};
 			};
 		};
 		// draw traveled path
-		for (let index = area * 10; index < (area + 1) * 10 && index < game.traveled.length; index++) {
-			draw.polyline(mapPathPoints[Math.max(index - 1, area * 10)][game.traveled[Math.max(index - 1, area * 10)]][index][game.traveled[index]], "#842", 3);
+		for (let index = area * 10 + 1; index <= (area + 1) * 10 && index < game.traveled.length; index++) {
+			draw.polyline(mapPathPoints[index - 1][game.traveled[index - 1]][game.traveled[index]], "#842", 3);
 		};
 		ctx.filter = "none";
 		// draw nodes
-		const coordSel = availableLocations[game.select[1]] ? availableLocations[game.select[1]] : [];
-		const coordOn = game.location ? game.location : [];
-		for (let x = area * 10; x < (area + 1) * 10; x++) {
+		const coordSel = [game.floor + 1, availableLocations[game.select[1]]];
+		const coordOn = [game.floor, game.location];
+		for (let x = area * 10 + 1; x <= (area + 1) * 10; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
-				if (!(game.map[x][y] instanceof Object)) continue;
 				const type = +game.map[x][y][0];
-				let drawX = 25 + ((x - area * 10) * 32) + game.map[x][y][1];
-				let drawY = 18 + (y * 32) + game.map[x][y][2];
+				const drawX = game.map[x][y][1];
+				const drawY = game.map[x][y][2];
 				if (I.map.node[type] instanceof Image) {
-					if (game.map[x][y][0] === ROOM.BOSS) {
-						drawX += 10;
-						drawY = 90;
-					};
 					if (focused) {
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo[type], drawX - 1, drawY - 1);
 						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo[type], drawX - 1, drawY - 1);
@@ -1788,17 +1781,38 @@ const graphics = {
 	 */
 	conf(focused = true) {
 		let text = ["Are you sure?"];
-		if (menuSelect[0] === MENU.START_NEW_RUN) text = ["Are you sure you want to start a new run?", "If you have an ongoing run, it will be lost forever."];
-		else if (menuSelect[0] === MENU.CHANGE_DIFFICULTY) text = ["Are you sure you want to change the difficulty to " + (game.difficulty ? "easy" : "hard") + "?", "If you have an ongoing run, it will be reset."];
-		else if (menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED) text = ["Are you sure you want to change the seed?", "If you have an ongoing run, it will be reset.", "The new run will also not count towards your high score."];
-		else if (menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) text = ["Are you sure you want to remove run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[2][1] / 3)]].num + " from the list?", "This will permanently remove all of its information."];
-		else if (game.select[0] === S.CONF_END_TURN) text = ["Are you sure you want to end your turn?"];
-		else if (game.select[0] === S.CONF_EXIT) text = ["Are you sure you want to finish collecting rewards?", "There are still rewards left unclaimed."];
-		else if (game.select[0] === S.CONF_SURRENDER) text = ["Are you sure you want to end your current run by surrendering?", "This choice cannot be undone."];
-		else if (game.select[0] === S.CONF_HAND_ALIGN) text = ["Are you sure you want to align the hands of time?", "You will regret it. There is no going back."];
-		else if (game.select[0] === S.CONF_PURIFY) text = ["Are you sure you want to destroy the card " + game.cards[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only destroy one copy of the card."];
-		else if (game.select[0] === S.CONF_REFINE) text = ["Are you sure you want to improve the card " + refinableDeck[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only improve one copy of the card."];
-		else if (game.select[0] === S.CONF_PEARL) text = ["As the dark cloud clears, you see a strange pearl resting on the ground.", "Will you pick it up? This will consume 1 energy."];
+		let options = ["YES", "NO"];
+		if (menuSelect[0] === MENU.START_NEW_RUN) {
+			text = ["Are you sure you want to start a new run?", "If you have an ongoing run, it will be lost forever!"];
+		} else if (menuSelect[0] === MENU.CHANGE_DIFFICULTY) {
+			text = ["Are you sure you want to change the difficulty to " + (game.difficulty ? "easy" : "hard") + "?", "If you have an ongoing run, it will be reset!"];
+		} else if (menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED) {
+			text = ["Are you sure you want to change the seed?", "If you have an ongoing run, it will be reset!", "The new run will also not count towards your high score."];
+		} else if (menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
+			text = ["Are you sure you want to remove run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[2][1] / 3)]].num + " from the list?", "This will permanently remove all of its information."];
+		} else if (menuSelect[0] === MENU.OLD_SAVE_ALERT) {
+			text = ["ALERT: You have an old save from version " + get.versionDisplay(parseSave(localStorage.getItem(ID + "/old/global"))?.version || 0) + ", do you want to keep it?", "(You can play old versions by downloading the files from GitHub)"];
+			options = ["DISMISS", "COPY SAVE", "DELETE SAVE"];
+		} else if (menuSelect[0] === MENU.OLD_SAVE_COPY_FAILED) {
+			text = ["The old save could not be copied. Make sure this page has clipboard permissions.", "Try to copy old save again?"];
+		} else if (game.select[0] === S.CONF_END_TURN) {
+			text = ["Are you sure you want to end your turn?"];
+		} else if (game.select[0] === S.CONF_EXIT) {
+			text = ["Are you sure you want to finish collecting rewards?", "There are still rewards left unclaimed."];
+		} else if (game.select[0] === S.CONF_SURRENDER) {
+			text = ["Are you sure you want to end your current run by surrendering?", "This choice cannot be undone."];
+		} else if (game.select[0] === S.CONF_HAND_ALIGN) {
+			text = ["Are you sure you want to align the hands of time?", "You will regret it. There is no going back."];
+			options = ["YES", "NO", "BACK"];
+		} else if (game.select[0] === S.CONF_PURIFY) {
+			text = ["Are you sure you want to destroy the card " + game.cards[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only destroy one copy of the card."];
+			options = ["YES", "RESELECT", "BACK"];
+		} else if (game.select[0] === S.CONF_REFINE) {
+			text = ["Are you sure you want to improve the card " + refinableDeck[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only improve one copy of the card."];
+			options = ["YES", "BACK"];
+		} else if (game.select[0] === S.CONF_PEARL) {
+			text = ["As the dark cloud clears, you see a strange pearl resting on the ground.", "Will you pick it up? This will consume 1 energy."];
+		};
 		let width = 39;
 		for (let index = 0; index < text.length; index++) {
 			const size = text[index].length * 3 + 2;
@@ -1812,37 +1826,24 @@ const graphics = {
 		draw.lore(x + 1, y + 1, text.join("\n"), {"text-small": true});
 		if (focused) {
 			const select = (menuSelect[0] == -1 ? game.select[1] : menuSelect[1]);
-			if (select === 0) {
-				draw.rect("#fff", x, y + height - 14, 23, 14);
-			} else if (select == 1) {
-				if (game.select[0] === S.CONF_PURIFY) draw.rect("#fff", x + 22, y + height - 14, 53, 14);
-				else if (game.select[0] === S.CONF_REFINE) draw.rect("#fff", x + 22, y + height - 14, 29, 14);
-				else draw.rect("#fff", x + 22, y + height - 14, 17, 14);
-			} else {
-				if (game.select[0] === S.CONF_HAND_ALIGN) draw.rect("#fff", x + 38, y + height - 14, 29, 14);
-				else if (game.select[0] === S.CONF_PURIFY) draw.rect("#fff", x + 74, y + height - 14, 29, 14);
+			let offset = 0;
+			for (let index = 0; index < options.length; index++) {
+				const boxWidth = options[index].length * 6 + 1;
+				if (select === index) draw.rect("#fff", x + offset, y + height - 14, boxWidth + 4, 14);
+				offset += boxWidth + 3;
 			};
 		};
-		draw.box(x + 2, y + height - 12, 19, 10);
-		draw.lore(x + 3, y + height - 11, "YES");
-		if (game.select[0] === S.CONF_PURIFY) {
-			draw.box(x + 24, y + height - 12, 49, 10);
-			draw.lore(x + 25, y + height - 11, "RESELECT");
-			draw.box(x + 76, y + height - 12, 25, 10);
-			draw.lore(x + 77, y + height - 11, "BACK");
-		} else if (game.select[0] === S.CONF_REFINE) {
-			draw.box(x + 24, y + height - 12, 25, 10);
-			draw.lore(x + 25, y + height - 11, "BACK");
+		let offset = 0;
+		for (let index = 0; index < options.length; index++) {
+			const boxWidth = options[index].length * 6 + 1;
+			draw.box(x + 2 + offset, y + height - 12, boxWidth, 10);
+			draw.lore(x + 3 + offset, y + height - 11, options[index]);
+			offset += boxWidth + 3;
+		};
+		if (game.select[0] === S.CONF_REFINE) {
 			draw.card(refinableDeck[game.cardSelect], 100, 51, true, true);
 			draw.card(new Card(refinableDeck[game.cardSelect].id, 1), 234, 51, true, true);
 			draw.image(I.card.refine, 200 - I.card.refine.width / 2, 95);
-		} else {
-			draw.box(x + 24, y + height - 12, 13, 10);
-			draw.lore(x + 25, y + height - 11, "NO");
-		};
-		if (game.select[0] === S.CONF_HAND_ALIGN) {
-			draw.box(x + 40, y + height - 12, 25, 10);
-			draw.lore(x + 41, y + height - 11, "BACK");
 		};
 	},
 	/**

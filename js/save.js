@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
+ *  Copyright (C) 2026 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@ const ID = "Yrahcaz7/Dungeon-of-Souls/save";
  * Saves the game.
  */
 function save() {
-	if (game) localStorage.setItem(ID + "/0", btoa(JSON.stringify(game)));
-	if (global) localStorage.setItem(ID + "/master", btoa(JSON.stringify(global)));
+	if (game) localStorage.setItem(ID + "/v3/run", btoa(JSON.stringify(game)));
+	if (global) localStorage.setItem(ID + "/v3/global", btoa(JSON.stringify(global)));
 };
 
 /**
@@ -150,6 +150,22 @@ async function endRun(startNewRun = false, newDifficulty = game.difficulty) {
 };
 
 /**
+ * Parses a save. Returns `null` on failure.
+ * @param {string | null} str - The save to parse.
+ * @returns {Object | null}
+ */
+function parseSave(str) {
+	if (!str) return null;
+	try {
+		const obj = JSON.parse(atob(str));
+		if (obj instanceof Object) return obj;
+	} catch (error) {
+		console.warn(error);
+	};
+	return null;
+};
+
+/**
  * Loads the save. Creates a new save if there is no save to load.
  */
 const loadSave = (() => {
@@ -158,144 +174,6 @@ const loadSave = (() => {
 	 * @param {number} version - The version the save is from.
 	 */
 	function fixSave(version) {
-		// version 2.1.0
-		if (version < 2_001_000) {
-			// `game.deckPos` is now named `game.deckScroll`
-			game.deckScroll = game.deckPos;
-			delete game.deckPos;
-			// `game.cardSelect` is now a number
-			game.cardSelect = 0;
-		};
-		// version 2.1.4
-		if (version < 2_001_004) {
-			// `game.location` is now an array of numbers
-			if (game.location == "-1") game.location = [-1];
-			else game.location = game.location.split(", ").map(Number);
-		};
-		// version 2.1.13
-		if (version < 2_001_013) {
-			// cards screen is now its own screen
-			if (game.select[0] === S.MAP && game.select[1]) game.select = [S.CARDS, 0];
-			else if (game.select[2] && game.select[2][0] === S.MAP && game.select[2][1]) game.select[2] = [S.CARDS, 0];
-			// `game.mapSelect` is now a part of `game.select`
-			if (game.select[0] === S.MAP) {
-				game.select[1] = game.mapSelect;
-				delete game.mapSelect;
-			} else if (game.select[2] && game.select[2][0] === S.MAP) {
-				game.select[2][1] = game.mapSelect;
-				delete game.mapSelect;
-			} else {
-				delete game.mapSelect;
-			};
-		};
-		// version 2.1.15
-		if (version < 2_001_015) {
-			// enemies in the map syntax with custom power are now arrays
-			const fixEnemyArray = arr => {
-				if (!(arr instanceof Array)) return;
-				for (let index = 0; index < arr.length; index++) {
-					if (typeof arr[index] == "string") {
-						arr[index] = arr[index].split(", ").map(Number);
-					};
-				};
-			};
-			for (let x = 0; x < game.map.length; x++) {
-				for (let y = 0; y < game.map[x].length; y++) {
-					if (!(game.map[x][y] instanceof Array)) continue;
-					fixEnemyArray(game.map[x][y][3]);
-				};
-			};
-			fixEnemyArray(game.room[3]);
-		};
-		// version 2.1.23
-		if (version < 2_001_023) {
-			// card effects are now in the `Card.eff` property
-			const fixCard = obj => {
-				if (!obj.eff) obj.eff = {};
-				if (obj[CARD_EFF.COST_REDUCTION]) {
-					obj.eff[CARD_EFF.COST_REDUCTION] = obj[CARD_EFF.COST_REDUCTION];
-					delete obj[CARD_EFF.COST_REDUCTION];
-				};
-				if (obj[CARD_EFF.RETENTION]) {
-					obj.eff[CARD_EFF.RETENTION] = obj[CARD_EFF.RETENTION];
-					delete obj[CARD_EFF.RETENTION];
-				};
-			};
-			for (let index = 0; index < game.hand.length; index++) {
-				fixCard(game.hand[index]);
-			};
-			fixCard(game.enemyAtt[2]);
-		};
-		// version 2.2.1
-		if (version < 2_002_001) {
-			// `game.deck` is now named `game.cards`
-			game.cards = game.deck;
-			delete game.deck;
-			// `game.deckLocal` is now named `game.deck`
-			game.deck = game.deckLocal;
-			delete game.deckLocal;
-		};
-		// version 2.2.17
-		if (version < 2_002_017) {
-			// `game.enemyStage` now always uses `ANIM.STARTING` instead of `-1`
-			if (game.enemyStage === -1) game.enemyStage = ANIM.STARTING;
-		};
-		// version 2.2.20
-		if (version < 2_002_020) {
-			// it is now impossible to get a card with applied effects in `game.cards`
-			for (let index = 0; index < game.cards.length; index++) {
-				game.cards[index].eff = {};
-			};
-		};
-		// version 2.2.44
-		if (version < 2_002_044) {
-			// `game.rewards` is now an array of arrays instead of an array of strings
-			game.rewards = game.rewards.map(str => {
-				const arr = [REWARD.FINISH];
-				const items = ("" + str).split(" ");
-				for (const key in REWARD_NAME) {
-					if (REWARD_NAME[key] === items[1]) {
-						arr[0] = +key;
-						break;
-					};
-				};
-				if (items[1] === "gold" || items[1] === "health") arr[1] = +items[0];
-				if (items.length >= 4) arr[2] = true;
-				return arr;
-			});
-		};
-		// version 2.2.47
-		if (version < 2_002_047) {
-			// card and artifact reward selections now use negative indexes for the back button
-			if ((game.select[0] === S.CARD_REWARD && game.select[1] === get.cardRewardChoices()) || (game.select[0] === S.ARTIFACT_REWARD && game.select[1] === 3)) {
-				game.select[1] = -game.select[1];
-			};
-		};
-		// version 2.3.21
-		if (version < 2_003_021) {
-			// deck/discard/void viewing now always uses game.select[2]
-			if ((game.select[0] === S.DECK || game.select[0] === S.DISCARD || game.select[0] === S.VOID) && game.select[1] === 1 && !game.select[2]) {
-				game.select[2] = [game.select[0], 0];
-			} else if (game.select[2] && (game.select[2][0] === S.DECK || game.select[2][0] === S.DISCARD || game.select[2][0] === S.VOID) && game.select[2][1] === 1) {
-				game.select[2][1] = 0;
-			};
-		};
-		// version 2.3.28
-		if (version < 2_003_028) {
-			// events now cannot get stuck on non-numeric paths
-			if (game.select[0] === S.EVENT && typeof game.turn == "string") {
-				const turn = +game.turn.slice(0, -1);
-				game.turn = (isNaN(turn) ? 10000 : Math.max(turn, 10000));
-			};
-		};
-		// version 2.3.34
-		if (version < 2_003_034) {
-			// previous games can now be deleted, so their numbers must be stored so they don't change
-			for (let index = 0; index < global.prevGames.length; index++) {
-				global.prevGames[index].num = index + 1;
-			};
-			global.nextGameNum = global.prevGames.length + 1;
-		};
 		// reset GAME_OVER and GAME_WON screen fade-in (all versions)
 		if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) game.select[1] = 0;
 		// fix in-progress player attack (all versions)
@@ -316,49 +194,70 @@ const loadSave = (() => {
 			prevGame.cards = prevGame.cards.map(card => Card.classify(card));
 		};
 	};
+	const versionCutoff = 3_000_021;
+	let suffix = "";
+	let item = "";
+	let obj = {};
+	/**
+	 * Updates `suffix`, `item`, and `obj` according to `newSuffix`.
+	 * @param {string} newSuffix 
+	 */
+	function updateData(newSuffix) {
+		suffix = newSuffix;
+		item = localStorage.getItem(ID + suffix);
+		obj = parseSave(item);
+	};
 	return async () => {
 		const startTime = performance.now();
 		let oldVersion = 0;
 		let newGlobal = false;
-		// load global stuff
-		let get = localStorage.getItem(ID + "/master");
-		if (get && atob(get) && JSON.parse(atob(get))) {
-			let obj = JSON.parse(atob(get));
-			if (obj.version) {
+		// load global data
+		{
+			updateData("/v3/global");
+			if (obj) {
 				oldVersion = obj.version;
+			};
+			if (obj && oldVersion >= versionCutoff) {
 				obj.version = global.version;
 				const defaultOptions = global.options;
 				Object.assign(global, obj);
 				global.options = defaultOptions;
 				Object.assign(global.options, obj.options);
 			} else {
-				console.log("global save has no version number. creating new save...");
-				newGlobal = true;
+				if (!obj) {
+					updateData("/master");
+				};
+				if (obj) {
+					if (obj.version) {
+						localStorage.setItem(ID + "/old/global", item);
+						localStorage.removeItem(ID + suffix);
+					} else {
+						console.log("global save has no version number. creating new save...");
+						newGlobal = true;
+					};
+				} else {
+					console.log("no global save found. creating new save...");
+					newGlobal = true;
+				};
 			};
-		} else {
-			console.log("no global save found. creating new save...");
-			newGlobal = true;
 		};
 		// load current run
 		if (!newGlobal) {
-			get = localStorage.getItem(ID + "/0");
-			if (get && atob(get) && JSON.parse(atob(get))) {
-				let obj = JSON.parse(atob(get));
-				if (obj.newSave) {
-					// This is kept for compatibility so new saves don't break if people keep their tabs open.
-					// If the game version in the tab is from before v2.2.30, it will still use this method.
-					// After enough time has passed, this method can be removed. Maybe a month? A year?
-					// No one keeps their tabs open for that long, right?
-					game.difficulty = obj.difficulty;
-					if (obj.seed) game.seed = obj.seed;
-					if (obj.cheat) game.cheat = obj.cheat;
-				} else {
-					let runVersion = obj.version;
-					Object.assign(game, obj);
-					game.version = runVersion ?? 0;
-				};
+			updateData("/v3/run");
+			if (obj && oldVersion >= versionCutoff) {
+				const runVersion = obj.version;
+				Object.assign(game, obj);
+				game.version = runVersion ?? 0;
 			} else {
-				console.log("no local save found. creating new save...");
+				if (!obj) {
+					updateData("/0");
+				};
+				if (obj) {
+					localStorage.setItem(ID + "/old/run", item);
+					localStorage.removeItem(ID + suffix);
+				} else {
+					console.log("no local save found. creating new save...");
+				};
 			};
 		};
 		// fix old save (this isn't called on saves old enough to not have a version number, as those are reset anyway)
@@ -371,11 +270,13 @@ const loadSave = (() => {
 		updateRandom();
 		changeMusic();
 		if (game.map.length > 0) {
-			calculateMapPaths();
 			await generateMapPathPoints();
 			updateHandPos();
 		} else {
 			menuSelect = [MENU.MAIN, 1];
+		};
+		if (parseSave(localStorage.getItem(ID + "/old/global")) || parseSave(localStorage.getItem(ID + "/old/run"))) {
+			menuSelect = [MENU.OLD_SAVE_ALERT, 0];
 		};
 	};
 })();
