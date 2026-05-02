@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
+ *  Copyright (C) 2026 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -498,7 +498,9 @@ const generateMap = (() => {
 		paths = {};
 		game.map = [];
 		await updateGenProg();
-		await Promise.all([(async () => game.firstRoom = await getMapNode(0, MAP_NODE.FIRST))(), generateArea(0), generateArea(1)]);
+		game.firstRoom = await getMapNode(0, MAP_NODE.FIRST)
+		await generateArea(0);
+		await generateArea(1);
 		addScribbles();
 		console.log("[map data generated in " + (performance.now() - startTime) + "ms]");
 		await generateMapPathPoints();

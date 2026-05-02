@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_063;
+const VERSION = 2_003_064;
 
 /**
  * Returns the starting global data.
@@ -472,17 +472,18 @@ function updateVisuals() {
 		} else if (menuSelect[0] === MENU.PREV_GAMES || menuSelect[0] === MENU.PREV_GAME_INFO || menuSelect[0] === MENU.PREV_GAME_SORT || menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
 			graphics.prevGames(menuSelect[0] === MENU.PREV_GAMES);
 		};
-		if (menuSelect[0] === MENU.ENTER_SEED) {
-			graphics.seedInput();
-		} else if (menuSelect[0] === MENU.PREV_GAME_INFO) {
+		if (menuSelect[0] === MENU.PREV_GAME_INFO) {
 			if (menuSelect[1] % 3 === 0) graphics.deck();
 			else if (menuSelect[1] % 3 == 1) graphics.prevGameArtifacts();
 			else if (menuSelect[1] % 3 == 2) graphics.prevGameKills();
 		} else if (menuSelect[0] === MENU.PREV_GAME_SORT) {
 			graphics.prevGameSort();
-		}
+		};
 		if (menuSelect[0] === MENU.START_NEW_RUN || menuSelect[0] === MENU.CHANGE_DIFFICULTY || menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED || menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
 			graphics.conf(menuSelect[0] !== MENU.ENTER_SEED);
+		};
+		if (menuSelect[0] === MENU.ENTER_SEED) {
+			graphics.seedInput();
 		};
 		if (hasArtifact(202) && game.floor == 10 && transition < 100) transition++;
 		return;
