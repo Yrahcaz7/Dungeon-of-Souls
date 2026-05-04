@@ -173,6 +173,7 @@ const generateMap = (() => {
 	const MAP_NODE_MIN_Y = 18 - 4;
 	const MAP_NODE_MAX_Y = 18 + 160 + 4;
 	const MAP_NODE_SPREAD = 32;
+	const MAP_NODE_BATTLE_TYPES = [ROOM.BATTLE_0, ROOM.BATTLE_1, ROOM.BATTLE_2, ROOM.BATTLE_3];
 	/** @type {{}[][]} */
 	let pathInfo = [];
 	/**
@@ -209,8 +210,9 @@ const generateMap = (() => {
 	 * @param {number} row - the row of the map node.
 	 * @param {number} y - the y-coordinate of the map node.
 	 * @param {number} attribute - the attribute of the map node, if any.
+	 * @param {number[]} battleTypes - the possible battle types the map node can have. Defaults to all of them.
 	 */
-	function getMapNode(row, y, attribute = -1) {
+	function getMapNode(row, y, attribute = -1, battleTypes = MAP_NODE_BATTLE_TYPES) {
 		const area = get.area(row);
 		if (attribute === MAP_NODE.FIRST) return [ROOM.BATTLE, 0, 0, [SMALL_ENEMIES[area]], getGoldReward(row), randomCardSet(5)];
 		const x = ((row - area * 10) * 32) - 7 + randomInt(-5, 5);
@@ -224,14 +226,27 @@ const generateMap = (() => {
 		if (attribute === MAP_NODE.ORB) return [ROOM.ORB, x, y];
 		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, ((row - area * 10) * 32) + 3, 90, [BOSS_ENEMIES[area]], getGoldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
 		let node = [ROOM.BATTLE, x, y];
+		let typeWeights = [0, 0, 0, 0];
 		if (row % 10 >= 6) {
-			if (chance(1/3)) node.push([(chance() ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]]);
-			else if (chance()) node.push([BIG_ENEMIES[area], getWeakerSmallEnemy(row)]);
-			else node.push([SMALL_ENEMIES[area], SMALL_ENEMIES[area]]);
+			typeWeights = [1, 2, 2, 1];
 		} else {
-			if (chance()) node.push([(chance((row - 1) / 10 - area) ? SPECIAL_ENEMIES : BIG_ENEMIES)[area]]);
-			else node.push([SMALL_ENEMIES[area], getWeakerSmallEnemy(row)]);
+			const specialWeight = Math.max(row - 10 * area - 1, 0);
+			typeWeights = [10 - specialWeight, 10, 0, specialWeight];
 		};
+		for (let index = 0; index < typeWeights.length; index++) {
+			if (!battleTypes.includes(ROOM.BATTLE_0 + index)) {
+				typeWeights[index] = 0;
+			};			
+		};
+		const totalWeight = typeWeights.reduce((total, weight) => total + weight);
+		if (totalWeight <= 0) {
+			throw RangeError("Cannot construct a battle room that has no type");
+		};
+		const typeRand = random() * totalWeight;
+		if (typeRand < typeWeights[0]) node.push([BIG_ENEMIES[area]]);
+		else if (typeRand < typeWeights[0] + typeWeights[1]) node.push([SMALL_ENEMIES[area], SMALL_ENEMIES[area]]);
+		else if (typeRand < typeWeights[0] + typeWeights[1] + typeWeights[2]) node.push([BIG_ENEMIES[area], getWeakerSmallEnemy(row)]);
+		else node.push([SPECIAL_ENEMIES[area]]);
 		node.push(getGoldReward(row), randomCardSet(5));
 		return node;
 	};
@@ -269,6 +284,10 @@ const generateMap = (() => {
 		} else {
 			game.map[row] = [];
 			game.map[row - 1].forEach((prevNode, prevIndex) => {
+				let battleTypes = MAP_NODE_BATTLE_TYPES.filter(type => {
+					return !pathInfo[row - 1][prevIndex][type] || pathInfo[row - 1][prevIndex][type] < row - 1;
+				});
+				if (battleTypes.length === 0) battleTypes = MAP_NODE_BATTLE_TYPES.slice();
 				let newNodeIndexes = ["findLastIndex", "findIndex"].map((method, side) => {
 					if (row % 10 === 9) side = 0.5;
 					let index = game.map[row][method](node => node[2] - prevNode[2] >= MAP_NODE_SPREAD * (side - 1) && node[2] - prevNode[2] <= MAP_NODE_SPREAD * side);
@@ -284,7 +303,7 @@ const generateMap = (() => {
 						if (row % 10 === 9) y = Math.round((2 * y + 90) / 3);
 						index = game.map[row][method](node => Math.abs(node[2] - y) <= MAP_NODE_SPREAD);
 						if (index === -1) {
-							game.map[row].push(getMapNode(row, y, (row % 10 === 9 ? MAP_NODE.ORB : -1)));
+							game.map[row].push(getMapNode(row, y, (row % 10 === 9 ? MAP_NODE.ORB : -1), battleTypes));
 							index = game.map[row].length - 1;
 						};
 					};
@@ -293,7 +312,7 @@ const generateMap = (() => {
 				if (row % 10 < 9 && pathInfo[row - 1][prevIndex][ROOM.BRANCH_INFO] < row - 2 && newNodeIndexes[0] === newNodeIndexes[1]) {
 					const y = game.map[row][newNodeIndexes[0]][2] + MAP_NODE_SPREAD + randomInt(-4, 4);
 					if (y <= MAP_NODE_MAX_Y) {
-						game.map[row].push(getMapNode(row, y));
+						game.map[row].push(getMapNode(row, y, -1, battleTypes));
 						newNodeIndexes[1] = game.map[row].length - 1;
 					};
 				};
@@ -318,7 +337,7 @@ const generateMap = (() => {
 			game.paths[x].forEach((toIndexes, y) => {
 				if (toIndexes.includes(index)) {
 					for (const key in pathInfo[x][y]) {
-						pathInfo[row][index][key] = Math.max(pathInfo[row][index][key], pathInfo[x][y][key]);
+						pathInfo[row][index][key] = Math.max(pathInfo[row][index][key] ?? -Infinity, pathInfo[x][y][key]);
 					};
 					if (toIndexes.length > 1) pathInfo[row][index][ROOM.BRANCH_INFO] = row;
 				};
