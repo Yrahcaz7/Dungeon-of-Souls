@@ -274,35 +274,34 @@ const draw = {
 		// check for size tags
 		if (str.includes("<b>") || str.includes("<big>") || str.includes("<s>") || str.includes("<small>")) {
 			str = str.replace(/<\/b>|<\/big>|<\/s>|<\/small>/g, "");
-			let array = str.split(/<(?=b>|big>|s>|small>)/g);
+			let arr = str.split(/<(?=b>|big>|s>|small>)/);
 			let space = 0;
-			if (!array[0]) array.splice(0, 1);
-			for (let index = 0; index < array.length; index++) {
-				if (array[index].includes("s>") || array[index].includes("small>")) {
-					array[index] = array[index].replace(/s>|small>/, "");
+			if (!arr[0]) arr.splice(0, 1);
+			for (let index = 0; index < arr.length; index++) {
+				if (arr[index].includes("s>") || arr[index].includes("small>")) {
+					arr[index] = arr[index].replace(/s>|small>/, "").replace(/^\n/, "");
 					let obj = {};
 					Object.assign(obj, style);
 					obj["text-small"] = true;
-					space += draw.lore(x, y + space, array[index], obj);
-				} else if (array[index].includes("b>") || array[index].includes("big>")) {
-					array[index] = array[index].replace(/b>|big>/, "");
+					space += draw.lore(x, y + space, arr[index], obj);
+				} else if (arr[index].includes("b>") || arr[index].includes("big>")) {
+					arr[index] = arr[index].replace(/b>|big>/, "").replace(/^\n/, "");
 					let obj = {};
 					Object.assign(obj, style);
 					obj["text-small"] = false;
-					space += draw.lore(x, y + space, array[index], obj);
+					space += draw.lore(x, y + space, arr[index], obj);
 				} else {
-					space += draw.lore(x, y + space, array[index], style);
+					space += draw.lore(x, y + space, arr[index], style);
 				};
 			};
 			return space;
 		};
 		// print special multi-line text
 		if (str.includes("\n") && textAlign !== DIR.RIGHT) {
-			let array = str.split("\n");
+			let arr = str.split("\n");
 			let space = 0;
-			if (!array[0]) array.splice(0, 1);
-			for (let index = 0; index < array.length; index++) {
-				space += draw.lore(x, y + space, array[index], style);
+			for (let index = 0; index < arr.length; index++) {
+				space += draw.lore(x, y + space, arr[index], style);
 			};
 			return space;
 		};
@@ -311,7 +310,7 @@ const draw = {
 			// check for color tags
 			if (str.charAt(a) == "<") {
 				const cut = str.slice(a + 1), tag = cut.slice(0, cut.indexOf(" ") == -1 ? cut.indexOf(">") : Math.min(cut.indexOf(">"), cut.indexOf(" ")));
-				if (color == tag.slice(1) && tag.startsWith("/")) {
+				if (color === tag.slice(1) && tag.startsWith("/")) {
 					highlight = "";
 					color = style["color"];
 					str = str.replace("<" + tag + ">", "");
@@ -326,13 +325,13 @@ const draw = {
 			if (str.replace(/<.*?>/g, "").includes("\n", enterIndex + 1)) {
 				len = str.replace(/<.*?>/g, "").indexOf("\n", enterIndex + 1);
 			};
-			let char = str.charAt(a);
-			if (char == "\n") {
+			const char = str.charAt(a);
+			if (char === "\n") {
 				enters++;
 				enterIndex = a + 1;
 			};
 			// don't print if no color
-			if (color == "none" || style["color"] == "none") continue;
+			if (color === "none" || style["color"] === "none") continue;
 			// print character
 			if (textAlign === DIR.RIGHT) {
 				draw.char(char, x + ((a - enterIndex) * (small ? 3 : 6)), y + (enters * (small ? 5.5 : 11)), {

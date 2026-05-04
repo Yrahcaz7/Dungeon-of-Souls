@@ -93,7 +93,7 @@ window.onload = async function() {
 	canvas = document.getElementById("canvas");
 	ctx = canvas.getContext("2d");
 	ctx.imageSmoothingEnabled = false;
-	draw.lore(200 - 2, 100 - 5.5 * 3, "Loading graphics...\n\n0%", {"color": "#fff", "text-align": DIR.CENTER});
+	draw.lore(200 - 2, 100 - 5.5 * 3, "Loading graphics...\n\n0.0%", {"color": "#fff", "text-align": DIR.CENTER});
 	await Promise.all([loadImages(), loadSave()]);
 	fixCanvas(true);
 	loaded = true;
