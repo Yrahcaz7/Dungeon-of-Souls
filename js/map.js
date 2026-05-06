@@ -387,49 +387,37 @@ const generateMap = (() => {
 				let newRow = game.map[rowNum];
 				// add treasure
 				if (rowNum % 10 >= 3) {
-					let available = [0, 1, 2, 3, 4, 5];
-					let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-					while (true) {
-						if (newRow[rand] && !pathHasTypes([rowNum, rand], [ROOM.TREASURE, ROOM.PRIME])) {
+					let available = Array.from({length: newRow.length}, (_, i) => i);
+					while (available.length > 0) {
+						const rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+						if (!pathHasTypes([rowNum, rand], [ROOM.TREASURE, ROOM.PRIME])) {
 							newRow[rand] = getMapNode(rowNum, newRow[rand][2], MAP_NODE.TREASURE);
 							calculatePathInfo(rowNum);
-							break;
-						} else if (available.length) {
-							rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-						} else {
 							break;
 						};
 					};
 				};
 				// add death zone
 				if (rowNum % 10 >= 4 && deathZones < 2) {
-					let available = [0, 1, 2, 3, 4, 5];
-					let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-					while (true) {
-						if (newRow[rand] && newRow[rand][0] !== ROOM.TREASURE && !pathHasTypes([rowNum, rand], [ROOM.TREASURE, ROOM.PRIME])) {
+					let available = Array.from({length: newRow.length}, (_, i) => i);
+					while (available.length > 0) {
+						const rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+						if (newRow[rand][0] !== ROOM.TREASURE && !pathHasTypes([rowNum, rand], [ROOM.TREASURE, ROOM.PRIME])) {
 							newRow[rand] = getMapNode(rowNum, newRow[rand][2], MAP_NODE.PRIME);
 							deathZones++;
 							calculatePathInfo(rowNum);
-							break;
-						} else if (available.length) {
-							rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-						} else {
 							break;
 						};
 					};
 				};
 				// add event
 				if (rowNum % 2 == eventShift && rowNum % 10 < 8) {
-					let available = [0, 1, 2, 3, 4, 5];
-					let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-					while (true) {
-						if (newRow[rand] && newRow[rand][0] !== ROOM.TREASURE && newRow[rand][0] !== ROOM.PRIME && !pathHasTypes([rowNum, rand], [ROOM.EVENT])) {
+					let available = Array.from({length: newRow.length}, (_, i) => i);
+					while (available.length > 0) {
+						const rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+						if (newRow[rand][0] !== ROOM.TREASURE && newRow[rand][0] !== ROOM.PRIME && !pathHasTypes([rowNum, rand], [ROOM.EVENT])) {
 							newRow[rand] = getMapNode(rowNum, newRow[rand][2], MAP_NODE.EVENT);
 							calculatePathInfo(rowNum);
-							break;
-						} else if (available.length) {
-							rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-						} else {
 							break;
 						};
 					};
@@ -440,16 +428,12 @@ const generateMap = (() => {
 		// add death zone (no `calculatePathTypes()` is needed after this, as this is the last usage of pathHasTypes in this area)
 		let row = 4 + area * 10;
 		while (deathZones === 0) {
-			let available = [0, 1, 2, 3, 4, 5];
-			let rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-			while (true) {
-				if (game.map[row][rand] && (game.map[row][rand][0] === ROOM.TREASURE || (row % 10 === 3 && game.map[row][rand][0] === ROOM.BATTLE)) && !pathHasTypes([row, rand], [ROOM.TREASURE, ROOM.PRIME], true)) {
+			let available = Array.from({length: game.map[row].length}, (_, i) => i);
+			while (available.length > 0) {
+				const rand = available.splice(randomInt(0, available.length - 1), 1)[0];
+				if ((game.map[row][rand][0] === ROOM.TREASURE || (row % 10 === 3 && game.map[row][rand][0] === ROOM.BATTLE)) && !pathHasTypes([row, rand], [ROOM.TREASURE, ROOM.PRIME], true)) {
 					game.map[row][rand] = getMapNode(row, game.map[row][rand][2], MAP_NODE.PRIME);
 					deathZones++;
-					break;
-				} else if (available.length) {
-					rand = available.splice(randomInt(0, available.length - 1), 1)[0];
-				} else {
 					break;
 				};
 			};
