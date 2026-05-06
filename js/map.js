@@ -210,9 +210,8 @@ const generateMap = (() => {
 	 * @param {number} row - the row of the map node.
 	 * @param {number} y - the y-coordinate of the map node.
 	 * @param {number} attribute - the attribute of the map node, if any.
-	 * @param {number[]} excludeTypes - the battle types that the map node cannot have. Defaults to none.
 	 */
-	function getMapNode(row, y, attribute = -1, excludeTypes = []) {
+	function getMapNode(row, y, attribute = -1) {
 		const area = get.area(row);
 		if (attribute === MAP_NODE.FIRST) return [ROOM.BATTLE, 0, 0, [SMALL_ENEMIES[area]], getGoldReward(row), randomCardSet(5)];
 		const x = ((row - area * 10) * 32) - 7 + randomInt(-5, 5);
@@ -225,7 +224,7 @@ const generateMap = (() => {
 		};
 		if (attribute === MAP_NODE.ORB) return [ROOM.ORB, x, y];
 		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, ((row - area * 10) * 32) + 3, 90, [BOSS_ENEMIES[area]], getGoldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
-		return [ROOM.BATTLE, x, y, getEnemies(row, excludeTypes), getGoldReward(row), randomCardSet(5)];
+		return [ROOM.BATTLE, x, y, (attribute === MAP_NODE.NO_ENEMIES ? [] : getEnemies(row)), getGoldReward(row), randomCardSet(5)];
 	};
 	/**
 	 * Returns an array of enemies for a map node.
@@ -240,15 +239,20 @@ const generateMap = (() => {
 		} else {
 			const specialWeight = Math.max(row - 10 * area - 1, 0);
 			typeWeights = [10 - specialWeight, 10, 0, specialWeight];
+			if (!excludeTypes.includes(ROOM.BATTLE_2)) {
+				excludeTypes.push(ROOM.BATTLE_2);
+			};
 		};
-		for (let index = 0; index < typeWeights.length; index++) {
-			if (excludeTypes.includes(ROOM.BATTLE_0 + index)) {
-				typeWeights[index] = 0;
+		if (excludeTypes.length < typeWeights.length) {
+			for (let index = 0; index < typeWeights.length; index++) {
+				if (excludeTypes.includes(ROOM.BATTLE_0 + index)) {
+					typeWeights[index] = 0;
+				};
 			};
 		};
 		const totalWeight = typeWeights.reduce((total, weight) => total + weight);
 		if (totalWeight <= 0) {
-			throw RangeError("Cannot construct a battle room that has no type");
+			throw RangeError("Cannot get enemies for a map node with 0 total type weight. Please report this bug here: https://github.com/Yrahcaz7/Dungeon-of-Souls/issues\nError info:\n- Global version: " + get.versionDisplay(global.version) + "\n- Run version: " + get.versionDisplay(game.version) + "\n- Seed: " + game.seed);
 		};
 		const typeRand = random() * totalWeight;
 		if (typeRand < typeWeights[0]) return [BIG_ENEMIES[area]];
@@ -289,11 +293,11 @@ const generateMap = (() => {
 			game.map[row - 1].forEach((node, index) => addPaths(row - 1, index, [0]));
 		} else {
 			game.map[row] = [];
+			let excludeBattleTypes = [];
 			game.map[row - 1].forEach((prevNode, prevIndex) => {
-				let excludeBattleTypes = MAP_NODE_BATTLE_TYPES.filter(type => {
+				excludeBattleTypes[prevIndex] = MAP_NODE_BATTLE_TYPES.filter(type => {
 					return pathInfo[row - 1][prevIndex][type] && pathInfo[row - 1][prevIndex][type] >= row - 1;
 				});
-				if (excludeBattleTypes.length >= MAP_NODE_BATTLE_TYPES.length) excludeBattleTypes = [];
 				let newNodeIndexes = ["findLastIndex", "findIndex"].map((method, side) => {
 					if (row % 10 === 9) side = 0.5;
 					let index = game.map[row][method](node => node[2] - prevNode[2] >= MAP_NODE_SPREAD * (side - 1) && node[2] - prevNode[2] <= MAP_NODE_SPREAD * side);
@@ -306,10 +310,10 @@ const generateMap = (() => {
 						} else if (max > MAP_NODE_MAX_Y) {
 							y -= MAP_NODE_MAX_Y - max;
 						};
-						if (row % 10 === 9) y = Math.round((2 * y + 90) / 3);
+						if (row % 10 === 9) y = Math.round((3 * y + 90) / 4);
 						index = game.map[row][method](node => Math.abs(node[2] - y) <= MAP_NODE_SPREAD);
 						if (index === -1) {
-							game.map[row].push(getMapNode(row, y, (row % 10 === 9 ? MAP_NODE.ORB : -1), excludeBattleTypes));
+							game.map[row].push(getMapNode(row, y, (row % 10 === 9 ? MAP_NODE.ORB : MAP_NODE.NO_ENEMIES)));
 							index = game.map[row].length - 1;
 						};
 					};
@@ -318,11 +322,31 @@ const generateMap = (() => {
 				if (row % 10 < 9 && pathInfo[row - 1][prevIndex][ROOM.BRANCH_INFO] < row - 2 && newNodeIndexes[0] === newNodeIndexes[1]) {
 					const y = game.map[row][newNodeIndexes[0]][2] + MAP_NODE_SPREAD + randomInt(-4, 4);
 					if (y <= MAP_NODE_MAX_Y) {
-						game.map[row].push(getMapNode(row, y, -1, excludeBattleTypes));
+						game.map[row].push(getMapNode(row, y, MAP_NODE.NO_ENEMIES));
 						newNodeIndexes[1] = game.map[row].length - 1;
 					};
 				};
 				addPaths(row - 1, prevIndex, newNodeIndexes);
+			});
+			game.map[row].forEach((node, index) => {
+				let connectedPrevNodes = [];
+				let localExcludeTypes = [];
+				for (let prevIndex = 0; prevIndex < game.map[row - 1].length; prevIndex++) {
+					if (!game.paths[row - 1][prevIndex].includes(index)) continue;
+					connectedPrevNodes.push(prevIndex);
+					excludeBattleTypes[prevIndex].forEach(type => {
+						if (!localExcludeTypes.includes(type)) {
+							localExcludeTypes.push(type);
+						};
+					});
+				};
+				node[3] = getEnemies(row, localExcludeTypes);
+				const battleType = ROOM.BATTLE_0 + getBattleType(node);
+				connectedPrevNodes.forEach(prevIndex => {
+					if (!excludeBattleTypes[prevIndex].includes(battleType)) {
+						excludeBattleTypes[prevIndex].push(battleType);
+					};
+				});
 			});
 		};
 		calculatePathInfo(row);
