@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 3_000_047;
+const VERSION = 3_000_049;
 
 /**
  * Returns the starting global data.
@@ -446,7 +446,7 @@ function manageGameplay() {
  */
 function updateVisuals() {
 	// bugs
-	if (!(ctx instanceof CanvasRenderingContext2D)) return;
+	if (!(ctx instanceof CanvasRenderingContext2D)) throwError(`"${ctx}" is not of type "CanvasRenderingContext2D".`, TypeError);
 	// clear
 	clearCanvas();
 	// update data

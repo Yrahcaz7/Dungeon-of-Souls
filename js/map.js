@@ -251,9 +251,7 @@ const generateMap = (() => {
 			};
 		};
 		const totalWeight = typeWeights.reduce((total, weight) => total + weight);
-		if (totalWeight <= 0) {
-			throw RangeError("Cannot get enemies for a map node with 0 total type weight. Please report this bug here: https://github.com/Yrahcaz7/Dungeon-of-Souls/issues\nError info:\n- Global version: " + get.versionDisplay(global.version) + "\n- Run version: " + get.versionDisplay(game.version) + "\n- Seed: " + game.seed);
-		};
+		if (totalWeight <= 0) throwError("Cannot determine the types of enemies for a map node with 0 total type weight.", RangeError);
 		const typeRand = random() * totalWeight;
 		if (typeRand < typeWeights[0]) return [BIG_ENEMIES[area]];
 		if (typeRand < typeWeights[0] + typeWeights[1]) return [SMALL_ENEMIES[area], SMALL_ENEMIES[area]];

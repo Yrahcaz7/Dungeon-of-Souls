@@ -273,9 +273,18 @@ document.onkeydown = event => {
 
 document.onkeyup = event => {
 	const key = (event.key.length === 1 ? event.key.toUpperCase() : event.key);
-	if (key === "W" || key === "ArrowUp" || key === "A" || key === "ArrowLeft" || key === "S" || key === "ArrowDown" || key === "D" || key === "ArrowRight") {
+	if (["W", "ArrowUp", "A", "ArrowLeft", "S", "ArrowDown", "D", "ArrowRight"].includes(key)) {
 		action = -1;
 	};
+};
+
+/**
+ * Throws an error with extra information added.
+ * @param {string} description - the description of the error.
+ * @param {ErrorConstructor} errorType - the type of error. Defaults to `Error`.
+ */
+function throwError(description, errorType = Error) {
+	throw errorType(`${description}\nError info:\n- Global version: ${get.versionDisplay(global.version)}\n- Run version: ${get.versionDisplay(game.version)}\n- Seed: ${game.seed}\nPlease report this bug here: https://github.com/Yrahcaz7/Dungeon-of-Souls/issues/new?template=bug_report.md`);
 };
 
 /**

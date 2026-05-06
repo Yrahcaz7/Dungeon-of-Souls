@@ -2055,7 +2055,8 @@ const startAnim = {
 	 * @param {HTMLImageElement} image - the image of the player animation.
 	 */
 	player(image) {
-		if (!(image instanceof HTMLImageElement) || playerAnim[1] === I.player.death) return;
+		if (!(image instanceof HTMLImageElement)) throwError(`"${image}" is not of type "HTMLImageElement".`, TypeError);
+		if (playerAnim[1] === I.player.death) return;
 		if (game.attackEffects.includes(ATT_EFF.AURA_BLADE)) {
 			if (image == I.player.attack) image = I.player.attack_aura;
 			else if (image == I.player.attack_2) image = I.player.attack_2_aura;
@@ -2071,7 +2072,7 @@ const startAnim = {
 	 * @param {HTMLImageElement} image - the image of the effect animation.
 	 */
 	effect(image) {
-		if (!(image instanceof HTMLImageElement)) return;
+		if (!(image instanceof HTMLImageElement)) throwError(`"${image}" is not of type "HTMLImageElement".`, TypeError);
 		effAnim = [0, image];
 	},
 	/**

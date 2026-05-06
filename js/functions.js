@@ -419,7 +419,7 @@ function startEnemyTransition(index, prevShield = game.enemies[index].shield) {
  * @param {boolean} mult - whether to multiply the damage. Defaults to `true`.
  */
 function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, mult = true) {
-	if (isNaN(amount)) return;
+	if (isNaN(amount)) throwError(`"${amount}" is not of type "number".`, TypeError);
 	// setup
 	const enemy = game.enemies[index];
 	let prevShield = enemy.shield;
@@ -459,7 +459,7 @@ function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, 
  * @param {number} index - the index of the enemy. Defaults to `game.enemyNum`.
  */
 function takeDamage(amount, attack = true, index = game.enemyNum) {
-	if (isNaN(amount)) return;
+	if (isNaN(amount)) throwError(`"${amount}" is not of type "number".`, TypeError);
 	// multiply damage
 	if (attack) amount = Math.ceil(amount * get.takeDamageMult(index));
 	// take damage
@@ -495,7 +495,7 @@ function takeDamage(amount, attack = true, index = game.enemyNum) {
  * @param {number} exMod - the extra shield modifier. Defaults to `1`.
  */
 function playerGainShield(amount = 0, exMod = 1) {
-	if (isNaN(amount)) return;
+	if (isNaN(amount)) throwError(`"${amount}" is not of type "number".`, TypeError);
 	// increase shield
 	amount += Math.floor(get.extraShield() * exMod);
 	// multiply shield
@@ -510,7 +510,7 @@ function playerGainShield(amount = 0, exMod = 1) {
  * @param {number} index - the index of the enemy. Defaults to `game.enemyNum`.
  */
 function enemyGainShield(amount = 0, index = game.enemyNum) {
-	if (isNaN(amount)) return;
+	if (isNaN(amount)) throwError(`"${amount}" is not of type "number".`, TypeError);
 	// multiply shield
 	amount = Math.ceil(amount * get.enemyShieldMult(index));
 	// gain shield

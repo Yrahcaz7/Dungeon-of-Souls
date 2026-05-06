@@ -21,7 +21,7 @@
  * @param {boolean} attack - whether the damage is considered an attack. Defaults to `false`.
  */
 function logEventDamage(amount, attack = false) {
-	if (isNaN(amount)) return;
+	if (isNaN(amount)) throwError(`"${amount}" is not of type "number".`, TypeError);
 	// multiply damage
 	if (attack) amount = Math.ceil(amount * get.takeDamageMult(-1));
 	// take damage
