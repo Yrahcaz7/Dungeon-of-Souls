@@ -476,17 +476,11 @@ const generateMap = (() => {
 	 * Adds scribbles to the map.
 	 */
 	function addScribbles() {
-		let available = [0, 1, 2, 3, 4];
-		for (let index = 0; index < 2; index++) {
-			if (chance()) {
-				game.scribbles[index * 2] = available.splice(randomInt(0, available.length - 1), 1)[0];
-				if (!available.length) available = [0, 1, 2, 3, 4];
-				game.scribbles[index * 2 + 1] = available.splice(randomInt(0, available.length - 1), 1)[0];
-				if (!available.length) available = [0, 1, 2, 3, 4];
-			} else {
-				game.scribbles[randomInt(index * 2, index * 2 + 1)] = available.splice(randomInt(0, available.length - 1), 1)[0];
-				if (!available.length) available = [0, 1, 2, 3, 4];
-			};
+		game.scribbles = [-1, -1, -1, -1];
+		let available = Array.from({length: Math.round(I.map.scribbles.width / 64)}, (_, i) => i);
+		for (let index = 0; index < 4; index++) {
+			game.scribbles[index] = available.splice(randomInt(0, available.length - 1), 1)[0];
+			if (!available.length) available = Array.from({length: Math.round(I.map.scribbles.width / 64)}, (_, i) => i);
 		};
 	};
 	return async () => {
@@ -494,7 +488,6 @@ const generateMap = (() => {
 		loaded = false;
 		game.map = [];
 		game.paths = [];
-		game.scribbles = [-1, -1, -1, -1];
 		await updateGenProg();
 		game.map[0] = [getMapNode(0, 0, MAP_NODE.FIRST)];
 		game.room = game.map[0][0];
