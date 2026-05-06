@@ -320,7 +320,7 @@ const generateMap = (() => {
 					return index;
 				});
 				if (row % 10 < 9 && pathInfo[row - 1][prevIndex][ROOM.BRANCH_INFO] < row - 2 && newNodeIndexes[0] === newNodeIndexes[1]) {
-					const y = game.map[row][newNodeIndexes[0]][2] + MAP_NODE_SPREAD + randomInt(-4, 4);
+					const y = game.map[row][newNodeIndexes[0]][2] + MAP_NODE_SPREAD + randomInt(1, 4);
 					if (y <= MAP_NODE_MAX_Y) {
 						game.map[row].push(getMapNode(row, y, MAP_NODE.NO_ENEMIES));
 						newNodeIndexes[1] = game.map[row].length - 1;
