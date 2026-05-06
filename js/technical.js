@@ -134,6 +134,34 @@ let lastAction = -1;
 let holdTimer = 0;
 
 /**
+ * Tries to use the clipboard. Logs a warning in the console if it fails.
+ * @param {(() => string) | false} write - If this is a function, tries to write the return value to the clipboard. Otherwise, tries to read from the clipboard.
+ * @param {((result: string | undefined) => void) | null} onSuccess - If this is a function, runs it on success with the operation's result, if any.
+ * @param {(() => void) | null} onFail - If this is a function, runs it on failure.
+ */
+function tryUseClipboard(write = false, onSuccess = null, onFail = null) {
+	try {
+		if (navigator.clipboard) {
+			(write instanceof Function ? navigator.clipboard.writeText(write()) : navigator.clipboard.readText()).then(
+				result => {
+					if (onSuccess instanceof Function) onSuccess(result);
+				},
+				error => {
+					console.warn(error);
+					if (onFail instanceof Function) onFail();
+				},
+			);
+		} else {
+			console.warn("Error: navigator.clipboard is not available in this context.");
+			if (onFail instanceof Function) onFail();
+		};
+	} catch (error) {
+		console.warn(error);
+		if (onFail instanceof Function) onFail();
+	};
+};
+
+/**
  * Performs a keyboard shortcut that changes the selection.
  * @param {number} location - the shortcut changes the selection to `[location, 1]`.
  */
@@ -154,8 +182,17 @@ document.onkeydown = event => {
 	holdTimer = 0;
 	const key = (event.key.length === 1 ? event.key.toUpperCase() : event.key);
 	if (menuSelect[0] === MENU.ENTER_SEED) {
-		if (key.length === 1 && /[0-9A-F]/i.test(key) && !event.repeat && actionTimer === -1 && newSeed.length < 6) {
-			newSeed += key.toUpperCase();
+		if (key.length === 1 && /[0-9A-F]/.test(key) && !event.repeat && actionTimer === -1 && newSeed.length < 6) {
+			newSeed += key;
+		} else if (key === "V" && (event.ctrlKey || event.metaKey) && !event.repeat && actionTimer === -1 && newSeed.length < 6) {
+			tryUseClipboard(false, result => {
+				const pasteText = result.trim().toUpperCase();
+				if (/^[0-9A-F]+$/.test(pasteText)) {
+					newSeed = (newSeed + pasteText).slice(0, 6);
+				} else {
+					console.warn("Error: Clipboard contains text that is not a seed.");
+				};
+			});
 		} else if (key === "Backspace" && !event.repeat && actionTimer === -1) {
 			newSeed = newSeed.slice(0, -1);
 		} else if (key === "Clear" && !event.repeat && actionTimer === -1) {

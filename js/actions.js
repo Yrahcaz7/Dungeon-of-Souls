@@ -588,29 +588,17 @@ const performAction = (() => {
 	 * Attempts to copy the player's old save.
 	 */
 	function tryCopyOldSave() {
-		try {
-			if (navigator.clipboard) {
-				const obj = {
-					global: parseSave(localStorage.getItem(ID + "/old/global")),
-					run: parseSave(localStorage.getItem(ID + "/old/run")),
-				};
-				navigator.clipboard.writeText(btoa(JSON.stringify(obj))).then(
-					() => {
-						menuSelect = [MENU.OLD_SAVE_ALERT, 0];
-					},
-					error => {
-						console.warn(error);
-						menuSelect = [MENU.OLD_SAVE_COPY_FAILED, 0];
-					},
-				);
-			} else {
-				console.warn("Error: navigator.clipboard is not available in this context.");
-				menuSelect = [MENU.OLD_SAVE_COPY_FAILED, 0];
+		tryUseClipboard(() => {
+			const obj = {
+				global: parseSave(localStorage.getItem(ID + "/old/global")),
+				run: parseSave(localStorage.getItem(ID + "/old/run")),
 			};
-		} catch (error) {
-			console.warn(error);
+			return btoa(JSON.stringify(obj));
+		}, () => {
+			menuSelect = [MENU.OLD_SAVE_ALERT, 0];
+		}, () => {
 			menuSelect = [MENU.OLD_SAVE_COPY_FAILED, 0];
-		};
+		});
 	}
 	/**
 	 * Activates the attack effects of a card.
