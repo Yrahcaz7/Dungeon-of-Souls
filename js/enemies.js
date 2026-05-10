@@ -320,6 +320,8 @@ function getEnemyIntentPos(index, moving = false) {
 		else y -= 17 + Math.max(enemyAnim.prime[index] - 4, 0) * 2.5;
 	} else if (type === SLIME.STICKY) {
 		y -= 7;
+	} else if (type === SLIME.PUDDLE) {
+		y += 9;
 	} else if (type === FRAGMENT) {
 		if (enemyAnim.prime[index] == -1 || enemyAnim.prime[index] > 18) y -= 36;
 		else y = NaN;

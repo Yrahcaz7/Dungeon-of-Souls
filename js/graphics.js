@@ -124,14 +124,17 @@ const draw = {
 	 * @param {number} y3 - the y-coordinate to end drawing at.
 	 * @param {string} color - the color of the curved line. Defaults to `#000`.
 	 * @param {number} width - the width of the curved line. Defaults to `1`.
+	 * @param {boolean} antiAliased - if `true`, keeps anti-aliasing enabled.
 	 */
-	curvedLine(x1, y1, x2, y2, x3, y3, color = "#000", width = 1) {
+	curvedLine(x1, y1, x2, y2, x3, y3, color = "#000", width = 1, antiAliased = false) {
+		if (!antiAliased) ctx.filter = NO_ANTI_ALIASING_FILTER;
 		ctx.beginPath();
 		ctx.strokeStyle = color ?? "#000";
 		ctx.lineWidth = (width ?? 1) * SCALE;
 		ctx.moveTo(x1 * SCALE, y1 * SCALE);
 		ctx.quadraticCurveTo(x2 * SCALE, y2 * SCALE, x3 * SCALE, y3 * SCALE);
 		ctx.stroke();
+		if (!antiAliased) ctx.filter = "none";
 	},
 	/**
 	 * Draws a polyline on the canvas.
@@ -1365,6 +1368,8 @@ const graphics = {
 				coords = [0, 7, 64, 57];
 			} else if (type === SLIME.STICKY) {
 				coords = [-1, 36, 66, 36];
+			} else if (type === SLIME.PUDDLE) {
+				coords = [21, 52, 21, 12];
 			} else if (type === FRAGMENT && (enemyAnim.prime[game.select[1]] == -1 || enemyAnim.prime[game.select[1]] > 18)) {
 				coords = [7, 6, 50, 58];
 			} else if (type === SENTRY.BIG) {

@@ -107,6 +107,7 @@ const ENEMY_NAME = {
 	[SLIME.SMALL]: "small slime",
 	[SLIME.PRIME]: "prime slime",
 	[SLIME.STICKY]: "sticky slime",
+	[SLIME.PUDDLE]: "slime puddle",
 	[FRAGMENT]: "the fragment of time",
 	[SENTRY.BIG]: "big sentry",
 	[SENTRY.SMALL]: "small sentry",
@@ -121,6 +122,7 @@ const PLURAL_ENEMY_NAME = {
 	[SLIME.SMALL]: "small slimes",
 	[SLIME.PRIME]: "prime slimes",
 	[SLIME.STICKY]: "sticky slimes",
+	[SLIME.PUDDLE]: "slime puddles",
 	[SENTRY.BIG]: "big sentries",
 	[SENTRY.SMALL]: "small sentries",
 	[SENTRY.PRIME]: "prime sentries",
@@ -133,6 +135,7 @@ const ENEMY_WORTH = {
 	[SLIME.SMALL]: 50,
 	[SLIME.PRIME]: 500,
 	[SLIME.STICKY]: 150,
+	[SLIME.PUDDLE]: 1,
 	[FRAGMENT]: 1000,
 	[SENTRY.BIG]: 150,
 	[SENTRY.SMALL]: 75,
@@ -279,9 +282,9 @@ const EFF_DESC = {
 	[ENEMY_EFF.SCRAP_HEAP]: "This dying does not trigger [On death] effects.",
 	[ENEMY_EFF.STICKY]: "On attack, add 2 copies of Sticky Goo to the target's deck.",
 	[ENEMY_EFF.PERSISTENCE]: "On death, summon a Puddle of Slime with [count] max health and 2 revival.",
-	[ENEMY_EFF.REVIVAL]: "On start of turn, decrease count by 1; then, if count is 0, replace self with a Small Slime. This dying does not trigger [On death] effects.",
+	[ENEMY_EFF.REVIVAL]: "On start of turn, decrease count by 1; then, if count is 0, transform into a Small Slime.",
 	[ENEMY_EFF.REVIVED]: "This dying does not trigger [On death] effects.",
-	[ENEMY_EFF.OVERHEAT]: "On start of turn, increase count by 1. On death, deal [count] damage to all units.",
+	[ENEMY_EFF.OVERHEAT]: "On start of turn, increase count by 1. On death, deal [count] non-combat damage to all units.",
 };
 
 // numeric desc node types
@@ -295,7 +298,7 @@ const COLOR = {
 	// uncommon
 	"#e70": [EFF.BURN, EFF.BLAZE], // orange
 	"#862": [EFF.REINFORCE], // brown
-	"#665": [EFF.RESILIENCE], // yellowish gray
+	"#665": [EFF.RESILIENCE, ENEMY_EFF.REVIVED], // yellowish gray
 	"#655": [EFF.WEAKNESS], // reddish gray
 	"#e50": [EFF.PULSE], // reddish orange
 	"#00f": [EFF.HYPERSPEED], // neon dark blue
@@ -306,7 +309,7 @@ const COLOR = {
 	"#900": [ENEMY_EFF.PLAN_ATTACK], // dark red
 	"#070": [ENEMY_EFF.PLAN_SUMMON], // dark green
 	"#00a": [ENEMY_EFF.PLAN_DEFEND], // dark blue
-	"#575": [ENEMY_EFF.PERSISTENCE, ENEMY_EFF.REVIVAL, ENEMY_EFF.REVIVED], // greenish gray
+	"#575": [ENEMY_EFF.PERSISTENCE, ENEMY_EFF.REVIVAL], // greenish gray
 	"#765": [ENEMY_EFF.OVERHEAT], // orangeish gray
 	"#080": ["sticky goo", "puddle of slime", "small slime", ENEMY_EFF.STICKY], // darker green
 	"#80f": ["decay"], // purple

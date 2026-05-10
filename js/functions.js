@@ -415,8 +415,8 @@ function startEnemyTransition(index, prevShield = game.enemies[index].shield) {
  * @param {number} amount - the amount of damage.
  * @param {number} exMod - the extra damage modifier. Defaults to `1`.
  * @param {number} index - the index of the enemy. Defaults to `game.enemyAtt[1]`.
- * @param {boolean} attack - whether the damage is considered an attack. Defaults to `true`.
- * @param {boolean} mult - whether to multiply the damage. Defaults to `true`.
+ * @param {boolean} attack - whether the damage is considered an attack / "combat damage". Defaults to `true`.
+ * @param {boolean} mult - whether to multiply the damage if `attack` is `true`. Defaults to `true`.
  */
 function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, mult = true) {
 	if (isNaN(amount)) throwError(`"${amount}" is not of type "number".`, TypeError);
@@ -455,7 +455,7 @@ function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, 
 /**
  * Makes the player take damage.
  * @param {number} amount - the amount of damage to take.
- * @param {boolean} attack - whether the damage is considered an attack. Defaults to `true`.
+ * @param {boolean} attack - whether the damage is considered an attack / "combat damage". Defaults to `true`.
  * @param {number} index - the index of the enemy. Defaults to `game.enemyNum`.
  */
 function takeDamage(amount, attack = true, index = game.enemyNum) {

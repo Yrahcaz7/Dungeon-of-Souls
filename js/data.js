@@ -267,9 +267,7 @@ function updateData() {
 	};
 	// heal everything
 	if (healAll) {
-		for (let index = 0; index < game.enemies.length; index++) {
-			game.enemies[index].health = game.enemies[index].maxHealth;
-		};
+		game.enemies.forEach(enemy => enemy.health = enemy.maxHealth);
 		game.health = get.maxHealth();
 	};
 	// enemy plans
@@ -338,7 +336,10 @@ function updateData() {
 	};
 	// effects that need another update
 	if (damageAll > 0) {
-		game.enemies.forEach(enemy => enemy.health -= damageAll);
+		for (let index = 0; index < game.enemies.length; index++) {
+			dealDamage(damageAll, 0, index, false);
+		};
+		takeDamage(damageAll, false);
 		updateData();
 	};
 };
