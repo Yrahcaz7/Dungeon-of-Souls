@@ -170,6 +170,7 @@ const I = {
 		buff: new Image,
 		summon: new Image,
 		ritual: new Image,
+		nothing: new Image,
 		increase: new Image,
 		decrease: new Image,
 	}, popup: {

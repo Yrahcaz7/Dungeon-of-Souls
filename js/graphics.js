@@ -375,27 +375,29 @@ const draw = {
 	 * @param {number} index - the index of the enemy.
 	 */
 	intent(index) {
-		if (game.enemies[index].eff[ENEMY_EFF.SHROUD]) return;
-		if (index === game.enemyNum) return;
+		if (game.enemies[index].eff[ENEMY_EFF.SHROUD] || index === game.enemyNum) return;
 		const x = enemyPos[index][0] + 16;
 		const y = getEnemyIntentPos(index, true);
-		if (game.enemies[index].intent === INTENT.SUMMON) {
-			if (game.enemies.length >= 6) draw.image(I.intent.ritual, x, y);
-			else draw.image(I.intent.summon, x, y);
-		} else if (game.enemies[index].intent === INTENT.BUFF) {
-			draw.image(I.intent.buff, x, y);
-		} else if (game.enemies[index].intent === INTENT.ATTACK) {
+		const intent = game.enemies[index].intent;
+		if (intent === INTENT.ATTACK) {
 			const power = Math.ceil(game.enemies[index].getTotalAttackPower() * get.takeDamageMult(index));
 			draw.image(I.intent.attack[Math.min(Math.floor(power / 5), 10)], x, y);
 			draw.lore(x + 14, y + 12, power, {"color": "#fff", "text-align": DIR.CENTER});
 			if (power > game.enemies[index].attackPower) draw.image(I.intent.increase, x + 32 - 10, y);
 			else if (power < game.enemies[index].attackPower) draw.image(I.intent.decrease, x + 32 - 10, y + 32 - 8);
-		} else if (game.enemies[index].intent === INTENT.DEFEND) {
+		} else if (intent === INTENT.DEFEND) {
 			const power = Math.ceil(game.enemies[index].getTotalDefendPower() * get.enemyShieldMult(index));
 			draw.image(I.intent.defend[Math.min(Math.floor(power / 5), 10)], x, y);
 			draw.lore(x + 14, y + 11, power, {"color": "#fff", "text-align": DIR.CENTER});
 			if (power > game.enemies[index].defendPower) draw.image(I.intent.increase, x + 32 - 10, y);
 			else if (power < game.enemies[index].defendPower) draw.image(I.intent.decrease, x + 32 - 10, y + 32 - 8);
+		} else if (intent === INTENT.BUFF) {
+			draw.image(I.intent.buff, x, y);
+		} else if (intent === INTENT.SUMMON) {
+			if (game.enemies.length >= 6) draw.image(I.intent.ritual, x, y);
+			else draw.image(I.intent.summon, x, y);
+		} else if (intent === INTENT.NOTHING) {
+			draw.image(I.intent.nothing, x, y);
 		};
 		intentAnim[index] += (Math.random() + 0.5) * 0.15;
 		if (intentAnim[index] >= 4) intentAnim[index] -= 4;

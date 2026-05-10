@@ -186,6 +186,8 @@ class Enemy {
 				game.enemies.push(minion);
 			};
 			this.finishAction();
+		} else {
+			this.finishAction();
 		};
 	};
 	/**
@@ -233,14 +235,8 @@ class Enemy {
 	 * @param {boolean} first - whether this is the enemy's first intent. Defaults to `false`.
 	 */
 	getIntent(first = false) {
-		if (this.type === SINGULARITY) {
-			if (first) return INTENT.SUMMON;
-			if (this.health <= this.maxHealth / 4) {
-				return chance(1/3) ? INTENT.SUMMON : INTENT.DEFEND;
-			} else {
-				if (chance(3/5)) return chance(1/3) ? INTENT.SUMMON : INTENT.ATTACK;
-				return INTENT.DEFEND;
-			};
+		if (this.type === SLIME.PUDDLE) {
+			return INTENT.NOTHING;
 		};
 		if (this.type === FRAGMENT) {
 			if (first) return INTENT.BUFF;
@@ -249,6 +245,15 @@ class Enemy {
 			} else {
 				if (this.health <= this.maxHealth / 4 || this.eff[EFF.RESILIENCE] > 1) return INTENT.DEFEND;
 				return chance(2/3) ? INTENT.BUFF : INTENT.DEFEND;
+			};
+		};
+		if (this.type === SINGULARITY) {
+			if (first) return INTENT.SUMMON;
+			if (this.health <= this.maxHealth / 4) {
+				return chance(1/3) ? INTENT.SUMMON : INTENT.DEFEND;
+			} else {
+				if (chance(3/5)) return chance(1/3) ? INTENT.SUMMON : INTENT.ATTACK;
+				return INTENT.DEFEND;
 			};
 		};
 		if (first && hasArtifact(204)) return INTENT.DEFEND;

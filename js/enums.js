@@ -145,7 +145,7 @@ const ENEMY_WORTH = {
 };
 
 // enemy intents
-const INTENT = {ATTACK: 700, DEFEND: 701, BUFF: 702, SUMMON: 703, RITUAL: 704};
+const INTENT = {ATTACK: 700, DEFEND: 701, BUFF: 702, SUMMON: 703, RITUAL: 704, NOTHING: 705};
 
 // minimal descriptions of enemy intents
 const MIN_INTENT_DESC = {
@@ -153,6 +153,7 @@ const MIN_INTENT_DESC = {
 	[INTENT.DEFEND]: "<#48f>defend</#48f> itself",
 	[INTENT.BUFF]: "buff itself",
 	[INTENT.SUMMON]: "summon a minion",
+	[INTENT.NOTHING]: "do nothing",
 };
 
 // full descriptions of enemy intents
@@ -162,6 +163,7 @@ const FULL_INTENT_DESC = {
 	[INTENT.BUFF]: "This enemy intends to buff itself on its next turn.",
 	[INTENT.SUMMON]: "This enemy intends to summon a minion on its next turn.",
 	[INTENT.RITUAL]: "This enemy would have summoned a minion on its next turn, but since there are already five, it will perform a ritual instead.",
+	[INTENT.NOTHING]: "This enemy cannot do anything on its next turn.",
 };
 
 // enemy animation states
