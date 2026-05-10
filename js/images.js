@@ -68,6 +68,7 @@ const I = {
 			sticky: new Image,
 			sticky_attack: new Image,
 			sticky_defend: new Image,
+			puddle: new Image,
 		},
 		fragment: {
 			roll: new Image,

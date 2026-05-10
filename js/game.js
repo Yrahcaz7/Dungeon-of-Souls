@@ -283,10 +283,28 @@ function endTurn() {
 			// effects
 			const enemy = game.enemies[index];
 			let prevShield = enemy.shield;
-			if (enemy.eff[EFF.REINFORCE]) enemy.eff[EFF.REINFORCE]--;
-			else enemy.shield = 0;
-			if (enemy.eff[EFF.RESILIENCE]) enemy.eff[EFF.RESILIENCE]--;
-			if (enemy.eff[EFF.FIREPROOF] && enemy.eff[EFF.BURN]) enemy.eff[EFF.BURN] = Math.max(enemy.eff[EFF.BURN] - enemy.eff[EFF.FIREPROOF], 0);
+			if (enemy.eff[EFF.REINFORCE]) {
+				enemy.eff[EFF.REINFORCE]--;
+			} else {
+				enemy.shield = 0;
+			};
+			if (enemy.eff[EFF.RESILIENCE]) {
+				enemy.eff[EFF.RESILIENCE]--;
+			};
+			if (enemy.eff[EFF.FIREPROOF] && enemy.eff[EFF.BURN]) {
+				enemy.eff[EFF.BURN] = Math.max(enemy.eff[EFF.BURN] - enemy.eff[EFF.FIREPROOF], 0);
+			};
+			if (enemy.eff[ENEMY_EFF.REVIVAL]) {
+				enemy.eff[ENEMY_EFF.REVIVAL]--;
+				if (enemy.eff[ENEMY_EFF.REVIVAL] === 0) {
+					game.enemies[index] = new Enemy(SLIME.SMALL);
+					game.enemies[index].eff[ENEMY_EFF.REVIVED] = 1;
+					prevShield = 0;
+				};
+			};
+			if (enemy.eff[ENEMY_EFF.OVERHEAT]) {
+				enemy.eff[ENEMY_EFF.OVERHEAT]++;
+			};
 			// transitions
 			startEnemyTransition(index, prevShield);
 		};

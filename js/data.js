@@ -227,34 +227,43 @@ function updateData() {
 		};
 	};
 	// fixes
-	if (game.health < 0) game.health = 0;
-	else if (game.health > get.maxHealth()) game.health = get.maxHealth();
-	if (game.shield < 0) game.shield = 0;
-	else if (game.shield > get.maxShield()) game.shield = get.maxShield();
+	game.health = Math.min(Math.max(game.health, 0), get.maxHealth());
+	game.shield = Math.min(Math.max(game.shield, 0), get.maxShield());
 	for (let index = 0; index < game.enemies.length; index++) {
-		if (game.enemies[index].health > game.enemies[index].maxHealth) game.enemies[index].health = game.enemies[index].maxHealth;
-		if (game.enemies[index].shield > game.enemies[index].maxShield) game.enemies[index].shield = game.enemies[index].maxShield;
+		const enemy = game.enemies[index];
+		enemy.health = Math.min(enemy.health, enemy.maxHealth);
+		enemy.shield = Math.min(enemy.shield, enemy.maxShield);
 	};
 	// kill enemies
 	let healAll = false;
+	let damageAll = 0;
 	for (let index = game.enemies.length - 1; index >= 0; index--) {
-		if (game.enemies[index].health <= 0) {
-			const deathTriggers = !game.enemies[index].eff[ENEMY_EFF.SCRAP_HEAP];
-			if (game.enemies[index].eff[ENEMY_EFF.REWIND] && !game.enemies[index].eff[ENEMY_EFF.COUNTDOWN] && deathTriggers) {
-				game.enemies[index].eff[ENEMY_EFF.REWIND]++;
-				game.enemies[index].eff[ENEMY_EFF.COUNTDOWN] = Math.max(game.enemies[index].intentHistory.length - 1, 0);
-				game.enemies[index].intentHistory.splice(game.enemies[index].intentHistory.length - 1);
+		const enemy = game.enemies[index];
+		if (enemy.health > 0) continue;
+		const deathTriggers = !enemy.eff[ENEMY_EFF.SCRAP_HEAP] && !enemy.eff[ENEMY_EFF.REVIVED];
+		if (deathTriggers) {
+			if (enemy.eff[ENEMY_EFF.REWIND] && !enemy.eff[ENEMY_EFF.COUNTDOWN]) {
+				enemy.eff[ENEMY_EFF.REWIND]++;
+				enemy.eff[ENEMY_EFF.COUNTDOWN] = Math.max(enemy.intentHistory.length - 1, 0);
+				enemy.intentHistory.splice(enemy.intentHistory.length - 1);
 				healAll = true;
-			} else {
-				const type = game.enemies[index].type;
-				if (deathTriggers) {
-					if (game.kills[type]) game.kills[type]++;
-					else game.kills[type] = 1;
-				};
-				game.enemies.splice(index, 1);
-				if (game.enemyNum >= index) game.enemyNum--;
+				continue;
 			};
+			if (enemy.eff[ENEMY_EFF.PERSISTENCE]) {
+				const newEnemy = new Enemy(SLIME.PUDDLE);
+				newEnemy.maxHealth = enemy.eff[ENEMY_EFF.PERSISTENCE];
+				newEnemy.health = newEnemy.maxHealth;
+				newEnemy.maxShield = newEnemy.maxHealth;
+				newEnemy.eff[ENEMY_EFF.REVIVAL] = 2;
+				game.enemies.push(newEnemy);
+			};
+			if (enemy.eff[ENEMY_EFF.OVERHEAT]) {
+				damageAll += enemy.eff[ENEMY_EFF.OVERHEAT];
+			};
+			game.kills[enemy.type] = (game.kills[enemy.type] || 0) + 1;
 		};
+		game.enemies.splice(index, 1);
+		if (game.enemyNum >= index) game.enemyNum--;
 	};
 	// heal everything
 	if (healAll) {
@@ -326,5 +335,10 @@ function updateData() {
 	if (game.select[0] === S.HAND) {
 		if (game.hand.length) game.prevCard = game.select[1];
 		else game.select = [S.END_TURN, 0];
+	};
+	// effects that need another update
+	if (damageAll > 0) {
+		game.enemies.forEach(enemy => enemy.health -= damageAll);
+		updateData();
 	};
 };

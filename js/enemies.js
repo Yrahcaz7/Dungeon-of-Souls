@@ -21,8 +21,8 @@ class Enemy {
 	health = 1;
 	maxShield = 1;
 	shield = 0;
-	attackPower = 1;
-	defendPower = 1;
+	attackPower = 0;
+	defendPower = 0;
 	intent = INTENT.ATTACK;
 	intentHistory = [INTENT.ATTACK];
 	eff = {};
@@ -33,11 +33,11 @@ class Enemy {
 	 */
 	constructor(type, power = 1) {
 		if (!type) return;
+		// setup
 		if (SMALL_ENEMIES.includes(type)) power--;
 		else if (PRIME_ENEMIES.includes(type)) power++;
 		else if (BOSS_ENEMIES.includes(type)) power += 2;
-		power += game.difficulty + 2 + (game.floor * 0.05);
-		if (hasArtifact(202)) power += 0.5;
+		power += 2 + (game.difficulty + hasArtifact(202)) * 0.5 + game.floor * 0.05;
 		this.type = type;
 		if (type === SINGULARITY) this.maxHealth = (power * 10) * 1.25;
 		else if (type === FRAGMENT) this.maxHealth = (power * 10) * 1.05;
@@ -46,16 +46,38 @@ class Enemy {
 		this.maxHealth = Math.max(Math.round(this.maxHealth), 1);
 		this.health = this.maxHealth;
 		this.maxShield = Math.max(Math.floor(this.maxHealth / 2), 1);
-		this.attackPower = Math.max(Math.round(power * 2.5), 1);
-		this.defendPower = Math.max(Math.round(power * 3), 1);
+		if (type !== SLIME.PUDDLE) {
+			this.attackPower = Math.max(Math.round(power * 2.5), 1);
+			this.defendPower = Math.max(Math.round(power * 3), 1);
+		};
 		this.intent = this.getIntent(true);
 		this.intentHistory = [this.intent];
-		if (type === SLIME.STICKY) this.eff[ENEMY_EFF.STICKY] = 1;
-		if (type === FRAGMENT && hasArtifact(202)) this.eff[ENEMY_EFF.REWIND] = 1;
-		if (type === SENTRY.BIG || type === SENTRY.SMALL || type === SENTRY.PRIME || type === SENTRY.FLAMING || type === SINGULARITY) this.eff[EFF.BLAZE] = 99;
-		if (type === SENTRY.FLAMING) this.eff[EFF.HYPERSPEED] = 99;
-		if (type === SENTRY.FLAMING) this.eff[EFF.FIREPROOF] = 1;
-		if (type === SINGULARITY) this.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 3)]] = 1;
+		// general effects
+		if (type === SENTRY.BIG || type === SENTRY.SMALL || type === SENTRY.PRIME || type === SENTRY.FLAMING || type === SINGULARITY) {
+			this.eff[EFF.BLAZE] = 99;
+		};
+		// specific effects
+		if (type === SLIME.STICKY) {
+			this.eff[ENEMY_EFF.STICKY] = 1;
+		} else if (type === SENTRY.FLAMING) {
+			this.eff[EFF.HYPERSPEED] = 99;
+			this.eff[EFF.FIREPROOF] = 1;
+		} else if (type === SINGULARITY) {
+			this.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 3)]] = 1;
+		};
+		// difficulty effects
+		if (game.difficulty >= 1) {
+			if (type === SLIME.BIG) this.eff[ENEMY_EFF.PERSISTENCE] = 2;
+			else if (type === SLIME.SMALL) this.eff[ENEMY_EFF.PERSISTENCE] = 1;
+			else if (type === SLIME.PRIME) this.eff[ENEMY_EFF.PERSISTENCE] = 4;
+			else if (type === SLIME.STICKY) this.eff[ENEMY_EFF.PERSISTENCE] = 3;
+			else if (type === SENTRY.BIG || type === SENTRY.SMALL || type === SENTRY.PRIME) this.eff[ENEMY_EFF.OVERHEAT] = 1;
+			else if (type === SENTRY.FLAMING) this.eff[ENEMY_EFF.OVERHEAT] = 2;
+		};
+		if (hasArtifact(202)) {
+			if (type === FRAGMENT) this.eff[ENEMY_EFF.REWIND] = 1;
+		};
+		// artifact effects
 		if (hasArtifact(107)) this.eff[EFF.BURN] = 1;
 	};
 	/**

@@ -116,6 +116,8 @@ class EnemyAnimationSource {
 					if (enemy.transition[0] >= 15) delete enemy.transition;
 				};
 			};
+		} else if (enemy.type === SLIME.PUDDLE) {
+			draw.image(I.enemy.slime.puddle, x, y);
 		} else if (enemy.type === FRAGMENT) {
 			if (this.prime[index] == -1 || noPrimeAnim) {
 				if (enemy.transition) {

@@ -1407,6 +1407,7 @@ const graphics = {
 					if ((type === EFF.BLAZE || type === EFF.FIREPROOF) && !logged[EFF.BURN]) logEff(EFF.BURN);
 					else if (type === ENEMY_EFF.PLAN_ATTACK && !logged[EFF.ATKUP]) logEff(EFF.ATKUP);
 					else if (type === ENEMY_EFF.PLAN_DEFEND && !logged[EFF.DEFUP]) logEff(EFF.DEFUP);
+					else if (type === ENEMY_EFF.PERSISTENCE && !logged[ENEMY_EFF.REVIVAL]) logEff(ENEMY_EFF.REVIVAL);
 				};
 				for (const key in game.enemies[game.select[1]].eff) {
 					logEff(+key);
