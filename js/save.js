@@ -30,7 +30,7 @@ function save() {
  * @param {boolean} prevGamesMenu - Whether to reset the previous games menu. Defaults to `false`.
  */
 function resetVars(prevGamesMenu = false) {
-	popups = [];
+	activePopups = [];
 	notif = [-1, 0, "", 0];
 	refinableDeck = [];
 	winAnim = 0;

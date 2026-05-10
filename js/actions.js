@@ -26,8 +26,8 @@ const selection = (() => {
 	 * Checks if there is any active popups.
 	 */
 	function hasPopups() {
-		for (let index = 0; index < popups.length; index++) {
-			if (popups[index].length) return true;
+		for (let index = 0; index < activePopups.length; index++) {
+			if (activePopups[index].length) return true;
 		};
 		return false;
 	};
@@ -264,7 +264,7 @@ const selection = (() => {
 		} else if (action === DIR.UP && game.select[0] === S.VOID && !game.select[1]) {
 			if (hasPopups()) {
 				game.select = [S.POPUPS, 0];
-				while (game.select[1] < popups.length && !popups[game.select[1]].length) {
+				while (game.select[1] < activePopups.length && !activePopups[game.select[1]].length) {
 					game.select[1]++;
 				};
 			} else if (!game.enemies.length) {
@@ -283,7 +283,7 @@ const selection = (() => {
 				game.select = [S.VOID, 0];
 			} else if (hasPopups()) {
 				game.select = [S.POPUPS, 0];
-				while (game.select[1] < popups.length && !popups[game.select[1]].length) {
+				while (game.select[1] < activePopups.length && !activePopups[game.select[1]].length) {
 					game.select[1]++;
 				};
 			} else if (!game.enemies.length) {
@@ -324,7 +324,7 @@ const selection = (() => {
 			} else if (game.select[0] === S.HAND && game.select[1] == game.hand.length - 1) {
 				if (hasPopups()) {
 					game.select = [S.POPUPS, 0];
-					while (game.select[1] < popups.length && !popups[game.select[1]].length) {
+					while (game.select[1] < activePopups.length && !activePopups[game.select[1]].length) {
 						game.select[1]++;
 					};
 				} else {
@@ -358,11 +358,11 @@ const selection = (() => {
 		};
 		// popup selection
 		if (game.select[0] === S.POPUPS) {
-			if (game.select[1] >= popups.length) {
-				game.select[1] = popups.length - 1;
+			if (game.select[1] >= activePopups.length) {
+				game.select[1] = activePopups.length - 1;
 				return;
-			} else if (!popups[game.select[1]].length) {
-				while (game.select[1] >= 0 && !popups[game.select[1]].length) {
+			} else if (!activePopups[game.select[1]].length) {
+				while (game.select[1] >= 0 && !activePopups[game.select[1]].length) {
 					game.select[1]--;
 				};
 				if (game.select[1] == -1) {
@@ -374,17 +374,17 @@ const selection = (() => {
 				return;
 			} else if (action === DIR.UP) {
 				game.select[1]++;
-				while (game.select[1] < popups.length && !popups[game.select[1]].length) {
+				while (game.select[1] < activePopups.length && !activePopups[game.select[1]].length) {
 					game.select[1]++;
 				};
-				if (game.select[1] == popups.length) {
+				if (game.select[1] == activePopups.length) {
 					game.select = [S.LOOKER, 0];
 				};
 				actionTimer = 1;
 				return;
 			} else if (action === DIR.DOWN) {
 				game.select[1]--;
-				while (game.select[1] >= 0 && !popups[game.select[1]].length) {
+				while (game.select[1] >= 0 && !activePopups[game.select[1]].length) {
 					game.select[1]--;
 				};
 				if (game.select[1] == -1) {
@@ -444,8 +444,8 @@ const selection = (() => {
 				return;
 			} else if (action === DIR.DOWN) {
 				if (hasPopups()) {
-					game.select = [S.POPUPS, popups.length - 1];
-					while (game.select[1] >= 0 && !popups[game.select[1]].length) {
+					game.select = [S.POPUPS, activePopups.length - 1];
+					while (game.select[1] >= 0 && !activePopups[game.select[1]].length) {
 						game.select[1]--;
 					};
 				} else if (!game.enemies.length) {
@@ -1020,10 +1020,10 @@ const performAction = (() => {
 			};
 		};
 		// popups
-		if (game.select[0] === S.POPUPS && popups[game.select[1]] && !back) {
-			const action = popups[game.select[1]][4];
-			popups[game.select[1]] = [];
-			while (game.select[1] >= 0 && !popups[game.select[1]].length) {
+		if (game.select[0] === S.POPUPS && activePopups[game.select[1]] && !back) {
+			const action = activePopups[game.select[1]][4];
+			activePopups[game.select[1]] = [];
+			while (game.select[1] >= 0 && !activePopups[game.select[1]].length) {
 				game.select[1]--;
 			};
 			if (game.select[1] == -1) {

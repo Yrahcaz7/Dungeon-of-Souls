@@ -16,7 +16,6 @@
  */
 
 const NO_ANTI_ALIASING_FILTER = "url('#noAntiAliasingFilter')";
-const AURA_BLADE_POS = [[65, 10], [80, 25], [42, 0], [28, 35]];
 
 /** @type {number[][]} */
 let enemyPos = [];
@@ -1020,78 +1019,81 @@ const graphics = {
 	/**
 	 * Draws the player on the canvas.
 	 */
-	player() {
-		let x = 15;
-		let y = 27;
-		// aura blades
-		for (let index = 0; index < game.eff[EFF.AURA_BLADE] && index < 4; index++) {
-			draw.image(I.aura_blade, x + AURA_BLADE_POS[index][0], y + AURA_BLADE_POS[index][1] + 4 - Math.abs(Math.round(auraBladeAnim[index]) - 4));
-			auraBladeAnim[index] += (Math.random() + 0.5) * 0.05;
-			if (auraBladeAnim[index] >= 8) auraBladeAnim[index] -= 8;
-		};
-		// icons
-		for (const key in game.eff) {
-			if (game.eff[key]) {
-				let img = I.icon[key];
-				if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x + 22, y + 103);
-				draw.image(img, x + 23, y + 104);
-				if (!PERM_EFF_DESC[key]) draw.lore(x + 40, y + 112, game.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
-				x += 17;
-				if (x >= 15 + 68) {
-					x = 15;
-					y += 17;
+	player: (() => {
+		const AURA_BLADE_POS = [[65, 10], [80, 25], [42, 0], [28, 35]];
+		return () => {
+			let x = 15;
+			let y = 27;
+			// aura blades
+			for (let index = 0; index < game.eff[EFF.AURA_BLADE] && index < 4; index++) {
+				draw.image(I.aura_blade, x + AURA_BLADE_POS[index][0], y + AURA_BLADE_POS[index][1] + 4 - Math.abs(Math.round(auraBladeAnim[index]) - 4));
+				auraBladeAnim[index] += (Math.random() + 0.5) * 0.05;
+				if (auraBladeAnim[index] >= 8) auraBladeAnim[index] -= 8;
+			};
+			// icons
+			for (const key in game.eff) {
+				if (game.eff[key]) {
+					let img = I.icon[key];
+					if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x + 22, y + 103);
+					draw.image(img, x + 23, y + 104);
+					if (!PERM_EFF_DESC[key]) draw.lore(x + 40, y + 112, game.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
+					x += 17;
+					if (x >= 15 + 68) {
+						x = 15;
+						y += 17;
+					};
 				};
 			};
+			x = 15;
+			y = 27;
+			// animations
+			draw.imageSector(playerAnim[1], Math.floor(playerAnim[0]) * 120, 0, 120, playerAnim[1].height, x, y, 120);
+			if (playerAnim[1] === I.player.idle) {
+				playerAnim[0] += 0.25;
+				if (playerAnim[0] >= 10) {
+					playerAnim[0] = 0;
+				};
+			} else if (playerAnim[1] === I.player.attack || playerAnim[1] === I.player.attack_aura) {
+				playerAnim[0]++;
+				if (playerAnim[0] >= 4) {
+					playerAnim = [0, I.player.idle];
+					postCardActivation();
+				};
+			} else if (playerAnim[1] === I.player.attack_2 || playerAnim[1] === I.player.attack_2_aura) {
+				playerAnim[0]++;
+				if (playerAnim[0] >= 6) {
+					playerAnim = [0, I.player.idle];
+					postCardActivation();
+				};
+			} else if (isDefending(playerAnim[1])) {
+				playerAnim[0] += 0.5;
+				if (playerAnim[0] >= 3) {
+					playerAnim[0] = 2;
+				};
+			} else if (playerAnim[1] === I.player.hit) {
+				playerAnim[0] += 0.25;
+				if (playerAnim[0] >= 1) {
+					playerAnim = [0, I.player.idle];
+				};
+			} else if (playerAnim[1] === I.player.death) {
+				playerAnim[0] += 0.5;
+				if (playerAnim[0] >= 10) {
+					playerAnim[0] = 9;
+				};
+			};
+			// bars
+			draw.bars(x + 22, y + 15, game.health, get.maxHealth(), game.shield, get.maxShield());
+			let energy = game.energy;
+			if (energy < 10 && get.maxEnergy() >= 10) {
+				energy = "0" + energy;
+			};
+			const cutoff = Math.min(Math.max(Math.round(game.energy / get.maxEnergy() * 30), 0), 30);
+			draw.imageSector(I.bar.energy_full, 0, 0, cutoff + 1, 32, x - 1, y + 16);
+			draw.imageSector(I.bar.energy_empty, cutoff + 1, 0, 32 - (cutoff + 1), 32, x + cutoff, y + 16);
+			draw.lore(x + 14, y + 28, energy, {"text-align": DIR.LEFT});
+			draw.lore(x + 17, y + 28, get.maxEnergy());
 		};
-		x = 15;
-		y = 27;
-		// animations
-		draw.imageSector(playerAnim[1], Math.floor(playerAnim[0]) * 120, 0, 120, playerAnim[1].height, x, y, 120);
-		if (playerAnim[1] === I.player.idle) {
-			playerAnim[0] += 0.25;
-			if (playerAnim[0] >= 10) {
-				playerAnim[0] = 0;
-			};
-		} else if (playerAnim[1] === I.player.attack || playerAnim[1] === I.player.attack_aura) {
-			playerAnim[0]++;
-			if (playerAnim[0] >= 4) {
-				playerAnim = [0, I.player.idle];
-				postCardActivation();
-			};
-		} else if (playerAnim[1] === I.player.attack_2 || playerAnim[1] === I.player.attack_2_aura) {
-			playerAnim[0]++;
-			if (playerAnim[0] >= 6) {
-				playerAnim = [0, I.player.idle];
-				postCardActivation();
-			};
-		} else if (isDefending(playerAnim[1])) {
-			playerAnim[0] += 0.5;
-			if (playerAnim[0] >= 3) {
-				playerAnim[0] = 2;
-			};
-		} else if (playerAnim[1] === I.player.hit) {
-			playerAnim[0] += 0.25;
-			if (playerAnim[0] >= 1) {
-				playerAnim = [0, I.player.idle];
-			};
-		} else if (playerAnim[1] === I.player.death) {
-			playerAnim[0] += 0.5;
-			if (playerAnim[0] >= 10) {
-				playerAnim[0] = 9;
-			};
-		};
-		// bars
-		draw.bars(x + 22, y + 15, game.health, get.maxHealth(), game.shield, get.maxShield());
-		let energy = game.energy;
-		if (energy < 10 && get.maxEnergy() >= 10) {
-			energy = "0" + energy;
-		};
-		const cutoff = Math.min(Math.max(Math.round(game.energy / get.maxEnergy() * 30), 0), 30);
-		draw.imageSector(I.bar.energy_full, 0, 0, cutoff + 1, 32, x - 1, y + 16);
-		draw.imageSector(I.bar.energy_empty, cutoff + 1, 0, 32 - (cutoff + 1), 32, x + cutoff, y + 16);
-		draw.lore(x + 14, y + 28, energy, {"text-align": DIR.LEFT});
-		draw.lore(x + 17, y + 28, get.maxEnergy());
-	},
+	})(),
 	/**
 	 * Draws the current effect on the canvas.
 	 */
@@ -1466,33 +1468,39 @@ const graphics = {
 		};
 	},
 	/**
-	 * Draws the popups on the canvas.
+	 * Draws the active popups on the canvas.
 	 */
-	popups() {
-		for (let index = 0; index < popups.length && index <= 6; index++) {
-			if (!popups[index].length) continue;
-			if (popups[index][2] >= 150) {
-				popups[index] = [];
-				continue;
+	popups: (() => {
+		const STAY_TIME = 80;
+		const TRANS_TIME = 20;
+		return () => {
+			for (let index = 0; index < activePopups.length && index <= 6; index++) {
+				if (!activePopups[index].length) continue;
+				if (activePopups[index][2] >= STAY_TIME + TRANS_TIME) {
+					activePopups[index] = [];
+					continue;
+				};
+				activePopups[index][2]++;
+				let x = (activePopups[index][1].length * 6) + 13;
+				if (activePopups[index][3]) {
+					x = (Math.max(activePopups[index][1].length, activePopups[index][3].length) * 3) + 13;
+				};
+				if (activePopups[index][2] >= STAY_TIME) {
+					x *= (STAY_TIME + TRANS_TIME - activePopups[index][2]) / TRANS_TIME;
+				} else if (activePopups[index][2] < TRANS_TIME) {
+					x *= activePopups[index][2] / TRANS_TIME;
+				};
+				x = 400 - x;
+				draw.image(I.popup.back, x, 150 - (index * 21));
+				draw.lore(x + 13, 150 - (index * 21) + 8, activePopups[index][3] ? activePopups[index][1] + "\n" + activePopups[index][3] : activePopups[index][1], {"text-small": !!activePopups[index][3]});
+				if (I.popup[activePopups[index][0]]) draw.image(I.popup[activePopups[index][0]], x + 2, 150 - (index * 21) + 2);
+				if (game.select[0] === S.POPUPS && game.select[1] == index) {
+					draw.image(I.select.popup, x - 1, 150 - (index * 21) - 1);
+				};
+				ctx.globalAlpha = 1;
 			};
-			popups[index][2]++;
-			if (popups[index][2] >= 100) {
-				ctx.globalAlpha = 3 - (popups[index][2] / 50);
-			} else if (popups[index][2] < 25) {
-				ctx.globalAlpha = popups[index][2] / 25;
-			};
-			let x = (popups[index][1].length * 6) + 13;
-			if (popups[index][3]) x = (Math.max(popups[index][1].length, popups[index][3].length) * 3) + 13;
-			x = 400 - x;
-			draw.image(I.popup.back, x, 150 - (index * 21));
-			draw.lore(x + 13, 150 - (index * 21) + 8, popups[index][3] ? popups[index][1] + "\n" + popups[index][3] : popups[index][1], {"text-small": !!popups[index][3]});
-			if (I.popup[popups[index][0]]) draw.image(I.popup[popups[index][0]], x + 2, 150 - (index * 21) + 2);
-			if (game.select[0] === S.POPUPS && game.select[1] == index) {
-				draw.image(I.select.popup, x - 1, 150 - (index * 21) - 1);
-			};
-			ctx.globalAlpha = 1;
 		};
-	},
+	})(),
 	/**
 	 * Draws the reward claiming box on the canvas.
 	 * @param {boolean} focused - whether the reward layer is focused. Defaults to `true`.

@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 3_000_049;
+const VERSION = 3_000_050;
 
 /**
  * Returns the starting global data.
@@ -95,7 +95,7 @@ function getStartGameData() { return {
 let game = getStartGameData();
 
 /** @type {[string, string, number, string, (() => void) | null][]} */
-let popups = [];
+let activePopups = [];
 /** @type {[number, number, string, number]} */
 let notif = [-1, 0, "", 0];
 /** @type {Card[]} */
@@ -132,15 +132,15 @@ document.addEventListener("DOMContentLoaded", () => {
  */
 function createPopup(type, description, secondLine = "", action = null) {
 	let oldest = 0;
-	for (let index = 0; index <= popups.length && index < 7; index++) {
-		if (popups[index]?.length) {
-			if (popups[index] && popups[index][2] > popups[oldest][2]) oldest = index;
+	for (let index = 0; index <= activePopups.length && index < 7; index++) {
+		if (activePopups[index]?.length) {
+			if (activePopups[index] && activePopups[index][2] > activePopups[oldest][2]) oldest = index;
 			continue;
 		};
-		popups[index] = [type, description, 0, secondLine, action];
+		activePopups[index] = [type, description, 0, secondLine, action];
 		return;
 	};
-	popups[oldest] = [type, description, 0, secondLine, action];
+	activePopups[oldest] = [type, description, 0, secondLine, action];
 };
 
 /**
@@ -372,8 +372,8 @@ function endBattle() {
 function loadRoom() {
 	if (game.state === STATE.ENTER && !inMenu()) {
 		// remove directive popups
-		for (let index = 0; index < popups.length; index++) {
-			if (popups[index][0] === "go") popups[index] = [];
+		for (let index = 0; index < activePopups.length; index++) {
+			if (activePopups[index][0] === "go") activePopups[index] = [];
 		};
 		// reset things
 		game.shield = 0;
