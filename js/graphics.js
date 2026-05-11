@@ -2013,11 +2013,11 @@ const graphics = {
 		const prevGame = global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]];
 		const spaceY = 76;
 		let x = 3;
-		let y = 16;
 		const categories = [SMALL_ENEMIES, BIG_ENEMIES, PRIME_ENEMIES, SPECIAL_ENEMIES, BOSS_ENEMIES];
 		for (let category = 0; category < categories.length; category++) {
 			const spaceX = (categories[category] === BOSS_ENEMIES ? 400 - x + 1 : (categories[category] === SPECIAL_ENEMIES ? 80 : 76));
 			for (let index = 0; index < categories[category].length; index++) {
+				const y = 16 + spaceY * index;
 				const type = categories[category][index];
 				if (!prevGame.kills[type]) continue;
 				draw.box(x, y, spaceX - 4, spaceY - 4, {"background-color": "#0004", "border-color": "#fff"});
@@ -2036,9 +2036,7 @@ const graphics = {
 				} else {
 					menuEnemyAnim.drawEnemy(posX, y + 1, enemyIndex, true);
 				};
-				y += spaceY;
 			};
-			y = 16;
 			x += spaceX;
 		};
 		draw.topBar("Enemies Killed From Run #" + prevGame.num);
