@@ -418,9 +418,9 @@ function startEnemyTransition(index, prevShield = game.enemies[index].shield) {
  * @param {number} exMod - the extra damage modifier. Defaults to `1`.
  * @param {number} index - the index of the enemy. Defaults to `game.enemyAtt[1]`.
  * @param {boolean} attack - whether the damage is considered an attack / "combat damage". Defaults to `true`.
- * @param {boolean} mult - whether to multiply the damage if `attack` is `true`. Defaults to `true`.
+ * @param {boolean} mult - multiplies the damage after all other effects. Defaults to `1`.
  */
-function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, mult = true) {
+function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, mult = 1) {
 	if (isNaN(amount)) throwError(`"${amount}" is not of type "number".`, TypeError);
 	// setup
 	const enemy = game.enemies[index];
@@ -428,7 +428,8 @@ function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, 
 	// increase damage
 	if (attack) amount += Math.floor(get.extraDamage(index, true) * exMod);
 	// multiply damage
-	if (attack && mult) amount = Math.ceil(amount * get.dealDamageMult(index));
+	if (attack) amount = Math.ceil(amount * get.dealDamageMult(index));
+	if (mult > 0) amount *= mult;
 	// damage enemy
 	if (amount < enemy.shield) {
 		enemy.shield -= amount;

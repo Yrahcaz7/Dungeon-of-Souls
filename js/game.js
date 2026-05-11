@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 3_000_059;
+const VERSION = 3_000_060;
 
 /**
  * Returns the starting global data.
@@ -258,57 +258,56 @@ function startTurn(firstTurn = false) {
  * Ends the player's turn.
  */
 function endTurn() {
-	if (game.state === STATE.BATTLE) {
-		// end of your turn effects
-		game.select = [S.END_TURN, 0];
-		discardHand();
-		notif = [-1, 0, "", 0];
-		if (game.eff[EFF.BURN]) {
-			takeDamage(game.eff[EFF.BURN], false);
-			game.eff[EFF.BURN]--;
-		};
-		if (game.eff[EFF.WEAKNESS]) game.eff[EFF.WEAKNESS]--;
-		if (game.eff[EFF.BLAZE]) game.eff[EFF.BLAZE]--;
-		if (game.eff[EFF.ATKUP]) game.eff[EFF.ATKUP]--;
-		if (game.eff[EFF.DEFUP]) game.eff[EFF.DEFUP]--;
-		if (game.eff[EFF.PULSE]) game.eff[EFF.PULSE] = Math.max(game.eff[EFF.PULSE] - 2, 0);
-		if (game.eff[EFF.HYPERSPEED]) game.eff[EFF.HYPERSPEED]--;
-		// activate artifacts
-		activateArtifacts(FUNC.PLAYER_TURN_END);
-		// start of enemy turn effects
-		game.turn = TURN.ENEMY;
-		game.enemyNum = -1;
-		for (let index = 0; index < game.enemies.length; index++) {
-			// effects
-			const enemy = game.enemies[index];
-			let prevShield = enemy.shield;
-			if (enemy.eff[EFF.REINFORCE]) {
-				enemy.eff[EFF.REINFORCE]--;
-			} else {
-				enemy.shield = 0;
-			};
-			if (enemy.eff[EFF.RESILIENCE]) {
-				enemy.eff[EFF.RESILIENCE]--;
-			};
-			if (enemy.eff[EFF.FIREPROOF] && enemy.eff[EFF.BURN]) {
-				enemy.eff[EFF.BURN] = Math.max(enemy.eff[EFF.BURN] - enemy.eff[EFF.FIREPROOF], 0);
-			};
-			if (enemy.eff[ENEMY_EFF.REVIVAL]) {
-				enemy.eff[ENEMY_EFF.REVIVAL]--;
-				if (enemy.eff[ENEMY_EFF.REVIVAL] === 0) {
-					game.enemies[index] = new Enemy(SLIME.SMALL);
-					game.enemies[index].eff[ENEMY_EFF.REVIVED] = 1;
-					prevShield = 0;
-				};
-			};
-			if (enemy.eff[ENEMY_EFF.OVERHEAT]) {
-				enemy.eff[ENEMY_EFF.OVERHEAT]++;
-			};
-			// transitions
-			startEnemyTransition(index, prevShield);
-		};
-		startAnim.enemy();
+	if (game.state !== STATE.BATTLE) return;
+	// end of your turn effects
+	game.select = [S.END_TURN, 0];
+	discardHand();
+	notif = [-1, 0, "", 0];
+	if (game.eff[EFF.BURN]) {
+		takeDamage(game.eff[EFF.BURN], false);
+		game.eff[EFF.BURN]--;
 	};
+	if (game.eff[EFF.WEAKNESS]) game.eff[EFF.WEAKNESS]--;
+	if (game.eff[EFF.BLAZE]) game.eff[EFF.BLAZE]--;
+	if (game.eff[EFF.ATKUP]) game.eff[EFF.ATKUP]--;
+	if (game.eff[EFF.DEFUP]) game.eff[EFF.DEFUP]--;
+	if (game.eff[EFF.PULSE]) game.eff[EFF.PULSE] = Math.max(game.eff[EFF.PULSE] - 2, 0);
+	if (game.eff[EFF.HYPERSPEED]) game.eff[EFF.HYPERSPEED]--;
+	// activate artifacts
+	activateArtifacts(FUNC.PLAYER_TURN_END);
+	// start of enemy turn effects
+	game.turn = TURN.ENEMY;
+	game.enemyNum = -1;
+	for (let index = 0; index < game.enemies.length; index++) {
+		// effects
+		const enemy = game.enemies[index];
+		let prevShield = enemy.shield;
+		if (enemy.eff[EFF.REINFORCE]) {
+			enemy.eff[EFF.REINFORCE]--;
+		} else {
+			enemy.shield = 0;
+		};
+		if (enemy.eff[EFF.RESILIENCE]) {
+			enemy.eff[EFF.RESILIENCE]--;
+		};
+		if (enemy.eff[EFF.FIREPROOF] && enemy.eff[EFF.BURN]) {
+			enemy.eff[EFF.BURN] = Math.max(enemy.eff[EFF.BURN] - enemy.eff[EFF.FIREPROOF], 0);
+		};
+		if (enemy.eff[ENEMY_EFF.REVIVAL]) {
+			enemy.eff[ENEMY_EFF.REVIVAL]--;
+			if (enemy.eff[ENEMY_EFF.REVIVAL] === 0) {
+				game.enemies[index] = new Enemy(SLIME.SMALL);
+				game.enemies[index].eff[ENEMY_EFF.REVIVED] = 1;
+				prevShield = 0;
+			};
+		};
+		if (enemy.eff[ENEMY_EFF.OVERHEAT]) {
+			enemy.eff[ENEMY_EFF.OVERHEAT]++;
+		};
+		// transitions
+		startEnemyTransition(index, prevShield);
+	};
+	startAnim.enemy();
 };
 
 /**
@@ -324,27 +323,26 @@ function endTurnConfirm() {
  * Does stuff after the player plays a card and its effect activates.
  */
 function postCardActivation() {
-	if (game.turn === TURN.PLAYER) {
-		// finish attack enemy
-		if (game.enemyAtt[3]) {
-			const attCard = CARDS[game.enemyAtt[2].id];
-			if (attCard.target !== false && attCard.damage) {
-				if (attCard.keywords.includes(CARD_EFF.UNIFORM)) dealDamage(game.enemyAtt[2].getAttr("damage"), 0.5);
-				else dealDamage(game.enemyAtt[2].getAttr("damage"));
-			};
-			if (attCard.attack instanceof Function) attCard.attack(game.enemyAtt[2].level);
-			updateData();
+	if (game.turn !== TURN.PLAYER) return;
+	// finish attack enemy
+	if (game.enemyAtt[3]) {
+		const attCard = CARDS[game.enemyAtt[2].id];
+		if (attCard.target !== false && attCard.damage) {
+			if (attCard.keywords.includes(CARD_EFF.UNIFORM)) dealDamage(game.enemyAtt[2].getAttr("damage"), 0.5);
+			else dealDamage(game.enemyAtt[2].getAttr("damage"));
 		};
-		// activate artifacts
-		if (game.enemyAtt[1] >= 0 && CARDS[game.enemyAtt[2].id]) {
-			activateArtifacts(FUNC.AFTER_ATTACK, game.enemyAtt[2]);
-		};
-		// reset things
-		game.enemyAtt = [-1, -1, new Card(), false];
-		game.attackEffects = [];
-		// auto end turn
-		if (global.options[OPTION.AUTO_END_TURN] && !areAnyCardsPlayable()) endTurn();
+		if (attCard.attack instanceof Function) attCard.attack(game.enemyAtt[2].level);
+		updateData();
 	};
+	// activate artifacts
+	if (game.enemyAtt[1] >= 0 && CARDS[game.enemyAtt[2].id]) {
+		activateArtifacts(FUNC.AFTER_ATTACK, game.enemyAtt[2]);
+	};
+	// reset things
+	game.enemyAtt = [-1, -1, new Card(), false];
+	game.attackEffects = [];
+	// auto end turn
+	if (global.options[OPTION.AUTO_END_TURN] && !areAnyCardsPlayable()) endTurn();
 };
 
 /**
@@ -360,91 +358,89 @@ function enterBattle() {
  * Ends the battle if there are no enemies remaining.
  */
 function endBattle() {
-	if (game.state === STATE.BATTLE && !game.enemies.length) {
-		// normal things
-		discardHand(true);
-		notif = [-1, 0, "", 0];
-		game.select = [S.REWARDS, 0];
-		game.state = STATE.EVENT_FIN;
-		game.turn = -1;
-		game.enemyNum = -1;
-		// activate artifact effects
-		activateArtifacts(FUNC.FLOOR_CLEAR);
-		// set rewards
-		game.rewards = [];
-		if (game.room[4] > 0) game.rewards.push([REWARD.GOLD, game.room[4]]);
-		if (get.cardRewardChoices() > 0) game.rewards.push([REWARD.CARD]);
-		if ((game.room[0] === ROOM.PRIME || game.room[0] === ROOM.BOSS) && game.room[6] instanceof Array) {
-			for (let index = 0; index < game.room[6].length; index++) {
-				if (hasArtifact(game.room[6][index])) {
-					game.room[6][index] = randomArtifact(game.artifacts.concat(game.room[6]));
-				};
+	if (game.state !== STATE.BATTLE || game.enemies.length > 0) return;
+	// normal things
+	discardHand(true);
+	notif = [-1, 0, "", 0];
+	game.select = [S.REWARDS, 0];
+	game.state = STATE.EVENT_FIN;
+	game.turn = -1;
+	game.enemyNum = -1;
+	// activate artifact effects
+	activateArtifacts(FUNC.FLOOR_CLEAR);
+	// set rewards
+	game.rewards = [];
+	if (game.room[4] > 0) game.rewards.push([REWARD.GOLD, game.room[4]]);
+	if (get.cardRewardChoices() > 0) game.rewards.push([REWARD.CARD]);
+	if ((game.room[0] === ROOM.PRIME || game.room[0] === ROOM.BOSS) && game.room[6] instanceof Array) {
+		for (let index = 0; index < game.room[6].length; index++) {
+			if (hasArtifact(game.room[6][index])) {
+				game.room[6][index] = randomArtifact(game.artifacts.concat(game.room[6]));
 			};
-			game.rewards.push([REWARD.ARTIFACT]);
 		};
-		if (game.room[0] === ROOM.BOSS) {
-			game.rewards.push([REWARD.HEALTH, Math.floor(get.maxHealth() * 0.5)]);
-			game.rewards.push([REWARD.REFINER]);
-		};
-		game.rewards.push([REWARD.FINISH]);
+		game.rewards.push([REWARD.ARTIFACT]);
 	};
+	if (game.room[0] === ROOM.BOSS) {
+		game.rewards.push([REWARD.HEALTH, Math.floor(get.maxHealth() * 0.5)]);
+		game.rewards.push([REWARD.REFINER]);
+	};
+	game.rewards.push([REWARD.FINISH]);
 };
 
 /**
  * Loads the room that is being entered.
  */
 function loadRoom() {
-	if (game.state === STATE.ENTER && !inMenu()) {
-		// remove directive popups
-		for (let index = 0; index < activePopups.length; index++) {
-			if (activePopups[index][0] === "go") activePopups[index] = [];
-		};
-		// reset things
-		game.shield = 0;
-		game.energy = get.maxEnergy();
-		game.rewards = [];
-		game.enemies = [];
-		game.hand = [];
-		game.deck = shuffle(game.cards.map(obj => new Card(obj.id, obj.level)));
-		game.discard = [];
-		game.void = [];
-		game.eff = {};
-		cardAnim = [];
-		// enter room
-		game.traveled.push(game.location);
-		const type = (game.location[0] === -1 ? ROOM.BATTLE : game.map[game.floor][game.location][0]);
-		if (type === ROOM.BATTLE || type === ROOM.PRIME || type === ROOM.BOSS) {
-			for (let index = 0; index < game.room[3].length; index++) {
-				const enemy = game.room[3][index];
-				if (enemy instanceof Array) {
-					game.enemies.push(new Enemy(+enemy[0], +enemy[1]));
-				} else {
-					game.enemies.push(new Enemy(+enemy));
-				};
+	if (game.state !== STATE.ENTER || inMenu()) return;
+	// remove directive popups
+	for (let index = 0; index < activePopups.length; index++) {
+		if (activePopups[index][0] === "go") activePopups[index] = [];
+	};
+	// reset things
+	game.shield = 0;
+	game.energy = get.maxEnergy();
+	game.rewards = [];
+	game.enemies = [];
+	game.hand = [];
+	game.deck = shuffle(game.cards.map(obj => new Card(obj.id, obj.level)));
+	game.discard = [];
+	game.void = [];
+	game.eff = {};
+	cardAnim = [];
+	// enter room
+	game.traveled.push(game.location);
+	const type = (game.location[0] === -1 ? ROOM.BATTLE : game.map[game.floor][game.location][0]);
+	if (type === ROOM.BATTLE || type === ROOM.PRIME || type === ROOM.BOSS) {
+		for (let index = 0; index < game.room[3].length; index++) {
+			const enemy = game.room[3][index];
+			if (enemy instanceof Array) {
+				game.enemies.push(new Enemy(+enemy[0], +enemy[1]));
+			} else {
+				game.enemies.push(new Enemy(+enemy));
 			};
-			if (type === ROOM.BOSS || (game.floor > 10 && game.floor % 10 == 1)) fadeMusic();
-			enterBattle();
-		} else if (type === ROOM.TREASURE) {
-			game.select = [S.REWARDS, 0];
-			game.state = STATE.EVENT_FIN;
-			game.rewards = [];
-			if (game.room[4] > 0) game.rewards.push([REWARD.GOLD, game.room[4]]);
-			if (get.cardRewardChoices() > 0) game.rewards.push([REWARD.CARD]);
-			game.rewards.push([REWARD.FINISH]);
-			activateArtifacts(FUNC.FLOOR_CLEAR);
-		} else if (type === ROOM.ORB) {
-			game.select = [S.REWARDS, 0];
-			game.state = STATE.EVENT_FIN;
-			game.rewards = [[REWARD.HEALTH, Math.floor(get.maxHealth() * 0.5)], [REWARD.PURIFIER]];
-			if (get.area() >= 1) game.rewards.push([REWARD.REFINER]);
-			game.rewards.push([REWARD.FINISH]);
-			activateArtifacts(FUNC.FLOOR_CLEAR);
-		} else if (type === ROOM.EVENT) {
-			game.select = [S.EVENT, -1];
-			game.state = STATE.EVENT;
-			game.rewards = [];
-			game.turn = 10000;
 		};
+		if (type === ROOM.BOSS || (game.floor > 10 && game.floor % 10 == 1)) fadeMusic();
+		enterBattle();
+	} else if (type === ROOM.TREASURE) {
+		game.select = [S.REWARDS, 0];
+		game.state = STATE.EVENT_FIN;
+		game.rewards = [];
+		if (game.room[4] > 0) game.rewards.push([REWARD.GOLD, game.room[4]]);
+		if (get.cardRewardChoices() > 0) game.rewards.push([REWARD.CARD]);
+		game.rewards.push([REWARD.FINISH]);
+		activateArtifacts(FUNC.FLOOR_CLEAR);
+	} else if (type === ROOM.ORB) {
+		game.select = [S.REWARDS, 0];
+		game.state = STATE.EVENT_FIN;
+		game.rewards = [[REWARD.HEALTH, Math.floor(get.maxHealth() * 0.5)], [REWARD.PURIFIER]];
+		if (get.area() >= 1) game.rewards.push([REWARD.REFINER]);
+		game.rewards.push([REWARD.FINISH]);
+		activateArtifacts(FUNC.FLOOR_CLEAR);
+	} else if (type === ROOM.EVENT) {
+		game.select = [S.EVENT, -1];
+		game.state = STATE.EVENT;
+		game.rewards = [];
+		game.turn = 10000;
 	};
 };
 
