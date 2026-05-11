@@ -258,7 +258,7 @@ function updateData() {
 				game.enemies.push(newEnemy);
 			};
 			if (enemy.eff[ENEMY_EFF.OVERHEAT]) {
-				damageAll += enemy.eff[ENEMY_EFF.OVERHEAT];
+				damageAll += Math.floor(enemy.eff[ENEMY_EFF.OVERHEAT] / 2);
 			};
 			game.kills[enemy.type] = (game.kills[enemy.type] || 0) + 1;
 		};

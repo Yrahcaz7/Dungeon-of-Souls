@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 3_000_054;
+const VERSION = 3_000_055;
 
 /**
  * Returns the starting global data.
@@ -451,7 +451,7 @@ function manageGameplay() {
 	updateData();
 	// enemy actions
 	if (game.turn === TURN.ENEMY || game.enemyNum >= 0) {
-		if (game.enemyNum == -1) startAnim.enemy();
+		if (game.enemyNum === -1) startAnim.enemy();
 		if (game.enemyNum < game.enemies.length) {
 			if (game.enemyStage === ANIM.ENDING) game.enemies[game.enemyNum].finishAction();
 			else if (game.enemyStage === ANIM.MIDDLE) game.enemies[game.enemyNum].middleAction();

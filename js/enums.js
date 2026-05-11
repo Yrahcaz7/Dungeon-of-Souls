@@ -286,7 +286,7 @@ const EFF_DESC = {
 	[ENEMY_EFF.PERSISTENCE]: "On death, summon a Puddle of Slime with [count] max health and 2 revival.",
 	[ENEMY_EFF.REVIVAL]: "On start of turn, decrease count by 1; then, if count is 0, transform into a Small Slime.",
 	[ENEMY_EFF.REVIVED]: "This dying does not trigger [On death] effects.",
-	[ENEMY_EFF.OVERHEAT]: "On start of turn, increase count by 1. On death, deal [count] non-combat damage to all units.",
+	[ENEMY_EFF.OVERHEAT]: "On start of turn, increase count by 1. On death, deal [count / 2] non-combat damage to all units, rounded down.",
 };
 
 // numeric desc node types

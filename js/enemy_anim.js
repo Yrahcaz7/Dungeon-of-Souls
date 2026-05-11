@@ -305,7 +305,7 @@ class EnemyAnimationSource {
 				this.action[0]++;
 				if (this.action[0] >= 24) {
 					game.enemyStage = ANIM.ENDING;
-				} else if (this.action[0] == 18) {
+				} else if (this.action[0] === 18) {
 					game.enemyStage = ANIM.MIDDLE;
 				} else {
 					game.enemyStage = ANIM.PENDING;
@@ -326,7 +326,7 @@ class EnemyAnimationSource {
 				if (this.action[0] >= 5) {
 					this.action[0] = 4;
 					this.action[1] = ANIM.ENDING;
-				} else if (this.action[0] == 3 && this.action[1] === ANIM.ENDING) {
+				} else if (this.action[0] === 3 && this.action[1] === ANIM.ENDING) {
 					game.enemyStage = ANIM.MIDDLE;
 				} else if (this.action[0] < 0) {
 					this.idle[index] = 0;
@@ -350,7 +350,7 @@ class EnemyAnimationSource {
 				if (this.action[0] >= 12) {
 					this.action[0] = 11;
 					this.action[1] = ANIM.ENDING;
-				} else if (this.action[0] == 10 && this.action[1] === ANIM.ENDING) {
+				} else if (this.action[0] === 10 && this.action[1] === ANIM.ENDING) {
 					game.enemyStage = ANIM.MIDDLE;
 				} else if (this.action[0] < 0) {
 					this.idle[index] = 0;
@@ -376,7 +376,7 @@ class EnemyAnimationSource {
 				if (this.action[0] >= 13) {
 					this.action[0] = 12;
 					this.action[1] = ANIM.ENDING;
-				} else if (this.action[0] == 11 && this.action[1] === ANIM.ENDING) {
+				} else if (this.action[0] === 11 && this.action[1] === ANIM.ENDING) {
 					game.enemyStage = ANIM.MIDDLE;
 				} else if (this.action[0] < 0) {
 					this.idle[index] = 0;
@@ -391,7 +391,7 @@ class EnemyAnimationSource {
 				if (this.action[0] >= 4) {
 					this.action[0] = 3;
 					this.action[1] = ANIM.ENDING;
-				} else if (this.action[0] == 2 && this.action[1] === ANIM.ENDING) {
+				} else if (this.action[0] === 2 && this.action[1] === ANIM.ENDING) {
 					game.enemyStage = ANIM.MIDDLE;
 				} else if (this.action[0] < 0) {
 					this.idle[index] = 0;
@@ -421,7 +421,7 @@ class EnemyAnimationSource {
 				if (this.action[0] >= 9) {
 					this.action[0] = 8;
 					this.action[1] = ANIM.ENDING;
-				} else if (this.action[0] == 7 && this.action[1] === ANIM.ENDING) {
+				} else if (this.action[0] === 7 && this.action[1] === ANIM.ENDING) {
 					game.enemyStage = ANIM.MIDDLE;
 				} else if (this.action[0] < 0) {
 					game.enemyStage = ANIM.ENDING;
