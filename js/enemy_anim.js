@@ -203,18 +203,15 @@ class EnemyAnimationSource {
 				const posX = Math.round(this.actionData[0] * phase);
 				const posY = Math.round(this.actionData[1] * phase);
 				if (this.action[1] === ANIM.ENDING) {
-					game.enemyStage = ANIM.ENDING;
-				} else if (game.enemyStage === ANIM.MIDDLE) {
+					enemy.finishAction();
+				} else if (this.action[0] === 11) {
 					draw.imageSector(I.enemy.slime.big_attack, 4 * 7, 0, 7, 7, x + 16 - posX, y + 43 - posY);
 					this.action[1] = ANIM.ENDING;
-					game.enemyStage = ANIM.PENDING;
 				} else {
 					draw.imageSector(I.enemy.slime.big_attack, (this.action[0] % 4) * 7, 0, 7, 7, x + 16 - posX, y + 43 - posY);
 					this.action[0]++;
-					game.enemyStage = ANIM.PENDING;
-					if (this.action[0] >= 11) {
-						this.action[0] = 11;
-						game.enemyStage = ANIM.MIDDLE;
+					if (this.action[0] === 11) {
+						enemy.middleAction();
 					};
 				};
 			} else if (type === SLIME.SMALL) {
@@ -232,33 +229,28 @@ class EnemyAnimationSource {
 				};
 				if (this.action[1] === ANIM.STARTING) this.action[0]++;
 				else if (this.action[1] === ANIM.ENDING) this.action[0]--;
-				if (this.action[0] >= 20) {
+				if (this.action[0] === 20) {
 					this.action[0] = 18;
 					this.action[1] = ANIM.ENDING;
-					game.enemyStage = ANIM.MIDDLE;
+					enemy.middleAction();
 				} else if (this.action[0] < 0) {
 					this.idle[index] = 0;
-					game.enemyStage = ANIM.ENDING;
-				} else {
-					game.enemyStage = ANIM.PENDING;
+					enemy.finishAction();
 				};
 			} else if (type === SLIME.PRIME) {
 				if (!this.actionData.length) this.actionData = [x - (isDefending(playerAnim[1]) ? 90 : 71) - 40];
 				if (this.action[0] >= 4) {
-					const phase = ((this.action[0] - 4) / 15);
+					const phase = (this.action[0] - 4) / 15;
 					const posX = Math.round(this.actionData[0] * phase);
 					draw.imageSector(I.enemy.slime.prime_attack, 4 * 36, 0, 36, 18, x - 40 - posX, 80);
 				} else {
 					draw.imageSector(I.enemy.slime.prime_attack, Math.floor(this.action[0]) * 36, 0, 36, 18, x - 40, 80);
 				};
 				this.action[0]++;
-				if (game.enemyStage === ANIM.MIDDLE) {
-					game.enemyStage = ANIM.ENDING;
-				} else if (this.action[0] >= 19) {
-					this.action[0] = 19;
-					game.enemyStage = ANIM.MIDDLE;
-				} else {
-					game.enemyStage = ANIM.PENDING;
+				if (this.action[0] === 20) {
+					enemy.finishAction();
+				} else if (this.action[0] === 19) {
+					enemy.middleAction();
 				};
 			} else if (type === SLIME.STICKY) {
 				if (!this.actionData.length) this.actionData = [
@@ -270,11 +262,10 @@ class EnemyAnimationSource {
 				const posY = y - Math.round(this.actionData[1] * phase) + 48;
 				if (this.action[1] === ANIM.ENDING) {
 					this.idle[index] = 0;
-					game.enemyStage = ANIM.ENDING;
-				} else if (game.enemyStage === ANIM.MIDDLE) {
+					enemy.finishAction();
+				} else if (this.action[0] === 16) {
 					draw.imageSector(I.enemy.slime.big_attack, 4 * 7, 0, 7, 7, posX, posY);
 					this.action[1] = ANIM.ENDING;
-					game.enemyStage = ANIM.PENDING;
 				} else {
 					if (this.action[0] >= 7) {
 						draw.imageSector(I.enemy.slime.big_attack, (this.action[0] % 4) * 7, 0, 7, 7, posX, posY);
@@ -283,10 +274,8 @@ class EnemyAnimationSource {
 						draw.imageSector(I.enemy.slime.sticky_attack, Math.floor(this.action[0]) * 66, 0, 66, 70, x - 1, y + 1);
 					};
 					this.action[0]++;
-					game.enemyStage = ANIM.PENDING;
-					if (this.action[0] >= 16) {
-						this.action[0] = 16;
-						game.enemyStage = ANIM.MIDDLE;
+					if (this.action[0] === 16) {
+						enemy.middleAction();
 					};
 				};
 			} else if (type === FRAGMENT && this.prime[index] == -1) {
@@ -303,12 +292,10 @@ class EnemyAnimationSource {
 				};
 				ctx.globalAlpha = 1;
 				this.action[0]++;
-				if (this.action[0] >= 24) {
-					game.enemyStage = ANIM.ENDING;
+				if (this.action[0] === 24) {
+					enemy.finishAction();
 				} else if (this.action[0] === 18) {
-					game.enemyStage = ANIM.MIDDLE;
-				} else {
-					game.enemyStage = ANIM.PENDING;
+					enemy.middleAction();
 				};
 			} else if (type === SENTRY.BIG) {
 				if (!this.actionData.length) this.actionData = [
@@ -323,16 +310,14 @@ class EnemyAnimationSource {
 				};
 				if (this.action[1] === ANIM.STARTING) this.action[0]++;
 				else if (this.action[1] === ANIM.ENDING) this.action[0]--;
-				if (this.action[0] >= 5) {
+				if (this.action[0] === 5) {
 					this.action[0] = 4;
 					this.action[1] = ANIM.ENDING;
 				} else if (this.action[0] === 3 && this.action[1] === ANIM.ENDING) {
-					game.enemyStage = ANIM.MIDDLE;
+					enemy.middleAction();
 				} else if (this.action[0] < 0) {
 					this.idle[index] = 0;
-					game.enemyStage = ANIM.ENDING;
-				} else {
-					game.enemyStage = ANIM.PENDING;
+					enemy.finishAction();
 				};
 			} else if (type === SENTRY.SMALL) {
 				if (!this.actionData.length) this.actionData = [
@@ -347,16 +332,14 @@ class EnemyAnimationSource {
 				};
 				if (this.action[1] === ANIM.STARTING) this.action[0]++;
 				else if (this.action[1] === ANIM.ENDING) this.action[0]--;
-				if (this.action[0] >= 12) {
+				if (this.action[0] === 12) {
 					this.action[0] = 11;
 					this.action[1] = ANIM.ENDING;
 				} else if (this.action[0] === 10 && this.action[1] === ANIM.ENDING) {
-					game.enemyStage = ANIM.MIDDLE;
+					enemy.middleAction();
 				} else if (this.action[0] < 0) {
 					this.idle[index] = 0;
-					game.enemyStage = ANIM.ENDING;
-				} else {
-					game.enemyStage = ANIM.PENDING;
+					enemy.finishAction();
 				};
 			} else if (type === SENTRY.PRIME && this.prime[index] == -1) {
 				if (!this.actionData.length) this.actionData = [
@@ -373,31 +356,27 @@ class EnemyAnimationSource {
 				};
 				if (this.action[1] === ANIM.STARTING) this.action[0]++;
 				else if (this.action[1] === ANIM.ENDING) this.action[0]--;
-				if (this.action[0] >= 13) {
+				if (this.action[0] === 13) {
 					this.action[0] = 12;
 					this.action[1] = ANIM.ENDING;
 				} else if (this.action[0] === 11 && this.action[1] === ANIM.ENDING) {
-					game.enemyStage = ANIM.MIDDLE;
+					enemy.middleAction();
 				} else if (this.action[0] < 0) {
 					this.idle[index] = 0;
-					game.enemyStage = ANIM.ENDING;
-				} else {
-					game.enemyStage = ANIM.PENDING;
+					enemy.finishAction();
 				};
 			} else if (type === SENTRY.FLAMING) {
 				draw.imageSector(I.enemy.sentry.flaming_attack, Math.floor(this.action[0]) * 364, 0, 364, 128, x - 300, y - 32);
 				if (this.action[1] === ANIM.STARTING) this.action[0]++;
 				else if (this.action[1] === ANIM.ENDING) this.action[0]--;
-				if (this.action[0] >= 4) {
+				if (this.action[0] === 4) {
 					this.action[0] = 3;
 					this.action[1] = ANIM.ENDING;
 				} else if (this.action[0] === 2 && this.action[1] === ANIM.ENDING) {
-					game.enemyStage = ANIM.MIDDLE;
+					enemy.middleAction();
 				} else if (this.action[0] < 0) {
 					this.idle[index] = 0;
-					game.enemyStage = ANIM.ENDING;
-				} else {
-					game.enemyStage = ANIM.PENDING;
+					enemy.finishAction();
 				};
 			} else if (type === SINGULARITY) {
 				if (!this.actionData.length) this.actionData = [
@@ -418,15 +397,13 @@ class EnemyAnimationSource {
 				};
 				if (this.action[1] === ANIM.STARTING) this.action[0]++;
 				else if (this.action[1] === ANIM.ENDING) this.action[0]--;
-				if (this.action[0] >= 9) {
+				if (this.action[0] === 9) {
 					this.action[0] = 8;
 					this.action[1] = ANIM.ENDING;
 				} else if (this.action[0] === 7 && this.action[1] === ANIM.ENDING) {
-					game.enemyStage = ANIM.MIDDLE;
+					enemy.middleAction();
 				} else if (this.action[0] < 0) {
-					game.enemyStage = ANIM.ENDING;
-				} else {
-					game.enemyStage = ANIM.PENDING;
+					enemy.finishAction();
 				};
 			};
 		} else if (intent === INTENT.DEFEND) {
@@ -457,71 +434,52 @@ class EnemyAnimationSource {
 				};
 				ctx.globalAlpha = 1;
 				this.action[0]++;
-				if (game.enemyStage === ANIM.MIDDLE) {
-					game.enemyStage = ANIM.ENDING;
-				} else if (this.action[0] >= 15) {
-					this.action[0] = 15;
-					game.enemyStage = ANIM.MIDDLE;
-				} else {
-					game.enemyStage = ANIM.PENDING;
+				if (this.action[0] === 16) {
+					enemy.finishAction();
+				} else if (this.action[0] === 15) {
+					enemy.middleAction();
 				};
 			} else if (type === FRAGMENT && this.prime[index] == -1) {
 				draw.imageSector(I.enemy.fragment.defend, Math.floor(this.action[0]) * 64, 0, 64, 64, x, y + 1);
 				draw.clock(x + 2, y + 5, -1, 2 - Math.abs(Math.floor(this.idle[index]) - 2));
 				this.action[0] += 0.5;
-				this.action[0] = Math.round(this.action[0] * 1e12) / 1e12;
-				if (game.enemyStage === ANIM.MIDDLE) {
-					game.enemyStage = ANIM.ENDING;
-				} else if (this.action[0] >= 6) {
-					this.action[0] = 6;
-					game.enemyStage = ANIM.MIDDLE;
-				} else {
-					game.enemyStage = ANIM.PENDING;
+				if (this.action[0] > 6) {
+					enemy.finishAction();
+				} else if (this.action[0] === 6) {
+					enemy.middleAction();
 				};
 				this.idle[index] = 0;
 			} else if (type === SENTRY.BIG) {
 				draw.imageSector(I.enemy.sentry.big_defend, Math.floor(this.action[0]) * 64, 0, 64, 64, x, y + 1);
 				this.action[0]++;
-				if (game.enemyStage === ANIM.MIDDLE) {
-					game.enemyStage = ANIM.ENDING;
-				} else if (this.action[0] >= 7) {
-					this.action[0] = 7;
-					game.enemyStage = ANIM.MIDDLE;
-				} else {
-					game.enemyStage = ANIM.PENDING;
+				if (this.action[0] === 8) {
+					enemy.finishAction();
+				} else if (this.action[0] === 7) {
+					enemy.middleAction();
 				};
 			} else if (type === SENTRY.SMALL) {
 				draw.imageSector(I.enemy.sentry.small_defend, Math.floor(this.action[0]) * 64, 0, 64, 64, x, y);
 				this.action[0]++;
-				if (game.enemyStage === ANIM.MIDDLE) {
-					game.enemyStage = ANIM.ENDING;
-				} else if (this.action[0] >= 5) {
-					this.action[0] = 5;
-					game.enemyStage = ANIM.MIDDLE;
-				} else {
-					game.enemyStage = ANIM.PENDING;
+				if (this.action[0] === 6) {
+					enemy.finishAction();
+				} else if (this.action[0] === 5) {
+					enemy.middleAction();
 				};
 			} else if (type === SENTRY.PRIME && this.prime[index] == -1) {
 				draw.imageSector(I.enemy.sentry.prime_defend, Math.floor(this.action[0]) * 64, 0, 64, 64, x, y);
 				this.action[0]++;
-				if (game.enemyStage === ANIM.MIDDLE) {
-					game.enemyStage = ANIM.ENDING;
-				} else if (this.action[0] >= 9) {
-					this.action[0] = 9;
-					game.enemyStage = ANIM.MIDDLE;
-				} else {
-					game.enemyStage = ANIM.PENDING;
+				if (this.action[0] === 10) {
+					enemy.finishAction();
+				} else if (this.action[0] === 9) {
+					enemy.middleAction();
 				};
 			} else if (type === SENTRY.FLAMING) {
 				draw.imageSector(I.enemy.sentry.flaming_defend, Math.floor(this.action[0]) * 72, 0, 72, 67, x - 4, y - 15);
 				this.action[0]++;
-				if (game.enemyStage === ANIM.MIDDLE) {
-					game.enemyStage = ANIM.ENDING;
-				} else if (this.action[0] >= 6) {
-					this.action[0] = 6;
-					game.enemyStage = ANIM.MIDDLE;
-				} else {
-					game.enemyStage = ANIM.PENDING;
+				if (this.action[0] === 7) {
+					enemy.finishAction();
+				} else if (this.action[0] === 6) {
+					enemy.middleAction();
 				};
 			};
 		};

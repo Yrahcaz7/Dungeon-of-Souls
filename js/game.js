@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 3_000_055;
+const VERSION = 3_000_057;
 
 /**
  * Returns the starting global data.
@@ -44,7 +44,7 @@ let global = getStartGlobalData();
 
 /**
  * Returns the starting game data.
- * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, floor: number, gold: number, location: number, rewards: (number | boolean)[], state: number, turn: number, select: [number, number, [number, number] | undefined], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyStage: number, enemyAtt: [number, number, Card, boolean], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {}, room: (number | (number | number[])[])[], map: (number | (number | number[])[])[][][], paths: number[][][], traveled: number[], scribbles: number[], seed: string, randomState: number[], version: number}}
+ * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, floor: number, gold: number, location: number, rewards: (number | boolean)[], state: number, turn: number, select: [number, number, [number, number] | undefined], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyAtt: [number, number, Card, boolean], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {}, room: (number | (number | number[])[])[], map: (number | (number | number[])[])[][][], paths: number[][][], traveled: number[], scribbles: number[], seed: string, randomState: number[], version: number}}
  */
 function getStartGameData() { return {
 	character: CHARACTER.KNIGHT,
@@ -64,7 +64,6 @@ function getStartGameData() { return {
 	kills: {},
 	enemies: [],
 	enemyNum: -1,
-	enemyStage: ANIM.STARTING,
 	enemyAtt: [-1, 0, new Card(), false],
 	attackEffects: [],
 	artifacts: [200, 201],
@@ -308,6 +307,7 @@ function endTurn() {
 			// transitions
 			startEnemyTransition(index, prevShield);
 		};
+		startAnim.enemy();
 	};
 };
 
@@ -447,17 +447,7 @@ function loadRoom() {
  * Handles the gameplay.
  */
 function manageGameplay() {
-	// update data
 	updateData();
-	// enemy actions
-	if (game.turn === TURN.ENEMY || game.enemyNum >= 0) {
-		if (game.enemyNum === -1) startAnim.enemy();
-		if (game.enemyNum < game.enemies.length) {
-			if (game.enemyStage === ANIM.ENDING) game.enemies[game.enemyNum].finishAction();
-			else if (game.enemyStage === ANIM.MIDDLE) game.enemies[game.enemyNum].middleAction();
-			else if (game.enemyStage === ANIM.STARTING) game.enemies[game.enemyNum].startAction();
-		};
-	};
 };
 
 /**

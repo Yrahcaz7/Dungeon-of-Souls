@@ -174,14 +174,18 @@ const loadSave = (() => {
 	 * @param {number} version - The version the save is from.
 	 */
 	function fixSave(version) {
-		// reset GAME_OVER and GAME_WON screen fade-in (all versions)
+		// game.enemyStage is no longer used (as of v3.0.57)
+		if (version < 3_000_057) {
+			delete game.enemyStage;
+		};
+		// reset game end screen fade-in (all versions)
 		if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) game.select[1] = 0;
 		// fix in-progress player attack (all versions)
 		if (game.enemyAtt[3]) startAnim.player(CARDS[game.enemyAtt[2].id].attackAnim || I.player.attack);
 		// fix in-progress enemy attack (all versions)
-		if (game.enemyStage === ANIM.PENDING) {
-			if (game.enemies[game.enemyNum].done) game.enemyStage = ANIM.ENDING;
-			else game.enemyStage = ANIM.STARTING;
+		if (game.turn === TURN.ENEMY && game.enemyNum >= 0 && game.enemyNum < game.enemies.length) {
+			if (game.enemies[game.enemyNum].done) game.enemies[game.enemyNum].finishAction();
+			else game.enemies[game.enemyNum].startAction();
 		};
 		// classify enemies (all versions)
 		game.enemies = game.enemies.map(enemy => Enemy.classify(enemy));

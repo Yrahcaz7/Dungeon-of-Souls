@@ -1119,13 +1119,14 @@ const graphics = {
 			draw.enemyIcons(index);
 		};
 		// enemy drawing
+		const selected = (game.select[0] === S.ATTACK || game.select[0] === S.ENEMY);
 		for (let index = 0; index < game.enemies.length; index++) {
-			if (enemyPos[index]?.length && isEnemyVisible(index) && ((game.select[0] !== S.ATTACK && game.select[0] !== S.ENEMY) || index != game.select[1])) {
+			if (enemyPos[index]?.length && isEnemyVisible(index) && (!selected || index !== game.select[1])) {
 				enemyAnim.drawEnemy(enemyPos[index][0], enemyPos[index][1], index);
 			};
 		};
 		// action animations
-		if (game.enemies[game.enemyNum] && !game.enemies[game.enemyNum].transition && ((game.select[0] !== S.ATTACK && game.select[0] !== S.ENEMY) || game.enemyNum != game.select[1])) {
+		if (game.enemies[game.enemyNum] && !game.enemies[game.enemyNum].transition && (!selected || game.enemyNum !== game.select[1])) {
 			enemyAnim.drawEnemyActing(enemyPos[game.enemyNum][0], enemyPos[game.enemyNum][1], game.enemyNum);
 		};
 		// move idle animations along
@@ -2096,8 +2097,8 @@ const startAnim = {
 	 */
 	enemy() {
 		game.enemyNum++;
-		game.enemyStage = ANIM.STARTING;
 		enemyAnim.action = [0, ANIM.STARTING];
 		enemyAnim.actionData = [];
+		game.enemies[game.enemyNum].startAction();
 	},
 };

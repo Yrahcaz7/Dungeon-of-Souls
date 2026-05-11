@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
+ *  Copyright (C) 2026 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -222,7 +222,7 @@ class Enemy {
 		};
 		if (game.turn !== TURN.ENEMY) {
 			game.enemyNum = -1;
-		} else if (game.enemyNum == game.enemies.length - 1) {
+		} else if (game.enemyNum === game.enemies.length - 1) {
 			game.enemyNum = -1;
 			startTurn();
 		} else {
