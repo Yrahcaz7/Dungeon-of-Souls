@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 3_000_053;
+const VERSION = 3_000_054;
 
 /**
  * Returns the starting global data.
@@ -378,6 +378,7 @@ function endBattle() {
 			game.rewards.push([REWARD.ARTIFACT]);
 		};
 		if (game.room[0] === ROOM.BOSS) {
+			game.rewards.push([REWARD.HEALTH, Math.floor(get.maxHealth() * 0.5)]);
 			game.rewards.push([REWARD.REFINER]);
 		};
 		game.rewards.push([REWARD.FINISH]);
@@ -483,7 +484,7 @@ function updateVisuals() {
 		if (game.select[0] === S.WELCOME) {
 			draw.box(80 + 2, 83, 240 - 4, 34);
 			if (game.difficulty === 0) draw.lore(200 - 1, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the \"?\" at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
-			else draw.lore(200 - 1, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start much stronger from the beginning.\nAnd by much stronger, I mean <#f00>MUCH STRONGER</#f00>.\nOtherwise, it is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
+			else draw.lore(200 - 1, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start much stronger from the beginning.\nAdditionally, all non-boss enemies have a special effect.\nOtherwise, it is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
 		} else if ([MENU.PREV_GAMES, MENU.PREV_GAME_INFO, MENU.PREV_GAME_SORT, MENU.CONF_REMOVE_PREV_GAME].includes(menuSelect[0])) {
 			graphics.prevGames(menuSelect[0] === MENU.PREV_GAMES);
 		};
