@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 3_000_058;
+const VERSION = 3_000_059;
 
 /**
  * Returns the starting global data.
@@ -329,14 +329,19 @@ function postCardActivation() {
 		if (game.enemyAtt[3]) {
 			const attCard = CARDS[game.enemyAtt[2].id];
 			if (attCard.target !== false && attCard.damage) {
-				if (CARDS[game.enemyAtt[2].id].keywords.includes(CARD_EFF.UNIFORM)) dealDamage(game.enemyAtt[2].getAttr("damage"), 0.5);
+				if (attCard.keywords.includes(CARD_EFF.UNIFORM)) dealDamage(game.enemyAtt[2].getAttr("damage"), 0.5);
 				else dealDamage(game.enemyAtt[2].getAttr("damage"));
 			};
 			if (attCard.attack instanceof Function) attCard.attack(game.enemyAtt[2].level);
-			game.enemyAtt = [-1, -1, new Card(), false];
-			game.attackEffects = [];
 			updateData();
 		};
+		// activate artifacts
+		if (game.enemyAtt[1] >= 0 && CARDS[game.enemyAtt[2].id]) {
+			activateArtifacts(FUNC.AFTER_ATTACK, game.enemyAtt[2]);
+		};
+		// reset things
+		game.enemyAtt = [-1, -1, new Card(), false];
+		game.attackEffects = [];
 		// auto end turn
 		if (global.options[OPTION.AUTO_END_TURN] && !areAnyCardsPlayable()) endTurn();
 	};
@@ -441,13 +446,6 @@ function loadRoom() {
 			game.turn = 10000;
 		};
 	};
-};
-
-/**
- * Handles the gameplay.
- */
-function manageGameplay() {
-	updateData();
 };
 
 /**
@@ -560,7 +558,7 @@ function updateVisuals() {
  */
 function gameTick() {
 	if (!loaded) return;
-	if (!inMenu()) manageGameplay();
+	if (!inMenu()) updateData();
 	selection();
 	updateVisuals();
 	save();

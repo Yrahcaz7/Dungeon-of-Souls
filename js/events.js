@@ -127,7 +127,7 @@ const EVENTS = {
 			else startEventBattle(BATTLE.CROWD, 2);
 		}],
 		40: [null, "You successfully got past the enemies!\nYou must have been very lucky.\nStealth isn't your strong suit.", ["Get a move on", 21]],
-		50: [null, "You vaugely feel something long forgotten...\nYou want to fight these enemies fair and square.", ["Battle Start!", 31]],
+		50: [() => game.artifacts.push(206), "You vaugely feel something long forgotten...\nYou want to fight these enemies fair and square.", ["Battle Start!", 31]],
 	}, {
 		0: [null, "You observe a chasm in the ground.\nIt is clearly blocking your way forward.\nWhat do you do?", ["Navigate around the chasm", 100], ["Jump across the chasm", 200], ["Climb down the side", 300]],
 		100: [() => gainEff(EFF.WEAKNESS, 10), "You begin navigating around the chasm.\nIt is very exhausting.\nYou see an enemy in the way.\nWill you fight or go back?", ["Fight the enemy", 110], ["Go back", 120]],

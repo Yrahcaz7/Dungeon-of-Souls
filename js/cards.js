@@ -66,7 +66,7 @@ const CARDS = {
 		attack(level = 0) {
 			for (let index = 0; index < game.enemies.length; index++) {
 				let amount = 1;
-				amount += Math.floor(get.extraDamage(true) * 0.5);
+				amount += Math.floor(get.extraDamage(index, true) * 0.5);
 				amount = Math.ceil(amount * get.dealDamageMult(index));
 				dealDamage(amount * ((game.eff[EFF.AURA_BLADE] || 0) + 1), 0, index, true, false);
 			};

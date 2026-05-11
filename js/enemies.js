@@ -288,8 +288,12 @@ class Enemy {
 	 * @param {number} amt - the amount of the effect to gain. Defaults to `1`.
 	 */
 	gainEff(type, amt = 1) {
-		if (this.eff[type]) this.eff[type] += amt;
-		else this.eff[type] = amt;
+		if (type === ENEMY_EFF.DUEL) {
+			game.enemies.forEach(enemy => {
+				if (enemy !== this) delete enemy.eff[ENEMY_EFF.DUEL];
+			});
+		};
+		this.eff[type] = (this.eff[type] || 0) + amt;
 	};
 };
 

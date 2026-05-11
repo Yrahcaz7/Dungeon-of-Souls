@@ -56,8 +56,8 @@ const ARTIFACTS = {
 	106: {
 		name: "Magic Book",
 		desc: "When you play a magic type card, draw 2 cards.",
-		[FUNC.PLAY_CARD](cardObj) {
-			if (Math.floor(cardObj.id / 1000) == 4) {
+		[FUNC.PLAY_CARD](card) {
+			if (Math.floor(card.id / 1000) == 4) {
 				drawCards(2);
 			};
 		},
@@ -95,6 +95,15 @@ const ARTIFACTS = {
 		big: true,
 		[FUNC.PLAYER_TURN_END]() {
 			takeDamage(5, true, -1);
+		},
+	},
+	206: {
+		name: "A Faint Memory",
+		desc: "After single-target attack, apply 1 duel.",
+		[FUNC.AFTER_ATTACK](card) {
+			if (CARDS[card.id].target !== false) {
+				game.enemies[game.enemyAtt[1]].gainEff(ENEMY_EFF.DUEL);
+			};
 		},
 	},
 };

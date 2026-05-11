@@ -95,7 +95,10 @@ const GAMEPLAY = fixManualPageFormat(`
 const CHANGELOG = fixManualPageFormat(`
 	<b>Version 3.0 - In Development...<s>
 	 - completely reworked the map generator
+	 - added one new artifact and many new effects
+	 - reworked hard mode
 	 - improved the past run info screen
+	 - many bugfixes
 	<b>Version 2.3 - Consecution<s>
 	 - finally added the ACT 2 boss music!
 	 - two new enemies and five new effects!
@@ -264,6 +267,8 @@ function updateData() {
 		};
 		game.enemies.splice(index, 1);
 		if (game.enemyNum >= index) game.enemyNum--;
+		if (game.enemyAtt[1] > index) game.enemyAtt[1]--;
+		else if (game.enemyAtt[1] === index) game.enemyAtt[1] = -1;
 	};
 	// heal everything
 	if (healAll) {

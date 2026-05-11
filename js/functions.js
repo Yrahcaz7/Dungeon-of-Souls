@@ -147,15 +147,17 @@ const get = {
 	},
 	/**
 	 * Gets the current extra damage effect.
-	 * @param {boolean} attacking - whether the player is the middle of attacking.
+	 * @param {number} index - the index of the enemy that is being damaged. Defaults to `game.enemyAtt[1]`.
+	 * @param {boolean} attacking - whether the player is the middle of attacking. Defaults to `false`.
 	 */
-	extraDamage(attacking = false) {
+	extraDamage(index = game.enemyAtt[1], attacking = false) {
 		let extra = 0;
 		if (game.attackEffects.includes(ATT_EFF.AURA_BLADE)) {
 			extra += 5 + ((game.eff[EFF.AURA_BLADE] || 0) + 1);
 		} else if (game.eff[EFF.AURA_BLADE] && !attacking) {
 			extra += 5 + game.eff[EFF.AURA_BLADE];
 		};
+		if (game.enemies[index]?.eff[ENEMY_EFF.DUEL]) extra += Math.floor(1 + game.enemies[index].eff[ENEMY_EFF.DUEL] / 5);
 		if (hasArtifact(101)) extra += 2;
 		return extra;
 	},
@@ -424,7 +426,7 @@ function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, 
 	const enemy = game.enemies[index];
 	let prevShield = enemy.shield;
 	// increase damage
-	if (attack) amount += Math.floor(get.extraDamage(true) * exMod);
+	if (attack) amount += Math.floor(get.extraDamage(index, true) * exMod);
 	// multiply damage
 	if (attack && mult) amount = Math.ceil(amount * get.dealDamageMult(index));
 	// damage enemy
@@ -523,6 +525,5 @@ function enemyGainShield(amount = 0, index = game.enemyNum) {
  * @param {number} amt - the amount of the effect to gain. Defaults to `1`.
  */
 function gainEff(type, amt = 1) {
-	if (game.eff[type]) game.eff[type] += amt;
-	else game.eff[type] = amt;
+	game.eff[type] = (game.eff[type] || 0) + amt;
 };
