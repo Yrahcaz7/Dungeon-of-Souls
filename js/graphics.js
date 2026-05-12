@@ -591,6 +591,47 @@ const draw = {
 	},
 };
 
+/**
+ * For each keyword in (or reffered to by) `keywords`, excecutes `func`.
+ * @param {number[] | {}} keywords - An array containing keywords or an object with keywords as keys. These keywords are iterated over.
+ * @param {(type: number, height: number) => void} func - The function to excecute for each keyword.
+ * @param {number[] | {}} exclude - An array containing keywords or an object with keywords as keys. These keywords are excluded from iteration.
+ */
+const forKeywordIn = (() => {
+	let _keywords = {};
+	let _func = {};
+	let logged = {};
+	const logKeyword = type => {
+		if (logged[type] || !EFF_DESC[type]) return;
+		logged[type] = true;
+		const height = Math.ceil((EFF_DESC[type].match(/\n/g) || []).length * 5.5 + (_keywords[type] > 0 ? 22 : 11));
+		_func(type, height);
+		if (type === EFF.BLAZE || type === EFF.FIREPROOF) logKeyword(EFF.BURN);
+		else if (type === ENEMY_EFF.PLAN_ATTACK) logKeyword(EFF.ATKUP);
+		else if (type === ENEMY_EFF.PLAN_DEFEND) logKeyword(EFF.DEFUP);
+		else if (type === ENEMY_EFF.PERSISTENCE) logKeyword(ENEMY_EFF.REVIVAL);
+	};
+	return (keywords, func, exclude = []) => {
+		_keywords = keywords;
+		_func = func;
+		logged = {};
+		if (exclude instanceof Array) {
+			exclude.forEach(key => logged[key] = true);
+		} else {
+			for (const key in exclude) {
+				logged[key] = true;
+			};
+		};
+		if (keywords instanceof Array) {
+			keywords.forEach(logKeyword);
+		} else {
+			for (const key in keywords) {
+				logKeyword(+key);
+			};
+		};
+	};
+})();
+
 const info = {
 	/**
 	 * Draws an infobox for a card in the player's hand.
@@ -688,7 +729,7 @@ const info = {
 		const y = 68 + yPlus;
 		let move = 0;
 		if (eff > 0) {
-			const name = EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "");
+			const name = (eff !== 1 && PLURAL_EFF_NAME[type] ? PLURAL_EFF_NAME[type] : EFF_NAME[type]);
 			const start = (PERM_EFF_DESC[type] ? "This " + PERM_EFF_DESC[type] : "This has " + eff);
 			const desc = start + " " + name + ".";
 			move += draw.textBox(x, y + move, desc.length, (EFF_COLOR[type] ? start + " <" + EFF_COLOR[type] + ">" + name + "</" + EFF_COLOR[type] + ">." : desc), {"text-small": true});
@@ -709,7 +750,7 @@ const info = {
 		const y = pos[1] + yPlus;
 		let move = 0;
 		if (eff > 0) {
-			const name = EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "");
+			const name = (eff !== 1 && PLURAL_EFF_NAME[type] ? PLURAL_EFF_NAME[type] : EFF_NAME[type]);
 			const start = (PERM_EFF_DESC[type] ? "This " + PERM_EFF_DESC[type] : "This has " + eff);
 			const desc = start + " " + name + ".";
 			move += draw.textBox(x + 72 - (desc.length * 3), y + move, desc.length, (EFF_COLOR[type] ? start + " <" + EFF_COLOR[type] + ">" + name + "</" + EFF_COLOR[type] + ">." : desc), {"text-small": true});
@@ -733,23 +774,28 @@ const info = {
 		};
 	},
 	/**
-	 * Draws an infobox for an artifact.
+	 * Draws infoboxes for an artifact.
 	 * @param {string | number} type - the type of the artifact.
 	 * @param {number} xOveride - overrides the x-coordinate of the infobox.
 	 * @param {number} yOveride - overrides the y-coordinate of the infobox.
 	 */
 	artifact(type, xOveride = NaN, yOveride = NaN) {
-		const x = (xOveride === xOveride ? xOveride : 2 + (game.select[1] * 18));
-		const y = (yOveride === yOveride ? yOveride : 32);
+		const x = (isNaN(xOveride) ? 2 + (game.select[1] * 18) : xOveride);
+		let y = (isNaN(yOveride) ? 32 : yOveride);
 		const obj = ARTIFACTS[type];
 		if (!obj) return;
 		if (obj.name.length <= 12) {
 			draw.textBox(x, y, 12, obj.name, {"text-align": DIR.CENTER});
-			draw.textBox(x, y + 13, 24, obj.desc, {"text-small": true});
+			y += 13;
+			y += draw.textBox(x, y, 24, obj.desc, {"text-small": true});
 		} else {
 			draw.textBox(x, y, obj.name.length, obj.name);
-			draw.textBox(x, y + 13, obj.name.length * 2, obj.desc, {"text-small": true});
+			y += 13;
+			y += draw.textBox(x, y, obj.name.length * 2, obj.desc, {"text-small": true});
 		};
+		forKeywordIn(obj.keywords || [], keyword => {
+			y += draw.textBox(x, y, 24, EFF_DESC[keyword], {"text-small": true});
+		});
 	},
 	/**
 	 * Draws an infobox for a menu item.
@@ -1328,26 +1374,23 @@ const graphics = {
 	/**
 	 * Draws the info of a card on the canvas.
 	 * @param {"card" | "cardSelect" | "reward" | "deck"} type - the type of the card's selection.
-	 * @param {Card} cardObj - the card object.
+	 * @param {Card} card - the card object.
 	 */
-	cardInfo(type, cardObj) {
-		const keywords = CARDS[cardObj.id]?.keywords || [];
+	cardInfo(type, card) {
 		const appliedKeywords = [];
 		let x = 0;
 		let y = 0;
-		for (const key in cardObj.eff) {
+		for (const key in card.eff) {
 			const keyword = +key;
 			if (EFF_DESC[keyword]) {
-				if (EFF_NAME[keyword]) y += info[type]("This has " + cardObj.eff[keyword] + " <#666>" + EFF_NAME[keyword] + "</#666>.", x, y);
+				if (EFF_NAME[keyword]) y += info[type]("This has " + card.eff[keyword] + " <#666>" + EFF_NAME[keyword] + "</#666>.", x, y);
 				y += info[type](keyword, x, y);
 				appliedKeywords.push(keyword);
 			};
 		};
-		for (let index = 0; index < keywords.length; index++) {
-			if (appliedKeywords.includes(keywords[index])) continue;
-			y += info[type](keywords[index], x, y);
-			if (keywords[index] === EFF.BLAZE && !keywords.includes(EFF.BURN)) y += info[type](EFF.BURN, x, y);
-		};
+		forKeywordIn(CARDS[card.id]?.keywords || [], keyword => {
+			y += info[type](keyword, x, y);
+		}, appliedKeywords);
 	},
 	/**
 	 * Draws the selector and the info it targets on the canvas.
@@ -1403,23 +1446,13 @@ const graphics = {
 				else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-small": true});
 				let x = coords[0] - 5.5;
 				let y = coords[1] - 1;
-				const logged = {};
-				const logEff = type => {
-					logged[type] = true;
-					const height = Math.ceil((EFF_DESC[type].match(/\n/g) || []).length * 5.5 + (game.enemies[game.select[1]].eff[type] > 0 ? 22 : 11));
+				forKeywordIn(game.enemies[game.select[1]], (type, height) => {
 					if ((left ? y + 12 : y) + height >= 202 - pos[1]) {
 						y = coords[1] - 1;
 						x -= 78;
 					};
 					y += info.enemy(type, x, (left ? y + 12 : y));
-					if ((type === EFF.BLAZE || type === EFF.FIREPROOF) && !logged[EFF.BURN]) logEff(EFF.BURN);
-					else if (type === ENEMY_EFF.PLAN_ATTACK && !logged[EFF.ATKUP]) logEff(EFF.ATKUP);
-					else if (type === ENEMY_EFF.PLAN_DEFEND && !logged[EFF.DEFUP]) logEff(EFF.DEFUP);
-					else if (type === ENEMY_EFF.PERSISTENCE && !logged[ENEMY_EFF.REVIVAL]) logEff(ENEMY_EFF.REVIVAL);
-				};
-				for (const key in game.enemies[game.select[1]].eff) {
-					logEff(+key);
-				};
+				});
 			};
 		} else if (game.select[0] === S.PLAYER) {
 			const coords = [58, 69, 24, 39];
@@ -1427,20 +1460,13 @@ const graphics = {
 			draw.lore(coords[0] + (coords[2] / 2) - 1, 61.5, CHARACTER_NAME[game.character][global.charStage[game.character]], {"color": "#fff", "text-align": DIR.CENTER, "text-small": true});
 			let x = coords[0] + coords[2] - 80;
 			let y = 0;
-			const logged = {};
-			const logEff = type => {
-				logged[type] = true;
-				let height = Math.ceil((EFF_DESC[type].match(/\n/g) || []).length * 5.5 + (game.eff[type] > 0 ? 22 : 11));
+			forKeywordIn(game.eff, (type, height) => {
 				if (y + height >= 202 - coords[1]) {
 					y = 0;
 					x += 78;
 				};
 				y += info.player(type, x, y);
-				if ((type === EFF.BLAZE || type === EFF.FIREPROOF) && !logged[EFF.BURN]) logEff(EFF.BURN);
-			};
-			for (const key in game.eff) {
-				logEff(+key);
-			};
+			});
 		} else if (game.select[0] === S.ARTIFACTS) {
 			info.artifact(game.artifacts[game.select[1]]);
 		} else if (game.select[0] === S.ARTIFACT_REWARD) {

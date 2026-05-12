@@ -109,8 +109,17 @@ const ARTIFACTS = {
 };
 
 for (const key in ARTIFACTS) {
-	ARTIFACTS[key].desc = wrapText(ARTIFACTS[key].desc, Math.max(ARTIFACTS[key].name.length, 12) * 2, 0, key == 205);
-	ARTIFACTS[key].desc = colorText(ARTIFACTS[key].desc);
+	const artifact = ARTIFACTS[key];
+	artifact.keywords = [];
+	for (const obj of [EFF, ENEMY_EFF, CARD_EFF]) {
+		for (const effect in obj) {
+			if (!EFF_NAME[obj[effect]]) continue;
+			if (artifact.desc.includes(EFF_NAME[obj[effect]])) {
+				artifact.keywords.push(obj[effect]);
+			};
+		};
+	};
+	artifact.desc = colorText(wrapText(artifact.desc, Math.max(artifact.name.length, 12) * 2));
 };
 
 /**

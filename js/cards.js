@@ -304,7 +304,7 @@ const CARD_TYPE = ["error", "attack", "defense", "skill", "magic", "curse"];
 (() => {
 	/**
 	 * Checks if a number is enclosed within an array recursively.
-	 * @param {Array|number} arr - The array to check.
+	 * @param {number | (number | number[])[]} arr - The array to check.
 	 * @param {number} num - The number to check for.
 	 */
 	function encloses(arr, num) {
@@ -327,15 +327,12 @@ const CARD_TYPE = ["error", "attack", "defense", "skill", "magic", "curse"];
 		desc.nodes = desc.nodes.map(node => typeof node === "string" ? colorText(node) : node);
 		// list keywords
 		if (!ref.keywords) ref.keywords = [];
-		for (const eff in EFF) {
-			if (!ref.keywords.includes(EFF[eff]) && desc.nodes.some(node => node === EFF[eff] || encloses(node, EFF[eff]))) {
-				ref.keywords.push(EFF[eff]);
-			};
-		};
-		for (const eff in CARD_EFF) {
-			if (CARD_EFF[eff] === CARD_EFF.DESC) continue;
-			if (!ref.keywords.includes(CARD_EFF[eff]) && desc.nodes.some(node => node === CARD_EFF[eff] || encloses(node, CARD_EFF[eff]))) {
-				ref.keywords.push(CARD_EFF[eff]);
+		for (const obj of [EFF, ENEMY_EFF, CARD_EFF]) {
+			for (const effect in EFF) {
+				if (!EFF_NAME[obj[effect]]) continue;
+				if (!ref.keywords.includes(obj[effect]) && desc.nodes.some(node => node === obj[effect] || encloses(node, obj[effect]))) {
+					ref.keywords.push(obj[effect]);
+				};
 			};
 		};
 		// extra info

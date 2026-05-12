@@ -244,6 +244,12 @@ const EFF_NAME = {
 	[ENEMY_EFF.DUEL]: "duel",
 };
 
+// plural names of effects
+const PLURAL_EFF_NAME = {
+	[EFF.AURA_BLADE]: "aura blades",
+	[ENEMY_EFF.REWIND]: "rewinds",
+};
+
 // "has" text for permanent effects
 const PERM_EFF_DESC = {
 	[ENEMY_EFF.PLAN_ATTACK]: "has",
