@@ -157,7 +157,7 @@ const get = {
 		} else if (game.eff[EFF.AURA_BLADE] && !attacking) {
 			extra += 5 + game.eff[EFF.AURA_BLADE];
 		};
-		if (game.enemies[index]?.eff[ENEMY_EFF.DUEL]) extra += Math.floor(1 + game.enemies[index].eff[ENEMY_EFF.DUEL] / 5);
+		if (game.enemies[index]?.eff[ENEMY_EFF.DUEL_TARGET]) extra += Math.floor(1 + game.enemies[index].eff[ENEMY_EFF.DUEL_TARGET] / 5);
 		if (hasArtifact(101)) extra += 2;
 		return extra;
 	},

@@ -99,10 +99,10 @@ const ARTIFACTS = {
 	},
 	206: {
 		name: "A Faint Memory",
-		desc: "After single-target attack, apply 1 duel.",
+		desc: "After single-target attack, apply 1 duel target.",
 		[FUNC.AFTER_ATTACK](card) {
 			if (CARDS[card.id].target !== false) {
-				game.enemies[game.enemyAtt[1]].gainEff(ENEMY_EFF.DUEL);
+				game.enemies[game.enemyAtt[1]].gainEff(ENEMY_EFF.DUEL_TARGET);
 			};
 		},
 	},

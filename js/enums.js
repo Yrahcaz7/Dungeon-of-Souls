@@ -205,7 +205,7 @@ const EFF = {AURA_BLADE: 1700, BURN: 1701, REINFORCE: 1702, RESILIENCE: 1703, WE
 const CARD_EFF = {ONE_USE: 1800, UNIFORM: 1801, UNPLAYABLE: 1802, COST_REDUCTION: 1803, RETENTION: 1804, TEMP: 1898, DESC: 1899};
 
 // enemy effects
-const ENEMY_EFF = {COUNTDOWN: 1900, REWIND: 1901, SHROUD: 1902, PLAN_ATTACK: 1903, PLAN_SUMMON: 1904, PLAN_DEFEND: 1905, SCRAP_HEAP: 1906, STICKY: 1907, PERSISTENCE: 1908, REVIVAL: 1909, REVIVED: 1910, OVERHEAT: 1911, DUEL: 1912};
+const ENEMY_EFF = {COUNTDOWN: 1900, REWIND: 1901, SHROUD: 1902, PLAN_ATTACK: 1903, PLAN_SUMMON: 1904, PLAN_DEFEND: 1905, SCRAP_HEAP: 1906, STICKY: 1907, PERSISTENCE: 1908, REVIVAL: 1909, REVIVED: 1910, OVERHEAT: 1911, DUEL_TARGET: 1912};
 
 // names of effects
 const EFF_NAME = {
@@ -241,7 +241,7 @@ const EFF_NAME = {
 	[ENEMY_EFF.REVIVAL]: "revival",
 	[ENEMY_EFF.REVIVED]: "revived",
 	[ENEMY_EFF.OVERHEAT]: "overheat",
-	[ENEMY_EFF.DUEL]: "duel",
+	[ENEMY_EFF.DUEL_TARGET]: "duel target",
 };
 
 // plural names of effects
@@ -294,7 +294,7 @@ const EFF_DESC = {
 	[ENEMY_EFF.REVIVAL]: "On start of turn, decrease count by 1; then, if count is 0, transform into a Small Slime.",
 	[ENEMY_EFF.REVIVED]: "This dying does not trigger [On death] effects.",
 	[ENEMY_EFF.OVERHEAT]: "On start of turn, increase count by 1. On death, deal\n[count / 2] non-combat damage to all units, rounded down.",
-	[ENEMY_EFF.DUEL]: "Take [1 + count / 5] extra damage from the player, rounded down. When a unit gains this effect, all other units lose it.",
+	[ENEMY_EFF.DUEL_TARGET]: "Take [1 + count / 5] extra damage from the player, rounded down. When a unit gains this effect, all other units lose it.",
 };
 
 // numeric desc node types
@@ -309,7 +309,7 @@ const COLOR = {
 	"#e70": [EFF.BURN, EFF.BLAZE], // orange
 	"#862": [EFF.REINFORCE], // brown
 	"#665": [EFF.RESILIENCE, ENEMY_EFF.REVIVED], // yellowish gray
-	"#655": [EFF.WEAKNESS, ENEMY_EFF.DUEL], // reddish gray
+	"#655": [EFF.WEAKNESS, ENEMY_EFF.DUEL_TARGET], // reddish gray
 	"#e50": [EFF.PULSE], // reddish orange
 	"#00f": [EFF.HYPERSPEED], // neon dark blue
 	"#864": [EFF.FIREPROOF], // grayish orange
