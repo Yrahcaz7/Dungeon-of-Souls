@@ -1446,7 +1446,7 @@ const graphics = {
 				else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-small": true});
 				let x = coords[0] - 5.5;
 				let y = coords[1] - 1;
-				forKeywordIn(game.enemies[game.select[1]], (type, height) => {
+				forKeywordIn(enemy.eff, (type, height) => {
 					if ((left ? y + 12 : y) + height >= 202 - pos[1]) {
 						y = coords[1] - 1;
 						x -= 78;
