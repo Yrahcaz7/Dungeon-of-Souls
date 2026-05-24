@@ -68,6 +68,7 @@ const I = {
 			sticky: new Image,
 			sticky_attack: new Image,
 			sticky_defend: new Image,
+			puddle: new Image,
 		},
 		fragment: {
 			roll: new Image,
@@ -169,6 +170,7 @@ const I = {
 		buff: new Image,
 		summon: new Image,
 		ritual: new Image,
+		nothing: new Image,
 		increase: new Image,
 		decrease: new Image,
 	}, popup: {

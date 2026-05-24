@@ -15,7 +15,7 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const VERSION = 2_003_062;
+const VERSION = 3_000_063;
 
 /**
  * Returns the starting global data.
@@ -44,7 +44,7 @@ let global = getStartGlobalData();
 
 /**
  * Returns the starting game data.
- * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, floor: number, gold: number, location: number[], rewards: (number | boolean)[], state: number, turn: number, select: [number, number, [number, number] | undefined], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyStage: number, enemyAtt: [number, number, Card, boolean], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {}, room: (number | (number | number[])[])[], firstRoom: (number | number[])[], map: (number | boolean | (number | (number | number[])[])[])[][], traveled: number[], seed: string, randomState: number[], version: number}}
+ * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, floor: number, gold: number, location: number, rewards: (number | boolean)[], state: number, turn: number, select: [number, number, [number, number] | undefined], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyAtt: [number, number, Card, boolean], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {}, room: (number | (number | number[])[])[], map: (number | (number | number[])[])[][][], paths: number[][][], traveled: number[], scribbles: number[], seed: string, randomState: number[], version: number}}
  */
 function getStartGameData() { return {
 	character: CHARACTER.KNIGHT,
@@ -54,7 +54,7 @@ function getStartGameData() { return {
 	energy: 3,
 	floor: 0,
 	gold: 0,
-	location: [-1],
+	location: 0,
 	rewards: [],
 	state: STATE.ENTER,
 	turn: -1,
@@ -64,7 +64,6 @@ function getStartGameData() { return {
 	kills: {},
 	enemies: [],
 	enemyNum: -1,
-	enemyStage: ANIM.STARTING,
 	enemyAtt: [-1, 0, new Card(), false],
 	attackEffects: [],
 	artifacts: [200, 201],
@@ -77,9 +76,10 @@ function getStartGameData() { return {
 	eventLog: {},
 	eff: {},
 	room: [],
-	firstRoom: [],
 	map: [],
+	paths: [],
 	traveled: [],
+	scribbles: [],
 	seed: (() => {
 		let str = (Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase();
 		for (let index = str.length - 1; index > 0; index--) {
@@ -94,7 +94,7 @@ function getStartGameData() { return {
 let game = getStartGameData();
 
 /** @type {[string, string, number, string, (() => void) | null][]} */
-let popups = [];
+let activePopups = [];
 /** @type {[number, number, string, number]} */
 let notif = [-1, 0, "", 0];
 /** @type {Card[]} */
@@ -131,15 +131,15 @@ document.addEventListener("DOMContentLoaded", () => {
  */
 function createPopup(type, description, secondLine = "", action = null) {
 	let oldest = 0;
-	for (let index = 0; index <= popups.length && index < 7; index++) {
-		if (popups[index]?.length) {
-			if (popups[index] && popups[index][2] > popups[oldest][2]) oldest = index;
+	for (let index = 0; index <= activePopups.length && index < 7; index++) {
+		if (activePopups[index]?.length) {
+			if (activePopups[index] && activePopups[index][2] > activePopups[oldest][2]) oldest = index;
 		} else {
 			oldest = index;
 			break;
 		};
 	};
-	popups[oldest] = [type, description, 0, secondLine, action];
+	activePopups[oldest] = [type, description, 0, secondLine, action];
 };
 
 /**
@@ -258,38 +258,56 @@ function startTurn(firstTurn = false) {
  * Ends the player's turn.
  */
 function endTurn() {
-	if (game.state === STATE.BATTLE) {
-		// end of your turn effects
-		game.select = [S.END_TURN, 0];
-		discardHand();
-		notif = [-1, 0, "", 0];
-		if (game.eff[EFF.BURN]) {
-			takeDamage(game.eff[EFF.BURN], false);
-			game.eff[EFF.BURN]--;
-		};
-		if (game.eff[EFF.WEAKNESS]) game.eff[EFF.WEAKNESS]--;
-		if (game.eff[EFF.BLAZE]) game.eff[EFF.BLAZE]--;
-		if (game.eff[EFF.ATKUP]) game.eff[EFF.ATKUP]--;
-		if (game.eff[EFF.DEFUP]) game.eff[EFF.DEFUP]--;
-		if (game.eff[EFF.PULSE]) game.eff[EFF.PULSE] = Math.max(game.eff[EFF.PULSE] - 2, 0);
-		if (game.eff[EFF.HYPERSPEED]) game.eff[EFF.HYPERSPEED]--;
-		// activate artifacts
-		activateArtifacts(FUNC.PLAYER_TURN_END);
-		// start of enemy turn effects
-		game.turn = TURN.ENEMY;
-		game.enemyNum = -1;
-		for (let index = 0; index < game.enemies.length; index++) {
-			// effects
-			const enemy = game.enemies[index];
-			let prevShield = enemy.shield;
-			if (enemy.eff[EFF.REINFORCE]) enemy.eff[EFF.REINFORCE]--;
-			else enemy.shield = 0;
-			if (enemy.eff[EFF.RESILIENCE]) enemy.eff[EFF.RESILIENCE]--;
-			if (enemy.eff[EFF.FIREPROOF] && enemy.eff[EFF.BURN]) enemy.eff[EFF.BURN] = Math.max(enemy.eff[EFF.BURN] - enemy.eff[EFF.FIREPROOF], 0);
-			// transitions
-			startEnemyTransition(index, prevShield);
-		};
+	if (game.state !== STATE.BATTLE) return;
+	// end of your turn effects
+	game.select = [S.END_TURN, 0];
+	discardHand();
+	notif = [-1, 0, "", 0];
+	if (game.eff[EFF.BURN]) {
+		takeDamage(game.eff[EFF.BURN], false);
+		game.eff[EFF.BURN]--;
 	};
+	if (game.eff[EFF.WEAKNESS]) game.eff[EFF.WEAKNESS]--;
+	if (game.eff[EFF.BLAZE]) game.eff[EFF.BLAZE]--;
+	if (game.eff[EFF.ATKUP]) game.eff[EFF.ATKUP]--;
+	if (game.eff[EFF.DEFUP]) game.eff[EFF.DEFUP]--;
+	if (game.eff[EFF.PULSE]) game.eff[EFF.PULSE] = Math.max(game.eff[EFF.PULSE] - 2, 0);
+	if (game.eff[EFF.HYPERSPEED]) game.eff[EFF.HYPERSPEED]--;
+	// activate artifacts
+	activateArtifacts(FUNC.PLAYER_TURN_END);
+	// start of enemy turn effects
+	game.turn = TURN.ENEMY;
+	game.enemyNum = -1;
+	for (let index = 0; index < game.enemies.length; index++) {
+		// effects
+		const enemy = game.enemies[index];
+		let prevShield = enemy.shield;
+		if (enemy.eff[EFF.REINFORCE]) {
+			enemy.eff[EFF.REINFORCE]--;
+		} else {
+			enemy.shield = 0;
+		};
+		if (enemy.eff[EFF.RESILIENCE]) {
+			enemy.eff[EFF.RESILIENCE]--;
+		};
+		if (enemy.eff[EFF.FIREPROOF] && enemy.eff[EFF.BURN]) {
+			enemy.eff[EFF.BURN] = Math.max(enemy.eff[EFF.BURN] - enemy.eff[EFF.FIREPROOF], 0);
+		};
+		if (enemy.eff[ENEMY_EFF.REVIVAL]) {
+			enemy.eff[ENEMY_EFF.REVIVAL]--;
+			if (enemy.eff[ENEMY_EFF.REVIVAL] === 0) {
+				game.enemies[index] = new Enemy(SLIME.SMALL);
+				game.enemies[index].eff[ENEMY_EFF.REVIVED] = 1;
+				prevShield = 0;
+			};
+		};
+		if (enemy.eff[ENEMY_EFF.OVERHEAT]) {
+			enemy.eff[ENEMY_EFF.OVERHEAT]++;
+		};
+		// transitions
+		startEnemyTransition(index, prevShield);
+	};
+	startAnim.enemy();
 };
 
 /**
@@ -305,22 +323,26 @@ function endTurnConfirm() {
  * Does stuff after the player plays a card and its effect activates.
  */
 function postCardActivation() {
-	if (game.turn === TURN.PLAYER) {
-		// finish attack enemy
-		if (game.enemyAtt[3]) {
-			const attCard = CARDS[game.enemyAtt[2].id];
-			if (attCard.target !== false && attCard.damage) {
-				if (CARDS[game.enemyAtt[2].id].keywords.includes(CARD_EFF.UNIFORM)) dealDamage(game.enemyAtt[2].getAttr("damage"), 0.5);
-				else dealDamage(game.enemyAtt[2].getAttr("damage"));
-			};
-			if (attCard.attack instanceof Function) attCard.attack(game.enemyAtt[2].level);
-			game.enemyAtt = [-1, -1, new Card(), false];
-			game.attackEffects = [];
-			updateData();
+	if (game.turn !== TURN.PLAYER) return;
+	// finish attack enemy
+	if (game.enemyAtt[3]) {
+		const attCard = CARDS[game.enemyAtt[2].id];
+		if (attCard.target !== false && attCard.damage) {
+			if (attCard.keywords.includes(CARD_EFF.UNIFORM)) dealDamage(game.enemyAtt[2].getAttr("damage"), 0.5);
+			else dealDamage(game.enemyAtt[2].getAttr("damage"));
 		};
-		// auto end turn
-		if (global.options[OPTION.AUTO_END_TURN] && !areAnyCardsPlayable()) endTurn();
+		if (attCard.attack instanceof Function) attCard.attack(game.enemyAtt[2].level);
+		updateData();
 	};
+	// activate artifacts
+	if (game.enemyAtt[1] >= 0 && CARDS[game.enemyAtt[2].id]) {
+		activateArtifacts(FUNC.AFTER_ATTACK, game.enemyAtt[2]);
+	};
+	// reset things
+	game.enemyAtt = [-1, -1, new Card(), false];
+	game.attackEffects = [];
+	// auto end turn
+	if (global.options[OPTION.AUTO_END_TURN] && !areAnyCardsPlayable()) endTurn();
 };
 
 /**
@@ -336,111 +358,89 @@ function enterBattle() {
  * Ends the battle if there are no enemies remaining.
  */
 function endBattle() {
-	if (game.state === STATE.BATTLE && !game.enemies.length) {
-		// normal stuff
-		discardHand(true);
-		notif = [-1, 0, "", 0];
-		game.select = [S.REWARDS, 0];
-		game.state = STATE.EVENT_FIN;
-		game.turn = -1;
-		game.enemyNum = -1;
-		// activate artifacts
-		activateArtifacts(FUNC.FLOOR_CLEAR);
-		// set rewards
-		game.rewards = [];
-		if (game.room[4] > 0) game.rewards.push([REWARD.GOLD, game.room[4]]);
-		if (get.cardRewardChoices() > 0) game.rewards.push([REWARD.CARD]);
-		if ((game.room[0] === ROOM.PRIME || game.room[0] === ROOM.BOSS) && game.room[6] instanceof Array) {
-			for (let index = 0; index < game.room[6].length; index++) {
-				if (hasArtifact(game.room[6][index])) {
-					game.room[6][index] = randomArtifact(game.artifacts.concat(game.room[6]));
-				};
+	if (game.state !== STATE.BATTLE || game.enemies.length > 0) return;
+	// normal things
+	discardHand(true);
+	notif = [-1, 0, "", 0];
+	game.select = [S.REWARDS, 0];
+	game.state = STATE.EVENT_FIN;
+	game.turn = -1;
+	game.enemyNum = -1;
+	// activate artifact effects
+	activateArtifacts(FUNC.FLOOR_CLEAR);
+	// set rewards
+	game.rewards = [];
+	if (game.room[4] > 0) game.rewards.push([REWARD.GOLD, game.room[4]]);
+	if (get.cardRewardChoices() > 0) game.rewards.push([REWARD.CARD]);
+	if ((game.room[0] === ROOM.PRIME || game.room[0] === ROOM.BOSS) && game.room[6] instanceof Array) {
+		for (let index = 0; index < game.room[6].length; index++) {
+			if (hasArtifact(game.room[6][index])) {
+				game.room[6][index] = randomArtifact(game.artifacts.concat(game.room[6]));
 			};
-			game.rewards.push([REWARD.ARTIFACT]);
 		};
-		if (game.room[0] === ROOM.BOSS) {
-			game.rewards.push([REWARD.REFINER]);
-		};
-		game.rewards.push([REWARD.FINISH]);
+		game.rewards.push([REWARD.ARTIFACT]);
 	};
+	if (game.room[0] === ROOM.BOSS) {
+		game.rewards.push([REWARD.HEALTH, Math.floor(get.maxHealth() * 0.5)]);
+		game.rewards.push([REWARD.REFINER]);
+	};
+	game.rewards.push([REWARD.FINISH]);
 };
 
 /**
  * Loads the room that is being entered.
  */
 function loadRoom() {
-	if (game.state === STATE.ENTER && !inMenu()) {
-		// remove directive popups
-		for (let index = 0; index < popups.length; index++) {
-			if (popups[index][0] === "go") popups[index] = [];
-		};
-		// reset things
-		game.shield = 0;
-		game.energy = get.maxEnergy();
-		game.rewards = [];
-		game.enemies = [];
-		game.hand = [];
-		game.deck = shuffle(game.cards.map(obj => new Card(obj.id, obj.level)));
-		game.discard = [];
-		game.void = [];
-		game.eff = {};
-		cardAnim = [];
-		// enter room
-		const type = (game.location[0] === -1 ? ROOM.BATTLE : game.map[game.location[0]][game.location[1]][0]);
-		if (type === ROOM.BATTLE || type === ROOM.PRIME || type === ROOM.BOSS) {
-			if (game.location[0] === -1) game.room = game.firstRoom;
-			else game.traveled.push(game.location[1]);
-			for (let index = 0; index < game.room[3].length; index++) {
-				const enemy = game.room[3][index];
-				if (enemy instanceof Array) {
-					game.enemies.push(new Enemy(+enemy[0], +enemy[1]));
-				} else {
-					game.enemies.push(new Enemy(+enemy));
-				};
-			};
-			if (type === ROOM.BOSS || (game.floor > 10 && game.floor % 10 == 1)) fadeMusic();
-			enterBattle();
-		} else if (type === ROOM.TREASURE) {
-			game.traveled.push(game.location[1]);
-			game.select = [S.REWARDS, 0];
-			game.state = STATE.EVENT_FIN;
-			game.rewards = [];
-			if (game.room[4] > 0) game.rewards.push([REWARD.GOLD, game.room[4]]);
-			if (get.cardRewardChoices() > 0) game.rewards.push([REWARD.CARD]);
-			game.rewards.push([REWARD.FINISH]);
-			activateArtifacts(FUNC.FLOOR_CLEAR);
-		} else if (type === ROOM.ORB) {
-			game.traveled.push(game.location[1]);
-			game.select = [S.REWARDS, 0];
-			game.state = STATE.EVENT_FIN;
-			game.rewards = [[REWARD.HEALTH, Math.floor(get.maxHealth() * 0.5)], [REWARD.PURIFIER]];
-			if (get.area() >= 1) game.rewards.push([REWARD.REFINER]);
-			game.rewards.push([REWARD.FINISH]);
-			activateArtifacts(FUNC.FLOOR_CLEAR);
-		} else if (type === ROOM.EVENT) {
-			game.traveled.push(game.location[1]);
-			game.select = [S.EVENT, -1];
-			game.state = STATE.EVENT;
-			game.rewards = [];
-			game.turn = 10000;
-		};
+	if (game.state !== STATE.ENTER || inMenu()) return;
+	// remove directive popups
+	for (let index = 0; index < activePopups.length; index++) {
+		if (activePopups[index][0] === "go") activePopups[index] = [];
 	};
-};
-
-/**
- * Handles the gameplay.
- */
-function manageGameplay() {
-	// update data
-	updateData();
-	// enemy actions
-	if (game.turn === TURN.ENEMY || game.enemyNum >= 0) {
-		if (game.enemyNum == -1) startAnim.enemy();
-		if (game.enemyNum < game.enemies.length) {
-			if (game.enemyStage === ANIM.ENDING) game.enemies[game.enemyNum].finishAction();
-			else if (game.enemyStage === ANIM.MIDDLE) game.enemies[game.enemyNum].middleAction();
-			else if (game.enemyStage === ANIM.STARTING) game.enemies[game.enemyNum].startAction();
+	// reset things
+	game.shield = 0;
+	game.energy = get.maxEnergy();
+	game.rewards = [];
+	game.enemies = [];
+	game.hand = [];
+	game.deck = shuffle(game.cards.map(obj => new Card(obj.id, obj.level)));
+	game.discard = [];
+	game.void = [];
+	game.eff = {};
+	cardAnim = [];
+	// enter room
+	game.traveled.push(game.location);
+	const type = (game.location[0] === -1 ? ROOM.BATTLE : game.map[game.floor][game.location][0]);
+	if (type === ROOM.BATTLE || type === ROOM.PRIME || type === ROOM.BOSS) {
+		for (let index = 0; index < game.room[3].length; index++) {
+			const enemy = game.room[3][index];
+			if (enemy instanceof Array) {
+				game.enemies.push(new Enemy(+enemy[0], +enemy[1]));
+			} else {
+				game.enemies.push(new Enemy(+enemy));
+			};
 		};
+		if (type === ROOM.BOSS || (game.floor > 10 && game.floor % 10 == 1)) fadeMusic();
+		enterBattle();
+	} else if (type === ROOM.TREASURE) {
+		game.select = [S.REWARDS, 0];
+		game.state = STATE.EVENT_FIN;
+		game.rewards = [];
+		if (game.room[4] > 0) game.rewards.push([REWARD.GOLD, game.room[4]]);
+		if (get.cardRewardChoices() > 0) game.rewards.push([REWARD.CARD]);
+		game.rewards.push([REWARD.FINISH]);
+		activateArtifacts(FUNC.FLOOR_CLEAR);
+	} else if (type === ROOM.ORB) {
+		game.select = [S.REWARDS, 0];
+		game.state = STATE.EVENT_FIN;
+		game.rewards = [[REWARD.HEALTH, Math.floor(get.maxHealth() * 0.5)], [REWARD.PURIFIER]];
+		if (get.area() >= 1) game.rewards.push([REWARD.REFINER]);
+		game.rewards.push([REWARD.FINISH]);
+		activateArtifacts(FUNC.FLOOR_CLEAR);
+	} else if (type === ROOM.EVENT) {
+		game.select = [S.EVENT, -1];
+		game.state = STATE.EVENT;
+		game.rewards = [];
+		game.turn = 10000;
 	};
 };
 
@@ -449,7 +449,7 @@ function manageGameplay() {
  */
 function updateVisuals() {
 	// bugs
-	if (!(ctx instanceof CanvasRenderingContext2D)) return;
+	if (!(ctx instanceof CanvasRenderingContext2D)) throwError(`"${ctx}" is not of type "CanvasRenderingContext2D".`, TypeError);
 	// clear
 	clearCanvas();
 	// update data
@@ -468,21 +468,24 @@ function updateVisuals() {
 		if (game.select[0] === S.WELCOME) {
 			draw.box(80 + 2, 83, 240 - 4, 34);
 			if (game.difficulty === 0) draw.lore(200 - 1, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the \"?\" at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
-			else draw.lore(200 - 1, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start much stronger from the beginning.\nAnd by much stronger, I mean <#f00>MUCH STRONGER</#f00>.\nOtherwise, it is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
-		} else if (menuSelect[0] === MENU.PREV_GAMES || menuSelect[0] === MENU.PREV_GAME_INFO || menuSelect[0] === MENU.PREV_GAME_SORT || menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
+			else draw.lore(200 - 1, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start much stronger from the beginning.\nAdditionally, all non-boss enemies have a special effect.\nOtherwise, it is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
+		} else if ([MENU.PREV_GAMES, MENU.PREV_GAME_INFO, MENU.PREV_GAME_SORT, MENU.CONF_REMOVE_PREV_GAME].includes(menuSelect[0])) {
 			graphics.prevGames(menuSelect[0] === MENU.PREV_GAMES);
 		};
-		if (menuSelect[0] === MENU.ENTER_SEED) {
-			graphics.seedInput();
-		} else if (menuSelect[0] === MENU.PREV_GAME_INFO) {
+		if (menuSelect[0] === MENU.PREV_GAME_INFO) {
 			if (menuSelect[1] % 3 === 0) graphics.deck();
 			else if (menuSelect[1] % 3 == 1) graphics.prevGameArtifacts();
 			else if (menuSelect[1] % 3 == 2) graphics.prevGameKills();
 		} else if (menuSelect[0] === MENU.PREV_GAME_SORT) {
 			graphics.prevGameSort();
-		}
-		if (menuSelect[0] === MENU.START_NEW_RUN || menuSelect[0] === MENU.CHANGE_DIFFICULTY || menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED || menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
+		};
+		if (game.select[0] === S.WELCOME) {
+			return;
+		} else if ([MENU.START_NEW_RUN, MENU.CHANGE_DIFFICULTY, MENU.CHANGE_SEED, MENU.ENTER_SEED, MENU.CONF_REMOVE_PREV_GAME, MENU.OLD_SAVE_ALERT, MENU.OLD_SAVE_COPY_FAILED].includes(menuSelect[0])) {
 			graphics.conf(menuSelect[0] !== MENU.ENTER_SEED);
+		};
+		if (menuSelect[0] === MENU.ENTER_SEED) {
+			graphics.seedInput();
 		};
 		if (hasArtifact(202) && game.floor == 10 && transition < 100) transition++;
 		return;
@@ -551,7 +554,7 @@ function updateVisuals() {
  */
 function gameTick() {
 	if (!loaded) return;
-	if (!inMenu()) manageGameplay();
+	if (!inMenu()) updateData();
 	selection();
 	updateVisuals();
 	save();

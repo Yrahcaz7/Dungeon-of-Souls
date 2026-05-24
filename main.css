@@ -36,12 +36,15 @@ audio {
 	height: 0;
 }
 
-canvas {
+canvas, .overlay {
 	position: absolute;
 	top: 0;
 	left: 0;
 	bottom: 0;
 	right: 0;
+}
+
+canvas {
 	margin: auto;
 	width: min(100vw, 200vh);
 	background-color: #000000;
@@ -61,7 +64,5 @@ canvas {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	position: relative;
-	height: 100%;
 	background-color: #202020;
 }

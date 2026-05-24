@@ -56,8 +56,8 @@ const ARTIFACTS = {
 	106: {
 		name: "Magic Book",
 		desc: "When you play a magic type card, draw 2 cards.",
-		[FUNC.PLAY_CARD](cardObj) {
-			if (Math.floor(cardObj.id / 1000) == 4) {
+		[FUNC.PLAY_CARD](card) {
+			if (Math.floor(card.id / 1000) == 4) {
 				drawCards(2);
 			};
 		},
@@ -97,11 +97,29 @@ const ARTIFACTS = {
 			takeDamage(5, true, -1);
 		},
 	},
+	206: {
+		name: "A Faint Memory",
+		desc: "After single-target attack, apply 1 duel target.",
+		[FUNC.AFTER_ATTACK](card) {
+			if (CARDS[card.id].target !== false) {
+				game.enemies[game.enemyAtt[1]].gainEff(ENEMY_EFF.DUEL_TARGET);
+			};
+		},
+	},
 };
 
 for (const key in ARTIFACTS) {
-	ARTIFACTS[key].desc = wrapText(ARTIFACTS[key].desc, Math.max(ARTIFACTS[key].name.length, 12) * 2, 0, key == 205);
-	ARTIFACTS[key].desc = colorText(ARTIFACTS[key].desc);
+	const artifact = ARTIFACTS[key];
+	artifact.keywords = [];
+	for (const obj of [EFF, ENEMY_EFF, CARD_EFF]) {
+		for (const effect in obj) {
+			if (!EFF_NAME[obj[effect]]) continue;
+			if (artifact.desc.includes(EFF_NAME[obj[effect]])) {
+				artifact.keywords.push(obj[effect]);
+			};
+		};
+	};
+	artifact.desc = colorText(wrapText(artifact.desc, Math.max(artifact.name.length, 12) * 2));
 };
 
 /**

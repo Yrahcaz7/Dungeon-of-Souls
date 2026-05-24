@@ -147,15 +147,17 @@ const get = {
 	},
 	/**
 	 * Gets the current extra damage effect.
-	 * @param {boolean} attacking - whether the player is the middle of attacking.
+	 * @param {number} index - the index of the enemy that is being damaged. Defaults to `game.enemyAtt[1]`.
+	 * @param {boolean} attacking - whether the player is the middle of attacking. Defaults to `false`.
 	 */
-	extraDamage(attacking = false) {
+	extraDamage(index = game.enemyAtt[1], attacking = false) {
 		let extra = 0;
 		if (game.attackEffects.includes(ATT_EFF.AURA_BLADE)) {
 			extra += 5 + ((game.eff[EFF.AURA_BLADE] || 0) + 1);
 		} else if (game.eff[EFF.AURA_BLADE] && !attacking) {
 			extra += 5 + game.eff[EFF.AURA_BLADE];
 		};
+		if (game.enemies[index]?.eff[ENEMY_EFF.DUEL_TARGET]) extra += Math.floor(1 + game.enemies[index].eff[ENEMY_EFF.DUEL_TARGET] / 5);
 		if (hasArtifact(101)) extra += 2;
 		return extra;
 	},
@@ -220,12 +222,12 @@ const get = {
 	},
 	/**
 	 * Returns an array of locations that the player can move to from their current one.
-	 * @param {number[]} location - The player's location. Defaults to `game.location`.
-	 * @returns {number[][]}
+	 * @param {number} floor - What floor the player is on. Defaults to `game.floor`.
+	 * @param {number} location - The player's location. Defaults to `game.location`.
+	 * @returns {number[]}
 	 */
-	availableLocations(location = game.location) {
-		if (location.length >= 2) return (paths[location[0]] || {})[location[1]] || [];
-		return paths[location[0]] || [];
+	availableLocations(floor = game.floor, location = game.location) {
+		return (game.paths[floor] || [])[location] || [];
 	},
 	/**
 	 * Gets the array of card positions for a hand of a certain size.
@@ -415,18 +417,19 @@ function startEnemyTransition(index, prevShield = game.enemies[index].shield) {
  * @param {number} amount - the amount of damage.
  * @param {number} exMod - the extra damage modifier. Defaults to `1`.
  * @param {number} index - the index of the enemy. Defaults to `game.enemyAtt[1]`.
- * @param {boolean} attack - whether the damage is considered an attack. Defaults to `true`.
- * @param {boolean} mult - whether to multiply the damage. Defaults to `true`.
+ * @param {boolean} attack - whether the damage is considered an attack / "combat damage". Defaults to `true`.
+ * @param {boolean} mult - multiplies the damage after all other effects. Defaults to `1`.
  */
-function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, mult = true) {
-	if (isNaN(amount)) return;
+function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, mult = 1) {
+	if (isNaN(amount)) throwError(`"${amount}" is not of type "number".`, TypeError);
 	// setup
 	const enemy = game.enemies[index];
 	let prevShield = enemy.shield;
 	// increase damage
-	if (attack) amount += Math.floor(get.extraDamage(true) * exMod);
+	if (attack) amount += Math.floor(get.extraDamage(index, true) * exMod);
 	// multiply damage
-	if (attack && mult) amount = Math.ceil(amount * get.dealDamageMult(index));
+	if (attack) amount = Math.ceil(amount * get.dealDamageMult(index));
+	if (mult > 0) amount *= mult;
 	// damage enemy
 	if (amount < enemy.shield) {
 		enemy.shield -= amount;
@@ -455,11 +458,11 @@ function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, 
 /**
  * Makes the player take damage.
  * @param {number} amount - the amount of damage to take.
- * @param {boolean} attack - whether the damage is considered an attack. Defaults to `true`.
+ * @param {boolean} attack - whether the damage is considered an attack / "combat damage". Defaults to `true`.
  * @param {number} index - the index of the enemy. Defaults to `game.enemyNum`.
  */
 function takeDamage(amount, attack = true, index = game.enemyNum) {
-	if (isNaN(amount)) return;
+	if (isNaN(amount)) throwError(`"${amount}" is not of type "number".`, TypeError);
 	// multiply damage
 	if (attack) amount = Math.ceil(amount * get.takeDamageMult(index));
 	// take damage
@@ -495,7 +498,7 @@ function takeDamage(amount, attack = true, index = game.enemyNum) {
  * @param {number} exMod - the extra shield modifier. Defaults to `1`.
  */
 function playerGainShield(amount = 0, exMod = 1) {
-	if (isNaN(amount)) return;
+	if (isNaN(amount)) throwError(`"${amount}" is not of type "number".`, TypeError);
 	// increase shield
 	amount += Math.floor(get.extraShield() * exMod);
 	// multiply shield
@@ -510,7 +513,7 @@ function playerGainShield(amount = 0, exMod = 1) {
  * @param {number} index - the index of the enemy. Defaults to `game.enemyNum`.
  */
 function enemyGainShield(amount = 0, index = game.enemyNum) {
-	if (isNaN(amount)) return;
+	if (isNaN(amount)) throwError(`"${amount}" is not of type "number".`, TypeError);
 	// multiply shield
 	amount = Math.ceil(amount * get.enemyShieldMult(index));
 	// gain shield
@@ -523,6 +526,5 @@ function enemyGainShield(amount = 0, index = game.enemyNum) {
  * @param {number} amt - the amount of the effect to gain. Defaults to `1`.
  */
 function gainEff(type, amt = 1) {
-	if (game.eff[type]) game.eff[type] += amt;
-	else game.eff[type] = amt;
+	game.eff[type] = (game.eff[type] || 0) + amt;
 };

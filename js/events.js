@@ -1,5 +1,5 @@
 /*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
+ *  Copyright (C) 2026 Yrahcaz7
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
  * @param {boolean} attack - whether the damage is considered an attack. Defaults to `false`.
  */
 function logEventDamage(amount, attack = false) {
-	if (isNaN(amount)) return;
+	if (isNaN(amount)) throwError(`"${amount}" is not of type "number".`, TypeError);
 	// multiply damage
 	if (attack) amount = Math.ceil(amount * get.takeDamageMult(-1));
 	// take damage
@@ -127,7 +127,7 @@ const EVENTS = {
 			else startEventBattle(BATTLE.CROWD, 2);
 		}],
 		40: [null, "You successfully got past the enemies!\nYou must have been very lucky.\nStealth isn't your strong suit.", ["Get a move on", 21]],
-		50: [null, "You vaugely feel something long forgotten...\nYou want to fight these enemies fair and square.", ["Battle Start!", 31]],
+		50: [() => game.artifacts.push(206), "You vaugely feel something long forgotten...\nYou want to fight these enemies fair and square.", ["Battle Start!", 31]],
 	}, {
 		0: [null, "You observe a chasm in the ground.\nIt is clearly blocking your way forward.\nWhat do you do?", ["Navigate around the chasm", 100], ["Jump across the chasm", 200], ["Climb down the side", 300]],
 		100: [() => gainEff(EFF.WEAKNESS, 10), "You begin navigating around the chasm.\nIt is very exhausting.\nYou see an enemy in the way.\nWill you fight or go back?", ["Fight the enemy", 110], ["Go back", 120]],
@@ -193,7 +193,7 @@ const EVENTS = {
 		}, ["Leave the ruins", 110], ["Investigate more", 120]],
 		110: [null, "Not wanting to waste even more time,\nyou turn around to leave the ruins...\nAnd you see an enemy right next to you!", ["Battle Start!", 111]],
 		111: [() => startEventBattle(BATTLE.AMBUSH, 1.1)],
-		120: [null, 'There seems to be something written on the ground...\nBut you can only make out the word "difficulty".\nThe rest is completely unreadable.\nYou also see gold coins lying around.', ["Leave the ruins", 110], ["Pocket the coins", 121]],
+		120: [null, 'There seems to be something written on the ground,\nbut you can only make out the word "difficulty".\nThe rest is completely unreadable.\nYou also see gold coins lying around.', ["Leave the ruins", 110], ["Pocket the coins", 121]],
 		121: [() => {
 			game.gold += 30;
 			logEventDamage(10, true);

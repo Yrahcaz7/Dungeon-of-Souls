@@ -15,168 +15,185 @@
  *  along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-const OVERVIEW = ""
-	+ "<b>Storyline<s>"
-	+ "You have been trapped in this dungeon as long as you can remember.\n"
-	+ "You are determined to get out, so you pick up some armour and start climbing up the floors.\n"
-	+ "As you go higher, you get closer to the exit, but the monsters get stronger.\n"
-	+ "As time goes on, you wonder... what was the reason you were trapped here in the first place?\n"
-	+ "Is there something more to this place than what it seems?\n"
-	+ "<b>Controls<s>"
-	+ "Use the arrow keys or WASD keys to select things.\n"
-	+ "The enter key and the space bar perform actions and interact with things.\n"
-	+ "There are also hotkeys, like E, which ends your turn, and B, which goes back in menus.\n"
-	+ "The 1, 2, 3, and 0 keys view your deck, discard, void, and owned cards, respectively.\n"
-	+ "You also can press tab to enter fullscreen and escape to exit it.\n"
-	+ "<b>How to Play<s>"
-	+ "You have a deck of cards, which you draw the top 5 from each turn.\n"
-	+ "You can play the cards in your hand for the effect(s) they say.\n"
-	+ "After each battle, you will get rewards, including better cards.\n"
-	+ "Try to get a good synergy between the cards in your deck.\n"
-	+ "If you reach 0 health, you die and lose your progress.\n"
-	+ "However, you can use your new knowledge to reach higher heights next time.\n"
-	+ "Note: go to the next page for more details on how to play.\n"
-	+ "<b><#999>An ominous feeling...<s><#999>"
-	+ "When the hands align,\n"
-	+ "find the fragment of time.\n"
-	+ "Else, at the edge of the sky,\n"
-	+ "you shall eternally die.";
-const GAMEPLAY = ""
-	+ "<b>Cards and Effects<s>"
-	+ "You have a deck of cards, which you draw the top 5 from each turn.\n"
-	+ "Cards cost <#ff0>energy</#ff0> to play, which is the number in the big yellow circle.\n"
-	+ "The <#ff0>energy cost</#ff0> of each card is always shown in its top-left corner.\n"
-	+ "When you play a card, it does what it says on the card (effects are listed below).\n"
-	+ " - <#f44>Damage</#f44> reduces enemies' <#f44>health</#f44>, while <#48f>shield</#48f> protects your <#f44>health</#f44> from attacks.\n"
-	+ " - Take note that <#48f>shield</#48f> is not kept at the end of your turn unless something says otherwise.\n"
-	+ " - Also, <#48f>shield</#48f> on enemies acts the same and goes away at the start of the enemy's turn.\n"
-	+ " - Most other effects are more complex and have a tooltip that says what they do.\n"
-	+ "<b>Enemy Intents<s>"
-	+ "Take note of what's floating above the enemies' heads. That is their intent.\n"
-	+ "An enemy's intent shows what it intends to do on its next turn.\n"
-	+ "<#f44>Red</#f44> intents mean <#f44>attack</#f44>, while <#48f>blue</#48f> intents mean <#48f>defense</#48f> (gain <#48f>shield</#48f>).\n"
-	+ "There are others later, but you can look at the tooltips to see what they are.\n"
-	+ "Use the enemies' predictability to strategize what cards you play.\n"
-	+ "<b>Building a Deck<s>"
-	+ "After each battle, you will get rewards, including a choice of 3 cards.\n"
-	+ "Some special things can give you more or less card choices, but it's normally 3.\n"
-	+ "Choose your cards wisely to get a good synergy between the cards in your deck.\n"
-	+ "Later on, you can also get purifiers, which let you remove cards from your deck.\n"
-	+ "Another reward that can appear later on is refiners, which let you improve your cards.\n"
-	+ "<b>Artifacts<s>"
-	+ "Artifacts are very important. You start with two: <#f0c060>The Map</#f0c060> and Iron Will.\n"
-	+ "You can open <#f0c060>the map</#f0c060> to look at it and pick where you will go next after a battle.\n"
-	+ "Iron Will has you gain 2 <#f44>health</#f44> every time you clear a floor, which is very useful.\n"
-	+ "More artifacts will appear later and you can look at their tooltips to see what they do.\n"
-	+ "<b>The Map<s>"
-	+ "When you open <#f0c060>the map</#f0c060>, you will see a tree of paths you can take.\n"
-	+ "Most nodes on the map are normal battles, which give standard rewards.\n"
-	+ "You will also see some chests, which symbolize <#ff0>treasure chambers</#ff0>.\n"
-	+ "<#ff0>Treasure chambers</#ff0> give better rewards than battles, so try to get them.\n"
-	+ "Additionally, there will be a <#f00>skull</#f00> on <#f0c060>the map</#f0c060>. That is the <#f00>death zone</#f00>.\n"
-	+ "It contains a <#f00>prime enemy</#f00>, which is much stronger than normal enemies.\n"
-	+ "However, the rewards you get are even better than ones from <#ff0>treasure chambers</#ff0>.\n"
-	+ "The large node on the far right is a <#f00>boss battle</#f00>, which gives the greatest rewards of all.\n"
-	+ "Lastly, the bright orbs right before the <#f00>boss battle</#f00> help prepare you for the fight.\n"
-	+ "<b>Losing the Game<s>"
-	+ "If your <#f44>health</#f44> drops down to 0, you will <#f00>die</#f00> and lose your progress.\n"
-	+ "However, you earn <#ff0>XP</#ff0> (not implemented yet), and when you get enough you can unlock new cards.\n"
-	+ "Then, you can use your new knowledge and cards to reach higher heights next time.";
-const CHANGELOG = ""
-	+ "<b>Version 2.3 - Consecution<s>"
-	+ " - finally added the ACT 2 boss music!\n"
-	+ " - two new enemies and five new effects!\n"
-	+ " - added five new cards (or maybe six?)\n"
-	+ " - finally added card draw/discard animations!\n"
-	+ " - added a way to remove past run info\n"
-	+ " - improved most effect descriptions!\n"
-	+ " - even more things that I didn't list here\n"
-	+ "<b>Version 2.2 - Convolution<s>"
-	+ " - finally added a way to view info on past runs!\n"
-	+ " - added a way to play runs with custom seeds!\n"
-	+ " - you can now see the types of battles on the map!\n"
-	+ " - added and adjusted a number of enemy animations\n"
-	+ " - various adjustments, bugfixes, and optimizations\n"
-	+ " - added tooltips to all of the menu items!\n"
-	+ " - probably some more things I forgot\n"
-	+ "<b>Version 2.1 - Revolution<s>"
-	+ " - finally reworked the refiner screen!\n"
-	+ " - added two new options, including auto end turn!\n"
-	+ " - there are two new artifacts (or maybe three?)\n"
-	+ " - added a hotkey (0) to view all cards you own\n"
-	+ " - some bugfixes, balancing, and performance improvements\n"
-	+ " - added a main menu for real this time!\n"
-	+ " - minor changes that you won't even notice\n"
-	+ "<b>Version 2.0 - Evolution<s>"
-	+ " - finally added ACT 2!\n"
-	+ " - added one new boss!\n"
-	+ " - added three new enemies!\n"
-	+ " - you can now refine your cards!\n"
-	+ " - there is two new artifacts\n"
-	+ " - improved game performance and some visuals\n"
-	+ " - various balancing changes and bugfixes\n"
-	+ " - even more things that I didn't list here\n"
-	+ "<b>Version 1.3 - Deception<s>"
-	+ " - added THE SECRET ACT!\n"
-	+ " - added special events (4 so far)\n"
-	+ " - added a new option: screen shake\n"
-	+ " - five new cards and many new effects\n"
-	+ " - you now get scored at the end of each run\n"
-	+ " - the map now looks much cooler\n"
-	+ " - probably some more things I forgot\n"
-	+ "<b>Version 1.2 - Reception<s>"
-	+ " - added a new option: pixel perfect size\n"
-	+ " - two new cards and two new artifacts\n"
-	+ " - a new effect, resilience, which reduces damage taken\n"
-	+ " - the boss is now smarter and has a new move\n"
-	+ " - slimes now finally have defending animations!\n"
-	+ " - rebalancing for cards, enemies, and artifacts\n"
-	+ " - minor changes that you won't even notice\n"
-	+ "<b>Version 1.1 - Perception<s>"
-	+ " - added a new option: pixel perfect screen\n"
-	+ " - two new cards and a new effect\n"
-	+ " - four new artifacts (obtained via death zone rewards)\n"
-	+ " - finally added a boss battle at the end!\n"
-	+ " - travelled paths on the map now appear darker\n"
-	+ " - balancing (including the map generator)\n"
-	+ " - even more things that I didn't list here\n"
-	+ "<b>Version 1.0 - Inception<s>"
-	+ " - finally added title and game over screens!\n"
-	+ " - finally added an options menu!\n"
-	+ " - added treasure chambers and death zones\n"
-	+ " - added hotkeys for various things\n"
-	+ " - three new cards and some card rebalancing\n"
-	+ " - polished up the map generator (and fixed seeds)\n"
-	+ " - many bugfixes and internal optimizations\n"
-	+ " - probably some more things I forgot\n"
-	+ "<b>Version 0.3 - Formulation<s>"
-	+ " - enemies now die upon reaching 0 health\n"
-	+ " - added the map (upper-left corner)\n"
-	+ " - added artifacts (and seeds; a work in progress)\n"
-	+ " - finally added the how to play page!\n"
-	+ " - two new cards and a new effect\n"
-	+ " - added loot/rewards at end of fights\n"
-	+ " - minor changes that you won't even notice\n"
-	+ "<b>Version 0.2 - Manifestation<s>"
-	+ " - you can now end your turn (you couldn't before)\n"
-	+ " - enemies can now attack and defend\n"
-	+ " - you can now see what the enemy intends to do\n"
-	+ " - added the changelog to the game info\n"
-	+ " - added notifications (currently only music change ones)\n"
-	+ " - a new card, with a totally new effect\n"
-	+ " - even more things that I didn't list here\n"
-	+ "<b>Version 0.1 - Realization<s>"
-	+ " - many optimizations and code improvements\n"
-	+ " - a lot more cool visuals and animations\n"
-	+ " - some new UI items and a help page\n"
-	+ " - added custom music, made by myself\n"
-	+ " - you can now view your deck and discard\n"
-	+ " - a new card, with a totally new effect\n"
-	+ " - probably some more things I forgot\n"
-	+ "<b>Version 0.0 - Desolation<s>"
-	+ " - started making the game in my spare time\n"
-	+ " - still needs a lot of polishing and such\n"
-	+ " - next update will probably make it more playable";
+/**
+ * Fixes the formatting of a manual page's text and returns it.
+ * @param {string} str - the text to fix the formatting of.
+ */
+function fixManualPageFormat(str) {
+	return str.replace(/^\n/, "").replace(/\n$/, "").replace(/\t/g, "");
+};
+
+const OVERVIEW = fixManualPageFormat(`
+	<b>Storyline<s>
+	You have been trapped in this dungeon as long as you can remember.
+	You are determined to get out, so you pick up some armour and start climbing up the floors.
+	As you go higher, you get closer to the exit, but the monsters get stronger.
+	As time goes on, you wonder... What was the reason you were trapped here in the first place?
+	Is there something more to this dungeon than it seems?
+	<b>Controls<s>
+	Use the arrow keys or WASD keys to select things.
+	The enter key and the space bar perform actions and interact with things.
+	There are also hotkeys, like E, which ends your turn, and B, which goes back in menus.
+	The 1, 2, 3, and 0 keys view your deck, discard, void, and owned cards, respectively.
+	You also can press tab to enter fullscreen and escape to exit it.
+	<b>How to Play<s>
+	You have a deck of cards, which you draw the top 5 from each turn.
+	You can play the cards in your hand for the effect(s) they say.
+	After each battle, you will get rewards, including better cards.
+	Try to get a good synergy between the cards in your deck.
+	If you reach 0 health, you die and lose your progress.
+	However, you can use your new knowledge to reach higher heights next time.
+	Note: go to the next page for more details on how to play.
+	<b><#999>An ominous feeling...<s>
+	<#999>When the hands align,
+	find the fragment of time.
+	Else, at the edge of the sky,
+	you shall eternally die.
+`);
+const GAMEPLAY = fixManualPageFormat(`
+	<b>Cards and Effects<s>
+	You have a deck of cards, which you draw the top 5 from each turn.
+	Cards cost <#ff0>energy</#ff0> to play, which is the number in the big yellow circle.
+	The <#ff0>energy cost</#ff0> of each card is always shown in its top-left corner.
+	When you play a card, it does what it says on the card (effects are listed below).
+	 - <#f44>Damage</#f44> reduces enemies' <#f44>health</#f44>, while <#48f>shield</#48f> protects your <#f44>health</#f44> from attacks.
+	 - Take note that <#48f>shield</#48f> goes away at the start of your turn unless something says otherwise.
+	 - Also, <#48f>shield</#48f> on enemies acts the same and goes away at the start of the enemy turn.
+	 - Most other effects are more complex and have a tooltip that says what they do.
+	<b>Enemy Intents<s>
+	Take note of what's floating above the enemies' heads. That is their intent.
+	An enemy's intent shows what it intends to do on its next turn.
+	<#f44>Red</#f44> intents mean <#f44>attack</#f44>, while <#48f>blue</#48f> intents mean <#48f>defense</#48f> (gain <#48f>shield</#48f>).
+	There are others later, but you can look at the tooltips to see what they are.
+	Use the enemies' predictability to strategize what cards you play.
+	<b>Building a Deck<s>
+	After each battle, you will get rewards, including a choice of 3 cards.
+	Some special things can give you more or less card choices, but it's normally 3.
+	Choose your cards wisely to get a good synergy between the cards in your deck.
+	Later on, you can also get purifiers, which let you remove cards from your deck.
+	Another reward that can appear later on is refiners, which let you improve your cards.
+	<b>Artifacts<s>
+	Artifacts are very important. You start with two: <#f0c060>The Map</#f0c060> and Iron Will.
+	You can open <#f0c060>the map</#f0c060> to look at it and pick where you will go next after a battle.
+	Iron Will has you gain 2 <#f44>health</#f44> every time you clear a floor, which is very useful.
+	More artifacts will appear later and you can look at their tooltips to see what they do.
+	<b>The Map<s>
+	When you open <#f0c060>the map</#f0c060>, you will see a tree of paths you can take.
+	Most nodes on the map are normal battles, which give standard rewards.
+	You will also see some chests, which symbolize <#ff0>treasure chambers</#ff0>.
+	<#ff0>Treasure chambers</#ff0> give better rewards than battles, so try to get them.
+	Additionally, there will be a <#f00>skull</#f00> on <#f0c060>the map</#f0c060>. That is the <#f00>death zone</#f00>.
+	It contains a <#f00>prime enemy</#f00>, which is much stronger than normal enemies.
+	However, the rewards you get are even better than ones from <#ff0>treasure chambers</#ff0>.
+	The large node on the far right is a <#f00>boss battle</#f00>, which gives the greatest rewards of all.
+	Lastly, the bright orbs right before the <#f00>boss battle</#f00> help prepare you for the fight.
+	<b>Losing the Game<s>
+	If your <#f44>health</#f44> drops down to 0, you will <#f00>die</#f00> and lose your progress.
+	However, you earn <#ff0>XP</#ff0> (not implemented yet), and when you get enough you can unlock new cards.
+	Then, you can use your new knowledge and cards to reach higher heights next time.
+`);
+const CHANGELOG = fixManualPageFormat(`
+	<b>Version 3.0 - In Development...<s>
+	 - completely reworked the map generator
+	 - added one new artifact and many new effects
+	 - reworked hard mode
+	 - improved the past run info screen
+	 - many bugfixes
+	<b>Version 2.3 - Consecution<s>
+	 - finally added the ACT 2 boss music!
+	 - two new enemies and five new effects!
+	 - added five new cards (or maybe six?)
+	 - finally added card draw/discard animations!
+	 - added a way to remove past run info
+	 - improved most effect descriptions!
+	 - some less important things
+	<b>Version 2.2 - Convolution<s>
+	 - finally added a way to view info on past runs!
+	 - added a way to play runs with custom seeds!
+	 - you can now see the types of battles on the map!
+	 - added and adjusted a number of enemy animations
+	 - various adjustments, bugfixes, and optimizations
+	 - added tooltips to all of the menu items!
+	 - probably some more things I forgot
+	<b>Version 2.1 - Revolution<s>
+	 - finally reworked the refiner screen!
+	 - added two new options, including auto end turn!
+	 - there are two new artifacts (or maybe three?)
+	 - added a hotkey (0) to view all cards you own
+	 - some bugfixes, balancing, and performance improvements
+	 - added a main menu for real this time!
+	 - minor changes that you won't even notice
+	<b>Version 2.0 - Evolution<s>
+	 - finally added ACT 2!
+	 - added one new boss!
+	 - added three new enemies!
+	 - you can now refine your cards!
+	 - there is two new artifacts
+	 - improved game performance and some visuals
+	 - various balancing changes and bugfixes
+	 - some less important things
+	<b>Version 1.3 - Deception<s>
+	 - added THE SECRET ACT!
+	 - added special events (4 so far)
+	 - added a new option: screen shake
+	 - five new cards and many new effects
+	 - you now get scored at the end of each run
+	 - the map now looks much cooler
+	 - probably some more things I forgot
+	<b>Version 1.2 - Reception<s>
+	 - added a new option: pixel perfect size
+	 - two new cards and two new artifacts
+	 - a new effect, resilience, which reduces damage taken
+	 - the boss is now smarter and has a new move
+	 - slimes now finally have defending animations!
+	 - rebalancing for cards, enemies, and artifacts
+	 - minor changes that you won't even notice
+	<b>Version 1.1 - Perception<s>
+	 - added a new option: pixel perfect screen
+	 - two new cards and a new effect
+	 - four new artifacts (obtained via death zone rewards)
+	 - finally added a boss battle at the end!
+	 - travelled paths on the map now appear darker
+	 - balancing (including the map generator)
+	 - some less important things
+	<b>Version 1.0 - Inception<s>
+	 - finally added title and game over screens!
+	 - finally added an options menu!
+	 - added treasure chambers and death zones
+	 - added hotkeys for various things
+	 - three new cards and some card rebalancing
+	 - polished the map generator (and fixed seeds)
+	 - many bugfixes and internal optimizations
+	 - probably some more things I forgot
+	<b>Version 0.3 - Formulation<s>
+	 - enemies now die upon reaching 0 health
+	 - added the map (and seeds)
+	 - added the starting artifact
+	 - finally added the how to play page!
+	 - two new cards and a new effect
+	 - added loot/rewards at end of fights
+	 - minor changes that you won't even notice
+	<b>Version 0.2 - Manifestation<s>
+	 - you can now end your turn (you couldn't before)
+	 - enemies can now attack and defend
+	 - you can now see what the enemy intends to do
+	 - added the changelog to the game info
+	 - added notifications (currently only music change ones)
+	 - a new card, with a totally new effect
+	 - some less important things
+	<b>Version 0.1 - Realization<s>
+	 - many optimizations and code improvements
+	 - a lot more cool visuals and animations
+	 - some new UI items and a help page
+	 - added custom music, made by myself
+	 - you can now view your deck and discard
+	 - a new card, with a totally new effect
+	 - probably some more things I forgot
+	<b>Version 0.0 - Desolation<s>
+	 - started making the game in my spare time
+	 - still needs a lot of polishing and such
+	 - next update will probably make it more playable
+`);
 
 /**
  * Updates the game's data.
@@ -213,40 +230,49 @@ function updateData() {
 		};
 	};
 	// fixes
-	if (game.health < 0) game.health = 0;
-	else if (game.health > get.maxHealth()) game.health = get.maxHealth();
-	if (game.shield < 0) game.shield = 0;
-	else if (game.shield > get.maxShield()) game.shield = get.maxShield();
+	game.health = Math.min(Math.max(game.health, 0), get.maxHealth());
+	game.shield = Math.min(Math.max(game.shield, 0), get.maxShield());
 	for (let index = 0; index < game.enemies.length; index++) {
-		if (game.enemies[index].health > game.enemies[index].maxHealth) game.enemies[index].health = game.enemies[index].maxHealth;
-		if (game.enemies[index].shield > game.enemies[index].maxShield) game.enemies[index].shield = game.enemies[index].maxShield;
+		const enemy = game.enemies[index];
+		enemy.health = Math.min(enemy.health, enemy.maxHealth);
+		enemy.shield = Math.min(enemy.shield, enemy.maxShield);
 	};
 	// kill enemies
 	let healAll = false;
+	let damageAll = 0;
 	for (let index = game.enemies.length - 1; index >= 0; index--) {
-		if (game.enemies[index].health <= 0) {
-			const deathTriggers = !game.enemies[index].eff[ENEMY_EFF.SCRAP_HEAP];
-			if (game.enemies[index].eff[ENEMY_EFF.REWIND] && !game.enemies[index].eff[ENEMY_EFF.COUNTDOWN] && deathTriggers) {
-				game.enemies[index].eff[ENEMY_EFF.REWIND]++;
-				game.enemies[index].eff[ENEMY_EFF.COUNTDOWN] = Math.max(game.enemies[index].intentHistory.length - 1, 0);
-				game.enemies[index].intentHistory.splice(game.enemies[index].intentHistory.length - 1);
+		const enemy = game.enemies[index];
+		if (enemy.health > 0) continue;
+		const deathTriggers = !enemy.eff[ENEMY_EFF.SCRAP_HEAP] && !enemy.eff[ENEMY_EFF.REVIVED];
+		if (deathTriggers) {
+			if (enemy.eff[ENEMY_EFF.REWIND] && !enemy.eff[ENEMY_EFF.COUNTDOWN]) {
+				enemy.eff[ENEMY_EFF.REWIND]++;
+				enemy.eff[ENEMY_EFF.COUNTDOWN] = Math.max(enemy.intentHistory.length - 1, 0);
+				enemy.intentHistory.splice(enemy.intentHistory.length - 1);
 				healAll = true;
-			} else {
-				const type = game.enemies[index].type;
-				if (deathTriggers) {
-					if (game.kills[type]) game.kills[type]++;
-					else game.kills[type] = 1;
-				};
-				game.enemies.splice(index, 1);
-				if (game.enemyNum >= index) game.enemyNum--;
+				continue;
 			};
+			if (enemy.eff[ENEMY_EFF.PERSISTENCE]) {
+				const newEnemy = new Enemy(SLIME.PUDDLE);
+				newEnemy.maxHealth = enemy.eff[ENEMY_EFF.PERSISTENCE];
+				newEnemy.health = newEnemy.maxHealth;
+				newEnemy.maxShield = newEnemy.maxHealth;
+				newEnemy.eff[ENEMY_EFF.REVIVAL] = 2;
+				game.enemies.push(newEnemy);
+			};
+			if (enemy.eff[ENEMY_EFF.OVERHEAT]) {
+				damageAll += Math.floor(enemy.eff[ENEMY_EFF.OVERHEAT] / 2);
+			};
+			game.kills[enemy.type] = (game.kills[enemy.type] || 0) + 1;
 		};
+		game.enemies.splice(index, 1);
+		if (game.enemyNum >= index) game.enemyNum--;
+		if (game.enemyAtt[1] > index) game.enemyAtt[1]--;
+		else if (game.enemyAtt[1] === index) game.enemyAtt[1] = -1;
 	};
 	// heal everything
 	if (healAll) {
-		for (let index = 0; index < game.enemies.length; index++) {
-			game.enemies[index].health = game.enemies[index].maxHealth;
-		};
+		game.enemies.forEach(enemy => enemy.health = enemy.maxHealth);
 		game.health = get.maxHealth();
 	};
 	// enemy plans
@@ -312,5 +338,13 @@ function updateData() {
 	if (game.select[0] === S.HAND) {
 		if (game.hand.length) game.prevCard = game.select[1];
 		else game.select = [S.END_TURN, 0];
+	};
+	// effects that need another update
+	if (damageAll > 0) {
+		for (let index = 0; index < game.enemies.length; index++) {
+			dealDamage(damageAll, 0, index, false);
+		};
+		takeDamage(damageAll, false);
+		updateData();
 	};
 };

@@ -16,7 +16,6 @@
  */
 
 const NO_ANTI_ALIASING_FILTER = "url('#noAntiAliasingFilter')";
-const AURA_BLADE_POS = [[65, 10], [80, 25], [42, 0], [28, 35]];
 
 /** @type {number[][]} */
 let enemyPos = [];
@@ -125,14 +124,17 @@ const draw = {
 	 * @param {number} y3 - the y-coordinate to end drawing at.
 	 * @param {string} color - the color of the curved line. Defaults to `#000`.
 	 * @param {number} width - the width of the curved line. Defaults to `1`.
+	 * @param {boolean} antiAliased - if `true`, keeps anti-aliasing enabled.
 	 */
-	curvedLine(x1, y1, x2, y2, x3, y3, color = "#000", width = 1) {
+	curvedLine(x1, y1, x2, y2, x3, y3, color = "#000", width = 1, antiAliased = false) {
+		if (!antiAliased) ctx.filter = NO_ANTI_ALIASING_FILTER;
 		ctx.beginPath();
 		ctx.strokeStyle = color ?? "#000";
 		ctx.lineWidth = (width ?? 1) * SCALE;
 		ctx.moveTo(x1 * SCALE, y1 * SCALE);
 		ctx.quadraticCurveTo(x2 * SCALE, y2 * SCALE, x3 * SCALE, y3 * SCALE);
 		ctx.stroke();
+		if (!antiAliased) ctx.filter = "none";
 	},
 	/**
 	 * Draws a polyline on the canvas.
@@ -274,35 +276,34 @@ const draw = {
 		// check for size tags
 		if (str.includes("<b>") || str.includes("<big>") || str.includes("<s>") || str.includes("<small>")) {
 			str = str.replace(/<\/b>|<\/big>|<\/s>|<\/small>/g, "");
-			let array = str.split(/<(?=b>|big>|s>|small>)/g);
+			let arr = str.split(/<(?=b>|big>|s>|small>)/);
 			let space = 0;
-			if (!array[0]) array.splice(0, 1);
-			for (let index = 0; index < array.length; index++) {
-				if (array[index].includes("s>") || array[index].includes("small>")) {
-					array[index] = array[index].replace(/s>|small>/, "");
+			if (!arr[0]) arr.splice(0, 1);
+			for (let index = 0; index < arr.length; index++) {
+				if (arr[index].includes("s>") || arr[index].includes("small>")) {
+					arr[index] = arr[index].replace(/s>|small>/, "").replace(/^\n/, "");
 					let obj = {};
 					Object.assign(obj, style);
 					obj["text-small"] = true;
-					space += draw.lore(x, y + space, array[index], obj);
-				} else if (array[index].includes("b>") || array[index].includes("big>")) {
-					array[index] = array[index].replace(/b>|big>/, "");
+					space += draw.lore(x, y + space, arr[index], obj);
+				} else if (arr[index].includes("b>") || arr[index].includes("big>")) {
+					arr[index] = arr[index].replace(/b>|big>/, "").replace(/^\n/, "");
 					let obj = {};
 					Object.assign(obj, style);
 					obj["text-small"] = false;
-					space += draw.lore(x, y + space, array[index], obj);
+					space += draw.lore(x, y + space, arr[index], obj);
 				} else {
-					space += draw.lore(x, y + space, array[index], style);
+					space += draw.lore(x, y + space, arr[index], style);
 				};
 			};
 			return space;
 		};
 		// print special multi-line text
 		if (str.includes("\n") && textAlign !== DIR.RIGHT) {
-			let array = str.split("\n");
+			let arr = str.split("\n");
 			let space = 0;
-			if (!array[0]) array.splice(0, 1);
-			for (let index = 0; index < array.length; index++) {
-				space += draw.lore(x, y + space, array[index], style);
+			for (let index = 0; index < arr.length; index++) {
+				space += draw.lore(x, y + space, arr[index], style);
 			};
 			return space;
 		};
@@ -311,7 +312,7 @@ const draw = {
 			// check for color tags
 			if (str.charAt(a) == "<") {
 				const cut = str.slice(a + 1), tag = cut.slice(0, cut.indexOf(" ") == -1 ? cut.indexOf(">") : Math.min(cut.indexOf(">"), cut.indexOf(" ")));
-				if (color == tag.slice(1) && tag.startsWith("/")) {
+				if (color === tag.slice(1) && tag.startsWith("/")) {
 					highlight = "";
 					color = style["color"];
 					str = str.replace("<" + tag + ">", "");
@@ -326,13 +327,13 @@ const draw = {
 			if (str.replace(/<.*?>/g, "").includes("\n", enterIndex + 1)) {
 				len = str.replace(/<.*?>/g, "").indexOf("\n", enterIndex + 1);
 			};
-			let char = str.charAt(a);
-			if (char == "\n") {
+			const char = str.charAt(a);
+			if (char === "\n") {
 				enters++;
 				enterIndex = a + 1;
 			};
 			// don't print if no color
-			if (color == "none" || style["color"] == "none") continue;
+			if (color === "none" || style["color"] === "none") continue;
 			// print character
 			if (textAlign === DIR.RIGHT) {
 				draw.char(char, x + ((a - enterIndex) * (small ? 3 : 6)), y + (enters * (small ? 5.5 : 11)), {
@@ -374,27 +375,29 @@ const draw = {
 	 * @param {number} index - the index of the enemy.
 	 */
 	intent(index) {
-		if (game.enemies[index].eff[ENEMY_EFF.SHROUD]) return;
-		if (index === game.enemyNum) return;
+		if (game.enemies[index].eff[ENEMY_EFF.SHROUD] || index === game.enemyNum) return;
 		const x = enemyPos[index][0] + 16;
 		const y = getEnemyIntentPos(index, true);
-		if (game.enemies[index].intent === INTENT.SUMMON) {
-			if (game.enemies.length >= 6) draw.image(I.intent.ritual, x, y);
-			else draw.image(I.intent.summon, x, y);
-		} else if (game.enemies[index].intent === INTENT.BUFF) {
-			draw.image(I.intent.buff, x, y);
-		} else if (game.enemies[index].intent === INTENT.ATTACK) {
+		const intent = game.enemies[index].intent;
+		if (intent === INTENT.ATTACK) {
 			const power = Math.ceil(game.enemies[index].getTotalAttackPower() * get.takeDamageMult(index));
 			draw.image(I.intent.attack[Math.min(Math.floor(power / 5), 10)], x, y);
 			draw.lore(x + 14, y + 12, power, {"color": "#fff", "text-align": DIR.CENTER});
 			if (power > game.enemies[index].attackPower) draw.image(I.intent.increase, x + 32 - 10, y);
 			else if (power < game.enemies[index].attackPower) draw.image(I.intent.decrease, x + 32 - 10, y + 32 - 8);
-		} else if (game.enemies[index].intent === INTENT.DEFEND) {
+		} else if (intent === INTENT.DEFEND) {
 			const power = Math.ceil(game.enemies[index].getTotalDefendPower() * get.enemyShieldMult(index));
 			draw.image(I.intent.defend[Math.min(Math.floor(power / 5), 10)], x, y);
 			draw.lore(x + 14, y + 11, power, {"color": "#fff", "text-align": DIR.CENTER});
 			if (power > game.enemies[index].defendPower) draw.image(I.intent.increase, x + 32 - 10, y);
 			else if (power < game.enemies[index].defendPower) draw.image(I.intent.decrease, x + 32 - 10, y + 32 - 8);
+		} else if (intent === INTENT.BUFF) {
+			draw.image(I.intent.buff, x, y);
+		} else if (intent === INTENT.SUMMON) {
+			if (game.enemies.length >= 6) draw.image(I.intent.ritual, x, y);
+			else draw.image(I.intent.summon, x, y);
+		} else if (intent === INTENT.NOTHING) {
+			draw.image(I.intent.nothing, x, y);
 		};
 		intentAnim[index] += (Math.random() + 0.5) * 0.15;
 		if (intentAnim[index] >= 4) intentAnim[index] -= 4;
@@ -544,6 +547,23 @@ const draw = {
 		draw.rect("#fff", 1, 12, width, 1);
 	},
 	/**
+	 * Draws a row of previous game stats on the canvas.
+	 * @param {number} x - the x-coordinate to draw the row at.
+	 * @param {number} y - the y-coordinate to draw the row at.
+	 * @param {string[]} text - the text of the stats to display.
+	 * @param {string[]} styles - for each element, replaces the default style for the respective text.
+	 * @param {number} endPadding - adds extra padding at the end of the row.
+	 */
+	prevGameRow(x, y, text = [], styles = [], endPadding = 0) {
+		const totalLength = text.reduce((acc, stat) => acc + stat.replace(/<.+?>/g, "").length, 0);
+		let spacing = Math.floor((318 - endPadding - 6 * totalLength) / 3);
+		if (spacing <= 6) spacing = Math.floor((318 - endPadding - 6 * totalLength) / 2);
+		text.forEach((stat, index) => {
+			draw.lore(x + index * spacing, y, stat, styles[index] ?? {"color": "#fff"});
+			x += 6 * stat.replace(/<.+?>/g, "").length;
+		});
+	},
+	/**
 	 * Draw's an enemy's icons on the canvas.
 	 * @param {number} index - the index of the enemy.
 	 */
@@ -570,6 +590,47 @@ const draw = {
 		};
 	},
 };
+
+/**
+ * For each keyword in (or reffered to by) `keywords`, excecutes `func`.
+ * @param {number[] | {}} keywords - An array containing keywords or an object with keywords as keys. These keywords are iterated over.
+ * @param {(type: number, height: number) => void} func - The function to excecute for each keyword.
+ * @param {number[] | {}} exclude - An array containing keywords or an object with keywords as keys. These keywords are excluded from iteration.
+ */
+const forKeywordIn = (() => {
+	let _keywords = {};
+	let _func = {};
+	let logged = {};
+	const logKeyword = type => {
+		if (logged[type] || !EFF_DESC[type]) return;
+		logged[type] = true;
+		const height = Math.ceil((EFF_DESC[type].match(/\n/g) || []).length * 5.5 + (_keywords[type] > 0 ? 22 : 11));
+		_func(type, height);
+		if (type === EFF.BLAZE || type === EFF.FIREPROOF) logKeyword(EFF.BURN);
+		else if (type === ENEMY_EFF.PLAN_ATTACK) logKeyword(EFF.ATKUP);
+		else if (type === ENEMY_EFF.PLAN_DEFEND) logKeyword(EFF.DEFUP);
+		else if (type === ENEMY_EFF.PERSISTENCE) logKeyword(ENEMY_EFF.REVIVAL);
+	};
+	return (keywords, func, exclude = []) => {
+		_keywords = keywords;
+		_func = func;
+		logged = {};
+		if (exclude instanceof Array) {
+			exclude.forEach(key => logged[key] = true);
+		} else {
+			for (const key in exclude) {
+				logged[key] = true;
+			};
+		};
+		if (keywords instanceof Array) {
+			keywords.forEach(logKeyword);
+		} else {
+			for (const key in keywords) {
+				logKeyword(+key);
+			};
+		};
+	};
+})();
 
 const info = {
 	/**
@@ -668,7 +729,7 @@ const info = {
 		const y = 68 + yPlus;
 		let move = 0;
 		if (eff > 0) {
-			const name = EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "");
+			const name = (eff !== 1 && PLURAL_EFF_NAME[type] ? PLURAL_EFF_NAME[type] : EFF_NAME[type]);
 			const start = (PERM_EFF_DESC[type] ? "This " + PERM_EFF_DESC[type] : "This has " + eff);
 			const desc = start + " " + name + ".";
 			move += draw.textBox(x, y + move, desc.length, (EFF_COLOR[type] ? start + " <" + EFF_COLOR[type] + ">" + name + "</" + EFF_COLOR[type] + ">." : desc), {"text-small": true});
@@ -689,7 +750,7 @@ const info = {
 		const y = pos[1] + yPlus;
 		let move = 0;
 		if (eff > 0) {
-			const name = EFF_NAME[type] + ((type === EFF.AURA_BLADE || type === ENEMY_EFF.REWIND) && eff >= 2 ? "s" : "");
+			const name = (eff !== 1 && PLURAL_EFF_NAME[type] ? PLURAL_EFF_NAME[type] : EFF_NAME[type]);
 			const start = (PERM_EFF_DESC[type] ? "This " + PERM_EFF_DESC[type] : "This has " + eff);
 			const desc = start + " " + name + ".";
 			move += draw.textBox(x + 72 - (desc.length * 3), y + move, desc.length, (EFF_COLOR[type] ? start + " <" + EFF_COLOR[type] + ">" + name + "</" + EFF_COLOR[type] + ">." : desc), {"text-small": true});
@@ -713,23 +774,28 @@ const info = {
 		};
 	},
 	/**
-	 * Draws an infobox for an artifact.
+	 * Draws infoboxes for an artifact.
 	 * @param {string | number} type - the type of the artifact.
 	 * @param {number} xOveride - overrides the x-coordinate of the infobox.
 	 * @param {number} yOveride - overrides the y-coordinate of the infobox.
 	 */
 	artifact(type, xOveride = NaN, yOveride = NaN) {
-		const x = (xOveride === xOveride ? xOveride : 2 + (game.select[1] * 18));
-		const y = (yOveride === yOveride ? yOveride : 32);
+		const x = (isNaN(xOveride) ? 2 + (game.select[1] * 18) : xOveride);
+		let y = (isNaN(yOveride) ? 32 : yOveride);
 		const obj = ARTIFACTS[type];
 		if (!obj) return;
 		if (obj.name.length <= 12) {
 			draw.textBox(x, y, 12, obj.name, {"text-align": DIR.CENTER});
-			draw.textBox(x, y + 13, 24, obj.desc, {"text-small": true});
+			y += 13;
+			y += draw.textBox(x, y, 24, obj.desc, {"text-small": true});
 		} else {
 			draw.textBox(x, y, obj.name.length, obj.name);
-			draw.textBox(x, y + 13, obj.name.length * 2, obj.desc, {"text-small": true});
+			y += 13;
+			y += draw.textBox(x, y, obj.name.length * 2, obj.desc, {"text-small": true});
 		};
+		forKeywordIn(obj.keywords || [], keyword => {
+			y += draw.textBox(x, y, 24, EFF_DESC[keyword], {"text-small": true});
+		});
 	},
 	/**
 	 * Draws an infobox for a menu item.
@@ -747,11 +813,11 @@ const info = {
 			loc = [395 - index * 19 - desc.length * 6, 22];
 		} else if (location === S.MAP) {
 			const selection = get.availableLocations()[index];
-			if (selection) {
-				const node = game.map[selection[0]][selection[1]];
+			if (selection !== undefined) {
+				const node = game.map[game.floor + 1][selection];
 				const area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0));
 				if (node[0] === ROOM.BOSS) loc = [258, 100];
-				else loc = [25 + ((selection[0] - area * 10) * 32) + node[1] + 19, 18 + (selection[1] * 32) + node[2] + 2];
+				else loc = [node[1] + 19, node[2] + 2];
 				if (node[0] === ROOM.BATTLE) desc = "Enter Battle";
 				else if (node[0] === ROOM.TREASURE) desc = "Claim Treasure";
 				else if (node[0] === ROOM.PRIME) desc = "Enter Death Zone";
@@ -1004,78 +1070,81 @@ const graphics = {
 	/**
 	 * Draws the player on the canvas.
 	 */
-	player() {
-		let x = 15;
-		let y = 27;
-		// aura blades
-		for (let index = 0; index < game.eff[EFF.AURA_BLADE] && index < 4; index++) {
-			draw.image(I.aura_blade, x + AURA_BLADE_POS[index][0], y + AURA_BLADE_POS[index][1] + 4 - Math.abs(Math.round(auraBladeAnim[index]) - 4));
-			auraBladeAnim[index] += (Math.random() + 0.5) * 0.05;
-			if (auraBladeAnim[index] >= 8) auraBladeAnim[index] -= 8;
-		};
-		// icons
-		for (const key in game.eff) {
-			if (game.eff[key]) {
-				let img = I.icon[key];
-				if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x + 22, y + 103);
-				draw.image(img, x + 23, y + 104);
-				if (!PERM_EFF_DESC[key]) draw.lore(x + 40, y + 112, game.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
-				x += 17;
-				if (x >= 15 + 68) {
-					x = 15;
-					y += 17;
+	player: (() => {
+		const AURA_BLADE_POS = [[65, 10], [80, 25], [42, 0], [28, 35]];
+		return () => {
+			let x = 15;
+			let y = 27;
+			// aura blades
+			for (let index = 0; index < game.eff[EFF.AURA_BLADE] && index < 4; index++) {
+				draw.image(I.aura_blade, x + AURA_BLADE_POS[index][0], y + AURA_BLADE_POS[index][1] + 4 - Math.abs(Math.round(auraBladeAnim[index]) - 4));
+				auraBladeAnim[index] += (Math.random() + 0.5) * 0.05;
+				if (auraBladeAnim[index] >= 8) auraBladeAnim[index] -= 8;
+			};
+			// icons
+			for (const key in game.eff) {
+				if (game.eff[key]) {
+					let img = I.icon[key];
+					if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x + 22, y + 103);
+					draw.image(img, x + 23, y + 104);
+					if (!PERM_EFF_DESC[key]) draw.lore(x + 40, y + 112, game.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
+					x += 17;
+					if (x >= 15 + 68) {
+						x = 15;
+						y += 17;
+					};
 				};
 			};
+			x = 15;
+			y = 27;
+			// animations
+			draw.imageSector(playerAnim[1], Math.floor(playerAnim[0]) * 120, 0, 120, playerAnim[1].height, x, y, 120);
+			if (playerAnim[1] === I.player.idle) {
+				playerAnim[0] += 0.25;
+				if (playerAnim[0] >= 10) {
+					playerAnim[0] = 0;
+				};
+			} else if (playerAnim[1] === I.player.attack || playerAnim[1] === I.player.attack_aura) {
+				playerAnim[0]++;
+				if (playerAnim[0] >= 4) {
+					playerAnim = [0, I.player.idle];
+					postCardActivation();
+				};
+			} else if (playerAnim[1] === I.player.attack_2 || playerAnim[1] === I.player.attack_2_aura) {
+				playerAnim[0]++;
+				if (playerAnim[0] >= 6) {
+					playerAnim = [0, I.player.idle];
+					postCardActivation();
+				};
+			} else if (isDefending(playerAnim[1])) {
+				playerAnim[0] += 0.5;
+				if (playerAnim[0] >= 3) {
+					playerAnim[0] = 2;
+				};
+			} else if (playerAnim[1] === I.player.hit) {
+				playerAnim[0] += 0.25;
+				if (playerAnim[0] >= 1) {
+					playerAnim = [0, I.player.idle];
+				};
+			} else if (playerAnim[1] === I.player.death) {
+				playerAnim[0] += 0.5;
+				if (playerAnim[0] >= 10) {
+					playerAnim[0] = 9;
+				};
+			};
+			// bars
+			draw.bars(x + 22, y + 15, game.health, get.maxHealth(), game.shield, get.maxShield());
+			let energy = game.energy;
+			if (energy < 10 && get.maxEnergy() >= 10) {
+				energy = "0" + energy;
+			};
+			const cutoff = Math.min(Math.max(Math.round(game.energy / get.maxEnergy() * 30), 0), 30);
+			draw.imageSector(I.bar.energy_full, 0, 0, cutoff + 1, 32, x - 1, y + 16);
+			draw.imageSector(I.bar.energy_empty, cutoff + 1, 0, 32 - (cutoff + 1), 32, x + cutoff, y + 16);
+			draw.lore(x + 14, y + 28, energy, {"text-align": DIR.LEFT});
+			draw.lore(x + 17, y + 28, get.maxEnergy());
 		};
-		x = 15;
-		y = 27;
-		// animations
-		draw.imageSector(playerAnim[1], Math.floor(playerAnim[0]) * 120, 0, 120, playerAnim[1].height, x, y, 120);
-		if (playerAnim[1] === I.player.idle) {
-			playerAnim[0] += 0.25;
-			if (playerAnim[0] >= 10) {
-				playerAnim[0] = 0;
-			};
-		} else if (playerAnim[1] === I.player.attack || playerAnim[1] === I.player.attack_aura) {
-			playerAnim[0]++;
-			if (playerAnim[0] >= 4) {
-				playerAnim = [0, I.player.idle];
-				postCardActivation();
-			};
-		} else if (playerAnim[1] === I.player.attack_2 || playerAnim[1] === I.player.attack_2_aura) {
-			playerAnim[0]++;
-			if (playerAnim[0] >= 6) {
-				playerAnim = [0, I.player.idle];
-				postCardActivation();
-			};
-		} else if (isDefending(playerAnim[1])) {
-			playerAnim[0] += 0.5;
-			if (playerAnim[0] >= 3) {
-				playerAnim[0] = 2;
-			};
-		} else if (playerAnim[1] === I.player.hit) {
-			playerAnim[0] += 0.25;
-			if (playerAnim[0] >= 1) {
-				playerAnim = [0, I.player.idle];
-			};
-		} else if (playerAnim[1] === I.player.death) {
-			playerAnim[0] += 0.5;
-			if (playerAnim[0] >= 10) {
-				playerAnim[0] = 9;
-			};
-		};
-		// bars
-		draw.bars(x + 22, y + 15, game.health, get.maxHealth(), game.shield, get.maxShield());
-		let energy = game.energy;
-		if (energy < 10 && get.maxEnergy() >= 10) {
-			energy = "0" + energy;
-		};
-		const cutoff = Math.min(Math.max(Math.round(game.energy / get.maxEnergy() * 30), 0), 30);
-		draw.imageSector(I.bar.energy_full, 0, 0, cutoff + 1, 32, x - 1, y + 16);
-		draw.imageSector(I.bar.energy_empty, cutoff + 1, 0, 32 - (cutoff + 1), 32, x + cutoff, y + 16);
-		draw.lore(x + 14, y + 28, energy, {"text-align": DIR.LEFT});
-		draw.lore(x + 17, y + 28, get.maxEnergy());
-	},
+	})(),
 	/**
 	 * Draws the current effect on the canvas.
 	 */
@@ -1096,13 +1165,14 @@ const graphics = {
 			draw.enemyIcons(index);
 		};
 		// enemy drawing
+		const selected = (game.select[0] === S.ATTACK || game.select[0] === S.ENEMY);
 		for (let index = 0; index < game.enemies.length; index++) {
-			if (enemyPos[index]?.length && isEnemyVisible(index) && ((game.select[0] !== S.ATTACK && game.select[0] !== S.ENEMY) || index != game.select[1])) {
+			if (enemyPos[index]?.length && isEnemyVisible(index) && (!selected || index !== game.select[1])) {
 				enemyAnim.drawEnemy(enemyPos[index][0], enemyPos[index][1], index);
 			};
 		};
 		// action animations
-		if (game.enemies[game.enemyNum] && !game.enemies[game.enemyNum].transition && ((game.select[0] !== S.ATTACK && game.select[0] !== S.ENEMY) || game.enemyNum != game.select[1])) {
+		if (game.enemies[game.enemyNum] && !game.enemies[game.enemyNum].transition && (!selected || game.enemyNum !== game.select[1])) {
 			enemyAnim.drawEnemyActing(enemyPos[game.enemyNum][0], enemyPos[game.enemyNum][1], game.enemyNum);
 		};
 		// move idle animations along
@@ -1304,26 +1374,23 @@ const graphics = {
 	/**
 	 * Draws the info of a card on the canvas.
 	 * @param {"card" | "cardSelect" | "reward" | "deck"} type - the type of the card's selection.
-	 * @param {Card} cardObj - the card object.
+	 * @param {Card} card - the card object.
 	 */
-	cardInfo(type, cardObj) {
-		const keywords = CARDS[cardObj.id]?.keywords || [];
+	cardInfo(type, card) {
 		const appliedKeywords = [];
 		let x = 0;
 		let y = 0;
-		for (const key in cardObj.eff) {
+		for (const key in card.eff) {
 			const keyword = +key;
 			if (EFF_DESC[keyword]) {
-				if (EFF_NAME[keyword]) y += info[type]("This has " + cardObj.eff[keyword] + " <#666>" + EFF_NAME[keyword] + "</#666>.", x, y);
+				if (EFF_NAME[keyword]) y += info[type]("This has " + card.eff[keyword] + " <#666>" + EFF_NAME[keyword] + "</#666>.", x, y);
 				y += info[type](keyword, x, y);
 				appliedKeywords.push(keyword);
 			};
 		};
-		for (let index = 0; index < keywords.length; index++) {
-			if (appliedKeywords.includes(keywords[index])) continue;
-			y += info[type](keywords[index], x, y);
-			if (keywords[index] === EFF.BLAZE && !keywords.includes(EFF.BURN)) y += info[type](EFF.BURN, x, y);
-		};
+		forKeywordIn(CARDS[card.id]?.keywords || [], keyword => {
+			y += info[type](keyword, x, y);
+		}, appliedKeywords);
 	},
 	/**
 	 * Draws the selector and the info it targets on the canvas.
@@ -1347,6 +1414,8 @@ const graphics = {
 				coords = [0, 7, 64, 57];
 			} else if (type === SLIME.STICKY) {
 				coords = [-1, 36, 66, 36];
+			} else if (type === SLIME.PUDDLE) {
+				coords = [21, 52, 21, 12];
 			} else if (type === FRAGMENT && (enemyAnim.prime[game.select[1]] == -1 || enemyAnim.prime[game.select[1]] > 18)) {
 				coords = [7, 6, 50, 58];
 			} else if (type === SENTRY.BIG) {
@@ -1377,22 +1446,13 @@ const graphics = {
 				else draw.lore(pos[0] + coords[0] + coords[2] + 3, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-small": true});
 				let x = coords[0] - 5.5;
 				let y = coords[1] - 1;
-				const logged = {};
-				const logEff = type => {
-					logged[type] = true;
-					const height = Math.ceil((EFF_DESC[type].match(/\n/g) || []).length * 5.5 + (game.enemies[game.select[1]].eff[type] > 0 ? 22 : 11));
+				forKeywordIn(enemy.eff, (type, height) => {
 					if ((left ? y + 12 : y) + height >= 202 - pos[1]) {
 						y = coords[1] - 1;
 						x -= 78;
 					};
 					y += info.enemy(type, x, (left ? y + 12 : y));
-					if ((type === EFF.BLAZE || type === EFF.FIREPROOF) && !logged[EFF.BURN]) logEff(EFF.BURN);
-					else if (type === ENEMY_EFF.PLAN_ATTACK && !logged[EFF.ATKUP]) logEff(EFF.ATKUP);
-					else if (type === ENEMY_EFF.PLAN_DEFEND && !logged[EFF.DEFUP]) logEff(EFF.DEFUP);
-				};
-				for (const key in game.enemies[game.select[1]].eff) {
-					logEff(+key);
-				};
+				});
 			};
 		} else if (game.select[0] === S.PLAYER) {
 			const coords = [58, 69, 24, 39];
@@ -1400,20 +1460,13 @@ const graphics = {
 			draw.lore(coords[0] + (coords[2] / 2) - 1, 61.5, CHARACTER_NAME[game.character][global.charStage[game.character]], {"color": "#fff", "text-align": DIR.CENTER, "text-small": true});
 			let x = coords[0] + coords[2] - 80;
 			let y = 0;
-			const logged = {};
-			const logEff = type => {
-				logged[type] = true;
-				let height = Math.ceil((EFF_DESC[type].match(/\n/g) || []).length * 5.5 + (game.eff[type] > 0 ? 22 : 11));
+			forKeywordIn(game.eff, (type, height) => {
 				if (y + height >= 202 - coords[1]) {
 					y = 0;
 					x += 78;
 				};
 				y += info.player(type, x, y);
-				if ((type === EFF.BLAZE || type === EFF.FIREPROOF) && !logged[EFF.BURN]) logEff(EFF.BURN);
-			};
-			for (const key in game.eff) {
-				logEff(+key);
-			};
+			});
 		} else if (game.select[0] === S.ARTIFACTS) {
 			info.artifact(game.artifacts[game.select[1]]);
 		} else if (game.select[0] === S.ARTIFACT_REWARD) {
@@ -1450,40 +1503,46 @@ const graphics = {
 		};
 	},
 	/**
-	 * Draws the popups on the canvas.
+	 * Draws the active popups on the canvas.
 	 */
-	popups() {
-		for (let index = 0; index < popups.length && index <= 6; index++) {
-			if (!popups[index].length) continue;
-			if (popups[index][2] >= 150) {
-				popups[index] = [];
-				continue;
+	popups: (() => {
+		const STAY_TIME = 80;
+		const TRANS_TIME = 20;
+		return () => {
+			for (let index = 0; index < activePopups.length && index <= 6; index++) {
+				if (!activePopups[index].length) continue;
+				if (activePopups[index][2] >= STAY_TIME + TRANS_TIME) {
+					activePopups[index] = [];
+					continue;
+				};
+				activePopups[index][2]++;
+				let x = (activePopups[index][1].length * 6) + 13;
+				if (activePopups[index][3]) {
+					x = (Math.max(activePopups[index][1].length, activePopups[index][3].length) * 3) + 13;
+				};
+				if (activePopups[index][2] >= STAY_TIME) {
+					x *= (STAY_TIME + TRANS_TIME - activePopups[index][2]) / TRANS_TIME;
+				} else if (activePopups[index][2] < TRANS_TIME) {
+					x *= activePopups[index][2] / TRANS_TIME;
+				};
+				x = 400 - x;
+				draw.image(I.popup.back, x, 150 - (index * 21));
+				draw.lore(x + 13, 150 - (index * 21) + 8, activePopups[index][3] ? activePopups[index][1] + "\n" + activePopups[index][3] : activePopups[index][1], {"text-small": !!activePopups[index][3]});
+				if (I.popup[activePopups[index][0]]) draw.image(I.popup[activePopups[index][0]], x + 2, 150 - (index * 21) + 2);
+				if (game.select[0] === S.POPUPS && game.select[1] == index) {
+					draw.image(I.select.popup, x - 1, 150 - (index * 21) - 1);
+				};
+				ctx.globalAlpha = 1;
 			};
-			popups[index][2]++;
-			if (popups[index][2] >= 100) {
-				ctx.globalAlpha = 3 - (popups[index][2] / 50);
-			} else if (popups[index][2] < 25) {
-				ctx.globalAlpha = popups[index][2] / 25;
-			};
-			let x = (popups[index][1].length * 6) + 13;
-			if (popups[index][3]) x = (Math.max(popups[index][1].length, popups[index][3].length) * 3) + 13;
-			x = 400 - x;
-			draw.image(I.popup.back, x, 150 - (index * 21));
-			draw.lore(x + 13, 150 - (index * 21) + 8, popups[index][3] ? popups[index][1] + "\n" + popups[index][3] : popups[index][1], {"text-small": !!popups[index][3]});
-			if (I.popup[popups[index][0]]) draw.image(I.popup[popups[index][0]], x + 2, 150 - (index * 21) + 2);
-			if (game.select[0] === S.POPUPS && game.select[1] == index) {
-				draw.image(I.select.popup, x - 1, 150 - (index * 21) - 1);
-			};
-			ctx.globalAlpha = 1;
 		};
-	},
+	})(),
 	/**
 	 * Draws the reward claiming box on the canvas.
 	 * @param {boolean} focused - whether the reward layer is focused. Defaults to `true`.
 	 */
 	rewards(focused = true) {
 		draw.box(145, 20, 110, 160, {"background-color": "#aaa"});
-		const type = (game.location[0] === -1 ? ROOM.BATTLE : game.map[game.location[0]][game.location[1]][0]);
+		const type = game.map[game.floor][game.location][0];
 		if (type === ROOM.BATTLE) draw.lore(200 - 2, 21, "Battle Loot!", {"text-align": DIR.CENTER});
 		else if (type === ROOM.TREASURE) draw.lore(200 - 2, 21, "Treasure!", {"text-align": DIR.CENTER});
 		else if (type === ROOM.ORB) draw.lore(200 - 2, 21, "Healing!", {"text-align": DIR.CENTER});
@@ -1581,44 +1640,37 @@ const graphics = {
 		draw.lore(1, 1, "Floor " + game.floor + " - " + game.gold + " gold", {"color": "#fff"});
 		draw.lore(399, 1, "Seed: " + game.seed, {"color": "#fff", "text-align": DIR.LEFT});
 		// draw scribbles
-		for (let x = area * 10; x < (area + 1) * 10; x++) {
-			for (let y = 0; y < game.map[x].length; y++) {
-				if (typeof game.map[x][y] != "number") continue;
-				draw.image(I.map.scribble_back, 25 + ((x - area * 10) * 32) + 8 - 4, 18 + (y * 32) + 8 - 3 - 2.5, 80 / 2, 80 / 2);
-				draw.imageSector(I.map.scribbles, game.map[x][y] * 64, 0, 64, 70, 25 + ((x - area * 10) * 32) + 8, 18 + (y * 32) + 8 - 3, 64 / 2, 70 / 2);
-			};
+		for (let index = area * 2; index < (area + 1) * 2 && index < game.scribbles.length; index++) {
+			if (game.scribbles[index] < 0) continue;
+			const x = 35 + 9 * 32;
+			const y = 24.5 + 4 * (index % 2) * 32;
+			draw.image(I.map.scribble_back, x - 4, y - 2.5, 80 / SCALE, 80 / SCALE);
+			draw.imageSector(I.map.scribbles, game.scribbles[index] * 64, 0, 64, 70, x, y, 64 / SCALE, 70 / SCALE);
 		};
 		// draw paths
 		ctx.filter = NO_ANTI_ALIASING_FILTER;
 		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
 			for (const node1 in mapPathPoints[row1]) {
-				for (const row2 in mapPathPoints[row1][node1]) {
-					for (const node2 in mapPathPoints[row1][node1][row2]) {
-						if (game.traveled[row1] == node1 && game.traveled[row2] == node2) continue;
-						draw.polyline(mapPathPoints[row1][node1][row2][node2], "#b84", 3);
-					};
+				for (const node2 in mapPathPoints[row1][node1]) {
+					if (game.traveled[row1] == node1 && game.traveled[row1 + 1] == node2) continue;
+					draw.polyline(mapPathPoints[row1][node1][node2], "#b84", 3);
 				};
 			};
 		};
 		// draw traveled path
-		for (let index = area * 10; index < (area + 1) * 10 && index < game.traveled.length; index++) {
-			draw.polyline(mapPathPoints[Math.max(index - 1, area * 10)][game.traveled[Math.max(index - 1, area * 10)]][index][game.traveled[index]], "#842", 3);
+		for (let index = area * 10 + 1; index <= (area + 1) * 10 && index < game.traveled.length; index++) {
+			draw.polyline(mapPathPoints[index - 1][game.traveled[index - 1]][game.traveled[index]], "#842", 3);
 		};
 		ctx.filter = "none";
 		// draw nodes
-		const coordSel = availableLocations[game.select[1]] ? availableLocations[game.select[1]] : [];
-		const coordOn = game.location ? game.location : [];
-		for (let x = area * 10; x < (area + 1) * 10; x++) {
+		const coordSel = [game.floor + 1, availableLocations[game.select[1]]];
+		const coordOn = [game.floor, game.location];
+		for (let x = area * 10 + 1; x <= (area + 1) * 10; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
-				if (!(game.map[x][y] instanceof Object)) continue;
-				const type = +game.map[x][y][0];
-				let drawX = 25 + ((x - area * 10) * 32) + game.map[x][y][1];
-				let drawY = 18 + (y * 32) + game.map[x][y][2];
+				const type = game.map[x][y][0];
+				const drawX = game.map[x][y][1];
+				const drawY = game.map[x][y][2];
 				if (I.map.node[type] instanceof Image) {
-					if (game.map[x][y][0] === ROOM.BOSS) {
-						drawX += 10;
-						drawY = 90;
-					};
 					if (focused) {
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo[type], drawX - 1, drawY - 1);
 						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo[type], drawX - 1, drawY - 1);
@@ -1627,11 +1679,7 @@ const graphics = {
 				} else {
 					let num = -1;
 					if (game.map[x][y][0] === ROOM.BATTLE) {
-						if (game.map[x][y][3].length === 1) {
-							num = (BIG_ENEMIES.includes(game.map[x][y][3][0]) ? 0 : 3);
-						} else if (game.map[x][y][3].length === 2) {
-							num = (BIG_ENEMIES.includes(game.map[x][y][3][0]) ? 2 : 1);
-						};
+						num = getBattleType(game.map[x][y]);
 					} else if (game.map[x][y][0] === ROOM.TREASURE) {
 						num = (game.traveled[x] == y ? 1 : 0);
 					};
@@ -1788,17 +1836,38 @@ const graphics = {
 	 */
 	conf(focused = true) {
 		let text = ["Are you sure?"];
-		if (menuSelect[0] === MENU.START_NEW_RUN) text = ["Are you sure you want to start a new run?", "If you have an ongoing run, it will be lost forever."];
-		else if (menuSelect[0] === MENU.CHANGE_DIFFICULTY) text = ["Are you sure you want to change the difficulty to " + (game.difficulty ? "easy" : "hard") + "?", "If you have an ongoing run, it will be reset."];
-		else if (menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED) text = ["Are you sure you want to change the seed?", "If you have an ongoing run, it will be reset.", "The new run will also not count towards your high score."];
-		else if (menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) text = ["Are you sure you want to remove run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[2][1] / 3)]].num + " from the list?", "This will permanently remove all of its information."];
-		else if (game.select[0] === S.CONF_END_TURN) text = ["Are you sure you want to end your turn?"];
-		else if (game.select[0] === S.CONF_EXIT) text = ["Are you sure you want to finish collecting rewards?", "There are still rewards left unclaimed."];
-		else if (game.select[0] === S.CONF_SURRENDER) text = ["Are you sure you want to end your current run by surrendering?", "This choice cannot be undone."];
-		else if (game.select[0] === S.CONF_HAND_ALIGN) text = ["Are you sure you want to align the hands of time?", "You will regret it. There is no going back."];
-		else if (game.select[0] === S.CONF_PURIFY) text = ["Are you sure you want to destroy the card " + game.cards[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only destroy one copy of the card."];
-		else if (game.select[0] === S.CONF_REFINE) text = ["Are you sure you want to improve the card " + refinableDeck[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only improve one copy of the card."];
-		else if (game.select[0] === S.CONF_PEARL) text = ["As the dark cloud clears, you see a strange pearl resting on the ground.", "Will you pick it up? This will consume 1 energy."];
+		let options = ["YES", "NO"];
+		if (menuSelect[0] === MENU.START_NEW_RUN) {
+			text = ["Are you sure you want to start a new run?", "If you have an ongoing run, it will be lost forever!"];
+		} else if (menuSelect[0] === MENU.CHANGE_DIFFICULTY) {
+			text = ["Are you sure you want to change the difficulty to " + (game.difficulty ? "easy" : "hard") + "?", "If you have an ongoing run, it will be reset!"];
+		} else if (menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED) {
+			text = ["Are you sure you want to change the seed?", "If you have an ongoing run, it will be reset!", "The new run will also not count towards your high score."];
+		} else if (menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
+			text = ["Are you sure you want to remove run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[2][1] / 3)]].num + " from the list?", "This will permanently remove all of its information."];
+		} else if (menuSelect[0] === MENU.OLD_SAVE_ALERT) {
+			text = ["ALERT: You have an old save from version " + get.versionDisplay(parseSave(localStorage.getItem(ID + "/old/global"))?.version || 0) + ", do you want to keep it?", "(You can play old versions by downloading the files from GitHub)"];
+			options = ["DISMISS", "COPY SAVE", "DELETE SAVE"];
+		} else if (menuSelect[0] === MENU.OLD_SAVE_COPY_FAILED) {
+			text = ["The old save could not be copied. Make sure this page has clipboard permissions.", "Try to copy old save again?"];
+		} else if (game.select[0] === S.CONF_END_TURN) {
+			text = ["Are you sure you want to end your turn?"];
+		} else if (game.select[0] === S.CONF_EXIT) {
+			text = ["Are you sure you want to finish collecting rewards?", "There are still rewards left unclaimed."];
+		} else if (game.select[0] === S.CONF_SURRENDER) {
+			text = ["Are you sure you want to end your current run by surrendering?", "This choice cannot be undone."];
+		} else if (game.select[0] === S.CONF_HAND_ALIGN) {
+			text = ["Are you sure you want to align the hands of time?", "You will regret it. There is no going back."];
+			options = ["YES", "NO", "BACK"];
+		} else if (game.select[0] === S.CONF_PURIFY) {
+			text = ["Are you sure you want to destroy the card " + game.cards[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only destroy one copy of the card."];
+			options = ["YES", "RESELECT", "BACK"];
+		} else if (game.select[0] === S.CONF_REFINE) {
+			text = ["Are you sure you want to improve the card " + refinableDeck[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only improve one copy of the card."];
+			options = ["YES", "BACK"];
+		} else if (game.select[0] === S.CONF_PEARL) {
+			text = ["As the dark cloud clears, you see a strange pearl resting on the ground.", "Will you pick it up? This will consume 1 energy."];
+		};
 		let width = 39;
 		for (let index = 0; index < text.length; index++) {
 			const size = text[index].length * 3 + 2;
@@ -1812,37 +1881,24 @@ const graphics = {
 		draw.lore(x + 1, y + 1, text.join("\n"), {"text-small": true});
 		if (focused) {
 			const select = (menuSelect[0] == -1 ? game.select[1] : menuSelect[1]);
-			if (select === 0) {
-				draw.rect("#fff", x, y + height - 14, 23, 14);
-			} else if (select == 1) {
-				if (game.select[0] === S.CONF_PURIFY) draw.rect("#fff", x + 22, y + height - 14, 53, 14);
-				else if (game.select[0] === S.CONF_REFINE) draw.rect("#fff", x + 22, y + height - 14, 29, 14);
-				else draw.rect("#fff", x + 22, y + height - 14, 17, 14);
-			} else {
-				if (game.select[0] === S.CONF_HAND_ALIGN) draw.rect("#fff", x + 38, y + height - 14, 29, 14);
-				else if (game.select[0] === S.CONF_PURIFY) draw.rect("#fff", x + 74, y + height - 14, 29, 14);
+			let offset = 0;
+			for (let index = 0; index < options.length; index++) {
+				const boxWidth = options[index].length * 6 + 1;
+				if (select === index) draw.rect("#fff", x + offset, y + height - 14, boxWidth + 4, 14);
+				offset += boxWidth + 3;
 			};
 		};
-		draw.box(x + 2, y + height - 12, 19, 10);
-		draw.lore(x + 3, y + height - 11, "YES");
-		if (game.select[0] === S.CONF_PURIFY) {
-			draw.box(x + 24, y + height - 12, 49, 10);
-			draw.lore(x + 25, y + height - 11, "RESELECT");
-			draw.box(x + 76, y + height - 12, 25, 10);
-			draw.lore(x + 77, y + height - 11, "BACK");
-		} else if (game.select[0] === S.CONF_REFINE) {
-			draw.box(x + 24, y + height - 12, 25, 10);
-			draw.lore(x + 25, y + height - 11, "BACK");
+		let offset = 0;
+		for (let index = 0; index < options.length; index++) {
+			const boxWidth = options[index].length * 6 + 1;
+			draw.box(x + 2 + offset, y + height - 12, boxWidth, 10);
+			draw.lore(x + 3 + offset, y + height - 11, options[index]);
+			offset += boxWidth + 3;
+		};
+		if (game.select[0] === S.CONF_REFINE) {
 			draw.card(refinableDeck[game.cardSelect], 100, 51, true, true);
 			draw.card(new Card(refinableDeck[game.cardSelect].id, 1), 234, 51, true, true);
 			draw.image(I.card.refine, 200 - I.card.refine.width / 2, 95);
-		} else {
-			draw.box(x + 24, y + height - 12, 13, 10);
-			draw.lore(x + 25, y + height - 11, "NO");
-		};
-		if (game.select[0] === S.CONF_HAND_ALIGN) {
-			draw.box(x + 40, y + height - 12, 25, 10);
-			draw.lore(x + 41, y + height - 11, "BACK");
 		};
 	},
 	/**
@@ -1890,72 +1946,64 @@ const graphics = {
 			else if (menuScroll < 0) menuScroll = 0;
 		};
 		// draw previous games
-		for (let index = 0; index < sortedPrevGames.length; index++) {
-			// first row
+		for (let index = Math.max(Math.floor((menuScroll - 18) / spaceY), 0); index < Math.min(Math.floor((menuScroll + 400 - 18) / spaceY), sortedPrevGames.length); index++) {
+			// setup
 			const prevGame = global.prevGames[sortedPrevGames[index]];
-			let x = 5;
-			let y = 18 + (index * spaceY) - menuScroll;
+			const x = 5;
+			const y = 18 + (index * spaceY) - menuScroll;
 			draw.box(x - 2, y - 2, 321, 45, {"background-color": "#0004", "border-color": "#fff"});
-			draw.lore(x, y, "<#000 highlight>Run #" + prevGame.num + "</#000>", {"color": "#000", "highlight-color": "#fff"});
-			x += 6 * 10;
-			if (prevGame.result === GAME_RESULT.DEFEAT) draw.lore(x, y, "Result: <#f00>Defeat</#f00>", {"color": "#fff"});
-			else if (prevGame.result === GAME_RESULT.VICTORY) draw.lore(x, y, "Result: <#0f0>Victory</#0f0>", {"color": "#fff"});
-			else draw.lore(x, y, "Result: <#f00>Surrender</#f00>", {"color": "#fff"});
-			x += 6 * 18;
-			if (prevGame.artifacts.includes(202)) draw.lore(x, y, "Difficulty: <#0f0>Easy</#0f0> <#f00>+ Hard</#f00>", {"color": "#fff"});
-			else if (prevGame.difficulty) draw.lore(x, y, "Difficulty: <#f00>Hard</#f00>", {"color": "#fff"});
-			else draw.lore(x, y, "Difficulty: <#0f0>Easy</#0f0>", {"color": "#fff"});
-			// second row
-			x = 5;
-			y += 11;
-			draw.lore(x, y, "Floor: " + prevGame.floor, {"color": "#fff"});
-			x += 6 * 11;
-			if (prevGame.result === GAME_RESULT.VICTORY) draw.lore(x, y, "Remaining health: <#0f0>" + prevGame.health + "</#0f0>", {"color": "#fff"});
-			else if (prevGame.health > 0) draw.lore(x, y, "Remaining health: <#f00>" + prevGame.health + "</#f00>", {"color": "#fff"});
-			else draw.lore(x, y, "Remaining health: 0", {"color": "#fff"});
-			x += 6 * 22;
-			if (prevGame.gold > 0) draw.lore(x, y, "Remaining gold: <#0f0>" + prevGame.gold + "</#0f0>", {"color": "#fff"});
-			else draw.lore(x, y, "Remaining gold: 0", {"color": "#fff"});
-			// third row
-			x = 5;
-			y += 11;
-			if (prevGame.cheat) draw.lore(x, y, "Score: <#f00>" + prevGame.score + "</#f00>", {"color": "#fff"});
-			else if (prevGame.newHighScore) draw.lore(x, y, "Score: <#0f0>" + prevGame.score + "</#0f0>", {"color": "#fff"});
-			else draw.lore(x, y, "Score: " + prevGame.score, {"color": "#fff"});
-			x += 6 * 14;
-			draw.lore(x, y, "Seed: " + prevGame.seed, {"color": "#fff"});
-			x += 6 * 14;
-			if (prevGame.startVersion == prevGame.endVersion) {
-				if (prevGame.endVersion == global.version) draw.lore(x, y, "Version: <#0f0>" + get.versionDisplay(prevGame.endVersion) + "</#0f0>", {"color": "#fff"});
-				else draw.lore(x, y, "Version: " + get.versionDisplay(prevGame.endVersion), {"color": "#fff"});
-			} else {
-				if (prevGame.endVersion == global.version) draw.lore(x, y, "Version: " + get.versionDisplay(prevGame.startVersion) + " to <#0f0>" + get.versionDisplay(prevGame.endVersion) + "</#0f0>", {"color": "#fff"});
-				else draw.lore(x, y, "Version: " + get.versionDisplay(prevGame.startVersion) + " to " + get.versionDisplay(prevGame.endVersion), {"color": "#fff"});
+			// first row (text)
+			let text = ["<#000 highlight>Run #" + prevGame.num + "</#000>", "Result: ", "Difficulty: "];
+			if (prevGame.result === GAME_RESULT.DEFEAT) text[1] += "<#f00>Defeat</#f00>";
+			else if (prevGame.result === GAME_RESULT.VICTORY) text[1] += "<#0f0>Victory</#0f0>";
+			else text[1] += "<#f00>Surrender</#f00>";
+			if (prevGame.artifacts.includes(202)) text[2] += "<#0f0>Easy</#0f0> <#f00>+ Hard</#f00>";
+			else if (prevGame.difficulty) text[2] += "<#f00>Hard</#f00>";
+			else text[2] += "<#0f0>Easy</#0f0>";
+			draw.prevGameRow(x, y, text, [{"color": "#000", "highlight-color": "#fff"}]);
+			// second row (text)
+			text = ["Floor: " + prevGame.floor, "Remaining health: ", "Remaining gold: "];
+			if (prevGame.result === GAME_RESULT.VICTORY) text[1] += "<#0f0>" + prevGame.health + "</#0f0>";
+			else if (prevGame.health > 0) text[1] += "<#f00>" + prevGame.health + "</#f00>";
+			else text[1] += "0";
+			if (prevGame.gold > 0) text[2] += "<#0f0>" + prevGame.gold + "</#0f0>";
+			else text[2] += "0";
+			draw.prevGameRow(x, y + 11, text);
+			// third row (text)
+			text = ["Score: ", "Seed: " + prevGame.seed, "Version: "];
+			if (prevGame.cheat) text[0] += "<#f00>" + prevGame.score + "</#f00>";
+			else if (prevGame.newHighScore) text[0] += "<#0f0>" + prevGame.score + "</#0f0>";
+			else text[0] += prevGame.score;
+			if (prevGame.startVersion !== prevGame.endVersion) text[2] += get.versionDisplay(prevGame.startVersion) + " to ";
+			if (prevGame.endVersion === global.version) text[2] += "<#0f0>" + get.versionDisplay(prevGame.endVersion) + "</#0f0>";
+			else text[2] += get.versionDisplay(prevGame.endVersion);
+			draw.prevGameRow(x, y + 2 * 11, text);
+			// fourth row (icons)
+			let iconWidth = 0;
+			if (prevGame.cheat) {
+				iconWidth += I.x.width;
+				draw.image(I.x, 323 - iconWidth, y + 3 * 11 - 1);
 			};
-			// fourth row (interactable row)
-			x = 5;
-			y += 11;
-			if (index * 3 == menuSelect[1] && focused) draw.lore(x, y, "> Cards: " + prevGame.cards.length, {"color": "#ff0"});
-			else draw.lore(x, y, "  Cards: " + prevGame.cards.length, {"color": "#fff"});
-			x += 6 * 12;
-			if (index * 3 + 1 == menuSelect[1] && focused) draw.lore(x, y, "> Artifacts: " + prevGame.artifacts.length, {"color": "#ff0"});
-			else draw.lore(x, y, "  Artifacts: " + prevGame.artifacts.length, {"color": "#fff"});
-			x += 6 * 16;
+			if (prevGame.character === CHARACTER.KNIGHT) {
+				iconWidth += I.player.head.width;
+				draw.image(I.player.head, 323 - iconWidth, y + 3 * 11 - 1);
+			};
+			// fourth row (interactable text)
 			let kills = 0;
 			for (const key in prevGame.kills) {
 				kills += prevGame.kills[key];
 			};
-			if (index * 3 + 2 == menuSelect[1] && focused) draw.lore(x, y, "> Enemies killed: " + kills, {"color": "#ff0"});
-			else if (kills > 0) draw.lore(x, y, "  Enemies killed: <#0f0>" + kills + "</#0f0>", {"color": "#fff"});
-			else draw.lore(x, y, "  Enemies killed: 0", {"color": "#fff"});
-			// icons
-			x = 323;
-			if (prevGame.cheat) {
-				x -= I.x.width;
-				draw.image(I.x, x, y - 1);
+			text = ["  Cards: " + prevGame.cards.length, "  Artifacts: " + prevGame.artifacts.length, "  Enemies killed: " + kills];
+			let styles = [];
+			if (focused) {
+				for (let offset = 0; offset < 3; offset++) {
+					if (index * 3 + offset !== menuSelect[1]) continue;
+					text[offset] = text[offset].replace(" ", ">");
+					styles[offset] = {"color": "#ff0"};
+				};
 			};
-			x -= I.player.head.width;
-			draw.image(I.player.head, x, y - 1);
+			if (!styles[2] && kills > 0) text[2] = "  Enemies killed: <#0f0>" + kills + "</#0f0>";
+			draw.prevGameRow(x, y + 3 * 11, text, styles, iconWidth + 6);
 		};
 		// draw top bar
 		draw.topBar("Previous Runs");
@@ -1991,11 +2039,11 @@ const graphics = {
 		const prevGame = global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]];
 		const spaceY = 76;
 		let x = 3;
-		let y = 16;
 		const categories = [SMALL_ENEMIES, BIG_ENEMIES, PRIME_ENEMIES, SPECIAL_ENEMIES, BOSS_ENEMIES];
 		for (let category = 0; category < categories.length; category++) {
 			const spaceX = (categories[category] === BOSS_ENEMIES ? 400 - x + 1 : (categories[category] === SPECIAL_ENEMIES ? 80 : 76));
 			for (let index = 0; index < categories[category].length; index++) {
+				const y = 16 + spaceY * index;
 				const type = categories[category][index];
 				if (!prevGame.kills[type]) continue;
 				draw.box(x, y, spaceX - 4, spaceY - 4, {"background-color": "#0004", "border-color": "#fff"});
@@ -2014,9 +2062,7 @@ const graphics = {
 				} else {
 					menuEnemyAnim.drawEnemy(posX, y + 1, enemyIndex, true);
 				};
-				y += spaceY;
 			};
-			y = 16;
 			x += spaceX;
 		};
 		draw.topBar("Enemies Killed From Run #" + prevGame.num);
@@ -2050,7 +2096,8 @@ const startAnim = {
 	 * @param {HTMLImageElement} image - the image of the player animation.
 	 */
 	player(image) {
-		if (!(image instanceof HTMLImageElement) || playerAnim[1] === I.player.death) return;
+		if (!(image instanceof HTMLImageElement)) throwError(`"${image}" is not of type "HTMLImageElement".`, TypeError);
+		if (playerAnim[1] === I.player.death) return;
 		if (game.attackEffects.includes(ATT_EFF.AURA_BLADE)) {
 			if (image == I.player.attack) image = I.player.attack_aura;
 			else if (image == I.player.attack_2) image = I.player.attack_2_aura;
@@ -2066,7 +2113,7 @@ const startAnim = {
 	 * @param {HTMLImageElement} image - the image of the effect animation.
 	 */
 	effect(image) {
-		if (!(image instanceof HTMLImageElement)) return;
+		if (!(image instanceof HTMLImageElement)) throwError(`"${image}" is not of type "HTMLImageElement".`, TypeError);
 		effAnim = [0, image];
 	},
 	/**
@@ -2074,8 +2121,8 @@ const startAnim = {
 	 */
 	enemy() {
 		game.enemyNum++;
-		game.enemyStage = ANIM.STARTING;
 		enemyAnim.action = [0, ANIM.STARTING];
 		enemyAnim.actionData = [];
+		game.enemies[game.enemyNum].startAction();
 	},
 };

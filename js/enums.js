@@ -16,10 +16,10 @@
  */
 
 // map node generation attributes
-const MAP_NODE = {FIRST: 0, TREASURE: 1, PRIME: 2, ORB: 3, BOSS: 4, EVENT: 5};
+const MAP_NODE = {FIRST: 0, TREASURE: 1, PRIME: 2, ORB: 3, BOSS: 4, EVENT: 5, NO_ENEMIES: 6};
 
 // map room types
-const ROOM = {BATTLE: 100, TREASURE: 101, PRIME: 102, ORB: 103, BOSS: 104, EVENT: 105};
+const ROOM = {BATTLE: 100, TREASURE: 101, PRIME: 102, ORB: 103, BOSS: 104, EVENT: 105, BATTLE_0: 110, BATTLE_1: 111, BATTLE_2: 112, BATTLE_3: 113, BRANCH_INFO: 199};
 
 // player attack effects
 const ATT_EFF = {AURA_BLADE: 200};
@@ -73,6 +73,8 @@ const MENU = {
 	CHANGE_SEED: 406, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 	ENTER_SEED: 407, // N does not indicate anything.
 	CONF_REMOVE_PREV_GAME: 408, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
+	OLD_SAVE_ALERT: 409, // N indicates which button is selected (2 for the remove button, 1 for the copy button, 0 for the dismiss button).
+	OLD_SAVE_COPY_FAILED: 410, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 };
 
 // main menu options
@@ -91,10 +93,13 @@ const SS = {
 const DIR = {UP: 501, LEFT: 502, CENTER: 503, RIGHT: 504, DOWN: 505};
 
 // enemy types
-const SLIME = {BIG: 600, SMALL: 601, PRIME: 602, STICKY: 608}, FRAGMENT = 603, SENTRY = {BIG: 604, SMALL: 605, PRIME: 606, FLAMING: 609}, SINGULARITY = 607;
+const SLIME = {BIG: 600, SMALL: 601, PRIME: 602, STICKY: 608, PUDDLE: 610};
+const FRAGMENT = 603;
+const SENTRY = {BIG: 604, SMALL: 605, PRIME: 606, FLAMING: 609};
+const SINGULARITY = 607;
 
 // enemy type order
-const ENEMY_ORDER = [SLIME.SMALL, SLIME.BIG, SLIME.PRIME, SLIME.STICKY, FRAGMENT, SENTRY.SMALL, SENTRY.BIG, SENTRY.PRIME, SENTRY.FLAMING, SINGULARITY];
+const ENEMY_ORDER = [SLIME.PUDDLE, SLIME.SMALL, SLIME.BIG, SLIME.PRIME, SLIME.STICKY, FRAGMENT, SENTRY.SMALL, SENTRY.BIG, SENTRY.PRIME, SENTRY.FLAMING, SINGULARITY];
 
 // names of enemy types
 const ENEMY_NAME = {
@@ -102,6 +107,7 @@ const ENEMY_NAME = {
 	[SLIME.SMALL]: "small slime",
 	[SLIME.PRIME]: "prime slime",
 	[SLIME.STICKY]: "sticky slime",
+	[SLIME.PUDDLE]: "slime puddle",
 	[FRAGMENT]: "the fragment of time",
 	[SENTRY.BIG]: "big sentry",
 	[SENTRY.SMALL]: "small sentry",
@@ -116,6 +122,7 @@ const PLURAL_ENEMY_NAME = {
 	[SLIME.SMALL]: "small slimes",
 	[SLIME.PRIME]: "prime slimes",
 	[SLIME.STICKY]: "sticky slimes",
+	[SLIME.PUDDLE]: "slime puddles",
 	[SENTRY.BIG]: "big sentries",
 	[SENTRY.SMALL]: "small sentries",
 	[SENTRY.PRIME]: "prime sentries",
@@ -128,6 +135,7 @@ const ENEMY_WORTH = {
 	[SLIME.SMALL]: 50,
 	[SLIME.PRIME]: 500,
 	[SLIME.STICKY]: 150,
+	[SLIME.PUDDLE]: 1,
 	[FRAGMENT]: 1000,
 	[SENTRY.BIG]: 150,
 	[SENTRY.SMALL]: 75,
@@ -137,7 +145,7 @@ const ENEMY_WORTH = {
 };
 
 // enemy intents
-const INTENT = {ATTACK: 700, DEFEND: 701, BUFF: 702, SUMMON: 703, RITUAL: 704};
+const INTENT = {ATTACK: 700, DEFEND: 701, BUFF: 702, SUMMON: 703, RITUAL: 704, NOTHING: 705};
 
 // minimal descriptions of enemy intents
 const MIN_INTENT_DESC = {
@@ -145,6 +153,7 @@ const MIN_INTENT_DESC = {
 	[INTENT.DEFEND]: "<#48f>defend</#48f> itself",
 	[INTENT.BUFF]: "buff itself",
 	[INTENT.SUMMON]: "summon a minion",
+	[INTENT.NOTHING]: "do nothing",
 };
 
 // full descriptions of enemy intents
@@ -154,13 +163,14 @@ const FULL_INTENT_DESC = {
 	[INTENT.BUFF]: "This enemy intends to buff itself on its next turn.",
 	[INTENT.SUMMON]: "This enemy intends to summon a minion on its next turn.",
 	[INTENT.RITUAL]: "This enemy would have summoned a minion on its next turn, but since there are already five, it will perform a ritual instead.",
+	[INTENT.NOTHING]: "This enemy cannot do anything on its next turn.",
 };
 
 // enemy animation states
 const ANIM = {PENDING: 800, STARTING: 801, MIDDLE: 802, ENDING: 803};
 
 // artifact effect function keys
-const FUNC = {FLOOR_CLEAR: 900, PICKUP: 901, PLAYER_TURN_END: 902, PLAY_CARD: 903};
+const FUNC = {FLOOR_CLEAR: 900, PICKUP: 901, PLAYER_TURN_END: 902, PLAY_CARD: 903, AFTER_ATTACK: 904};
 
 // room states
 const STATE = {ENTER: 1000, BATTLE: 1001, EVENT_FIN: 1002, GAME_END: 1003, EVENT: 1004};
@@ -195,7 +205,7 @@ const EFF = {AURA_BLADE: 1700, BURN: 1701, REINFORCE: 1702, RESILIENCE: 1703, WE
 const CARD_EFF = {ONE_USE: 1800, UNIFORM: 1801, UNPLAYABLE: 1802, COST_REDUCTION: 1803, RETENTION: 1804, TEMP: 1898, DESC: 1899};
 
 // enemy effects
-const ENEMY_EFF = {COUNTDOWN: 1900, REWIND: 1901, SHROUD: 1902, PLAN_ATTACK: 1903, PLAN_SUMMON: 1904, PLAN_DEFEND: 1905, SCRAP_HEAP: 1906, STICKY: 1907};
+const ENEMY_EFF = {COUNTDOWN: 1900, REWIND: 1901, SHROUD: 1902, PLAN_ATTACK: 1903, PLAN_SUMMON: 1904, PLAN_DEFEND: 1905, SCRAP_HEAP: 1906, STICKY: 1907, PERSISTENCE: 1908, REVIVAL: 1909, REVIVED: 1910, OVERHEAT: 1911, DUEL_TARGET: 1912};
 
 // names of effects
 const EFF_NAME = {
@@ -227,6 +237,17 @@ const EFF_NAME = {
 	[ENEMY_EFF.PLAN_DEFEND]: "plan defend",
 	[ENEMY_EFF.SCRAP_HEAP]: "scrap heap",
 	[ENEMY_EFF.STICKY]: "sticky",
+	[ENEMY_EFF.PERSISTENCE]: "persistence",
+	[ENEMY_EFF.REVIVAL]: "revival",
+	[ENEMY_EFF.REVIVED]: "revived",
+	[ENEMY_EFF.OVERHEAT]: "overheat",
+	[ENEMY_EFF.DUEL_TARGET]: "duel target",
+};
+
+// plural names of effects
+const PLURAL_EFF_NAME = {
+	[EFF.AURA_BLADE]: "aura blades",
+	[ENEMY_EFF.REWIND]: "rewinds",
 };
 
 // "has" text for permanent effects
@@ -236,6 +257,7 @@ const PERM_EFF_DESC = {
 	[ENEMY_EFF.PLAN_DEFEND]: "has",
 	[ENEMY_EFF.SCRAP_HEAP]: "is a",
 	[ENEMY_EFF.STICKY]: "is",
+	[ENEMY_EFF.REVIVED]: "was",
 };
 
 // descriptions of effects
@@ -261,13 +283,18 @@ const EFF_DESC = {
 	[CARD_EFF.DESC]: "After a card leaves your hand, it loses all of its applied effects.",
 	// enemy effects
 	[ENEMY_EFF.COUNTDOWN]: "On end of turn, intent is set to what it was on the [count]th turn, then decrease count by 1.",
-	[ENEMY_EFF.REWIND]: "Is [20 × count]% stronger, rounded down. On death, if this has 0 countdown: gain 1 count, fully heal all entities (including self), and start the countdown.",
+	[ENEMY_EFF.REWIND]: "Is [20 × count]% stronger, rounded down. On death, if this has 0 countdown: gain 1 count, fully heal all units (including self), and start the countdown.",
 	[ENEMY_EFF.SHROUD]: "Intent is not visible. On end of turn, decrease count by 1.",
 	[ENEMY_EFF.PLAN_ATTACK]: "If the player has enough shield to block 100% of attack, gain 2 ATK+ and make a new plan. If this has shield and intends to defend, change intent to attack and make a new plan.",
 	[ENEMY_EFF.PLAN_SUMMON]: "If the player has enough shield to block 100% of attack or this has shield and intends to defend, change intent to summon and make a new plan.",
 	[ENEMY_EFF.PLAN_DEFEND]: "If this has shield and intends to defend, gain 2 DEF+ and make a new plan. If the player has enough shield to block 100% of attack, change intent to defense and make a new plan.",
 	[ENEMY_EFF.SCRAP_HEAP]: "This dying does not trigger [On death] effects.",
 	[ENEMY_EFF.STICKY]: "On attack, add 2 copies of Sticky Goo to the target's deck.",
+	[ENEMY_EFF.PERSISTENCE]: "On death, summon a Puddle of Slime with [count] max health and 2 revival.",
+	[ENEMY_EFF.REVIVAL]: "On start of turn, decrease count by 1; then, if count is 0, transform into a Small Slime.",
+	[ENEMY_EFF.REVIVED]: "This dying does not trigger [On death] effects.",
+	[ENEMY_EFF.OVERHEAT]: "On start of turn, increase count by 1. On death, deal\n[count / 2] non-combat damage to all units, rounded down.",
+	[ENEMY_EFF.DUEL_TARGET]: "Take [1 + count / 5] extra damage from the player, rounded down. When a unit gains this effect, all other units lose it.",
 };
 
 // numeric desc node types
@@ -281,10 +308,10 @@ const COLOR = {
 	// uncommon
 	"#e70": [EFF.BURN, EFF.BLAZE], // orange
 	"#862": [EFF.REINFORCE], // brown
-	"#665": [EFF.RESILIENCE], // yellowish gray
-	"#655": [EFF.WEAKNESS], // reddish gray
+	"#665": [EFF.RESILIENCE, ENEMY_EFF.REVIVED], // yellowish gray
+	"#655": [EFF.WEAKNESS, ENEMY_EFF.DUEL_TARGET], // reddish gray
 	"#e50": [EFF.PULSE], // reddish orange
-	"#00f": [EFF.HYPERSPEED], // dark blue
+	"#00f": [EFF.HYPERSPEED], // neon dark blue
 	"#864": [EFF.FIREPROOF], // grayish orange
 	"#556": [EFF.LIVING_METAL, ENEMY_EFF.SHROUD], // bluish gray
 	"#666": [CARD_EFF.ONE_USE, CARD_EFF.UNIFORM, CARD_EFF.UNPLAYABLE, CARD_EFF.COST_REDUCTION, CARD_EFF.RETENTION], // gray
@@ -292,7 +319,9 @@ const COLOR = {
 	"#900": [ENEMY_EFF.PLAN_ATTACK], // dark red
 	"#070": [ENEMY_EFF.PLAN_SUMMON], // dark green
 	"#00a": [ENEMY_EFF.PLAN_DEFEND], // dark blue
-	"#080": ["sticky goo", ENEMY_EFF.STICKY], // dark green
+	"#575": [ENEMY_EFF.PERSISTENCE, ENEMY_EFF.REVIVAL], // greenish gray
+	"#765": [ENEMY_EFF.OVERHEAT], // orangeish gray
+	"#080": ["sticky goo", "puddle of slime", "small slime", ENEMY_EFF.STICKY], // darker green
 	"#80f": ["decay"], // purple
 	// common
 	"#f44": ["max health", "health", "non-combat damage", "combat damage", "extra damage", "damage", "attacks", "attack", DESC.DAMAGE, EFF.ATKUP, ENEMY_EFF.COUNTDOWN, ENEMY_EFF.SCRAP_HEAP], // red
