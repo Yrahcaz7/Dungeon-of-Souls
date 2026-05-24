@@ -134,10 +134,10 @@ function createPopup(type, description, secondLine = "", action = null) {
 	for (let index = 0; index <= activePopups.length && index < 7; index++) {
 		if (activePopups[index]?.length) {
 			if (activePopups[index] && activePopups[index][2] > activePopups[oldest][2]) oldest = index;
-			continue;
+		} else {
+			oldest = index;
+			break;
 		};
-		activePopups[index] = [type, description, 0, secondLine, action];
-		return;
 	};
 	activePopups[oldest] = [type, description, 0, secondLine, action];
 };

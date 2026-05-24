@@ -27,7 +27,7 @@ const selection = (() => {
 	 */
 	function hasPopups() {
 		for (let index = 0; index < activePopups.length; index++) {
-			if (activePopups[index].length) return true;
+			if (activePopups[index]?.length) return true;
 		};
 		return false;
 	};
@@ -68,7 +68,9 @@ const selection = (() => {
 	return () => {
 		// timers
 		actionTimer = Math.max(actionTimer, 0) - 1;
-		if (actionTimer > -1 || holdTimer === 1 || (handAnim.length > 0 && game.state !== STATE.EVENT_FIN)) return;
+		if (actionTimer > -1 || (action !== -1 && holdTimer === 1) || (handAnim.length > 0 && game.state !== STATE.EVENT_FIN)) {
+			return;
+		};
 		holdTimer++;
 		// menus
 		if (menuSelect[0] === MENU.MAIN) {
@@ -369,7 +371,9 @@ const selection = (() => {
 					if (!game.hand.length) {
 						if (game.void.length) game.select = [S.VOID, 0];
 						else game.select = [S.DISCARD, 0];
-					} else game.select = [S.HAND, game.prevCard];
+					} else {
+						game.select = [S.HAND, game.prevCard];
+					};
 				};
 				return;
 			} else if (action === DIR.UP) {
