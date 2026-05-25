@@ -106,6 +106,10 @@ const ARTIFACTS = {
 			};
 		},
 	},
+	207: {
+		name: '"Device"',
+		desc: "Your hand size is 1 larger.",
+	},
 };
 
 for (const key in ARTIFACTS) {
@@ -129,6 +133,16 @@ for (const key in ARTIFACTS) {
 function hasArtifact(id) {
 	if (id == 103 && game.artifacts.includes(205)) return true; // make "Corrosion [stage 2]" count as "Corrosion"
 	return game.artifacts.includes(id);
+};
+
+/**
+ * Gives the player an artifact.
+ * @param {number} id - the artifact's id.
+ */
+function getArtifact(id) {
+	game.artifacts.push(id);
+	const func = ARTIFACTS[id][FUNC.PICKUP];
+	if (func instanceof Function) func();
 };
 
 /**

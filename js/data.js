@@ -95,9 +95,10 @@ const GAMEPLAY = fixManualPageFormat(`
 const CHANGELOG = fixManualPageFormat(`
 	<b>Version 3.0 - In Development...<s>
 	 - completely reworked the map generator
-	 - added one new artifact and many new effects
+	 - added two new artifacts and many new effects
 	 - reworked hard mode
 	 - improved the past run info screen
+	 - added one new event
 	 - many bugfixes
 	<b>Version 2.3 - Consecution<s>
 	 - finally added the ACT 2 boss music!

@@ -42,8 +42,7 @@ function logEventDamage(amount, attack = false) {
  * @param {number} defaultValue - the value to return if the event is not logged.
  */
 function getLoggedEvent(type, defaultValue = 0) {
-	if (game.eventLog[type] === undefined) return defaultValue;
-	return game.eventLog[type];
+	return game.eventLog[type] ?? defaultValue;
 };
 
 /**
@@ -127,9 +126,9 @@ const EVENTS = {
 			else startEventBattle(BATTLE.CROWD, 2);
 		}],
 		40: [null, "You successfully got past the enemies!\nYou must have been very lucky.\nStealth isn't your strong suit.", ["Get a move on", 21]],
-		50: [() => game.artifacts.push(206), "You vaugely feel something long forgotten...\nYou want to fight these enemies fair and square.", ["Battle Start!", 31]],
+		50: [() => getArtifact(206), "You vaugely feel something long forgotten...\nYou want to fight these enemies fair and square.", ["Battle Start!", 31]],
 	}, {
-		0: [null, "You observe a chasm in the ground.\nIt is clearly blocking your way forward.\nWhat do you do?", ["Navigate around the chasm", 100], ["Jump across the chasm", 200], ["Climb down the side", 300]],
+		0: [null, "You see a chasm in the ground ahead.\nIt is clearly blocking your way forward.\nWhat do you do?", ["Navigate around the chasm", 100], ["Jump across the chasm", 200], ["Climb down the side", 300]],
 		100: [() => gainEff(EFF.WEAKNESS, 10), "You begin navigating around the chasm.\nIt is very exhausting.\nYou see an enemy in the way.\nWill you fight or go back?", ["Fight the enemy", 110], ["Go back", 120]],
 		110: [null, "You ready yourself and charge at the enemy.", ["Battle Start!", 111]],
 		111: [() => startEventBattle(BATTLE.AMBUSH)],
@@ -141,7 +140,7 @@ const EVENTS = {
 		300: [null, "You climb down into the chasm unexpectedly easily.\nHowever, going back up may be harder.\nWhat will you do?", ["Look around", 400], ["Climb up", 500]],
 		400: [null, "You find a platform with two giant cups on it.\nThe left cup is filled with purple ooze.\nThe right cup is filled with glowing water.\nClearly one is all you can drink.\nYou would vomit if you had both.", ["Look closer at left cup", 410], ["Look closer at right cup", 420], ["Forget this, climb back up", 500]],
 		410: [null, "There is an engraving on the cup.\nIt says: ENVIGORATING BUT DANGEROUS.\nCONSUME AT YOUR OWN RISK.", ["Drink from the left cup", () => hasArtifact(103) ? 430 : 411], ["Look closer at right cup", 420], ["Forget this, climb back up", 500]],
-		411: [() => game.artifacts.push(103), "A foul energy courses through your veins.\nYou can now wield Corrosion.", ["Get out of this chasm already", 412]],
+		411: [() => getArtifact(103), "A foul energy courses through your veins.\nYou can now wield Corrosion.", ["Get out of this chasm already", 412]],
 		412: [null, "Just as you start to climb out,\nyou spot something very shiny.\nYou can't seem to resist its allure...", ["Pocket the shiny thing", 413]],
 		413: [() => game.gold += 10, "You pocket the strange lump of gold.\nIt's probably worth around 10 gold coins.\nYou see another shiny thing nearby...", ["Go get the shiny thing", 414], ["Really, get out of here already!", 500]],
 		414: [() => game.gold = 0, "As you reach out to grab the shining rock,\na foul energy erupts from within you.\nDark tendrils spread outwards,\ngreedily devouring all of your gold.\nYou hear an ominous crackle emerge from yourself.\nJust what exactly did you drink?", ["GET OUT OF HERE!", 500]],
@@ -162,7 +161,7 @@ const EVENTS = {
 		110: [() => logEventDamage(6), "You cut yourself and bleed onto the altar.\nSuddenly, an enemy pops out from behind some rocks!\nIt starts hastily running away, quickly vanishing from sight.", ["Get a move on", 111]],
 		111: [finishEvent],
 		120: [() => logEventDamage(25), "You brutally stab yourself and bleed onto the altar.\nSeemingly in response, a compartment in the altar opens.\nInside is a brilliant red gem.\nJust holding it makes you feel stronger.", ["Take the gem", 121]],
-		121: [() => game.artifacts.push(101), "You pocket the gem.\nYou then stumble around lightheadedly for a bit.\nMaybe you should be a bit more careful with your blood.", ["Get a move on", 111]],
+		121: [() => getArtifact(101), "You pocket the gem.\nYou then stumble around lightheadedly for a bit.\nMaybe you should be a bit more careful with your blood.", ["Get a move on", 111]],
 		130: [() => game.health += 6, "You brutally stab yourself and bleed onto the altar.\nYour Gem of Rage glows ever brighter...\nSuddenly, your blood starts to trickle back into your wound.\nThe blood stains become liquid again and enter as well.\nYou gain 6 health, but you feel rather queasy...", ["Get a move on", 111]],
 		200: [null, "You have a bad feeling about this...", ["Do it anyway", 201], ["Cancel", 0]],
 		201: [null, "You topple the altar, and a dark cloud spreads...\nYou feel sluggish, and you can't see ahead of you.", ["Run out of the cloud", 202]],
@@ -207,7 +206,23 @@ const EVENTS = {
 		221: [null, "You sucessfully got past the enemy!", ["Get a move on", 222]],
 		222: [finishEvent],
 	}],
-	1: [],
+	1: [{
+		0: [null, "As you walk down a rather spacious hallway, you spot a strange gray box to the side.\nOn one of its faces, there is a square hole that seems to be glowing.\nDo you investigate it?", ["Yes", 100], ["No", 200]],
+		100: [null, `Upon closer inspection, you see glowing words inside the hole. It reads:\n"Deposit physical currency here. Unregistered users will recieve a new device."\nYou're not quite sure what it means, but maybe giving it some gold will do something?`, ["Deposit 100 gold", 110], ["Deposit 400 gold", 120], ["Don't deposit anything", 130]],
+		110: [() => {
+			game.gold -= 100;
+			getArtifact(207);
+		}, `After throwing in a decent amount of gold, a strange object fell out of the hole.\nIt is probably the "Device" that the text spoke of.\nThe "Device" has many glowing words on it, some of them unfamiliar.\nThe words seem to form a complicated poem... You'll contemplate it later.`, ["Get a move on", 111]],
+		111: [finishEvent],
+		120: [() => {
+			game.gold -= 400;
+			game.health += 10;
+			getArtifact(207);
+		}, "You cram a bunch of gold into the hole, but all of it mysteriously dissapears.\nOnly two objects fall out of the hole, a bottle and a glowing slab.\nRecognizing the red liquid in the bottle, you quickly chug it down.\nAs soon as you do so, your fatigue begins to wash away.", ["Inspect the slab", 121]],
+		121: [null, `The mysterious slab is probably that "Device" mentioned by the text.\nPicking it up, you realize the glow comes from many individual words on its surface.\nThe words seem to form a complicated poem...\nYou'll have to contemplate it later.`, ["Get a move on", 111]],
+		130: [null, "You decide that it's probably not worth the gold and continue onward.", ["Get a move on", 111]],
+		200: [null, "You decide that it's not worth your time and continue onward.", ["Get a move on", 111]],
+	}],
 };
 
 /**

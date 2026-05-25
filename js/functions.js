@@ -118,6 +118,7 @@ const get = {
 		let size = 5;
 		if (hasArtifact(104)) size--;
 		if (hasArtifact(205)) size++;
+		if (hasArtifact(207)) size++;
 		return size;
 	},
 	/**

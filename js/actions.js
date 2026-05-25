@@ -900,7 +900,7 @@ const performAction = (() => {
 			} else {
 				game.floor++;
 				game.location = availableLocations[0];
-				if (game.select[1] === 0) game.artifacts.push(202);
+				if (game.select[1] === 0) getArtifact(202);
 				game.room = game.map[game.floor][game.location];
 				game.select = [-1, 0];
 				game.state = STATE.ENTER;
@@ -939,7 +939,7 @@ const performAction = (() => {
 				game.select = [S.HAND, 0];
 			} else {
 				game.energy--; // spend 1 energy picking up the pearl
-				game.artifacts.push(204); // give player artifact "Shrouded Pearl"
+				getArtifact(204); // give player artifact "Shrouded Pearl"
 				game.select = [S.ARTIFACTS, game.artifacts.length - 1];
 			};
 			actionTimer = 2;
@@ -981,9 +981,7 @@ const performAction = (() => {
 				if (game.select[0] === S.CARD_REWARD) {
 					game.cards.push(new Card(game.room[5][game.select[1]]));
 				} else if (game.select[0] === S.ARTIFACT_REWARD) {
-					game.artifacts.push(game.room[6][game.select[1]]);
-					const func = ARTIFACTS[game.room[6][game.select[1]]][FUNC.PICKUP];
-					if (func instanceof Function) func();
+					getArtifact(game.room[6][game.select[1]]);
 				};
 				if (index >= 0) game.rewards[index][2] = true;
 			};

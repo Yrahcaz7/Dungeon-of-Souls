@@ -177,7 +177,7 @@ class Enemy {
 				if (game.health < prevHealth) startAnim.player(I.player.hit);
 				// If the player survives the ritual, they get the easter egg "Warped Essence"
 				if (game.health > 0 && !hasArtifact(203)) {
-					game.artifacts.push(203);
+					getArtifact(203);
 				};
 			} else {
 				// SUMMON (summon a small enemy that gives no points when defeated)
