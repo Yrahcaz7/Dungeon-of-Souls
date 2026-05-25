@@ -1012,7 +1012,7 @@ const performAction = (() => {
 					game.select[1] = 0;
 				} else {
 					const next = event[game.select[1] + 2][1];
-					game.turn = 10000 + (next instanceof Function ? next() : next);
+					game.turn = TURN.EVENT_START + (next instanceof Function ? next() : next);
 					event = getCurrentEvent();
 					if (event[0] instanceof Function) event[0]();
 					if (game.select[0] === S.EVENT) game.select[1] = -1;

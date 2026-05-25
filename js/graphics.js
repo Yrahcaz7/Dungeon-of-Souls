@@ -1701,15 +1701,17 @@ const graphics = {
 	 * Draws the current event on the canvas.
 	 */
 	event() {
-		draw.rect("#0006");
-		graphics.foregrounds();
+		draw.rect("#0008");
 		const event = getCurrentEvent();
-		if (!event[1]) return;
-		draw.lore(200 - 2, 50, (event[1] instanceof Function ? event[1]() : event[1]), {"color": "#fff", "text-align": DIR.CENTER});
+		if (event.length === 0) {
+			throwError(`Invalid event: ${get.area()}-${game.room[3] - 100}-${game.turn - TURN.EVENT_START}`);
+		};
+		draw.textBox(125 - 1, 40, 50, wrapText(event[1] instanceof Function ? event[1]() : event[1], 50), {"text-small": true});
 		for (let index = 2; index < event.length; index++) {
+			const x = 100 + (index - 2) * 20;
 			const text = (event[index][0] instanceof Function ? event[index][0]() : event[index][0]);
-			if (index == game.select[1] + 2) draw.lore(200 - 2, 100 + index * 20, "<#ff0>\> " + text + "  </#ff0>", {"color": "#fff", "text-align": DIR.CENTER});
-			else draw.lore(200 - 2, 100 + index * 20, text, {"color": "#fff", "text-align": DIR.CENTER});
+			if (index == game.select[1] + 2) draw.lore(200 - 2, x, "<#ff0>\> " + text + "  </#ff0>", {"color": "#fff", "text-align": DIR.CENTER});
+			else draw.lore(200 - 2, x, text, {"color": "#fff", "text-align": DIR.CENTER});
 		};
 	},
 	/**

@@ -440,7 +440,7 @@ function loadRoom() {
 		game.select = [S.EVENT, -1];
 		game.state = STATE.EVENT;
 		game.rewards = [];
-		game.turn = 10000;
+		game.turn = TURN.EVENT_START;
 	};
 };
 
@@ -496,9 +496,7 @@ function updateVisuals() {
 		graphics.effect();
 	};
 	graphics.middleLayer();
-	if (game.select[0] !== S.EVENT) {
-		graphics.foregrounds();
-	};
+	graphics.foregrounds();
 	if (!hidden()) {
 		if (game.select[0] === SS.SELECT_HAND) graphics.handSelect();
 		else graphics.hand();
