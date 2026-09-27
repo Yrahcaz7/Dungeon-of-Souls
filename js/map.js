@@ -1,20 +1,3 @@
-/*  Dungeon of Souls
- *  Copyright (C) 2026 Yrahcaz7
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 /** @type {{}[]} */
 let mapPathPoints = [];
 
@@ -36,7 +19,7 @@ const generateMapPathPoints = (() => {
 			t[sub] = (sub + 1) * increment;
 			tSquared[sub] = t[sub] * t[sub];
 			tCubed[sub] = tSquared[sub] * t[sub];
-		};
+		}
 		let pathPoints = [points[0]];
 		for (let index = 1; index < points.length - 2; index++) {
 			const subdivisionIndex = 1 + (index - 1) * (PATH_SUBDIVISIONS + 1);
@@ -57,12 +40,12 @@ const generateMapPathPoints = (() => {
 				pathPoints[subdivisionIndex + sub + 1] = [];
 				pathPoints[subdivisionIndex + sub + 1][0] = 0.5 * (ax * tCubed[sub] + bx * tSquared[sub] + cx * t[sub] + dx);
 				pathPoints[subdivisionIndex + sub + 1][1] = 0.5 * (ay * tCubed[sub] + by * tSquared[sub] + cy * t[sub] + dy);
-			};
-		};
+			}
+		}
 		pathPoints.push(points.at(-2));
 		pathPoints.push(points.at(-1));
 		return pathPoints;
-	};
+	}
 	/**
 	 * Gets the visual map paths of an area.
 	 * @param {number} area - the area to get the visual map paths of.
@@ -80,10 +63,10 @@ const generateMapPathPoints = (() => {
 					let innerArr = arr[path].slice();
 					innerArr.push([lastNode[0] + 1, node]);
 					nextArr.push(innerArr);
-				};
-			};
+				}
+			}
 			arr = nextArr;
-		};
+		}
 		// calculate all possible visual paths for each node pair and log them in `mapPathPoints`.
 		for (let path = 0; path < arr.length; path++) {
 			let visualArr = [];
@@ -100,22 +83,30 @@ const generateMapPathPoints = (() => {
 					break;
 				} else {
 					visualArr.push([node[1] + 8, node[2] + 8]);
-				};
-			};
+				}
+			}
 			let pathPoints = getSubdividedPath(visualArr);
 			for (let index = 1; index < visualArr.length - 3; index++) {
 				const subdivisionIndex = 1 + (index - 1) * (PATH_SUBDIVISIONS + 1);
-				if (!mapPathPoints[arr[path][index - 1][0]]) mapPathPoints[arr[path][index - 1][0]] = [];
-				if (!mapPathPoints[arr[path][index - 1][0]][arr[path][index - 1][1]]) mapPathPoints[arr[path][index - 1][0]][arr[path][index - 1][1]] = {};
+				if (!mapPathPoints[arr[path][index - 1][0]]) {
+					mapPathPoints[arr[path][index - 1][0]] = [];
+				}
+				if (!mapPathPoints[arr[path][index - 1][0]][arr[path][index - 1][1]]) {
+					mapPathPoints[arr[path][index - 1][0]][arr[path][index - 1][1]] = {};
+				}
 				const firstNode = mapPathPoints[arr[path][index - 1][0]][arr[path][index - 1][1]];
-				if (!firstNode[arr[path][index][1]]) firstNode[arr[path][index][1]] = [];
+				if (!firstNode[arr[path][index][1]]) {
+					firstNode[arr[path][index][1]] = [];
+				}
 				const nodePair = firstNode[arr[path][index][1]];
 				for (let sub = 0; sub < PATH_SUBDIVISIONS + 2; sub++) {
-					if (!nodePair[sub]) nodePair[sub] = [];
+					if (!nodePair[sub]) {
+						nodePair[sub] = [];
+					}
 					nodePair[sub].push(pathPoints[subdivisionIndex + sub]);
-				};
-			};
-		};
+				}
+			}
+		}
 		// average the points in `mapPathPoints` for each subdivision for each node pair.
 		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
 			for (const node1 in mapPathPoints[row1]) {
@@ -127,20 +118,20 @@ const generateMapPathPoints = (() => {
 						for (let index = 0; index < nodePair[sub].length; index++) {
 							total[0] += nodePair[sub][index][0];
 							total[1] += nodePair[sub][index][1];
-						};
+						}
 						averagePath.push([total[0] / nodePair[sub].length, total[1] / nodePair[sub].length]);
-					};
+					}
 					mapPathPoints[row1][node1][node2] = averagePath;
-				};
-			};
-		};
-	};
+				}
+			}
+		}
+	}
 	return async () => {
 		const startTime = performance.now();
 		mapPathPoints = [];
 		await Promise.all([getVisualMapPaths(0), getVisualMapPaths(1)]);
 		console.log("[map visuals generated in " + (performance.now() - startTime) + "ms]");
-	};
+	}
 })();
 
 const BIG_ENEMIES = [SLIME.BIG, SENTRY.BIG];
@@ -159,10 +150,10 @@ function getBattleType(node) {
 			return (BIG_ENEMIES.includes(node[3][0]) ? 0 : 3);
 		} else if (node[3].length === 2) {
 			return (BIG_ENEMIES.includes(node[3][0]) ? 2 : 1);
-		};
-	};
+		}
+	}
 	return -1;
-};
+}
 
 /**
  * Generates a map and saves it.
@@ -183,14 +174,14 @@ const generateMap = (() => {
 	function getWeakerSmallEnemy(row) {
 		const area = get.area(row);
 		return [SMALL_ENEMIES[area], Math.round(((row - 1 - game.difficulty * 12 + (1 - area) * 10) * 0.05) * 100) / 100];
-	};
+	}
 	/**
 	 * Gets the base gold reward for a room.
 	 * @param {number} row - the row the room is in.
 	 */
 	function getGoldReward(row) {
 		return randomInt(25, 50) + (row - 1) * 2;
-	};
+	}
 	/**
 	 * Updates the map generation progress.
 	 */
@@ -202,9 +193,9 @@ const generateMap = (() => {
 		} else {
 			draw.lore(200 - 2, 100 - 5.5 * 3, "Generating Map...\n\n" + (genProg / GEN_STEPS * 100).toFixed(0) + "%", {"color": "#fff", "text-align": DIR.CENTER});
 			genProg++;
-		};
+		}
 		await new Promise(resolve => setTimeout(resolve));
-	};
+	}
 	/**
 	 * Returns a map node.
 	 * @param {number} row - the row of the map node.
@@ -213,19 +204,31 @@ const generateMap = (() => {
 	 */
 	function getMapNode(row, y, attribute = -1) {
 		const area = get.area(row);
-		if (attribute === MAP_NODE.FIRST) return [ROOM.BATTLE, 0, 0, [SMALL_ENEMIES[area]], getGoldReward(row), randomCardSet(5)];
+		if (attribute === MAP_NODE.FIRST) {
+			return [ROOM.BATTLE, 0, 0, [SMALL_ENEMIES[area]], getGoldReward(row), randomCardSet(5)];
+		}
 		const x = ((row - area * 10) * 32) - 7 + randomInt(-5, 5);
-		if (attribute === MAP_NODE.TREASURE) return [ROOM.TREASURE, x, y, [], getGoldReward(row) * 2, randomCardSet(5, 4/10)];
-		if (attribute === MAP_NODE.PRIME) return [ROOM.PRIME, x, y, [getWeakerSmallEnemy(row), PRIME_ENEMIES[area], getWeakerSmallEnemy(row)], getGoldReward(row) * 2, randomCardSet(5, 9/10), randomArtifactSet(3)];
+		if (attribute === MAP_NODE.TREASURE) {
+			return [ROOM.TREASURE, x, y, [], getGoldReward(row) * 2, randomCardSet(5, 4/10)];
+		}
+		if (attribute === MAP_NODE.PRIME) {
+			return [ROOM.PRIME, x, y, [getWeakerSmallEnemy(row), PRIME_ENEMIES[area], getWeakerSmallEnemy(row)], getGoldReward(row) * 2, randomCardSet(5, 9/10), randomArtifactSet(3)];
+		}
 		if (attribute === MAP_NODE.EVENT) {
 			let index = randomInt(0, EVENTS.any.length + EVENTS[area].length - 1);
-			if (index >= EVENTS.any.length) index += 100 - EVENTS.any.length;
+			if (index >= EVENTS.any.length) {
+				index += 100 - EVENTS.any.length;
+			}
 			return [ROOM.EVENT, x, y, index, getGoldReward(row), randomCardSet(5)];
-		};
-		if (attribute === MAP_NODE.ORB) return [ROOM.ORB, x, y];
-		if (attribute === MAP_NODE.BOSS) return [ROOM.BOSS, ((row - area * 10) * 32) + 3, 90, [BOSS_ENEMIES[area]], getGoldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
+		}
+		if (attribute === MAP_NODE.ORB) {
+			return [ROOM.ORB, x, y];
+		}
+		if (attribute === MAP_NODE.BOSS) {
+			return [ROOM.BOSS, ((row - area * 10) * 32) + 3, 90, [BOSS_ENEMIES[area]], getGoldReward(row) * 4, randomCardSet(5, 9/10), randomArtifactSet(3)];
+		}
 		return [ROOM.BATTLE, x, y, (attribute === MAP_NODE.NO_ENEMIES ? [] : getEnemies(row)), getGoldReward(row), randomCardSet(5)];
-	};
+	}
 	/**
 	 * Returns an array of enemies for a map node.
 	 * @param {number} row - the row of the map node.
@@ -241,23 +244,29 @@ const generateMap = (() => {
 			typeWeights = [10 - specialWeight, 10, 0, specialWeight];
 			if (!excludeTypes.includes(ROOM.BATTLE_2)) {
 				excludeTypes.push(ROOM.BATTLE_2);
-			};
-		};
+			}
+		}
 		if (excludeTypes.length < typeWeights.length) {
 			for (let index = 0; index < typeWeights.length; index++) {
 				if (excludeTypes.includes(ROOM.BATTLE_0 + index)) {
 					typeWeights[index] = 0;
-				};
-			};
-		};
+				}
+			}
+		}
 		const totalWeight = typeWeights.reduce((total, weight) => total + weight);
 		if (totalWeight <= 0) throwError("Cannot determine the types of enemies for a map node with 0 total type weight.", RangeError);
 		const typeRand = random() * totalWeight;
-		if (typeRand < typeWeights[0]) return [BIG_ENEMIES[area]];
-		if (typeRand < typeWeights[0] + typeWeights[1]) return [SMALL_ENEMIES[area], SMALL_ENEMIES[area]];
-		if (typeRand < typeWeights[0] + typeWeights[1] + typeWeights[2]) return [BIG_ENEMIES[area], getWeakerSmallEnemy(row)];
+		if (typeRand < typeWeights[0]) {
+			return [BIG_ENEMIES[area]];
+		}
+		if (typeRand < typeWeights[0] + typeWeights[1]) {
+			return [SMALL_ENEMIES[area], SMALL_ENEMIES[area]];
+		}
+		if (typeRand < typeWeights[0] + typeWeights[1] + typeWeights[2]) {
+			return [BIG_ENEMIES[area], getWeakerSmallEnemy(row)];
+		}
 		return [SPECIAL_ENEMIES[area]];
-	};
+	}
 	/**
 	 * Adds the specified paths to `game.paths` if they do not already exist.
 	 * @param {number} fromRow - The row that the paths start from.
@@ -267,17 +276,17 @@ const generateMap = (() => {
 	function addPaths(fromRow, fromIndex, toIndexes) {
 		if (!game.paths[fromRow]) {
 			game.paths[fromRow] = [];
-		};
+		}
 		if (!game.paths[fromRow][fromIndex]) {
 			game.paths[fromRow][fromIndex] = [];
-		};
+		}
 		for (const index of toIndexes) {
 			if (!game.paths[fromRow][fromIndex].includes(index)) {
 				game.paths[fromRow][fromIndex].push(index);
-			};
-		};
+			}
+		}
 		game.paths[fromRow][fromIndex].sort();
-	};
+	}
 	/**
 	 * Returns a map row.
 	 * @param {number} row - the row number.
@@ -297,7 +306,9 @@ const generateMap = (() => {
 					return pathInfo[row - 1][prevIndex][type] && pathInfo[row - 1][prevIndex][type] >= row - 1;
 				});
 				let newNodeIndexes = ["findLastIndex", "findIndex"].map((method, side) => {
-					if (row % 10 === 9) side = 0.5;
+					if (row % 10 === 9) {
+						side = 0.5;
+					}
 					let index = game.map[row][method](node => node[2] - prevNode[2] >= MAP_NODE_SPREAD * (side - 1) && node[2] - prevNode[2] <= MAP_NODE_SPREAD * side);
 					if (index === -1) {
 						const min = Math.max(prevNode[2] + MAP_NODE_SPREAD * (side - 1), MAP_NODE_MIN_Y);
@@ -307,14 +318,16 @@ const generateMap = (() => {
 							y += MAP_NODE_MIN_Y - min;
 						} else if (max > MAP_NODE_MAX_Y) {
 							y -= MAP_NODE_MAX_Y - max;
-						};
-						if (row % 10 === 9) y = Math.round((3 * y + 90) / 4);
+						}
+						if (row % 10 === 9) {
+							y = Math.round((3 * y + 90) / 4);
+						}
 						index = game.map[row][method](node => Math.abs(node[2] - y) <= MAP_NODE_SPREAD);
 						if (index === -1) {
 							game.map[row].push(getMapNode(row, y, (row % 10 === 9 ? MAP_NODE.ORB : MAP_NODE.NO_ENEMIES)));
 							index = game.map[row].length - 1;
-						};
-					};
+						}
+					}
 					return index;
 				});
 				if (row % 10 < 9 && pathInfo[row - 1][prevIndex][ROOM.BRANCH_INFO] < row - 2 && newNodeIndexes[0] === newNodeIndexes[1]) {
@@ -322,33 +335,35 @@ const generateMap = (() => {
 					if (y <= MAP_NODE_MAX_Y) {
 						game.map[row].push(getMapNode(row, y, MAP_NODE.NO_ENEMIES));
 						newNodeIndexes[1] = game.map[row].length - 1;
-					};
-				};
+					}
+				}
 				addPaths(row - 1, prevIndex, newNodeIndexes);
 			});
 			game.map[row].forEach((node, index) => {
 				let connectedPrevNodes = [];
 				let localExcludeTypes = [];
 				for (let prevIndex = 0; prevIndex < game.map[row - 1].length; prevIndex++) {
-					if (!game.paths[row - 1][prevIndex].includes(index)) continue;
+					if (!game.paths[row - 1][prevIndex].includes(index)) {
+						continue;
+					}
 					connectedPrevNodes.push(prevIndex);
 					excludeBattleTypes[prevIndex].forEach(type => {
 						if (!localExcludeTypes.includes(type)) {
 							localExcludeTypes.push(type);
-						};
+						}
 					});
-				};
+				}
 				node[3] = getEnemies(row, localExcludeTypes);
 				const battleType = ROOM.BATTLE_0 + getBattleType(node);
 				connectedPrevNodes.forEach(prevIndex => {
 					if (!excludeBattleTypes[prevIndex].includes(battleType)) {
 						excludeBattleTypes[prevIndex].push(battleType);
-					};
+					}
 				});
 			});
-		};
+		}
 		calculatePathInfo(row);
-	};
+	}
 	/**
 	 * Calculates the path types and branch info of a map row.
 	 * @param {number} row - the row number.
@@ -359,19 +374,25 @@ const generateMap = (() => {
 		for (let index = 0; index < game.map[row].length; index++) {
 			pathInfo[row][index] = {[game.map[row][index][0]]: row, [ROOM.BRANCH_INFO]: area * 10};
 			const battleType = getBattleType(game.map[row][index]);
-			if (battleType >= 0) pathInfo[row][index][ROOM.BATTLE_0 + battleType] = row;
-			if (row % 10 <= 1) continue;
+			if (battleType >= 0) {
+				pathInfo[row][index][ROOM.BATTLE_0 + battleType] = row;
+			}
+			if (row % 10 <= 1) {
+				continue;
+			}
 			const x = row - 1;
 			game.paths[x].forEach((toIndexes, y) => {
 				if (toIndexes.includes(index)) {
 					for (const key in pathInfo[x][y]) {
 						pathInfo[row][index][key] = Math.max(pathInfo[row][index][key] ?? -Infinity, pathInfo[x][y][key]);
-					};
-					if (toIndexes.length > 1) pathInfo[row][index][ROOM.BRANCH_INFO] = row;
-				};
+					}
+					if (toIndexes.length > 1) {
+						pathInfo[row][index][ROOM.BRANCH_INFO] = row;
+					}
+				}
 			});
-		};
-	};
+		}
+	}
 	/**
 	 * Checks if a map path has any nodes of specified types.
 	 * @param {number[]} coords - the coordinates of the node to start searching from.
@@ -382,25 +403,27 @@ const generateMap = (() => {
 		if (!front) {
 			for (let index = 0; index < types.length; index++) {
 				if (pathInfo[coords[0]][coords[1]][types[index]] !== undefined) return true;
-			};
+			}
 			return false;
-		};
+		}
 		const locations = [coords];
 		for (let index = 0; index < locations.length; index++) {
 			const loc = locations[index];
 			if (!game.map[loc[0]] || !game.map[loc[0]][loc[1]] || game.map[loc[0]][loc[1]][0] === ROOM.BOSS) {
 				continue;
-			};
+			}
 			if (types.includes(game.map[loc[0]][loc[1]][0])) {
 				return true;
-			};
+			}
 			let availableLocations = get.availableLocations(loc[0], loc[1]);
 			for (let i2 = 0; i2 < availableLocations.length; i2++) {
-				if (get.availableLocations(loc[0] + 1, availableLocations[i2]).length) locations.push([loc[0] + 1, availableLocations[i2]]);
-			};
-		};
+				if (get.availableLocations(loc[0] + 1, availableLocations[i2]).length) {
+					locations.push([loc[0] + 1, availableLocations[i2]]);
+				}
+			}
+		}
 		return false;
-	};
+	}
 	/**
 	 * Generates an area of the map.
 	 * @param {number} area - the area number.
@@ -422,9 +445,9 @@ const generateMap = (() => {
 							newRow[rand] = getMapNode(rowNum, newRow[rand][2], MAP_NODE.TREASURE);
 							calculatePathInfo(rowNum);
 							break;
-						};
-					};
-				};
+						}
+					}
+				}
 				// add death zone
 				if (rowNum % 10 >= 4 && deathZones < 2) {
 					let available = Array.from({length: newRow.length}, (_, i) => i);
@@ -435,9 +458,9 @@ const generateMap = (() => {
 							deathZones++;
 							calculatePathInfo(rowNum);
 							break;
-						};
-					};
-				};
+						}
+					}
+				}
 				// add event
 				if (rowNum % 2 == eventShift && rowNum % 10 < 8) {
 					let available = Array.from({length: newRow.length}, (_, i) => i);
@@ -447,12 +470,12 @@ const generateMap = (() => {
 							newRow[rand] = getMapNode(rowNum, newRow[rand][2], MAP_NODE.EVENT);
 							calculatePathInfo(rowNum);
 							break;
-						};
-					};
-				};
-			};
+						}
+					}
+				}
+			}
 			await updateGenProg();
-		};
+		}
 		// add death zone (no `calculatePathTypes()` is needed after this, as this is the last usage of pathHasTypes in this area)
 		let row = 4 + area * 10;
 		while (deathZones === 0) {
@@ -463,13 +486,13 @@ const generateMap = (() => {
 					game.map[row][rand] = getMapNode(row, game.map[row][rand][2], MAP_NODE.PRIME);
 					deathZones++;
 					break;
-				};
-			};
+				}
+			}
 			if (row % 10 >= 7) row = 3 + area * 10;
 			else if (row % 10 === 3) break;
 			else row++;
-		};
-	};
+		}
+	}
 	/**
 	 * Adds scribbles to the map.
 	 */
@@ -479,8 +502,8 @@ const generateMap = (() => {
 		for (let index = 0; index < 4; index++) {
 			game.scribbles[index] = available.splice(randomInt(0, available.length - 1), 1)[0];
 			if (!available.length) available = Array.from({length: Math.round(I.map.scribbles.width / 64)}, (_, i) => i);
-		};
-	};
+		}
+	}
 	return async () => {
 		const startTime = performance.now();
 		loaded = false;
@@ -495,5 +518,5 @@ const generateMap = (() => {
 		console.log("[map data generated in " + (performance.now() - startTime) + "ms]");
 		await generateMapPathPoints();
 		loaded = true;
-	};
+	}
 })();

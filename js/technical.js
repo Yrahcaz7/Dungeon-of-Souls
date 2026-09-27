@@ -1,25 +1,8 @@
-/*  Dungeon of Souls
- *  Copyright (C) 2025 Yrahcaz7
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 /**
  * Updates the random number generator to use the current seed.
- * @param {boolean} updateState - whether to update the random state. Defaults to `game.randomState.length == 0`.
+ * @param {boolean} updateState - whether to update the random state. Defaults to `game.randomState.length === 0`.
  */
-function updateRandom(updateState = (game.randomState.length == 0)) {
+function updateRandom(updateState = (game.randomState.length === 0)) {
 	if (updateState) {
 		let h = 2166136261 >>> 0;
 		for (let i = 0; i < game.seed.length; i++) {
@@ -28,7 +11,7 @@ function updateRandom(updateState = (game.randomState.length == 0)) {
 			h ^= Math.imul(k, 461845907);
 			h = h << 13 | h >>> 19;
 			h = Math.imul(h, 5) + 3864292196 | 0;
-		};
+		}
 		h ^= game.seed.length;
 		const seed = () => {
 			h ^= h >>> 16;
@@ -39,7 +22,7 @@ function updateRandom(updateState = (game.randomState.length == 0)) {
 			return h >>> 0;
 		};
 		game.randomState = [seed(), seed(), seed(), seed()];
-	};
+	}
 	random = () => {
 		const t = game.randomState[1] << 9;
 		let r = game.randomState[1] * 5;
@@ -52,7 +35,7 @@ function updateRandom(updateState = (game.randomState.length == 0)) {
 		game.randomState[3] = game.randomState[3] << 11 | game.randomState[3] >>> 21;
 		return (r >>> 0) / 4294967296;
 	};
-};
+}
 
 /**
  * Returns a seeded random number in [0, 1)
@@ -70,7 +53,7 @@ function randomInt(min, max) {
 	max = Math.floor(max);
 	if (min > max) [min, max] = [max, min];
 	return Math.floor(random() * (max - min + 1)) + min;
-};
+}
 
 /**
  * Has a chance of returning true.
@@ -78,7 +61,7 @@ function randomInt(min, max) {
  */
 function chance(chance = 1/2) {
 	return random() < chance;
-};
+}
 
 const SCALE = 2;
 
@@ -97,14 +80,14 @@ window.onload = async function() {
 	await Promise.all([loadImages(), loadSave()]);
 	fixCanvas(true);
 	loaded = true;
-};
+}
 
 /**
  * Clears the canvas.
  */
 function clearCanvas() {
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
-};
+}
 
 /**
  * Fixes the canvas.
@@ -112,20 +95,30 @@ function clearCanvas() {
  */
 function fixCanvas(resize = false) {
 	if (global.options[OPTION.PERFECT_SCREEN]) {
-		if (resize) canvas.style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
+		if (resize) {
+			canvas.style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
+		}
 		const width = +(canvas.style.width.match(/\d+/) || [800])[0];
 		if (window.innerHeight <= width / 2) {
-			if (window.innerWidth <= width) canvas.className = "onlyScroll";
-			else canvas.className = "fixed";
+			if (window.innerWidth <= width) {
+				canvas.className = "onlyScroll";
+			} else {
+				canvas.className = "fixed";
+			}
 		} else {
 			canvas.className = "";
-		};
+		}
 	} else {
-		if (resize) canvas.style = "";
-		if (window.innerHeight <= window.innerWidth / 2) canvas.className = "fixed";
-		else canvas.className = "";
-	};
-};
+		if (resize) {
+			canvas.style = "";
+		}
+		if (window.innerHeight <= window.innerWidth / 2) {
+			canvas.className = "fixed";
+		} else {
+			canvas.className = "";
+		}
+	}
+}
 
 window.onresize = fixCanvas;
 
@@ -154,12 +147,12 @@ function tryUseClipboard(write = false, onSuccess = null, onFail = null) {
 		} else {
 			console.warn("Error: navigator.clipboard is not available in this context.");
 			if (onFail instanceof Function) onFail();
-		};
+		}
 	} catch (error) {
 		console.warn(error);
 		if (onFail instanceof Function) onFail();
-	};
-};
+	}
+}
 
 /**
  * Performs a keyboard shortcut that changes the selection.
@@ -167,15 +160,21 @@ function tryUseClipboard(write = false, onSuccess = null, onFail = null) {
  */
 function shortcutTo(location) {
 	if (game.select[0] === location && game.select[1]) {
-		if (game.select[2]) game.select = game.select[2];
-		else game.select = [location, 0];
+		if (game.select[2]) {
+			game.select = game.select[2];
+		} else {
+			game.select = [location, 0];
+		}
 	} else {
-		if (game.select[2]) game.select = [location, 1, game.select[2]];
-		else game.select = [location, 1, game.select];
-	};
+		if (game.select[2]) {
+			game.select = [location, 1, game.select[2]];
+		} else {
+			game.select = [location, 1, game.select];
+		}
+	}
 	action = -1;
 	actionTimer = 2;
-};
+}
 
 document.onkeydown = event => {
 	if (!loaded) return;
@@ -191,7 +190,7 @@ document.onkeydown = event => {
 					newSeed = (newSeed + pasteText).slice(0, 6);
 				} else {
 					console.warn("Error: Clipboard contains text that is not a seed.");
-				};
+				}
 			});
 		} else if (key === "Backspace" && !event.repeat && actionTimer === -1) {
 			newSeed = newSeed.slice(0, -1);
@@ -199,7 +198,7 @@ document.onkeydown = event => {
 			newSeed = "";
 		} else if ((key === " " || key === "Enter") && !event.repeat && actionTimer === -1) {
 			performAction();
-		};
+		}
 		action = -1;
 	} else if (key === "E" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1 && game.turn === TURN.PLAYER) {
 		if (game.select[0] === S.CONF_END_TURN) game.select = [S.HAND, game.prevCard];
@@ -218,7 +217,7 @@ document.onkeydown = event => {
 		} else {
 			if (game.select[2]) game.select = [S.CARDS, 1, game.select[2]];
 			else game.select = [S.CARDS, 1, game.select];
-		};
+		}
 		action = -1;
 		actionTimer = 2;
 	} else if (key === "C" && !event.repeat && menuSelect[0] === MENU.PREV_GAMES && actionTimer === -1) {
@@ -245,7 +244,7 @@ document.onkeydown = event => {
 		action = DIR.RIGHT;
 	} else {
 		action = -1;
-	};
+	}
 	if (key === "Escape") { // exits fullscreen
 		if (document.body.exitFullscreen) {
 			document.body.exitFullscreen();
@@ -255,7 +254,7 @@ document.onkeydown = event => {
 			document.body.mozExitFullScreen();
 		} else if (document.body.msExitFullscreen) {
 			document.body.msExitFullscreen();
-		};
+		}
 	} else if (key === "Tab") { // enters fullscreen
 		if (document.body.requestFullscreen) {
 			document.body.requestFullscreen();
@@ -265,18 +264,18 @@ document.onkeydown = event => {
 			document.body.mozRequestFullScreen();
 		} else if (document.body.msRequestFullscreen) {
 			document.body.msRequestFullscreen();
-		};
-	};
+		}
+	}
 	if (!event.repeat && lastAction === action && global.options[OPTION.FAST_MOVEMENT]) gameTick();
 	if (action !== -1) lastAction = action;
-};
+}
 
 document.onkeyup = event => {
 	const key = (event.key.length === 1 ? event.key.toUpperCase() : event.key);
 	if (["W", "ArrowUp", "A", "ArrowLeft", "S", "ArrowDown", "D", "ArrowRight"].includes(key)) {
 		action = -1;
-	};
-};
+	}
+}
 
 /**
  * Throws an error with extra information added.
@@ -285,7 +284,7 @@ document.onkeyup = event => {
  */
 function throwError(description, errorType = Error) {
 	throw errorType(`${description}\nError info:\n- Global version: ${get.versionDisplay(global.version)}\n- Run version: ${get.versionDisplay(game.version)}\n- Seed: ${game.seed}\nPlease report this bug here: https://github.com/Yrahcaz7/Dungeon-of-Souls/issues/new?template=bug_report.md`);
-};
+}
 
 /**
  * Returns a sorted index array.
@@ -297,12 +296,14 @@ function getSortedIndexes(arr, func) {
 	while (result.length < arr.length) {
 		let pending = -1;
 		for (let index = 0; index < arr.length; index++) {
-			if (result.includes(index)) continue;
+			if (result.includes(index)) {
+				continue;
+			}
 			if (pending === -1 || func(arr[index], arr[pending]) < 0) {
 				pending = index;
-			};
-		};
+			}
+		}
 		result.push(pending);
-	};
+	}
 	return result;
-};
+}

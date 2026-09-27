@@ -1,20 +1,3 @@
-/*  Dungeon of Souls
- *  Copyright (C) 2026 Yrahcaz7
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 class Desc {
 	/**
 	 * Returns a new description.
@@ -22,7 +5,7 @@ class Desc {
 	 */
 	constructor(...nodes) {
 		this.nodes = nodes;
-	};
+	}
 	/**
 	 * Draws the description on the canvas.
 	 * @param {number} x - the x-coordinate to draw the description at.
@@ -60,39 +43,39 @@ class Desc {
 								str += "<#fff highlight>" + amount + "</#fff>";
 							} else {
 								str += amount;
-							};
+							}
 						} else {
 							str += nodes[index][0];
-						};
+						}
 						str += (nodes[index][2] instanceof Array ? getStringFromNodes(nodes[index][2], id, outside)[0] : nodes[index][2] ?? " ");
 						const color = EFF_COLOR[nodes[index][1]];
 						if (color) str += "<" + color + ">" + DESC_NAME[nodes[index][1]] + "</" + color + ">";
 						else str += DESC_NAME[nodes[index][1]];
 					} else {
-						const name = (typeof nodes[index][1] === "string" ?
-							EFF_NAME[nodes[index][0]] + nodes[index][1]
-							: (nodes[index][1] === true ?
-								EFF_NAME[nodes[index][0]][0].toUpperCase() + EFF_NAME[nodes[index][0]].slice(1)
+						const name = (typeof nodes[index][1] === "string"
+							? EFF_NAME[nodes[index][0]] + nodes[index][1]
+							: (nodes[index][1] === true
+								? EFF_NAME[nodes[index][0]][0].toUpperCase() + EFF_NAME[nodes[index][0]].slice(1)
 								: EFF_NAME[nodes[index][0]]
 						));
 						const color = EFF_COLOR[nodes[index][0]];
 						if (color) str += "<" + color + ">" + name + "</" + color + ">";
 						else str += name;
-					};
+					}
 				} else if (EFF_NAME[nodes[index]]) {
 					const color = EFF_COLOR[nodes[index]];
 					if (color) str += "<" + color + ">" + EFF_NAME[nodes[index]] + "</" + color + ">";
 					else str += EFF_NAME[nodes[index]];
 				} else {
 					str += nodes[index];
-				};
-			};
+				}
+			}
 			return [str, valueIsLess];
-		};
+		}
 		return (x = 0, y = 0, id = 0, outside = false, wrapWidth = 18) => {
 			let [str, valueIsLess] = getStringFromNodes(this.nodes, id, outside);
 			if (wrapWidth > 0) str = wrapText(str, wrapWidth);
 			return draw.lore(x, y, str, {"highlight-color": (valueIsLess ? "#f00" : "#000"), "text-small": true});
-		};
+		}
 	})();
-};
+}

@@ -1,20 +1,3 @@
-/*  Dungeon of Souls
- *  Copyright (C) 2026 Yrahcaz7
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 /**
  * Makes the player take damage.
  * @param {number} amount - the amount of damage to take.
@@ -23,7 +6,9 @@
 function logEventDamage(amount, attack = false) {
 	if (isNaN(amount)) throwError(`"${amount}" is not of type "number".`, TypeError);
 	// multiply damage
-	if (attack) amount = Math.ceil(amount * get.takeDamageMult(-1));
+	if (attack) {
+		amount = Math.ceil(amount * get.takeDamageMult(-1));
+	}
 	// take damage
 	if (amount < game.shield) {
 		game.shield -= amount;
@@ -33,8 +18,8 @@ function logEventDamage(amount, attack = false) {
 		game.shield = 0;
 		game.health -= amount;
 		game.eventLog[EVENT_LOG.DAMAGE] = amount;
-	};
-};
+	}
+}
 
 /**
  * Returns a logged event value.
@@ -42,7 +27,7 @@ function logEventDamage(amount, attack = false) {
  */
 function getLoggedEvent(type) {
 	return game.eventLog[type];
-};
+}
 
 /**
  * Starts a battle from an event.
@@ -56,13 +41,13 @@ function startEventBattle(type, num = 1) {
 		let enemy = SMALL_ENEMIES[get.area()];
 		for (let index = 0; index < num; index++) {
 			game.enemies.push(new Enemy(enemy, 1 - (index + num) / (5 - game.difficulty * 2)));
-		};
+		}
 	} else if (type === BATTLE.AMBUSH) {
 		let enemy = BIG_ENEMIES[get.area()];
 		game.enemies = [new Enemy(enemy, num)];
-	};
+	}
 	enterBattle();
-};
+}
 
 /**
  * Finishes an event with no battle or rewards.
@@ -72,7 +57,7 @@ function finishEvent() {
 	game.state = STATE.EVENT_FIN;
 	activateArtifacts(FUNC.FLOOR_CLEAR);
 	mapPopup();
-};
+}
 
 /**
  * Performs a screen shake animation.
@@ -88,7 +73,9 @@ const doScreenShake = (() => {
 	let screenShakeAnimation = null;
 
 	return (strength = 0, duration = 0, angle = Math.random() * 2 * Math.PI) => {
-		if (strength <= 0 || duration <= 0 || !global.options[OPTION.SCREEN_SHAKE]) return;
+		if (strength <= 0 || duration <= 0 || !global.options[OPTION.SCREEN_SHAKE]) {
+			return;
+		}
 		strength = Math.min(strength, 1);
 		let animation = [];
 		if (screenShakeAnimation instanceof Animation && screenShakeAnimation.playState !== "finished") {
@@ -97,7 +84,7 @@ const doScreenShake = (() => {
 			screenShakeAnimation.cancel();
 		} else {
 			animation.push({transform: "translate(0px, 0px)"});
-		};
+		}
 		let decayProgress = 0;
 		while (true) {
 			const shakeX = Math.cos(angle) * strength * SCREEN_SHAKE_MAX_DIST;
@@ -107,9 +94,9 @@ const doScreenShake = (() => {
 			angle = (Math.random() * 2 - 1) * SCREEN_SHAKE_ANGLE_VARIANCE - angle;
 			decayProgress += SCREEN_SHAKE_TIME / duration;
 			strength = Math.max(strength * (1 - decayProgress ** 2), 0);
-		};
+		}
 		screenShakeAnimation = document.body.animate(animation, duration * 1000);
-	};
+	}
 })();
 
 const EVENTS = {
@@ -232,4 +219,4 @@ function getCurrentEvent() {
 	if (game.state !== STATE.EVENT) return [];
 	if (game.room[3] < EVENTS.any.length) return EVENTS.any[game.room[3]][game.turn - TURN.EVENT_START] || [];
 	return EVENTS[get.area()][game.room[3] - 100][game.turn - TURN.EVENT_START] || [];
-};
+}

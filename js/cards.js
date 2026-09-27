@@ -1,20 +1,3 @@
-/*  Dungeon of Souls
- *  Copyright (C) 2026 Yrahcaz7
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 const CARDS = {
 	0: {
 		name: "Error",
@@ -39,7 +22,7 @@ const CARDS = {
 			const burn = (level >= 1 ? 4 : 2);
 			for (let index = 0; index < game.enemies.length; index++) {
 				game.enemies[index].gainEff(EFF.BURN, burn);
-			};
+			}
 		},
 	},
 	1002: {
@@ -53,7 +36,7 @@ const CARDS = {
 			let damage = (level >= 1 ? 8 : 4);
 			for (let index = 0; index < game.enemies.length; index++) {
 				dealDamage(damage, 0.5, index);
-			};
+			}
 		},
 	},
 	1003: {
@@ -66,7 +49,7 @@ const CARDS = {
 		attack(level = 0) {
 			for (let index = 0; index < game.enemies.length; index++) {
 				dealDamage(1, 0.5, index, true, (game.eff[EFF.AURA_BLADE] || 0) + 1);
-			};
+			}
 			game.eff[EFF.AURA_BLADE] = 0;
 		},
 		can(level = 0) {return game.eff[EFF.AURA_BLADE] > 0},
@@ -118,7 +101,7 @@ const CARDS = {
 			} else {
 				playerGainShield(2);
 				gainEff(EFF.REINFORCE);
-			};
+			}
 		},
 	},
 	2002: {
@@ -133,7 +116,7 @@ const CARDS = {
 			} else {
 				playerGainShield(2);
 				gainEff(EFF.REINFORCE, 2);
-			};
+			}
 			gainEff(EFF.LIVING_METAL, 2);
 		},
 	},
@@ -149,7 +132,7 @@ const CARDS = {
 			} else {
 				playerGainShield(9);
 				gainEff(EFF.WEAKNESS, 2);
-			};
+			}
 		},
 	},
 	2004: {
@@ -171,7 +154,7 @@ const CARDS = {
 			} else {
 				game.gold -= 45;
 				playerGainShield(10);
-			};
+			}
 			gainEff(EFF.REINFORCE);
 		},
 		can(level = 0) {return game.gold >= (level >= 1 ? 30 : 45)},
@@ -198,8 +181,8 @@ const CARDS = {
 				if (!game.enemies[index].isBoss()) {
 					game.enemies[index].intent = INTENT.DEFEND;
 					if (game.enemies[index].intent !== INTENT.DEFEND) game.enemies[index].intentHistory.push(INTENT.DEFEND);
-				};
-			};
+				}
+			}
 			if (level >= 1) drawCards(1);
 		},
 	},
@@ -225,7 +208,7 @@ const CARDS = {
 			const burn = (level >= 1 ? 2 : 1);
 			for (let index = 0; index < game.enemies.length; index++) {
 				game.enemies[index].gainEff(EFF.BURN, burn);
-			};
+			}
 		},
 	},
 	3003: {
@@ -282,7 +265,7 @@ const CARDS = {
 			for (let index = 0; index < game.hand.length; index++) {
 				if (game.hand[index].eff[CARD_EFF.RETENTION]) game.hand[index].eff[CARD_EFF.RETENTION]++;
 				else game.hand[index].eff[CARD_EFF.RETENTION] = 1;
-			};
+			}
 		},
 	},
 	5001: {
@@ -311,12 +294,12 @@ const CARD_TYPE = ["error", "attack", "defense", "skill", "magic", "curse"];
 		if (arr instanceof Array) {
 			for (let index = 0; index < arr.length; index++) {
 				if (encloses(arr[index], num)) return true;
-			};
+			}
 		} else if (arr === num) {
 			return true;
-		};
+		}
 		return false;
-	};
+	}
 	/**
 	 * Loads a card and returns its description.
 	 * @param {object} ref - a reference to the card data.
@@ -332,23 +315,23 @@ const CARD_TYPE = ["error", "attack", "defense", "skill", "magic", "curse"];
 				if (!EFF_NAME[obj[effect]]) continue;
 				if (!ref.keywords.includes(obj[effect]) && desc.nodes.some(node => node === obj[effect] || encloses(node, obj[effect]))) {
 					ref.keywords.push(obj[effect]);
-				};
-			};
-		};
+				}
+			}
+		}
 		// extra info
 		if (!ref.keywords.includes(CARD_EFF.DESC) && desc.nodes.some(node => /apply/i.test(node)) && desc.nodes.some(node => /card/i.test(node))) ref.keywords.push(CARD_EFF.DESC);
 		// return desc
 		return desc;
-	};
+	}
 	for (const key in CARDS) {
 		if (CARDS[key].desc instanceof Array) {
 			for (let index = 0; index < CARDS[key].desc.length; index++) {
 				CARDS[key].desc[index] = loadCard(CARDS[key], CARDS[key].desc[index]);
-			};
+			}
 		} else {
 			CARDS[key].desc = loadCard(CARDS[key], CARDS[key].desc);
-		};
-	};
+		}
+	}
 })();
 
 class Card {
@@ -365,7 +348,7 @@ class Card {
 		this.id = id;
 		this.level = level;
 		if (temp) this.eff[CARD_EFF.TEMP] = 1;
-	};
+	}
 	/**
 	 * Returns an object as a card.
 	 * @param {object} obj - the object to classify.
@@ -375,10 +358,10 @@ class Card {
 		for (const key in instance) {
 			if (Object.hasOwn(instance, key) && Object.hasOwn(obj, key)) {
 				instance[key] = obj[key];
-			};
-		};
+			}
+		}
 		return instance;
-	};
+	}
 	/**
 	 * Sorts an array of cards. This method mutates the array and returns a reference to the same array.
 	 * @param {Card[]} arr - the array of cards to sort.
@@ -400,7 +383,7 @@ class Card {
 			// end sort
 			return 0;
 		});
-	};
+	}
 	/**
 	 * Returns an attribute of the card.
 	 * @param {string} attr - the attribute to return.
@@ -412,12 +395,12 @@ class Card {
 			if (attr === "select") {
 				if (CARDS[this.id][attr][this.level] instanceof Object) return CARDS[this.id][attr][this.level];
 				return CARDS[this.id][attr];
-			};
+			}
 			return CARDS[this.id][attr][this.level];
-		};
+		}
 		return CARDS[this.id][attr];
-	};
-};
+	}
+}
 
 const CARD_IDS = [[], [], []];
 
@@ -435,8 +418,8 @@ function randomCardSet(length = 0, rareChance = 3/10) {
 		while (!card || result.includes(card)) {
 			let rarity = (chance(rareChance) ? 2 : 1);
 			card = CARD_IDS[rarity][randomInt(0, CARD_IDS[rarity].length - 1)];
-		};
+		}
 		result.push(card);
-	};
+	}
 	return result;
-};
+}

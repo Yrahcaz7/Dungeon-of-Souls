@@ -1,27 +1,10 @@
-/*  Dungeon of Souls
- *  Copyright (C) 2026 Yrahcaz7
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 /**
  * Fixes the formatting of a manual page's text and returns it.
  * @param {string} str - the text to fix the formatting of.
  */
 function fixManualPageFormat(str) {
 	return str.replace(/^\n/, "").replace(/\n$/, "").replace(/\t/g, "");
-};
+}
 
 const OVERVIEW = fixManualPageFormat(`
 	<b>Storyline<s>
@@ -212,24 +195,24 @@ function updateData() {
 		else if (game.enemies.length == 5) enemyPos = [[400 - 70, 80], [400 - 140, 80], [400 - 100, 14], [400 - 170, 14], [400 - 210, 80]];
 		else if (game.enemies.length == 6) enemyPos = [[400 - 70, 80], [400 - 140, 80], [400 - 100, 14], [400 - 170, 14], [400 - 210, 80], [400 - 240, 14]];
 		else enemyPos = [];
-	};
+	}
 	// info scroll
 	if (infoPos < 0) infoPos = 0;
 	if (infoPos > infoLimit) infoPos = infoLimit;
 	// effect removal
 	for (const eff in game.eff) {
 		if (!game.eff[eff]) delete game.eff[eff];
-	};
+	}
 	for (let index = 0; index < game.enemies.length; index++) {
 		for (const eff in game.enemies[index].eff) {
 			if (!game.enemies[index].eff[eff]) delete game.enemies[index].eff[eff];
-		};
-	};
+		}
+	}
 	for (let index = 0; index < game.hand.length; index++) {
 		for (const eff in game.hand[index].eff) {
 			if (!game.hand[index].eff[eff]) delete game.hand[index].eff[eff];
-		};
-	};
+		}
+	}
 	// fixes
 	game.health = Math.min(Math.max(game.health, 0), get.maxHealth());
 	game.shield = Math.min(Math.max(game.shield, 0), get.maxShield());
@@ -237,7 +220,7 @@ function updateData() {
 		const enemy = game.enemies[index];
 		enemy.health = Math.min(enemy.health, enemy.maxHealth);
 		enemy.shield = Math.min(enemy.shield, enemy.maxShield);
-	};
+	}
 	// kill enemies
 	let healAll = false;
 	let damageAll = 0;
@@ -252,7 +235,7 @@ function updateData() {
 				enemy.intentHistory.splice(enemy.intentHistory.length - 1);
 				healAll = true;
 				continue;
-			};
+			}
 			if (enemy.eff[ENEMY_EFF.PERSISTENCE]) {
 				const newEnemy = new Enemy(SLIME.PUDDLE);
 				newEnemy.maxHealth = enemy.eff[ENEMY_EFF.PERSISTENCE];
@@ -260,22 +243,22 @@ function updateData() {
 				newEnemy.maxShield = newEnemy.maxHealth;
 				newEnemy.eff[ENEMY_EFF.REVIVAL] = 2;
 				game.enemies.push(newEnemy);
-			};
+			}
 			if (enemy.eff[ENEMY_EFF.OVERHEAT]) {
 				damageAll += Math.floor(enemy.eff[ENEMY_EFF.OVERHEAT] / 2);
-			};
+			}
 			game.kills[enemy.type] = (game.kills[enemy.type] || 0) + 1;
-		};
+		}
 		game.enemies.splice(index, 1);
 		if (game.enemyNum >= index) game.enemyNum--;
 		if (game.enemyAtt[1] > index) game.enemyAtt[1]--;
 		else if (game.enemyAtt[1] === index) game.enemyAtt[1] = -1;
-	};
+	}
 	// heal everything
 	if (healAll) {
 		game.enemies.forEach(enemy => enemy.health = enemy.maxHealth);
 		game.health = get.maxHealth();
-	};
+	}
 	// enemy plans
 	for (let index = 0; index < game.enemies.length; index++) {
 		if (index == game.enemyNum) continue;
@@ -291,7 +274,7 @@ function updateData() {
 				enemy.intentHistory.push(this.intent);
 				enemy.eff[[ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 2)]] = 1;
 				delete enemy.eff[ENEMY_EFF.PLAN_ATTACK];
-			};
+			}
 		} else if (enemy.eff[ENEMY_EFF.PLAN_SUMMON]) {
 			if ((enemy.intent === INTENT.DEFEND && enemy.shield > 0)
 				|| (enemy.intent === INTENT.ATTACK && game.shield >= Math.ceil(enemy.getTotalAttackPower() * get.takeDamageMult(index)))
@@ -300,7 +283,7 @@ function updateData() {
 				enemy.intentHistory.push(INTENT.SUMMON);
 				enemy.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 2)]] = 1;
 				delete enemy.eff[ENEMY_EFF.PLAN_SUMMON];
-			};
+			}
 		} else if (enemy.eff[ENEMY_EFF.PLAN_DEFEND]) {
 			if (enemy.intent === INTENT.DEFEND && enemy.shield > 0) {
 				if (enemy.eff[EFF.DEFUP]) enemy.eff[EFF.DEFUP] += 2;
@@ -312,22 +295,22 @@ function updateData() {
 				enemy.intentHistory.push(INTENT.DEFEND);
 				enemy.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON][Math.floor(random() * 2)]] = 1;
 				delete enemy.eff[ENEMY_EFF.PLAN_DEFEND];
-			};
-		};
-	};
+			}
+		}
+	}
 	// game over
 	if (game.health === 0 && playerAnim[1] !== I.player.death) {
 		startAnim.player(I.player.death);
 		game.turn = -1;
 		game.state = STATE.GAME_END;
 		game.select = [S.GAME_OVER, 0];
-	};
+	}
 	// game won
 	if (game.floor == 20 && game.state === STATE.EVENT_FIN && game.select[0] === S.MAP) {
 		game.turn = -1;
 		game.state = STATE.GAME_END;
 		game.select = [S.GAME_WON, 0];
-	};
+	}
 	// state changes
 	endBattle();
 	loadRoom();
@@ -339,13 +322,13 @@ function updateData() {
 	if (game.select[0] === S.HAND) {
 		if (game.hand.length) game.prevCard = game.select[1];
 		else game.select = [S.END_TURN, 0];
-	};
+	}
 	// effects that need another update
 	if (damageAll > 0) {
 		for (let index = 0; index < game.enemies.length; index++) {
 			dealDamage(damageAll, 0, index, false);
-		};
+		}
 		takeDamage(damageAll, false);
 		updateData();
-	};
-};
+	}
+}

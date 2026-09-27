@@ -1,47 +1,30 @@
-/*  Dungeon of Souls
- *  Copyright (C) 2026 Yrahcaz7
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 /**
  * Returns a boolean indicating whether the middleground layers are hidden.
  */
 function hidden() {
 	return !!((game.select[0] === S.LOOKER || game.select[0] === S.HELP || game.select[0] === S.OPTIONS || game.select[0] === S.DECK || game.select[0] === S.DISCARD || game.select[0] === S.VOID) && game.select[1]) || game.select[0] === S.MAP || game.select[0] === S.CARDS || game.select[0] === S.CONF_HAND_ALIGN || game.select[0] === S.CONF_SURRENDER;
-};
+}
 
 /**
  * Returns a boolean indicating whether a menu is being viewed.
  */
 function inMenu() {
 	return menuSelect[0] !== -1 || game.select[0] === S.WELCOME;
-};
+}
 
 /**
  * Returns a boolean indicating whether a deck outside battle is being viewed.
  */
 function inOutsideDeck() {
 	return menuSelect[0] === MENU.PREV_GAME_INFO || game.select[0] === S.CARDS || game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY || game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE;
-};
+}
 
 /**
  * Returns a boolean indicating whether a deck is being viewed.
  */
 function inDeck() {
 	return !!((game.select[0] === S.DECK || game.select[0] === S.DISCARD || game.select[0] === S.VOID) && game.select[1]) || inOutsideDeck();
-};
+}
 
 /**
  * Returns the current deck being viewed. If there is none, returns an empty array.
@@ -57,16 +40,16 @@ function currentDeck() {
 		if (game.select[0] === S.CARDS) return game.cards;
 		if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY) return game.cards;
 		if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) return refinableDeck;
-	};
+	}
 	return [];
-};
+}
 
 /**
  * Returns a boolean indicating whether the current floor ends in a cutscene.
  */
 function onFloorWithCutscene() {
 	return game.floor == 10;
-};
+}
 
 /**
  * Returns a boolean indicating whether the specified player image is defending.
@@ -74,7 +57,7 @@ function onFloorWithCutscene() {
  */
 function isDefending(image) {
 	return image === I.player.shield || image === I.player.shield_reinforced || image === I.player.crouch_shield || image === I.player.crouch_shield_reinforced;
-};
+}
 
 /**
  * Returns a boolean indicating whether the specified player image is crouching.
@@ -82,7 +65,7 @@ function isDefending(image) {
  */
 function isCrouching(image) {
 	return image === I.player.crouch_shield || image === I.player.crouch_shield_reinforced;
-};
+}
 
 /**
  * Returns a boolean indicating whether the player can play any card from their hand.
@@ -92,7 +75,7 @@ function areAnyCardsPlayable() {
 		const cardInfo = CARDS[card.id];
 		return getCardCost(card) <= game.energy && !cardInfo.keywords.includes(CARD_EFF.UNPLAYABLE) && (!cardInfo.can || cardInfo.can(card.level));
 	});
-};
+}
 
 const get = {
 	/**
@@ -157,9 +140,13 @@ const get = {
 			extra += 5 + ((game.eff[EFF.AURA_BLADE] || 0) + 1);
 		} else if (game.eff[EFF.AURA_BLADE] && !attacking) {
 			extra += 5 + game.eff[EFF.AURA_BLADE];
-		};
-		if (game.enemies[index]?.eff[ENEMY_EFF.DUEL_TARGET]) extra += Math.floor(1 + game.enemies[index].eff[ENEMY_EFF.DUEL_TARGET] / 5);
-		if (hasArtifact(101)) extra += 2;
+		}
+		if (game.enemies[index]?.eff[ENEMY_EFF.DUEL_TARGET]) {
+			extra += Math.floor(1 + game.enemies[index].eff[ENEMY_EFF.DUEL_TARGET] / 5);
+		}
+		if (hasArtifact(101)) {
+			extra += 2;
+		}
 		return extra;
 	},
 	/**
@@ -237,10 +224,12 @@ const get = {
 	handPos(size = game.hand.length) {
 		let positions = [];
 		const margin = [-4, -4, -4, -4, -4, 8, 16, 24, 28, 32, 36, 38, 40, 42, 44, 46, 46, 48, 48, 50, 50, 52, 52, 52, 52, 54, 54, 54, 54];
-		if (size > margin.length) size = margin.length;
+		if (size > margin.length) {
+			size = margin.length;
+		}
 		for (let index = 0; index < size; index++) {
 			positions.push(Math.round(198 + (index - (size / 2)) * 64 - (index - ((size - 1) / 2)) * margin[size - 1]));
-		};
+		}
 		return positions;
 	},
 };
@@ -253,9 +242,9 @@ function shuffle(deck) {
 	for (let index = deck.length - 1; index > 0; index--) {
 		const rand = Math.floor(random() * (index + 1));
 		[deck[index], deck[rand]] = [deck[rand], deck[index]];
-	};
+	}
 	return deck;
-};
+}
 
 /**
  * Updates the positions of the cards in hand.
@@ -272,14 +261,14 @@ function updateHandPos(prevHand = game.hand, discardIndex = -1, discardY = 146) 
 		const extraCards = game.hand.splice(handPos.length);
 		for (const card of extraCards) {
 			game.discard.push(new Card(card.id, card.level));
-		};
-	};
+		}
+	}
 	// start card draw/discard animation
 	if (loaded && handPos.length != prevHandPos.length && !hidden() && game.select[0] !== S.PLAYER && game.select[0] !== S.ENEMY && (handAnim.length == 0 || handAnim.at(-1)[0] < 10 || Math.sign(handPos.length - prevHandPos.length) != Math.sign(prevHandPos.length - handAnim.at(-1)[2].length))) {
 		handAnim.push([10, prevHand, prevHandPos, []]);
 		if (discardIndex >= 0) handAnim.at(-1)[3][discardIndex] = discardY;
-	};
-};
+	}
+}
 
 /**
  * Updates the animating cards, card positions, and index offsets for the animated hand.
@@ -293,8 +282,8 @@ function updateAnimatedHandData() {
 				if (handAnim[index][1].length > (handAnim[index + 1] ? handAnim[index + 1][1] : game.hand).length) {
 					handAnimCards = handAnim[index][1];
 					break;
-				};
-			};
+				}
+			}
 			const prevHand = handAnim[0][1];
 			const nextHand = (handAnim[1] ? handAnim[1][1] : game.hand);
 			const prevHandPos = handAnim[0][2];
@@ -317,24 +306,24 @@ function updateAnimatedHandData() {
 							if (handAnim[anim][3][index]) {
 								handAnimPositions[index][1] = handAnim[anim][3][index];
 								break;
-							};
-						};
-					};
+							}
+						}
+					}
 				} else {
 					handAnimPositions[index][0] = nextHandPos[effIndex];
 					handAnimPositions[index][1] = Math.round((146 + 100) * (1 - handAnim[0][0] / 10) - 100);
-				};
+				}
 				handAnimOffsets[index + 1] = handAnimOffsets[index];
-			};
+			}
 			if (handAnim[0][0] == 0) handAnim.shift();
 			return;
 		} else {
 			handAnim.shift();
-		};
-	};
+		}
+	}
 	handAnimPositions = handPos.map(x => [x]);
 	handAnimOffsets = [];
-};
+}
 
 /**
  * Draws cards.
@@ -344,16 +333,16 @@ function drawCards(num) {
 	const prevHand = game.hand.slice();
 	for (; num > 0 && game.deck.length > 0; num--) {
 		game.hand.push(game.deck.pop());
-	};
+	}
 	if (num > 0) {
 		game.deck = shuffle(game.discard);
 		game.discard = [];
 		for (; num > 0 && game.deck.length > 0; num--) {
 			game.hand.push(game.deck.pop());
-		};
-	};
+		}
+	}
 	updateHandPos(prevHand);
-};
+}
 
 /**
  * Adds a new temporary card to hand.
@@ -364,7 +353,7 @@ function addCard(id = 0, level = 0) {
 	const prevHand = game.hand.slice();
 	game.hand.push(new Card(id, level, true));
 	updateHandPos(prevHand);
-};
+}
 
 /**
  * Discards a card.
@@ -378,7 +367,7 @@ function discardCard(index, used = false) {
 	const prevHand = game.hand.slice();
 	game.hand.splice(index, 1);
 	updateHandPos(prevHand, index, 146 - Math.floor(cardAnim.splice(index, 1)));
-};
+}
 
 /**
  * Discards the player's hand.
@@ -390,18 +379,20 @@ function discardHand(force = false) {
 			game.hand[index].eff[CARD_EFF.RETENTION]--;
 		} else {
 			discardCard(index);
-		};
-	};
-};
+		}
+	}
+}
 
 /**
  * Gets the cost of a card.
  * @param {Card} cardObj - the card object.
  */
 function getCardCost(cardObj) {
-	if (cardObj.eff[CARD_EFF.COST_REDUCTION] > 0) return Math.max(cardObj.getAttr("cost") - cardObj.eff[CARD_EFF.COST_REDUCTION], 0);
+	if (cardObj.eff[CARD_EFF.COST_REDUCTION] > 0) {
+		return Math.max(cardObj.getAttr("cost") - cardObj.eff[CARD_EFF.COST_REDUCTION], 0);
+	}
 	return +cardObj.getAttr("cost");
-};
+}
 
 /**
  * Starts a transition animation of an enemy.
@@ -409,9 +400,13 @@ function getCardCost(cardObj) {
  * @param {number} prevShield - defaults to `game.enemies[index].shield`.
  */
 function startEnemyTransition(index, prevShield = game.enemies[index].shield) {
-	if (game.enemies[index].type === SINGULARITY) return;
-	if (prevShield > 0 && game.enemies[index].shield === 0) game.enemies[index].transition = [0, TRANSITION.FROM_SHIELD];
-};
+	if (game.enemies[index].type === SINGULARITY) {
+		return;
+	}
+	if (prevShield > 0 && game.enemies[index].shield === 0) {
+		game.enemies[index].transition = [0, TRANSITION.FROM_SHIELD];
+	}
+}
 
 /**
  * Deals damage to an enemy.
@@ -438,7 +433,7 @@ function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, 
 		amount -= enemy.shield;
 		enemy.shield = 0;
 		enemy.health -= amount;
-	};
+	}
 	// additional effects
 	if (attack) {
 		// calculate number of times triggered
@@ -447,14 +442,14 @@ function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, 
 		// trigger effects
 		if (game.eff[EFF.BLAZE]) enemy.gainEff(EFF.BURN, triggerNum);
 		if (game.eff[EFF.PULSE]) enemy.gainEff(EFF.PULSE, triggerNum);
-	};
+	}
 	if (enemy.eff[EFF.LIVING_METAL]) {
 		enemy.shield += enemy.eff[EFF.LIVING_METAL];
 		enemy.eff[EFF.LIVING_METAL]--;
-	};
+	}
 	// transitions
 	startEnemyTransition(index, prevShield);
-};
+}
 
 /**
  * Makes the player take damage.
@@ -465,7 +460,9 @@ function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, 
 function takeDamage(amount, attack = true, index = game.enemyNum) {
 	if (isNaN(amount)) throwError(`"${amount}" is not of type "number".`, TypeError);
 	// multiply damage
-	if (attack) amount = Math.ceil(amount * get.takeDamageMult(index));
+	if (attack) {
+		amount = Math.ceil(amount * get.takeDamageMult(index));
+	}
 	// take damage
 	if (amount < game.shield) {
 		game.shield -= amount;
@@ -473,7 +470,7 @@ function takeDamage(amount, attack = true, index = game.enemyNum) {
 		amount -= game.shield;
 		game.shield = 0;
 		game.health -= amount;
-	};
+	}
 	// additional effects
 	if (attack && index >= 0) {
 		// calculate number of times triggered
@@ -485,13 +482,13 @@ function takeDamage(amount, attack = true, index = game.enemyNum) {
 		if (game.enemies[index].eff[ENEMY_EFF.STICKY]) {
 			game.deck = game.deck.concat(Array.from({length: 2 * triggerNum}, () => new Card(5001, 0, true)));
 			shuffle(game.deck);
-		};
-	};
+		}
+	}
 	if (game.eff[EFF.LIVING_METAL]) {
 		game.shield += game.eff[EFF.LIVING_METAL];
 		game.eff[EFF.LIVING_METAL]--;
-	};
-};
+	}
+}
 
 /**
  * Has the player gain shield.
@@ -506,7 +503,7 @@ function playerGainShield(amount = 0, exMod = 1) {
 	amount = Math.ceil(amount * get.playerShieldMult());
 	// gain shield
 	game.shield += amount;
-};
+}
 
 /**
  * Has an enemy gain shield.
@@ -519,7 +516,7 @@ function enemyGainShield(amount = 0, index = game.enemyNum) {
 	amount = Math.ceil(amount * get.enemyShieldMult(index));
 	// gain shield
 	game.enemies[index].shield += amount;
-};
+}
 
 /**
  * Has the player gain an effect.
@@ -528,4 +525,4 @@ function enemyGainShield(amount = 0, index = game.enemyNum) {
  */
 function gainEff(type, amt = 1) {
 	game.eff[type] = (game.eff[type] || 0) + amt;
-};
+}

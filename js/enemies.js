@@ -1,20 +1,3 @@
-/*  Dungeon of Souls
- *  Copyright (C) 2026 Yrahcaz7
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 class Enemy {
 	type = SLIME.SMALL;
 	maxHealth = 1;
@@ -49,13 +32,13 @@ class Enemy {
 		if (type !== SLIME.PUDDLE) {
 			this.attackPower = Math.max(Math.round(power * 2.5), 1);
 			this.defendPower = Math.max(Math.round(power * 3), 1);
-		};
+		}
 		this.intent = this.getIntent(true);
 		this.intentHistory = [this.intent];
 		// general effects
 		if (type === SENTRY.BIG || type === SENTRY.SMALL || type === SENTRY.PRIME || type === SENTRY.FLAMING || type === SINGULARITY) {
 			this.eff[EFF.BLAZE] = 99;
-		};
+		}
 		// specific effects
 		if (type === SLIME.STICKY) {
 			this.eff[ENEMY_EFF.STICKY] = 1;
@@ -64,7 +47,7 @@ class Enemy {
 			this.eff[EFF.FIREPROOF] = 1;
 		} else if (type === SINGULARITY) {
 			this.eff[[ENEMY_EFF.PLAN_ATTACK, ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 3)]] = 1;
-		};
+		}
 		// difficulty effects
 		if (game.difficulty >= 1) {
 			if (type === SLIME.BIG) this.eff[ENEMY_EFF.PERSISTENCE] = 2;
@@ -73,13 +56,13 @@ class Enemy {
 			else if (type === SLIME.STICKY) this.eff[ENEMY_EFF.PERSISTENCE] = 3;
 			else if (type === SENTRY.BIG || type === SENTRY.SMALL || type === SENTRY.PRIME) this.eff[ENEMY_EFF.OVERHEAT] = 1;
 			else if (type === SENTRY.FLAMING) this.eff[ENEMY_EFF.OVERHEAT] = 2;
-		};
+		}
 		if (hasArtifact(202)) {
 			if (type === FRAGMENT) this.eff[ENEMY_EFF.REWIND] = 1;
-		};
+		}
 		// artifact effects
 		if (hasArtifact(107)) this.eff[EFF.BURN] = 1;
-	};
+	}
 	/**
 	 * Returns an object as an enemy.
 	 * @param {object} obj - the object to classify.
@@ -89,16 +72,16 @@ class Enemy {
 		for (const key in instance) {
 			if (Object.hasOwn(instance, key) && Object.hasOwn(obj, key)) {
 				instance[key] = obj[key];
-			};
-		};
+			}
+		}
 		return instance;
-	};
+	}
 	/**
 	 * Returns a boolean indicating if the enemy is a boss.
 	 */
 	isBoss() {
 		return BOSS_ENEMIES.includes(this.type);
-	};
+	}
 	/**
 	 * Gets the enemy's extra attack power.
 	 */
@@ -106,7 +89,7 @@ class Enemy {
 		let power = 0;
 		if (this.eff[ENEMY_EFF.REWIND]) power += this.attackPower * this.eff[ENEMY_EFF.REWIND] * 0.2;
 		return Math.floor(power);
-	};
+	}
 	/**
 	 * Gets the enemy's extra defend power.
 	 */
@@ -114,19 +97,19 @@ class Enemy {
 		let power = 0;
 		if (this.eff[ENEMY_EFF.REWIND]) power += this.defendPower * this.eff[ENEMY_EFF.REWIND] * 0.2;
 		return Math.floor(power);
-	};
+	}
 	/**
 	 * Gets the enemy's total attack power.
 	 */
 	getTotalAttackPower() {
 		return this.attackPower + this.getExtraAttackPower();
-	};
+	}
 	/**
 	 * Gets the enemy's total defend power.
 	 */
 	getTotalDefendPower() {
 		return this.defendPower + this.getExtraDefendPower();
-	};
+	}
 	/**
 	 * Starts the enemy's action.
 	 */
@@ -135,13 +118,13 @@ class Enemy {
 			if (game.shield && !isDefending(playerAnim[1])) {
 				if (game.eff[EFF.WEAKNESS]) startAnim.player(I.player.crouch_shield);
 				else startAnim.player(I.player.shield);
-			};
+			}
 		} else if (this.intent === INTENT.DEFEND) {
 			return;
 		} else {
 			this.middleAction();
-		};
-	};
+		}
+	}
 	/**
 	 * Triggers the effects of the enemy's action.
 	 */
@@ -154,7 +137,7 @@ class Enemy {
 				startAnim.player(I.player.hit);
 			} else if (game.shield === 0 && playerAnim[1] !== I.player.idle) {
 				startAnim.player(I.player.idle);
-			};
+			}
 			this.done = true;
 		} else if (this.intent === INTENT.DEFEND) {
 			enemyGainShield(this.getTotalDefendPower());
@@ -170,26 +153,26 @@ class Enemy {
 					if (game.enemies[index].eff[ENEMY_EFF.SCRAP_HEAP]) {
 						damage += game.enemies[index].health;
 						game.enemies.splice(index, 1);
-					};
-				};
+					}
+				}
 				const prevHealth = game.health;
 				takeDamage(damage);
 				if (game.health < prevHealth) startAnim.player(I.player.hit);
 				// If the player survives the ritual, they get the easter egg "Warped Essence"
 				if (game.health > 0 && !hasArtifact(203)) {
 					getArtifact(203);
-				};
+				}
 			} else {
 				// SUMMON (summon a small enemy that gives no points when defeated)
 				const minion = new Enemy(SMALL_ENEMIES[get.area()], -0.5);
 				minion.gainEff(ENEMY_EFF.SCRAP_HEAP);
 				game.enemies.push(minion);
-			};
+			}
 			this.finishAction();
 		} else {
 			this.finishAction();
-		};
-	};
+		}
+	}
 	/**
 	 * Finishes the enemy's action.
 	 */
@@ -198,28 +181,36 @@ class Enemy {
 			this.intent = this.intentHistory[this.eff[ENEMY_EFF.COUNTDOWN] - 1];
 			this.intentHistory.push(this.intent);
 			this.eff[ENEMY_EFF.COUNTDOWN]--;
-			if (!this.eff[ENEMY_EFF.COUNTDOWN]) this.eff[ENEMY_EFF.REWIND]++;
+			if (!this.eff[ENEMY_EFF.COUNTDOWN]) {
+				this.eff[ENEMY_EFF.REWIND]++;
+			}
 		} else {
 			this.intent = this.getIntent();
 			this.intentHistory.push(this.intent);
 			if (this.overrideIntent(INTENT.ATTACK, INTENT.SUMMON)) {
 				if (this.type === FRAGMENT) {
-					if (this.health <= this.maxHealth / 4 || this.eff[EFF.RESILIENCE] > 1) this.intent = INTENT.DEFEND;
-					else this.intent = chance(2/3) ? INTENT.BUFF : INTENT.DEFEND;
+					if (this.health <= this.maxHealth / 4 || this.eff[EFF.RESILIENCE] > 1) {
+						this.intent = INTENT.DEFEND;
+					} else {
+						this.intent = chance(2/3) ? INTENT.BUFF : INTENT.DEFEND;
+					}
 				} else {
 					this.intent = INTENT.DEFEND;
-				};
+				}
 				this.intentHistory.push(this.intent);
 			} else if (this.overrideIntent(INTENT.DEFEND, INTENT.BUFF)) {
 				if (this.type === SINGULARITY) {
-					if (game.enemies.length > 2) this.intent = INTENT.ATTACK;
-					else this.intent = chance(1/3) ? INTENT.SUMMON : INTENT.ATTACK;
+					if (game.enemies.length > 2) {
+						this.intent = INTENT.ATTACK;
+					} else {
+						this.intent = chance(1/3) ? INTENT.SUMMON : INTENT.ATTACK;
+					}
 				} else {
 					this.intent = INTENT.ATTACK;
-				};
+				}
 				this.intentHistory.push(this.intent);
-			};
-		};
+			}
+		}
 		if (game.turn !== TURN.ENEMY) {
 			game.enemyNum = -1;
 		} else if (game.enemyNum === game.enemies.length - 1) {
@@ -227,9 +218,9 @@ class Enemy {
 			startTurn();
 		} else {
 			startAnim.enemy();
-		};
+		}
 		delete this.done;
-	};
+	}
 	/**
 	 * Gets the enemy's intent.
 	 * @param {boolean} first - whether this is the enemy's first intent. Defaults to `false`.
@@ -237,7 +228,7 @@ class Enemy {
 	getIntent(first = false) {
 		if (this.type === SLIME.PUDDLE) {
 			return INTENT.NOTHING;
-		};
+		}
 		if (this.type === FRAGMENT) {
 			if (first) return INTENT.BUFF;
 			if (chance(3/5)) {
@@ -245,8 +236,8 @@ class Enemy {
 			} else {
 				if (this.health <= this.maxHealth / 4 || this.eff[EFF.RESILIENCE] > 1) return INTENT.DEFEND;
 				return chance(2/3) ? INTENT.BUFF : INTENT.DEFEND;
-			};
-		};
+			}
+		}
 		if (this.type === SINGULARITY) {
 			if (first) return INTENT.SUMMON;
 			if (this.health <= this.maxHealth / 4) {
@@ -254,11 +245,11 @@ class Enemy {
 			} else {
 				if (chance(3/5)) return chance(1/3) ? INTENT.SUMMON : INTENT.ATTACK;
 				return INTENT.DEFEND;
-			};
-		};
+			}
+		}
 		if (first && hasArtifact(204)) return INTENT.DEFEND;
 		return chance(3/5) ? INTENT.ATTACK : INTENT.DEFEND;
-	};
+	}
 	/**
 	 * Overrides the enemy's intent if the conditions are satisfied.
 	 * @param {number} type - the type of intent to override.
@@ -269,7 +260,7 @@ class Enemy {
 		if (type2) {
 			let location2 = this.intentHistory.lastIndexOf(type2);
 			if (location2 > location) location = location2;
-		};
+		}
 		if (location !== -1) {
 			let item1 = this.intentHistory[location - 1];
 			if (item1 === type || (type2 && item1 === type2)) {
@@ -277,11 +268,11 @@ class Enemy {
 				if (item2 === type || (type2 && item2 === type2)) {
 					this.intentHistory.splice(this.intentHistory.length - 1);
 					return true;
-				};
-			};
-		};
+				}
+			}
+		}
 		return false;
-	};
+	}
 	/**
 	 * Has the enemy gain an effect.
 	 * @param {number} type - the type of effect to gain.
@@ -292,10 +283,10 @@ class Enemy {
 			game.enemies.forEach(enemy => {
 				if (enemy !== this) delete enemy.eff[ENEMY_EFF.DUEL_TARGET];
 			});
-		};
+		}
 		this.eff[type] = (this.eff[type] || 0) + amt;
-	};
-};
+	}
+}
 
 /**
  * Checks if an enemy should be visible.
@@ -310,7 +301,7 @@ function isEnemyVisible(index) {
 	if (intent === INTENT.ATTACK) return !(type === SLIME.SMALL || (type === SLIME.STICKY && enemyAnim.action[0] < 8) || type === SENTRY.FLAMING);
 	if (intent === INTENT.DEFEND) return !(type === SINGULARITY);
 	return true;
-};
+}
 
 /**
  * Gets the position of an enemy's intent.
@@ -325,15 +316,21 @@ function getEnemyIntentPos(index, moving = false) {
 	} else if (type === SLIME.SMALL) {
 		y -= 7;
 	} else if (type === SLIME.PRIME) {
-		if (enemyAnim.prime[index] == -1) y -= 37;
-		else y -= 17 + Math.max(enemyAnim.prime[index] - 4, 0) * 2.5;
+		if (enemyAnim.prime[index] == -1) {
+			y -= 37;
+		} else {
+			y -= 17 + Math.max(enemyAnim.prime[index] - 4, 0) * 2.5;
+		}
 	} else if (type === SLIME.STICKY) {
 		y -= 7;
 	} else if (type === SLIME.PUDDLE) {
 		y += 9;
 	} else if (type === FRAGMENT) {
-		if (enemyAnim.prime[index] == -1 || enemyAnim.prime[index] > 18) y -= 36;
-		else y = NaN;
+		if (enemyAnim.prime[index] == -1 || enemyAnim.prime[index] > 18) {
+			y -= 36;
+		} else {
+			y = NaN;
+		}
 	} else if (type === SENTRY.BIG) {
 		y -= 40;
 	} else if (type === SENTRY.SMALL) {
@@ -344,9 +341,12 @@ function getEnemyIntentPos(index, moving = false) {
 		y -= 37;
 	} else if (type === SINGULARITY) {
 		y -= 40;
-	};
+	}
 	y = Math.max(y, -2);
-	if (moving) y += Math.abs(intentAnim[index] - 2);
-	else y += 14;
+	if (moving) {
+		y += Math.abs(intentAnim[index] - 2);
+	} else {
+		y += 14;
+	}
 	return Math.round(y);
-};
+}

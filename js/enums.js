@@ -1,20 +1,3 @@
-/*  Dungeon of Souls
- *  Copyright (C) 2026 Yrahcaz7
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 // map node generation attributes
 const MAP_NODE = {FIRST: 0, TREASURE: 1, PRIME: 2, ORB: 3, BOSS: 4, EVENT: 5, NO_ENEMIES: 6};
 
@@ -334,8 +317,8 @@ const EFF_COLOR = {};
 for (const color in COLOR) {
 	for (const key of COLOR[color]) {
 		if (DESC_NAME[key] || EFF_NAME[key]) EFF_COLOR[key] = color;
-	};
-};
+	}
+}
 
 // event log types
 const EVENT_LOG = {DAMAGE: 2000};
@@ -365,12 +348,12 @@ function wrapText(text, width, offset = 0, debug = false) {
 	for (let index = 0; index < text.length; index++) {
 		if (text[index] == "<") {
 			inTag = true;
-		};
+		}
 		if (inTag) {
 			tagOffset++;
 			if (text[index] == ">") {
 				inTag = false;
-			};
+			}
 		} else {
 			offset++;
 			if (text[index] == " ") {
@@ -382,7 +365,7 @@ function wrapText(text, width, offset = 0, debug = false) {
 				result += text.slice(prevSpaceIndex + 1, index) + "\n";
 				spaceIndex = index;
 				prevSpaceIndex = index;
-			};
+			}
 			if (offset > width) {
 				//if (debug) console.log("index =", index, ". spaceIndex =", spaceIndex, ". tagOffset =", tagOffset);
 				if (spaceIndex < 0 || index - spaceIndex - tagOffset >= width) {
@@ -392,16 +375,16 @@ function wrapText(text, width, offset = 0, debug = false) {
 				} else {
 					offset = index - spaceIndex - tagOffset;
 					result += text.slice(prevSpaceIndex + 1, spaceIndex) + "\n";
-				};
+				}
 				//if (debug) console.log(result);
 				tagOffset = 0;
 				prevSpaceIndex = spaceIndex;
-			};
-		};
-	};
+			}
+		}
+	}
 	result += text.slice(prevSpaceIndex + 1);
 	return result;
-};
+}
 
 /**
  * Returns a string formatted with color tags.
@@ -411,23 +394,23 @@ const colorText = (() => {
 	const COLOR_REGEX = {};
 	for (const color in COLOR) {
 		COLOR_REGEX[color] = new RegExp("(?<!>)(" + COLOR[color].filter(key => !DESC_NAME[key]).map(key => (EFF_NAME[key] || key).replace(" ", "\\s").replace("+", "\\+")).join("|") + ")(?!<)", "gi");
-	};
+	}
 	return (text = "") => {
 		for (const color in COLOR_REGEX) {
 			text = text.replace(COLOR_REGEX[color], "<" + color + ">$1</" + color + ">");
-		};
+		}
 		text = text.replace(/(magic)(?=\stype)/gi, "<#f0f>$1</#f0f>");
 		return text;
-	};
+	}
 })();
 
 // preprocess intent descriptions
 for (const key in FULL_INTENT_DESC) {
 	FULL_INTENT_DESC[key] = wrapText(FULL_INTENT_DESC[key], 28);
-};
+}
 
 // preprocess effect descriptions
 for (const key in EFF_DESC) {
 	EFF_DESC[key] = wrapText(EFF_DESC[key], 24, EFF_NAME[key] ? EFF_NAME[key].length + 2 : 0);
 	EFF_DESC[key] = colorText((EFF_NAME[key] ? EFF_NAME[key][0].toUpperCase() + EFF_NAME[key].slice(1) + ": " : "") + EFF_DESC[key]);
-};
+}

@@ -1,20 +1,3 @@
-/*  Dungeon of Souls
- *  Copyright (C) 2026 Yrahcaz7
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 const I = {
 	player: {
 		idle: new Image,
@@ -225,10 +208,10 @@ const loadImages = (() => {
 			let count = 0;
 			for (const folder in ref[name]) {
 				count += countImages(ref[name], folder);
-			};
+			}
 			return count;
-		};
-	};
+		}
+	}
 	/**
 	 * Loads an image or all images in a folder.
 	 * @param {object} ref - a reference to the containing folder.
@@ -240,28 +223,30 @@ const loadImages = (() => {
 			if (!ref[name].src) {
 				ref[name].src = path + name + ".png";
 				promises.push(new Promise(resolve => ref[name].onload = resolve).then(updateLoadProg));
-			};
+			}
 			for (const extra in ref._) {
 				if (ref._[extra][name]?.src) continue;
 				ref._[extra][name] = new Image;
 				ref._[extra][name].src = path + extra + "/" + name + ".png";
 				promises.push(new Promise(resolve => ref._[extra][name].onload = resolve).then(updateLoadProg));
-			};
+			}
 		} else if (ref[name] instanceof Array) {
 			const num = ref[name][0];
 			const extras = ref[name][1];
 			ref[name] = [];
-			if (extras) ref[name]._ = extras;
+			if (extras) {
+				ref[name]._ = extras;
+			}
 			for (let index = 0; index < num; index++) {
 				ref[name].push(new Image);
 				promises.push(loadImage(ref[name], index, path + name + "/"));
-			};
+			}
 		} else {
 			for (const folder in ref[name]) {
 				await loadImage(ref[name], folder, path + name + "/");
-			};
-		};
-	};
+			}
+		}
+	}
 	/**
 	 * Updates the graphics loading progress.
 	 */
@@ -270,38 +255,42 @@ const loadImages = (() => {
 		draw.lore(200 - 2, 100 - 5.5 * 3, "Loading graphics...\n\n" + (loadProg / loadSteps * 100).toFixed(1) + "%", {"color": "#fff", "text-align": DIR.CENTER});
 		loadProg++;
 		await new Promise(resolve => setTimeout(resolve));
-	};
+	}
 	return async () => {
 		const startTime = performance.now();
 		// setup cards
 		for (const id in CARDS) {
 			if (id <= 0) continue;
 			I.card[CARDS[id].rarity][id] = new Image;
-			if (CARDS[id].rarity >= 0) CARD_IDS[CARDS[id].rarity].push(+id);
-		};
+			if (CARDS[id].rarity >= 0) {
+				CARD_IDS[CARDS[id].rarity].push(+id);
+			}
+		}
 		// setup artifacts
 		for (const id in ARTIFACTS) {
 			I.artifact[id] = new Image;
-			if (id >= 100 && id < 200) ARTIFACT_IDS.push(+id);
-		};
+			if (id >= 100 && id < 200) {
+				ARTIFACT_IDS.push(+id);
+			}
+		}
 		// setup effect icons
 		for (const eff in EFF) {
 			I.icon[EFF[eff]] = new Image;
-		};
+		}
 		// setup enemy effect icons
 		for (const eff in ENEMY_EFF) {
 			I.icon[ENEMY_EFF[eff]] = new Image;
-		};
+		}
 		// count images
 		for (const folder in I) {
 			loadSteps += countImages(I, folder);
-		};
+		}
 		// load images
 		updateLoadProg();
 		for (const folder in I) {
 			loadImage(I, folder, "images/");
-		};
+		}
 		await Promise.all(promises);
 		console.log("[images loaded in " + (performance.now() - startTime) + "ms]");
-	};
+	}
 })();

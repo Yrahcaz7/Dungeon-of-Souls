@@ -1,20 +1,3 @@
-/*  Dungeon of Souls
- *  Copyright (C) 2026 Yrahcaz7
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 const NO_ANTI_ALIASING_FILTER = "url('#noAntiAliasingFilter')";
 
 /** @type {number[][]} */
@@ -148,7 +131,7 @@ const draw = {
 		ctx.lineWidth = (width ?? 1) * SCALE;
 		for (let index = 0; index < points.length; index++) {
 			ctx.lineTo(points[index][0] * SCALE, points[index][1] * SCALE);
-		};
+		}
 		ctx.stroke();
 	},
 	/**
@@ -164,7 +147,7 @@ const draw = {
 		ctx.lineWidth = style["border-width"] * SCALE;
 		for (let index = 0; index < points.length; index++) {
 			ctx.lineTo(points[index][0] * SCALE, points[index][1] * SCALE);
-		};
+		}
 		ctx.closePath();
 		ctx.fill();
 		if (style["border-width"] > 0) ctx.stroke();
@@ -206,11 +189,11 @@ const draw = {
 			if (offsetH) {
 				for (let index = 0; index < points.length; index++) {
 					points[index][1] = Math.max(points[index][1] - offsetH, -30);
-				};
-			};
+				}
+			}
 			draw.polygon(points, {"background-color": "#f07000"});
 			ctx.restore();
-		};
+		}
 		if (minutes >= 0) {
 			ctx.save();
 			ctx.translate(coords[0], coords[1]);
@@ -219,11 +202,11 @@ const draw = {
 			if (offsetM) {
 				for (let index = 0; index < points.length; index++) {
 					points[index][1] = Math.max(points[index][1] - offsetM, -30);
-				};
-			};
+				}
+			}
 			draw.polygon(points, {"background-color": "#f0e000"});
 			ctx.restore();
-		};
+		}
 		ctx.filter = "none";
 		draw.image(I.background.clock_node, x + 26, y + 26);
 	},
@@ -240,7 +223,7 @@ const draw = {
 		if (style["highlight-color"] && char.charCodeAt() >= 32) {
 			if (style["text-small"]) draw.rect(style["highlight-color"], x - 0.5, y - 0.5, 3.5, 5.5);
 			else draw.rect(style["highlight-color"], x - 1, y - 1, 7, 11);
-		};
+		}
 		// draw char
 		if (CHARACTERS[char]) {
 			ctx.fillStyle = style["color"];
@@ -249,10 +232,10 @@ const draw = {
 					if (CHARACTERS[char][row][index]) {
 						if (style["text-small"]) ctx.fillRect(x * SCALE + index, y * SCALE + row, 1, 1);
 						else ctx.fillRect((x + index) * SCALE, (y + row) * SCALE, SCALE, SCALE);
-					};
-				};
-			};
-		};
+					}
+				}
+			}
+		}
 	},
 	/**
 	 * Draws some lore on the canvas.
@@ -278,7 +261,9 @@ const draw = {
 			str = str.replace(/<\/b>|<\/big>|<\/s>|<\/small>/g, "");
 			let arr = str.split(/<(?=b>|big>|s>|small>)/);
 			let space = 0;
-			if (!arr[0]) arr.splice(0, 1);
+			if (!arr[0]) {
+				arr.splice(0, 1);
+			}
 			for (let index = 0; index < arr.length; index++) {
 				if (arr[index].includes("s>") || arr[index].includes("small>")) {
 					arr[index] = arr[index].replace(/s>|small>/, "").replace(/^\n/, "");
@@ -294,19 +279,19 @@ const draw = {
 					space += draw.lore(x, y + space, arr[index], obj);
 				} else {
 					space += draw.lore(x, y + space, arr[index], style);
-				};
-			};
+				}
+			}
 			return space;
-		};
+		}
 		// print special multi-line text
 		if (str.includes("\n") && textAlign !== DIR.RIGHT) {
 			let arr = str.split("\n");
 			let space = 0;
 			for (let index = 0; index < arr.length; index++) {
 				space += draw.lore(x, y + space, arr[index], style);
-			};
+			}
 			return space;
-		};
+		}
 		// print all text
 		for (let a = 0; a < str.length; a++) {
 			// check for color tags
@@ -317,23 +302,28 @@ const draw = {
 					color = style["color"];
 					str = str.replace("<" + tag + ">", "");
 				} else {
-					if (cut.slice(0, cut.indexOf(">")).includes("highlight")) highlight = style["highlight-color"];
-					else highlight = "";
+					if (cut.slice(0, cut.indexOf(">")).includes("highlight")) {
+						highlight = style["highlight-color"];
+					} else {
+						highlight = "";
+					}
 					color = tag;
 					str = str.replace(new RegExp("<" + tag + ".*?>"), "");
-				};
-			};
+				}
+			}
 			// calculate length of this line
 			if (str.replace(/<.*?>/g, "").includes("\n", enterIndex + 1)) {
 				len = str.replace(/<.*?>/g, "").indexOf("\n", enterIndex + 1);
-			};
+			}
 			const char = str.charAt(a);
 			if (char === "\n") {
 				enters++;
 				enterIndex = a + 1;
-			};
+			}
 			// don't print if no color
-			if (color === "none" || style["color"] === "none") continue;
+			if (color === "none" || style["color"] === "none") {
+				continue;
+			}
 			// print character
 			if (textAlign === DIR.RIGHT) {
 				draw.char(char, x + ((a - enterIndex) * (small ? 3 : 6)), y + (enters * (small ? 5.5 : 11)), {
@@ -353,8 +343,8 @@ const draw = {
 					"highlight-color": highlight,
 					"text-small": small,
 				});
-			};
-		};
+			}
+		}
 		return small ? (enters + 1) * 5.5 : (enters + 1) * 11;
 	},
 	/**
@@ -375,7 +365,9 @@ const draw = {
 	 * @param {number} index - the index of the enemy.
 	 */
 	intent(index) {
-		if (game.enemies[index].eff[ENEMY_EFF.SHROUD] || index === game.enemyNum) return;
+		if (game.enemies[index].eff[ENEMY_EFF.SHROUD] || index === game.enemyNum) {
+			return;
+		}
 		const x = enemyPos[index][0] + 16;
 		const y = getEnemyIntentPos(index, true);
 		const intent = game.enemies[index].intent;
@@ -383,22 +375,31 @@ const draw = {
 			const power = Math.ceil(game.enemies[index].getTotalAttackPower() * get.takeDamageMult(index));
 			draw.image(I.intent.attack[Math.min(Math.floor(power / 5), 10)], x, y);
 			draw.lore(x + 14, y + 12, power, {"color": "#fff", "text-align": DIR.CENTER});
-			if (power > game.enemies[index].attackPower) draw.image(I.intent.increase, x + 32 - 10, y);
-			else if (power < game.enemies[index].attackPower) draw.image(I.intent.decrease, x + 32 - 10, y + 32 - 8);
+			if (power > game.enemies[index].attackPower) {
+				draw.image(I.intent.increase, x + 32 - 10, y);
+			} else if (power < game.enemies[index].attackPower) {
+				draw.image(I.intent.decrease, x + 32 - 10, y + 32 - 8);
+			}
 		} else if (intent === INTENT.DEFEND) {
 			const power = Math.ceil(game.enemies[index].getTotalDefendPower() * get.enemyShieldMult(index));
 			draw.image(I.intent.defend[Math.min(Math.floor(power / 5), 10)], x, y);
 			draw.lore(x + 14, y + 11, power, {"color": "#fff", "text-align": DIR.CENTER});
-			if (power > game.enemies[index].defendPower) draw.image(I.intent.increase, x + 32 - 10, y);
-			else if (power < game.enemies[index].defendPower) draw.image(I.intent.decrease, x + 32 - 10, y + 32 - 8);
+			if (power > game.enemies[index].defendPower) {
+				draw.image(I.intent.increase, x + 32 - 10, y);
+			} else if (power < game.enemies[index].defendPower) {
+				draw.image(I.intent.decrease, x + 32 - 10, y + 32 - 8);
+			}
 		} else if (intent === INTENT.BUFF) {
 			draw.image(I.intent.buff, x, y);
 		} else if (intent === INTENT.SUMMON) {
-			if (game.enemies.length >= 6) draw.image(I.intent.ritual, x, y);
-			else draw.image(I.intent.summon, x, y);
+			if (game.enemies.length >= 6) {
+				draw.image(I.intent.ritual, x, y);
+			} else {
+				draw.image(I.intent.summon, x, y);
+			}
 		} else if (intent === INTENT.NOTHING) {
 			draw.image(I.intent.nothing, x, y);
-		};
+		}
 		intentAnim[index] += (Math.random() + 0.5) * 0.15;
 		if (intentAnim[index] >= 4) intentAnim[index] -= 4;
 	},
@@ -414,12 +415,12 @@ const draw = {
 		style = Object.assign({"background-color": "#ddd", "border-width": 1, "border-color": "#000"}, style);
 		if (style["background-color"]) draw.rect(style["background-color"], x, y, width, height);
 		const borderW = style["border-width"];
-		if (borderW) {
+		if (borderW > 0) {
 			draw.rect(style["border-color"], x - borderW, y - borderW, width + borderW, borderW); // top
 			draw.rect(style["border-color"], x - borderW, y + height, width + borderW, borderW); // bottom
 			draw.rect(style["border-color"], x - borderW, y - borderW, borderW, height + borderW); // left
 			draw.rect(style["border-color"], x + width, y - borderW, borderW, height + (borderW * 2)); // right
-		};
+		}
 	},
 	/**
 	 * Draws an entity's status bars on the canvas.
@@ -434,7 +435,7 @@ const draw = {
 		let cutoff = Math.round(Math.min(Math.max(health / maxHealth, 0), 1) * 62);
 		if ((health < 10 && maxHealth >= 10) || (health < 100 && maxHealth >= 100) || (health < 1000 && maxHealth >= 1000)) {
 			health = "0" + health;
-		};
+		}
 		draw.imageSector(I.bar.health_full, 0, 0, cutoff + 1, 12, x, y + 65);
 		draw.imageSector(I.bar.health_empty, cutoff + 1, 0, 64 - (cutoff + 1), 12, x + (cutoff + 1), y + 65);
 		draw.lore(x + 31, y + 67, health, {"text-align": DIR.LEFT});
@@ -442,7 +443,7 @@ const draw = {
 		cutoff = Math.round(Math.min(Math.max(shield / maxShield, 0), 1) * 62);
 		if ((shield < 10 && maxShield >= 10) || (shield < 100 && maxShield >= 100) || (shield < 1000 && maxShield >= 1000)) {
 			shield = "0" + shield;
-		};
+		}
 		draw.imageSector(I.bar.shield_full, 0, 0, cutoff + 1, 12, x, y + 76);
 		draw.imageSector(I.bar.shield_empty, cutoff + 1, 0, 64 - (cutoff + 1), 12, x + (cutoff + 1), y + 76);
 		draw.lore(x + 31, y + 78, shield, {"text-align": DIR.LEFT});
@@ -464,7 +465,7 @@ const draw = {
 		if (card.id > 0 && I.card[rarity]) {
 			img = I.card[rarity][card.id];
 			draw.image(I.card.back, x + 2, y + 2);
-		};
+		}
 		// card outline
 		const type = CARD_TYPE[Math.floor(card.id / 1000)];
 		if (I.card.outline[type]) draw.image(I.card.outline[type], x + 3, y + 3);
@@ -475,7 +476,7 @@ const draw = {
 			if (CARDS[card.id].keywords.includes(CARD_EFF.UNPLAYABLE)) selectorName += "_unplayable";
 			if (card.level >= 1) selectorName += "_plus";
 			draw.image(I.select[selectorName], x - 3, y - 3);
-		};
+		}
 		// card image
 		if (img === I.card.error) draw.image(img, x + 2, y + 2);
 		else draw.image(img, x + 7, y + 7);
@@ -500,8 +501,8 @@ const draw = {
 				else if (cost > originalCost) draw.image(I.card.red_energy, x, y);
 				else draw.image(I.card.energy, x, y);
 				draw.lore(x + 4, y + 2, cost);
-			};
-		};
+			}
+		}
 		if (card.level >= 1) draw.image(I.card.plus, x + 55, y);
 	},
 	/**
@@ -522,7 +523,7 @@ const draw = {
 		} else {
 			width = width * 6 + 2;
 			height = lines * 11 + 12;
-		};
+		}
 		draw.box(x, y, width, height, style);
 		if (style["text-align"] === DIR.CENTER) {
 			x += width / 2;
@@ -532,7 +533,7 @@ const draw = {
 			x += width;
 			if (style["text-small"]) x -= 4;
 			else x -= 7;
-		};
+		}
 		draw.lore(x + 1, y + 1, str, style);
 		return height + 4;
 	},
@@ -575,21 +576,25 @@ const draw = {
 		for (const key in enemy.eff) {
 			if (enemy.eff[key]) {
 				let img = I.icon[key];
-				if (img === I.icon[1704]) draw.image(I.icon["1704_back"], x - 1, y + 88);
+				if (img === I.icon[1704]) {
+					draw.image(I.icon["1704_back"], x - 1, y + 88);
+				}
 				draw.image(img, x, y + 89);
-				if (!PERM_EFF_DESC[key]) draw.lore(x + 17, y + 97, enemy.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
+				if (!PERM_EFF_DESC[key]) {
+					draw.lore(x + 17, y + 97, enemy.eff[key], {"color": "#fff", "text-align": DIR.LEFT});
+				}
 				x += 17;
-				if (x >= enemyPos[index][0] + (index === 0 && game.void.length && game.enemies.length > 2 ?
-					(Object.keys(enemy.eff).length > (game.enemies.length > 3 ? 4 : 6) ? 51 : 34)
+				if (x >= enemyPos[index][0] + (index === 0 && game.void.length && game.enemies.length > 2
+					? (Object.keys(enemy.eff).length > (game.enemies.length > 3 ? 4 : 6) ? 51 : 34)
 					: 68
 				)) {
 					x = enemyPos[index][0];
 					y += 17;
-				};
-			};
-		};
+				}
+			}
+		}
 	},
-};
+}
 
 /**
  * For each keyword in (or reffered to by) `keywords`, excecutes `func`.
@@ -610,7 +615,7 @@ const forKeywordIn = (() => {
 		else if (type === ENEMY_EFF.PLAN_ATTACK) logKeyword(EFF.ATKUP);
 		else if (type === ENEMY_EFF.PLAN_DEFEND) logKeyword(EFF.DEFUP);
 		else if (type === ENEMY_EFF.PERSISTENCE) logKeyword(ENEMY_EFF.REVIVAL);
-	};
+	}
 	return (keywords, func, exclude = []) => {
 		_keywords = keywords;
 		_func = func;
@@ -620,16 +625,16 @@ const forKeywordIn = (() => {
 		} else {
 			for (const key in exclude) {
 				logged[key] = true;
-			};
-		};
+			}
+		}
 		if (keywords instanceof Array) {
 			keywords.forEach(logKeyword);
 		} else {
 			for (const key in keywords) {
 				logKeyword(+key);
-			};
-		};
-	};
+			}
+		}
+	}
 })();
 
 const info = {
@@ -648,10 +653,15 @@ const info = {
 		const y = (handAnimPositions[normIndex][1] ?? (146 - Math.floor(cardAnim[effIndex]))) + 1 + yPlus;
 		if (x + 24 * 3 + 2 > 400) {
 			const ref = CARDS[handAnimCards[normIndex].id];
-			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
-			else x -= 145;
-			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
-		};
+			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) {
+				x -= 143;
+			} else {
+				x -= 145;
+			}
+			if (!EFF_DESC[type]) {
+				x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
+			}
+		}
 		if (EFF_DESC[type]) return draw.textBox(x, y, 24, EFF_DESC[type], {"text-small": true});
 		return draw.textBox(x, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
@@ -667,10 +677,15 @@ const info = {
 		const y = 18 + yPlus;
 		if (x + 24 * 3 + 2 > 400) {
 			const ref = CARDS[game.hand[game.select[1]].id];
-			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
-			else x -= 145;
-			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
-		};
+			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) {
+				x -= 143;
+			} else {
+				x -= 145;
+			}
+			if (!EFF_DESC[type]) {
+				x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
+			}
+		}
 		if (EFF_DESC[type]) return draw.textBox(x, y, 24, EFF_DESC[type], {"text-small": true});
 		return draw.textBox(x, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
@@ -687,10 +702,15 @@ const info = {
 		const y = 51 + yPlus;
 		if (game.select[1] == choices - 1 && choices >= 4) {
 			const ref = CARDS[game.room[5][game.select[1]]];
-			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
-			else x -= 145;
-			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
-		};
+			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) {
+				x -= 143;
+			} else {
+				x -= 145;
+			}
+			if (!EFF_DESC[type]) {
+				x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
+			}
+		}
 		if (EFF_DESC[type]) return draw.textBox(x, y, 24, EFF_DESC[type], {"text-small": true});
 		return draw.textBox(x, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
@@ -710,10 +730,15 @@ const info = {
 		const y = (refining ? 16 : 15) + (selected[1] * (refining ? 100 : 98)) - game.deckScroll + yPlus;
 		if (selected[0] >= (refining ? 2 : 4)) {
 			let ref = CARDS[deck[game.cardSelect].id];
-			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) x -= 143;
-			else x -= 145;
-			if (!EFF_DESC[type]) x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
-		};
+			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) {
+				x -= 143;
+			} else {
+				x -= 145;
+			}
+			if (!EFF_DESC[type]) {
+				x += (24 - ("" + type).replace(/<.+?>/g, "").length) * 3;
+			}
+		}
 		if (EFF_DESC[type]) return draw.textBox(x, y, 24, EFF_DESC[type], {"text-small": true});
 		return draw.textBox(x, y, ("" + type).replace(/<.+?>/g, "").length, type, {"text-small": true});
 	},
@@ -733,7 +758,7 @@ const info = {
 			const start = (PERM_EFF_DESC[type] ? "This " + PERM_EFF_DESC[type] : "This has " + eff);
 			const desc = start + " " + name + ".";
 			move += draw.textBox(x, y + move, desc.length, (EFF_COLOR[type] ? start + " <" + EFF_COLOR[type] + ">" + name + "</" + EFF_COLOR[type] + ">." : desc), {"text-small": true});
-		};
+		}
 		move += draw.textBox(x, y + move, 24, EFF_DESC[type], {"text-small": true});
 		return move;
 	},
@@ -754,9 +779,11 @@ const info = {
 			const start = (PERM_EFF_DESC[type] ? "This " + PERM_EFF_DESC[type] : "This has " + eff);
 			const desc = start + " " + name + ".";
 			move += draw.textBox(x + 72 - (desc.length * 3), y + move, desc.length, (EFF_COLOR[type] ? start + " <" + EFF_COLOR[type] + ">" + name + "</" + EFF_COLOR[type] + ">." : desc), {"text-small": true});
-		};
+		}
 		move += draw.textBox(x, y + move, 24, EFF_DESC[type], {"text-small": true});
-		if (type === ENEMY_EFF.COUNTDOWN) move += draw.textBox(x, y + move, 24, "The next intent will be\nto " + MIN_INTENT_DESC[game.enemies[game.select[1]].intentHistory[eff - 1]] + ".", {"text-small": true});
+		if (type === ENEMY_EFF.COUNTDOWN) {
+			move += draw.textBox(x, y + move, 24, "The next intent will be\nto " + MIN_INTENT_DESC[game.enemies[game.select[1]].intentHistory[eff - 1]] + ".", {"text-small": true});
+		}
 		return move;
 	},
 	/**
@@ -770,8 +797,10 @@ const info = {
 		if (y === y) {
 			const intent = game.enemies[game.select[1]]?.intent;
 			const desc = FULL_INTENT_DESC[intent === INTENT.SUMMON && game.enemies.length >= 6 ? INTENT.RITUAL : intent];
-			if (desc) draw.textBox(x, y - (desc.match(/\n/g) || []).length * 3, 28, desc, {"text-small": true});
-		};
+			if (desc) {
+				draw.textBox(x, y - (desc.match(/\n/g) || []).length * 3, 28, desc, {"text-small": true});
+			}
+		}
 	},
 	/**
 	 * Draws infoboxes for an artifact.
@@ -783,7 +812,9 @@ const info = {
 		const x = (isNaN(xOveride) ? 2 + (game.select[1] * 18) : xOveride);
 		let y = (isNaN(yOveride) ? 32 : yOveride);
 		const obj = ARTIFACTS[type];
-		if (!obj) return;
+		if (!obj) {
+			return;
+		}
 		if (obj.name.length <= 12) {
 			draw.textBox(x, y, 12, obj.name, {"text-align": DIR.CENTER});
 			y += 13;
@@ -792,7 +823,7 @@ const info = {
 			draw.textBox(x, y, obj.name.length, obj.name);
 			y += 13;
 			y += draw.textBox(x, y, obj.name.length * 2, obj.desc, {"text-small": true});
-		};
+		}
 		forKeywordIn(obj.keywords || [], keyword => {
 			y += draw.textBox(x, y, 24, EFF_DESC[keyword], {"text-small": true});
 		});
@@ -831,11 +862,11 @@ const info = {
 			} else {
 				loc = [41, 18];
 				desc = "View Owned Cards";
-			};
+			}
 		} else if (location === DIR.CENTER) {
 			if (index === 0) loc = [22, 60];
 			else loc = [375 - desc.length * 6, 60];
-		};
+		}
 		draw.textBox(loc[0], loc[1], desc.length, desc);
 	},
 };
@@ -852,18 +883,18 @@ const graphics = {
 					if (!backAnim[col][index]?.length) backAnim[col][index] = [0];
 					if (backAnim[col][index][0] === 0 && Math.random() < 1/100) {
 						backAnim[col][index] = [Math.floor(Math.random() * 10) + 10, Math.floor(Math.random() * 6)];
-					};
-				};
-			};
+					}
+				}
+			}
 			for (let col = 0; col < 12; col++) {
 				if (!backAnim[col][9]) backAnim[col][9] = [];
 				for (let index = 0; index < 6; index++) {
 					if (!backAnim[col][9][index]) backAnim[col][9][index] = 0;
 					if (backAnim[col][9][index] === 0 && Math.random() < 1/200) {
 						backAnim[col][9][index] = Math.floor(Math.random() * 20) + 20;
-					};
-				};
-			};
+					}
+				}
+			}
 			draw.image(I.background.hallway, 0, 42);
 			if (!backAnim[29]) backAnim[29] = 0;
 			for (let col = 0; col < 12; col++) {
@@ -871,8 +902,8 @@ const graphics = {
 				for (let index = 0; index < 6; index++) {
 					if (backAnim[col][9][index] > 0) backAnim[col][9][index]--;
 					else draw.imageSector(I.background.panel_cover, index * 35, 0, 35, 42, col * 34 - 6, 0);
-				};
-			};
+				}
+			}
 			backAnim[29]++;
 			if (backAnim[29] >= 12) backAnim[29] = 0;
 			for (let col = 0; col < 14; col++) {
@@ -880,17 +911,17 @@ const graphics = {
 					if (backAnim[col][index][0] > 0) {
 						draw.imageSector(I.background.tiles, backAnim[col][index][1] * 15, 0, 15, 8, col * 34 - index * 9 + 9, index * 18 + 44);
 						backAnim[col][index][0]--;
-					};
-				};
-			};
+					}
+				}
+			}
 			for (let col = 0; col < 15; col++) {
 				for (let index = 0; index < 9; index++) {
 					if (backAnim[col + 14][index][0] > 0) {
 						draw.imageSector(I.background.tiles, backAnim[col][index][1] * 15, 8, 15, 8, col * 34 - index * 9 - 12, index * 18 + 53);
 						backAnim[col + 14][index][0]--;
-					};
-				};
-			};
+					}
+				}
+			}
 			draw.rect("#0003");
 		} else {
 			if (transition < 100) {
@@ -899,18 +930,18 @@ const graphics = {
 				draw.image(I.background.temple);
 				draw.image(I.background.floating_arch, 136, 35 - Math.abs(Math.round(backAnim[0]) - 2));
 				draw.image(I.background.debris, 151, 93 - Math.abs(Math.round(backAnim[1]) - 2));
-			};
+			}
 			if (hasArtifact(202) && game.floor == 10) {
 				if (transition < 100) {
 					ctx.globalAlpha = transition / 100;
-				};
+				}
 				draw.image(I.background.tunnel_of_time, 0 - backAnim[3]);
 				if (!game.enemies[0]?.eff[ENEMY_EFF.COUNTDOWN]) backAnim[3]++;
 				else backAnim[3]--;
 				if (backAnim[3] >= 16) backAnim[3] -= 16;
 				else if (backAnim[3] < 0) backAnim[3] += 16;
 				ctx.globalAlpha = 1;
-			};
+			}
 			if (game.floor != 10) {
 				const now = new Date();
 				let time = [now.getHours(), now.getMinutes()];
@@ -938,16 +969,16 @@ const graphics = {
 						ctx.globalAlpha = (cutsceneAnim[0] - 25) / 100;
 						draw.image(I.background.clock_minute_whirl, x + 30 - 16, y + 30 - 16, 32, 32);
 						ctx.globalAlpha = 1;
-					};
+					}
 					draw.image(I.background.clock_node, x + 26, y + 26);
-				};
+				}
 				cutsceneAnim[0]++;
-			};
+			}
 			for (let index = 0; index < 3; index++) {
 				backAnim[index] += (Math.random() + 0.5) * 0.075;
 				if (backAnim[index] >= 4) backAnim[index] -= 4;
-			};
-		};
+			}
+		}
 	},
 	/**
 	 * Draws the middle layer on the canvas.
@@ -957,11 +988,11 @@ const graphics = {
 			if (!extraAnim.length) {
 				for (let index = 0; index < 9; index++) {
 					extraAnim[index] = [Math.random() * 180 + 6, index * 50 - Math.random() * 10, Math.floor(Math.random() * 20 + index) % 20];
-				};
-			};
+				}
+			}
 			if (transition < 100) {
 				ctx.globalAlpha = transition / 100;
-			};
+			}
 			for (let index = 0; index < extraAnim.length; index++) {
 				if (extraAnim[index][2] < 8) {
 					draw.imageSector(I.background.column_debris, (extraAnim[index][2] % 8) * 16, 0, 16, 8, Math.floor(400 - extraAnim[index][1]), Math.floor(extraAnim[index][0]));
@@ -975,7 +1006,7 @@ const graphics = {
 					ctx.scale(-1, 1);
 					draw.image(I.background.debris, Math.floor(extraAnim[index][1] - 400), Math.floor(extraAnim[index][0] + 1), -6, 6);
 					ctx.scale(-1, 1);
-				};
+				}
 				const rand = Math.random();
 				if (rand < 0.05) extraAnim[index][0]++;
 				else if (rand < 0.1) extraAnim[index][0]--;
@@ -985,10 +1016,10 @@ const graphics = {
 					extraAnim[index] = [Math.random() * 180 + 6, 0 - Math.random() * 10, Math.floor(Math.random() * 20 + index) % 20];
 				} else if (extraAnim[index][1] <= 0) {
 					extraAnim[index] = [Math.random() * 180 + 6, 450 + Math.random() * 10, Math.floor(Math.random() * 20 + index) % 20];
-				};
-			};
+				}
+			}
 			ctx.globalAlpha = 1;
-		};
+		}
 	},
 	/**
 	 * Draws the foreground layer on the canvas.
@@ -1000,13 +1031,13 @@ const graphics = {
 			if (past[0] === S.REWARDS) graphics.rewards(false);
 			else if (past[0] === S.CARD_REWARD) graphics.cardRewards(false);
 			else if (past[0] === S.ARTIFACT_REWARD) graphics.artifactRewards(false);
-		};
+		}
 		// looker
 		if (game.select[0] === S.LOOKER && game.select[1] === 1) {
 			draw.imageSector(I.extra.looker, 16, 0, 16, 16, 343, 3);
 			draw.image(I.select.round, 342, 2);
 			return;
-		};
+		}
 		// extra covers
 		if (get.area() == 1) {
 			let topLeftX = [(("" + game.floor).length + ("" + game.gold).length - 2) * 6 - 200, (game.artifacts.length - 2) * 18 - 260];
@@ -1017,7 +1048,7 @@ const graphics = {
 			draw.image(I.cover.top_right, 339, 0);
 			draw.image(I.cover.bottom_left, 0, 159);
 			draw.image(I.cover.bottom_right, 377, game.void.length ? 159 : 178);
-		};
+		}
 		// extras
 		draw.imageSector(I.extra.looker, 0, 0, 16, 16, 343, 3);
 		draw.image(I.extra.help, 362, 3);
@@ -1033,13 +1064,13 @@ const graphics = {
 			if (!ARTIFACTS[game.artifacts[index]].big) continue;
 			draw.image(I.artifact[game.artifacts[index]], (index * 18) - 6, 5);
 			if (game.select[0] === S.ARTIFACTS && game.select[1] === index) draw.image(I.artifact._.wo[game.artifacts[index]], (index * 18) - 7, 4);
-		};
+		}
 		// small artifacts
 		for (let index = 0; index < game.artifacts.length; index++) {
 			if (ARTIFACTS[game.artifacts[index]].big) continue;
 			draw.image(I.artifact[game.artifacts[index]], (index * 18) + 2, 13);
 			if (game.select[0] === S.ARTIFACTS && game.select[1] === index) draw.image(I.artifact._.wo[game.artifacts[index]], (index * 18) + 1, 12);
-		};
+		}
 		// selected
 		if (game.select[0] === S.LOOKER) draw.image(I.select.round, 342, 2);
 		else if (game.select[0] === S.HELP) draw.image(I.select.round, 361, 2);
@@ -1054,18 +1085,18 @@ const graphics = {
 		if (!hidden() && !(game.select[0] === S.LOOKER || game.select[0] === S.HELP || game.select[0] === S.OPTIONS)) {
 			for (let index = 0; index < game.enemies.length; index++) {
 				draw.intent(index);
-			};
-		};
+			}
+		}
 		// selected enemy
 		if (game.select[0] === S.ATTACK || game.select[0] === S.ENEMY) {
 			draw.enemyIcons(game.select[1]);
 			if (enemyPos[game.select[1]]?.length && isEnemyVisible(game.select[1])) {
 				enemyAnim.drawEnemy(enemyPos[game.select[1]][0], enemyPos[game.select[1]][1], game.select[1]);
-			};
+			}
 			if (!game.enemies[game.select[1]].transition && game.select[1] == game.enemyNum) {
 				enemyAnim.drawEnemyActing(enemyPos[game.select[1]][0], enemyPos[game.select[1]][1], game.select[1]);
-			};
-		};
+			}
+		}
 	},
 	/**
 	 * Draws the player on the canvas.
@@ -1080,7 +1111,7 @@ const graphics = {
 				draw.image(I.aura_blade, x + AURA_BLADE_POS[index][0], y + AURA_BLADE_POS[index][1] + 4 - Math.abs(Math.round(auraBladeAnim[index]) - 4));
 				auraBladeAnim[index] += (Math.random() + 0.5) * 0.05;
 				if (auraBladeAnim[index] >= 8) auraBladeAnim[index] -= 8;
-			};
+			}
 			// icons
 			for (const key in game.eff) {
 				if (game.eff[key]) {
@@ -1092,9 +1123,9 @@ const graphics = {
 					if (x >= 15 + 68) {
 						x = 15;
 						y += 17;
-					};
-				};
-			};
+					}
+				}
+			}
 			x = 15;
 			y = 27;
 			// animations
@@ -1103,47 +1134,47 @@ const graphics = {
 				playerAnim[0] += 0.25;
 				if (playerAnim[0] >= 10) {
 					playerAnim[0] = 0;
-				};
+				}
 			} else if (playerAnim[1] === I.player.attack || playerAnim[1] === I.player.attack_aura) {
 				playerAnim[0]++;
 				if (playerAnim[0] >= 4) {
 					playerAnim = [0, I.player.idle];
 					postCardActivation();
-				};
+				}
 			} else if (playerAnim[1] === I.player.attack_2 || playerAnim[1] === I.player.attack_2_aura) {
 				playerAnim[0]++;
 				if (playerAnim[0] >= 6) {
 					playerAnim = [0, I.player.idle];
 					postCardActivation();
-				};
+				}
 			} else if (isDefending(playerAnim[1])) {
 				playerAnim[0] += 0.5;
 				if (playerAnim[0] >= 3) {
 					playerAnim[0] = 2;
-				};
+				}
 			} else if (playerAnim[1] === I.player.hit) {
 				playerAnim[0] += 0.25;
 				if (playerAnim[0] >= 1) {
 					playerAnim = [0, I.player.idle];
-				};
+				}
 			} else if (playerAnim[1] === I.player.death) {
 				playerAnim[0] += 0.5;
 				if (playerAnim[0] >= 10) {
 					playerAnim[0] = 9;
-				};
-			};
+				}
+			}
 			// bars
 			draw.bars(x + 22, y + 15, game.health, get.maxHealth(), game.shield, get.maxShield());
 			let energy = game.energy;
 			if (energy < 10 && get.maxEnergy() >= 10) {
 				energy = "0" + energy;
-			};
+			}
 			const cutoff = Math.min(Math.max(Math.round(game.energy / get.maxEnergy() * 30), 0), 30);
 			draw.imageSector(I.bar.energy_full, 0, 0, cutoff + 1, 32, x - 1, y + 16);
 			draw.imageSector(I.bar.energy_empty, cutoff + 1, 0, 32 - (cutoff + 1), 32, x + cutoff, y + 16);
 			draw.lore(x + 14, y + 28, energy, {"text-align": DIR.LEFT});
 			draw.lore(x + 17, y + 28, get.maxEnergy());
-		};
+		}
 	})(),
 	/**
 	 * Draws the current effect on the canvas.
@@ -1153,7 +1184,7 @@ const graphics = {
 			draw.imageSector(I.effect.war_cry, Math.floor(effAnim[0]) * 188, 0, 188, 188, -22, -18, 188, 188);
 			effAnim[0]++;
 			if (effAnim[0] >= 35) effAnim = [0, null];
-		};
+		}
 	},
 	/**
 	 * Draws the enemies on the canvas.
@@ -1163,26 +1194,26 @@ const graphics = {
 		for (let index = 0; index < game.enemies.length; index++) {
 			if ((game.select[0] === S.ATTACK || game.select[0] === S.ENEMY) && index == game.select[1]) continue;
 			draw.enemyIcons(index);
-		};
+		}
 		// enemy drawing
 		const selected = (game.select[0] === S.ATTACK || game.select[0] === S.ENEMY);
 		for (let index = 0; index < game.enemies.length; index++) {
 			if (enemyPos[index]?.length && isEnemyVisible(index) && (!selected || index !== game.select[1])) {
 				enemyAnim.drawEnemy(enemyPos[index][0], enemyPos[index][1], index);
-			};
-		};
+			}
+		}
 		// action animations
 		if (game.enemies[game.enemyNum] && !game.enemies[game.enemyNum].transition && (!selected || game.enemyNum !== game.select[1])) {
 			enemyAnim.drawEnemyActing(enemyPos[game.enemyNum][0], enemyPos[game.enemyNum][1], game.enemyNum);
-		};
+		}
 		// move idle animations along
 		enemyAnim.progressAnimations();
 		// draw intents
 		if (game.select[0] === S.LOOKER || game.select[0] === S.HELP || game.select[0] === S.OPTIONS) {
 			for (let index = 0; index < game.enemies.length; index++) {
 				draw.intent(index);
-			};
-		};
+			}
+		}
 	},
 	/**
 	 * Draws the current info page on the canvas.
@@ -1196,7 +1227,7 @@ const graphics = {
 			if (lim < 0) lim = 0;
 			if (infoPos > lim) infoPos = lim;
 			return lim;
-		};
+		}
 		if (game.select[1] == 3) {
 			infoLimit = limit(CHANGELOG);
 			draw.lore(1, 1 - infoPos, "Dungeon of Souls - Changelog", {"color": "#f44"});
@@ -1209,12 +1240,12 @@ const graphics = {
 			infoLimit = limit(OVERVIEW);
 			draw.lore(1, 1 - infoPos, "Dungeon of Souls - Overview", {"color": "#f44"});
 			draw.lore(1, 23 - infoPos, OVERVIEW, {"color": "#fff"});
-		};
+		}
 		draw.lore(1, 12 - infoPos, 'Source can be found at "https://github.com/Yrahcaz7/Dungeon-of-Souls"', {"color": "#f44", "text-small": true});
 		if (infoLimit > 0) {
 			draw.lore(366, 40, "Scrollable", {"color": "#fff", "text-align": DIR.LEFT});
 			draw.image(I.extra.arrows, 367, 36);
-		};
+		}
 	},
 	/**
 	 * Draws the options on the canvas.
@@ -1234,8 +1265,8 @@ const graphics = {
 			} else {
 				if (game.select[1] - 2 === index && focused) text += "<#ff0>" + OPTION_NAME[options[index]] + ": " + option + "</#ff0>\n";
 				else text += OPTION_NAME[options[index]] + ": " + option + "\n";
-			};
-		};
+			}
+		}
 		if (game.select[1] - 2 === options.length && focused) text += "\n<#ff0>SURRENDER</#ff0>";
 		else text += "\nSURRENDER";
 		draw.rect("#000c");
@@ -1255,7 +1286,7 @@ const graphics = {
 		if ((game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) && !refinableDeck.length) {
 			refinableDeck = game.cards.filter(card => card.level === 0);
 			if (!refinableDeck.length) refinableDeck = [new Card()];
-		};
+		}
 		// setup for deck drawing
 		const deck = currentDeck();
 		const len = deck.length;
@@ -1274,7 +1305,7 @@ const graphics = {
 			draw.card(cardObj, 213, 51, true, true);
 			draw.card(new Card(cardObj.id, 1), 329, 51, true, true);
 			draw.image(I.card.refine, 305 - I.card.refine.width / 2, 95);
-		};
+		}
 		// draw deck
 		if (len > 0) {
 			if (game.cardSelect > len - 1) game.cardSelect = len - 1;
@@ -1284,12 +1315,12 @@ const graphics = {
 			for (let x = (len - 1) % cols, y = Math.floor((len - 1) / cols); y >= 0; x--) {
 				if (x !== selected[0] || y !== selected[1] || !focused) {
 					draw.card(deck[x + (y * cols)], startX + (x * spaceX), startY + (y * spaceY) - game.deckScroll, false, inOutsideDeck());
-				};
+				}
 				if (x === 0) {
 					x = cols;
 					y--;
-				};
-			};
+				}
+			}
 			if (focused) {
 				draw.card(deck[game.cardSelect], startX + (selected[0] * spaceX), startY + (selected[1] * spaceY) - game.deckScroll, true, inOutsideDeck());
 				graphics.target();
@@ -1297,9 +1328,9 @@ const graphics = {
 					game.deckScroll -= Math.min(10, Math.abs(game.deckScroll - (spaceY * selected[1])));
 				} else if (game.deckScroll <= (spaceY * (selected[1] - 1)) + scrollPadding) {
 					game.deckScroll += Math.min(10, Math.abs(game.deckScroll - ((spaceY * (selected[1] - 1)) + scrollPadding)));
-				};
-			};
-		};
+				}
+			}
+		}
 		// draw top bar
 		if (menuSelect[0] === MENU.PREV_GAME_INFO) draw.topBar("Cards From Run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].num);
 		else if (game.select[0] === S.DECK) draw.topBar("Deck");
@@ -1318,7 +1349,7 @@ const graphics = {
 			return;
 		} else if (game.select[0] === S.PLAYER || game.select[0] === S.ENEMY) {
 			return;
-		};
+		}
 		updateAnimatedHandData();
 		let temp = -1;
 		for (let index = 0; index < handAnimCards.length && index < handAnimPositions.length; index++) {
@@ -1330,16 +1361,16 @@ const graphics = {
 				if (handAnimPositions[index][1] === undefined) {
 					if (cardAnim[effIndex] > 0) cardAnim[effIndex] -= 6 + Math.random();
 					if (cardAnim[effIndex] < 0) cardAnim[effIndex] = 0;
-				};
+				}
 				draw.card(handAnimCards[index], handAnimPositions[index][0], handAnimPositions[index][1] ?? (146 - Math.floor(cardAnim[effIndex])));
-			};
-		};
+			}
+		}
 		if (temp !== -1) {
 			const offTemp = temp - (handAnimOffsets[temp] || 0);
 			if (cardAnim[offTemp] < 44) cardAnim[offTemp] += 7 + Math.random();
 			if (cardAnim[offTemp] > 44) cardAnim[offTemp] = 44;
 			draw.card(handAnimCards[temp], handAnimPositions[temp][0], handAnimPositions[temp][1] ?? (146 - Math.floor(cardAnim[offTemp])), true);
-		};
+		}
 		if (notif[0] !== -1) {
 			const anim = cardAnim[notif[0] - (handAnimOffsets[notif[0]] || 0)];
 			draw.lore(handAnimPositions[notif[0]][0] + 32, 146 - 9 - Math.ceil(anim) - notif[1] + notif[3], notif[2], {
@@ -1348,7 +1379,7 @@ const graphics = {
 			});
 			notif[1]++;
 			if (notif[1] > 16) notif = [-1, 0];
-		};
+		}
 	},
 	/**
 	 * Draws the player's hand in a special select on the canvas.
@@ -1356,7 +1387,7 @@ const graphics = {
 	handSelect() {
 		if (handSelectPos.length === 0) {
 			handSelectPos = get.handPos(game.hand.length - 1);
-		};
+		}
 		draw.rect("#000c");
 		draw.image(I.extra.end, 3, 58);
 		draw.image(I.extra.end, 381, 58);
@@ -1365,10 +1396,10 @@ const graphics = {
 		for (let index = 0; index < game.hand.length - 1; index++) {
 			if (index === game.select[1]) continue;
 			draw.card(game.hand[index >= game.enemyAtt[0] ? index + 1 : index], handSelectPos[index], 17);
-		};
+		}
 		if (game.select[1] >= 0 && game.select[1] < game.hand.length - 1) {
 			draw.card(game.hand[game.select[1] >= game.enemyAtt[0] ? game.select[1] + 1 : game.select[1]], handSelectPos[game.select[1]], 17, true);
-		};
+		}
 		draw.topBar("Select a Card");
 	},
 	/**
@@ -1386,8 +1417,8 @@ const graphics = {
 				if (EFF_NAME[keyword]) y += info[type]("This has " + card.eff[keyword] + " <#666>" + EFF_NAME[keyword] + "</#666>.", x, y);
 				y += info[type](keyword, x, y);
 				appliedKeywords.push(keyword);
-			};
-		};
+			}
+		}
 		forKeywordIn(CARDS[card.id]?.keywords || [], keyword => {
 			y += info[type](keyword, x, y);
 		}, appliedKeywords);
@@ -1428,18 +1459,18 @@ const graphics = {
 				coords = [7, 6, 50, 58];
 			} else if (type === SINGULARITY) {
 				coords = [8, 3, 48, 61];
-			};
+			}
 			if (coords) {
 				if (pos[1] + coords[1] < 31) {
 					coords[1] = 31 - pos[1];
 					coords[3] -= 31 - pos[1];
-				};
+				}
 				const left = game.select[1] === 0 && game.enemies.length > 1;
 				draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
 				draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "#fff", "text-align": DIR.CENTER, "text-small": true});
 				if (game.select[1] !== game.enemyNum && !game.enemies[game.select[1]].eff[ENEMY_EFF.SHROUD]) {
 					info.intent();
-				};
+				}
 				const exAtt = enemy.getExtraAttackPower();
 				const exDef = enemy.getExtraDefendPower();
 				if (left) draw.lore(pos[0] + coords[0] - 2.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-align": DIR.LEFT, "text-small": true});
@@ -1450,10 +1481,10 @@ const graphics = {
 					if ((left ? y + 12 : y) + height >= 202 - pos[1]) {
 						y = coords[1] - 1;
 						x -= 78;
-					};
+					}
 					y += info.enemy(type, x, (left ? y + 12 : y));
 				});
-			};
+			}
 		} else if (game.select[0] === S.PLAYER) {
 			const coords = [58, 69, 24, 39];
 			draw.selector(coords[0], coords[1], coords[2], coords[3]);
@@ -1464,7 +1495,7 @@ const graphics = {
 				if (y + height >= 202 - coords[1]) {
 					y = 0;
 					x += 78;
-				};
+				}
 				y += info.player(type, x, y);
 			});
 		} else if (game.select[0] === S.ARTIFACTS) {
@@ -1489,7 +1520,7 @@ const graphics = {
 			info.menuItem(DIR.RIGHT, 0, "View Discard");
 		} else if (game.select[0] === S.MAP) {
 			info.menuItem(S.MAP, game.select[1]);
-		};
+		}
 		if (inMenu()) {
 			return;
 		} else if ((game.select[0] === S.HAND || (game.select[0] !== S.ATTACK && game.select[0] !== S.ENEMY && !hidden() && global.options[OPTION.STICKY_CARDS])) && game.hand.length && game.prevCard < game.hand.length) {
@@ -1499,8 +1530,8 @@ const graphics = {
 				graphics.cardInfo("cardSelect", game.hand[game.select[1] >= game.enemyAtt[0] ? game.select[1] + 1 : game.select[1]]);
 			} else {
 				info.menuItem(DIR.CENTER, (game.select[1] >= 0 ? 1 : 0), "Cancel");
-			};
-		};
+			}
+		}
 	},
 	/**
 	 * Draws the active popups on the canvas.
@@ -1514,27 +1545,27 @@ const graphics = {
 				if (activePopups[index][2] >= STAY_TIME + TRANS_TIME) {
 					activePopups[index] = [];
 					continue;
-				};
+				}
 				activePopups[index][2]++;
 				let x = (activePopups[index][1].length * 6) + 13;
 				if (activePopups[index][3]) {
 					x = (Math.max(activePopups[index][1].length, activePopups[index][3].length) * 3) + 13;
-				};
+				}
 				if (activePopups[index][2] >= STAY_TIME) {
 					x *= (STAY_TIME + TRANS_TIME - activePopups[index][2]) / TRANS_TIME;
 				} else if (activePopups[index][2] < TRANS_TIME) {
 					x *= activePopups[index][2] / TRANS_TIME;
-				};
+				}
 				x = 400 - x;
 				draw.image(I.popup.back, x, 150 - (index * 21));
 				draw.lore(x + 13, 150 - (index * 21) + 8, activePopups[index][3] ? activePopups[index][1] + "\n" + activePopups[index][3] : activePopups[index][1], {"text-small": !!activePopups[index][3]});
 				if (I.popup[activePopups[index][0]]) draw.image(I.popup[activePopups[index][0]], x + 2, 150 - (index * 21) + 2);
 				if (game.select[0] === S.POPUPS && game.select[1] == index) {
 					draw.image(I.select.popup, x - 1, 150 - (index * 21) - 1);
-				};
+				}
 				ctx.globalAlpha = 1;
-			};
-		};
+			}
+		}
 	})(),
 	/**
 	 * Draws the reward claiming box on the canvas.
@@ -1555,7 +1586,7 @@ const graphics = {
 			else if (game.select[1] == index && focused) draw.image(I.select.item, 149, 33 + (index * 20));
 			if (arr[0] === REWARD.FINISH) draw.image(I.reward.back, 149, 33 + (index * 20));
 			draw.lore(166, 37 + (index * 20), (arr[0] === REWARD.FINISH ? "" : (arr[1] ?? "1") + " ") + REWARD_NAME[arr[0]]);
-		};
+		}
 	},
 	/**
 	 * Draws the card reward choosing box on the canvas.
@@ -1572,7 +1603,7 @@ const graphics = {
 		else draw.lore(200 - 2, y + 1, "Pick a card:", {"text-align": DIR.CENTER});
 		for (let index = 0; index < choices; index++) {
 			if (index !== game.select[1] || !focused) draw.card(game.room[5][index], (199 - (choices * 68 / 2)) + 1 + (index * 68), 50, false, true);
-		};
+		}
 		if (game.select[1] >= 0 && focused) draw.card(game.room[5][game.select[1]], (199 - (choices * 68 / 2)) + 1 + (game.select[1] * 68), 50, true, true);
 		if (game.select[1] < 0 && focused) draw.rect("#fff", x, y + height - 14, width, 14);
 		draw.box(x + 2, y + height - 12, width - 4, 10);
@@ -1593,7 +1624,7 @@ const graphics = {
 		for (let index = 0; index < 3; index++) {
 			draw.image(I.artifact[game.room[6][index]], 160 + (index * 32), 90);
 			if (index === game.select[1]) draw.image(I.artifact._.wo[game.room[6][index]], 159 + (index * 32), 89);
-		};
+		}
 		if (game.select[1] < 0 && focused) draw.rect("#fff", x, y + height - 14, width, 14);
 		draw.box(x + 2, y + height - 12, width - 4, 10);
 		draw.lore(x + 3, y + height - 11, "Go back");
@@ -1619,7 +1650,7 @@ const graphics = {
 				draw.image(I.map.select_first, 13, 12);
 			} else {
 				draw.image(I.map.select, 13 + (game.floor % 10 * 32), 12);
-			};
+			}
 		} else if (game.floor > 0) {
 			if (game.floor % 10 === 0) {
 				draw.image(I.map.select, 18 + (9 * 32), 12);
@@ -1628,15 +1659,15 @@ const graphics = {
 				draw.image(I.map.select_first, 13, 12);
 			} else {
 				draw.image(I.map.select, 13 + ((game.floor % 10 - 1) * 32), 12);
-			};
-		};
+			}
+		}
 		draw.image(I.extra.deck, 22, 16);
 		draw.lore(23, 22, game.cards.length, {"color": "#fff"});
 		if (game.select[1] === availableLocations.length && focused) draw.image(I.select.deck, 21, 15);
 		if (!(game.state === STATE.EVENT_FIN && onFloorWithCutscene())) {
 			draw.image(I.extra.end, 22, 179);
 			if (game.select[1] === -1 && focused) draw.image(I.select.round, 21, 178);
-		};
+		}
 		draw.lore(1, 1, "Floor " + game.floor + " - " + game.gold + " gold", {"color": "#fff"});
 		draw.lore(399, 1, "Seed: " + game.seed, {"color": "#fff", "text-align": DIR.LEFT});
 		// draw scribbles
@@ -1646,7 +1677,7 @@ const graphics = {
 			const y = 24.5 + 4 * (index % 2) * 32;
 			draw.image(I.map.scribble_back, x - 4, y - 2.5, 80 / SCALE, 80 / SCALE);
 			draw.imageSector(I.map.scribbles, game.scribbles[index] * 64, 0, 64, 70, x, y, 64 / SCALE, 70 / SCALE);
-		};
+		}
 		// draw paths
 		ctx.filter = NO_ANTI_ALIASING_FILTER;
 		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
@@ -1654,13 +1685,13 @@ const graphics = {
 				for (const node2 in mapPathPoints[row1][node1]) {
 					if (game.traveled[row1] == node1 && game.traveled[row1 + 1] == node2) continue;
 					draw.polyline(mapPathPoints[row1][node1][node2], "#b84", 3);
-				};
-			};
-		};
+				}
+			}
+		}
 		// draw traveled path
 		for (let index = area * 10 + 1; index <= (area + 1) * 10 && index < game.traveled.length; index++) {
 			draw.polyline(mapPathPoints[index - 1][game.traveled[index - 1]][game.traveled[index]], "#842", 3);
-		};
+		}
 		ctx.filter = "none";
 		// draw nodes
 		const coordSel = [game.floor + 1, availableLocations[game.select[1]]];
@@ -1674,7 +1705,7 @@ const graphics = {
 					if (focused) {
 						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo[type], drawX - 1, drawY - 1);
 						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo[type], drawX - 1, drawY - 1);
-					};
+					}
 					draw.image(I.map.node[type], drawX, drawY);
 				} else {
 					let num = -1;
@@ -1682,17 +1713,17 @@ const graphics = {
 						num = getBattleType(game.map[x][y]);
 					} else if (game.map[x][y][0] === ROOM.TREASURE) {
 						num = (game.traveled[x] == y ? 1 : 0);
-					};
+					}
 					if (num >= 0) {
 						if (focused) {
 							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node[type]._.wo[num], drawX - 1, drawY - 1);
 							else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node[type]._.bo[num], drawX - 1, drawY - 1);
-						};
+						}
 						draw.image(I.map.node[type][num], drawX, drawY);
-					};
-				};
-			};
-		};
+					}
+				}
+			}
+		}
 		// draw map edges
 		draw.rect("#530", 16, 19, 2, 174);
 		draw.rect("#530", 382, 19, 2, 174);
@@ -1705,7 +1736,7 @@ const graphics = {
 		const event = getCurrentEvent();
 		if (event.length === 0) {
 			throwError(`Invalid event: ${get.area()}#${game.room[3]}#${game.turn - TURN.EVENT_START}`);
-		};
+		}
 		draw.textBox(125 - 1, 40, 50, wrapText(event[1] instanceof Function ? event[1]() : event[1], 50), {"text-small": true});
 		for (let index = 2; index < event.length; index++) {
 			const x = 100 + (index - 2) * 20;
@@ -1713,7 +1744,7 @@ const graphics = {
 			if (event[index][2] instanceof Function && !event[index][2]()) draw.lore(200 - 2, x, text, {"color": "#888", "text-align": DIR.CENTER});
 			else if (index == game.select[1] + 2) draw.lore(200 - 2, x, "\> " + text + "  ", {"color": "#ff0", "text-align": DIR.CENTER});
 			else draw.lore(200 - 2, x, text, {"color": "#fff", "text-align": DIR.CENTER});
-		};
+		}
 	},
 	/**
 	 * Draws the game end layer on the canvas.
@@ -1728,7 +1759,7 @@ const graphics = {
 			winAnim += Math.random() * 0.05 + 0.05;
 			if (winAnim >= 8) winAnim -= 8;
 			draw.rect("#0004");
-		};
+		}
 		// calculate header text
 		let text = "";
 		if (game.select[0] === S.GAME_WON) {
@@ -1743,7 +1774,7 @@ const graphics = {
 			else if (game.difficulty) text += "HARD";
 			else text += "EASY";
 			text += "\n\nTOP FLOOR: " + game.floor;
-		};
+		}
 		// calculate score factors
 		let factors = [];
 		for (let index = 0; index < ENEMY_ORDER.length; index++) {
@@ -1752,8 +1783,8 @@ const graphics = {
 			if (amt) {
 				if (BOSS_ENEMIES.includes(+type)) factors.push(["Killed " + ENEMY_NAME[+type], ENEMY_WORTH[+type], amt]);
 				else factors.push(["Killed " + amt + " " + (amt > 1 ? PLURAL_ENEMY_NAME : ENEMY_NAME)[+type], ENEMY_WORTH[+type], amt]);
-			};
-		};
+			}
+		}
 		factors.push(["Saved " + game.gold + " gold", 1, Math.floor(game.gold / 5)]);
 		if (game.select[0] === S.GAME_WON) factors.push(["Saved " + game.health + " health", 5, game.health]);
 		// calculate text position and color
@@ -1768,7 +1799,7 @@ const graphics = {
 		text = "";
 		for (let index = 0; index < factors.length; index++) {
 			text += factors[index][0] + ":\n";
-		};
+		}
 		if (game.difficulty) text += "\nBase score:\n\nTotal score:";
 		else text += "\nTotal score:";
 		draw.lore(120, 100 - (len - 7) * 2.75, text, {"color": normalColor, "text-small": true});
@@ -1784,8 +1815,8 @@ const graphics = {
 			} else {
 				text += amt + " points\n";
 				totalScore += amt;
-			};
-		};
+			}
+		}
 		if (game.difficulty) {
 			text += "\n" + totalScore + " points";
 			if (hasArtifact(202) && game.kills[FRAGMENT]) {
@@ -1794,16 +1825,16 @@ const graphics = {
 			} else {
 				text += "\n\n" + totalScore + "<" + hardColor + ">x2</" + hardColor + ">";
 				totalScore *= 2;
-			};
+			}
 			text += " = " + totalScore + " points";
 		} else {
 			text += "\n" + totalScore + " points";
-		};
+		}
 		// draw score text
 		draw.lore(280, 100 - (len - 7) * 2.75, text, {"color": normalColor, "text-align": DIR.LEFT, "text-small": true});
 		if (totalScore > global.highScore && !game.cheat) {
 			draw.lore(280, 100 + (len + 9) * 2.75, ": NEW HIGH SCORE!", {"color": normalColor, "text-small": true});
-		};
+		}
 		ctx.globalAlpha = 1;
 	},
 	/**
@@ -1815,10 +1846,10 @@ const graphics = {
 		if (hasArtifact(202)) {
 			if (game.floor == 10 && transition < 100) {
 				ctx.globalAlpha = transition / 100;
-			};
+			}
 			draw.imageSector(I.background.difficulty, 0, 2 * 16, 64, 16, 168, 146);
 			ctx.globalAlpha = 1;
-		};
+		}
 		if (game.select[0] !== S.WELCOME) {
 			let text = "";
 			for (let index = 0; index < MAIN_MENU_OPTIONS.length; index++) {
@@ -1828,10 +1859,10 @@ const graphics = {
 					text += "   <#888>" + MAIN_MENU_OPTIONS[index] + "</#888>\n";
 				} else {
 					text += "   " + MAIN_MENU_OPTIONS[index] + "\n";
-				};
-			};
+				}
+			}
 			draw.lore(1, 84, text, {"color": "#fff"});
-		};
+		}
 	},
 	/**
 	 * Draws the confirmation layer on the canvas.
@@ -1870,12 +1901,12 @@ const graphics = {
 			options = ["YES", "BACK"];
 		} else if (game.select[0] === S.CONF_PEARL) {
 			text = ["As the dark cloud clears, you see a strange pearl resting on the ground.", "Will you pick it up? This will consume 1 energy."];
-		};
+		}
 		let width = 39;
 		for (let index = 0; index < text.length; index++) {
 			const size = text[index].length * 3 + 2;
 			if (size > width) width = size;
-		};
+		}
 		const height = Math.ceil(text.length * 5.5) + 15;
 		const x = (400 - width) / 2;
 		const y = (game.select[0] === S.CONF_REFINE ? 20 : (200 - height) / 2);
@@ -1889,20 +1920,20 @@ const graphics = {
 				const boxWidth = options[index].length * 6 + 1;
 				if (select === index) draw.rect("#fff", x + offset, y + height - 14, boxWidth + 4, 14);
 				offset += boxWidth + 3;
-			};
-		};
+			}
+		}
 		let offset = 0;
 		for (let index = 0; index < options.length; index++) {
 			const boxWidth = options[index].length * 6 + 1;
 			draw.box(x + 2 + offset, y + height - 12, boxWidth, 10);
 			draw.lore(x + 3 + offset, y + height - 11, options[index]);
 			offset += boxWidth + 3;
-		};
+		}
 		if (game.select[0] === S.CONF_REFINE) {
 			draw.card(refinableDeck[game.cardSelect], 100, 51, true, true);
 			draw.card(new Card(refinableDeck[game.cardSelect].id, 1), 234, 51, true, true);
 			draw.image(I.card.refine, 200 - I.card.refine.width / 2, 95);
-		};
+		}
 	},
 	/**
 	 * Draws the seed input layer on the canvas.
@@ -1933,8 +1964,8 @@ const graphics = {
 		if (!sortedPrevGames.length) {
 			for (let index = global.prevGames.length - 1; index >= 0; index--) {
 				sortedPrevGames.push(index);
-			};
-		};
+			}
+		}
 		// scrolling
 		if (focused) {
 			const scrollPadding = 11;
@@ -1943,11 +1974,11 @@ const graphics = {
 				menuScroll -= Math.min(10, Math.abs(menuScroll - (spaceY * selected)));
 			} else if (menuScroll <= (spaceY * (selected - 3)) + scrollPadding) {
 				menuScroll += Math.min(10, Math.abs(menuScroll - ((spaceY * (selected - 3)) + scrollPadding)));
-			};
+			}
 			const maxScroll = Math.max(spaceY * (global.prevGames.length - 4) + scrollPadding, 0);
 			if (menuScroll > maxScroll) menuScroll = maxScroll;
 			else if (menuScroll < 0) menuScroll = 0;
-		};
+		}
 		// draw previous games
 		for (let index = Math.max(Math.floor((menuScroll - 18) / spaceY), 0); index < Math.min(Math.floor((menuScroll + 400 - 18) / spaceY), sortedPrevGames.length); index++) {
 			// setup
@@ -1986,16 +2017,16 @@ const graphics = {
 			if (prevGame.cheat) {
 				iconWidth += I.x.width;
 				draw.image(I.x, 323 - iconWidth, y + 3 * 11 - 1);
-			};
+			}
 			if (prevGame.character === CHARACTER.KNIGHT) {
 				iconWidth += I.player.head.width;
 				draw.image(I.player.head, 323 - iconWidth, y + 3 * 11 - 1);
-			};
+			}
 			// fourth row (interactable text)
 			let kills = 0;
 			for (const key in prevGame.kills) {
 				kills += prevGame.kills[key];
-			};
+			}
 			text = ["  Cards: " + prevGame.cards.length, "  Artifacts: " + prevGame.artifacts.length, "  Enemies killed: " + kills];
 			let styles = [];
 			if (focused) {
@@ -2003,11 +2034,11 @@ const graphics = {
 					if (index * 3 + offset !== menuSelect[1]) continue;
 					text[offset] = text[offset].replace(" ", ">");
 					styles[offset] = {"color": "#ff0"};
-				};
-			};
+				}
+			}
 			if (!styles[2] && kills > 0) text[2] = "  Enemies killed: <#0f0>" + kills + "</#0f0>";
 			draw.prevGameRow(x, y + 3 * 11, text, styles, iconWidth + 6);
-		};
+		}
 		// draw top bar
 		draw.topBar("Previous Runs");
 	},
@@ -2024,13 +2055,13 @@ const graphics = {
 			if (!ARTIFACTS[prevGame.artifacts[index]].big) continue;
 			draw.image(I.artifact[prevGame.artifacts[index]], (index * 26) + 3, 16);
 			if (index == menuArtifactSelect && focused) draw.image(I.artifact._.wo[prevGame.artifacts[index]], (index * 26) + 2, 15);
-		};
+		}
 		// small artifacts
 		for (let index = 0; index < prevGame.artifacts.length; index++) {
 			if (ARTIFACTS[prevGame.artifacts[index]].big) continue;
 			draw.image(I.artifact[prevGame.artifacts[index]], (index * 26) + 11, 24);
 			if (index == menuArtifactSelect && focused) draw.image(I.artifact._.wo[prevGame.artifacts[index]], (index * 26) + 10, 23);
-		};
+		}
 		info.artifact(prevGame.artifacts[menuArtifactSelect], menuArtifactSelect * 26 + 11, 43);
 		draw.topBar("Artifacts From Run #" + prevGame.num);
 	},
@@ -2064,10 +2095,10 @@ const graphics = {
 					menuEnemyAnim.drawEnemy(posX, y - 13, enemyIndex, true);
 				} else {
 					menuEnemyAnim.drawEnemy(posX, y + 1, enemyIndex, true);
-				};
-			};
+				}
+			}
 			x += spaceX;
-		};
+		}
 		draw.topBar("Enemies Killed From Run #" + prevGame.num);
 		menuEnemyAnim.progressAnimations();
 	},
@@ -2086,8 +2117,8 @@ const graphics = {
 			for (let index = 0; index < PREV_GAMES_SORT_NAMES.length; index++) {
 				if (index == prevGamesSort[0] && focused) text += "<#ff0> \> " + PREV_GAMES_SORT_NAMES[index] + "</#ff0>\n";
 				else text += "   " + PREV_GAMES_SORT_NAMES[index] + "\n";
-			};
-		};
+			}
+		}
 		draw.lore(2, 15, text, {"color": "#fff"});
 		draw.topBar(menuSelect[1] ? "Sort in..." : "Sort by...");
 	},
@@ -2104,11 +2135,11 @@ const startAnim = {
 		if (game.attackEffects.includes(ATT_EFF.AURA_BLADE)) {
 			if (image == I.player.attack) image = I.player.attack_aura;
 			else if (image == I.player.attack_2) image = I.player.attack_2_aura;
-		};
+		}
 		if (game.eff[EFF.REINFORCE]) {
 			if (image == I.player.shield) image = I.player.shield_reinforced;
 			else if (image == I.player.crouch_shield) image = I.player.crouch_shield_reinforced;
-		};
+		}
 		playerAnim = [0, image];
 	},
 	/**

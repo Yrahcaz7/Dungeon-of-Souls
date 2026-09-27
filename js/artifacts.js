@@ -1,20 +1,3 @@
-/*  Dungeon of Souls
- *  Copyright (C) 2026 Yrahcaz7
- *
- *  This program is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program. If not, see <https://www.gnu.org/licenses/>.
- */
-
 const ARTIFACTS = {
 	0: {
 		name: "Error",
@@ -59,7 +42,7 @@ const ARTIFACTS = {
 		[FUNC.PLAY_CARD](card) {
 			if (Math.floor(card.id / 1000) == 4) {
 				drawCards(2);
-			};
+			}
 		},
 	},
 	107: {
@@ -103,7 +86,7 @@ const ARTIFACTS = {
 		[FUNC.AFTER_ATTACK](card) {
 			if (CARDS[card.id].target !== false) {
 				game.enemies[game.enemyAtt[1]].gainEff(ENEMY_EFF.DUEL_TARGET);
-			};
+			}
 		},
 	},
 	207: {
@@ -120,11 +103,11 @@ for (const key in ARTIFACTS) {
 			if (!EFF_NAME[obj[effect]]) continue;
 			if (artifact.desc.includes(EFF_NAME[obj[effect]])) {
 				artifact.keywords.push(obj[effect]);
-			};
-		};
-	};
+			}
+		}
+	}
 	artifact.desc = colorText(wrapText(artifact.desc, Math.max(artifact.name.length, 12) * 2));
-};
+}
 
 /**
  * Returns a boolean indicating whether the player has an artifact.
@@ -133,7 +116,7 @@ for (const key in ARTIFACTS) {
 function hasArtifact(id) {
 	if (id == 103 && game.artifacts.includes(205)) return true; // make "Corrosion [stage 2]" count as "Corrosion"
 	return game.artifacts.includes(id);
-};
+}
 
 /**
  * Gives the player an artifact.
@@ -143,7 +126,7 @@ function getArtifact(id) {
 	game.artifacts.push(id);
 	const func = ARTIFACTS[id][FUNC.PICKUP];
 	if (func instanceof Function) func();
-};
+}
 
 /**
  * Activates all artifact effects of a type.
@@ -153,8 +136,8 @@ function activateArtifacts(type, ...params) {
 	for (let index = 0; index < game.artifacts.length; index++) {
 		const func = ARTIFACTS[game.artifacts[index]][type];
 		if (func instanceof Function) func(...params);
-	};
-};
+	}
+}
 
 const ARTIFACT_IDS = [];
 
@@ -169,16 +152,16 @@ function randomArtifact(notInclude = []) {
 			if (!notInclude.includes(ARTIFACT_IDS[index])) {
 				bool = false;
 				break;
-			};
-		};
+			}
+		}
 		if (bool) return 0;
-	};
+	}
 	let result = 0;
 	while (!result || notInclude.includes(result)) {
 		result = ARTIFACT_IDS[randomInt(0, ARTIFACT_IDS.length - 1)];
-	};
+	}
 	return result;
-};
+}
 
 /**
  * Returns a random artifact set.
@@ -190,6 +173,6 @@ function randomArtifactSet(length = 0) {
 	let result = [];
 	for (let index = 0; index < length; index++) {
 		result.push(randomArtifact(result));
-	};
+	}
 	return result;
-};
+}
