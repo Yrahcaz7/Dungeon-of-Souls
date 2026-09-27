@@ -198,13 +198,13 @@ const EVENTS = {
 		110: [() => {
 			game.gold -= 100;
 			getArtifact(207);
-		}, `After throwing in a decent amount of gold, a strange object fell out of the hole. It's probably the "Device" that the text spoke of. The "Device" has many glowing words on it, some of them unfamiliar. The words seem to form a complicated poem... You'll contemplate it later.`, ["Get a move on", 111]],
+		}, `After throwing in a decent amount of gold, a strange slab fell out of the hole. It's probably the "Device" that the text spoke of. The "Device" has many glowing words on it, some of them unfamiliar. The words seem to form a complicated poem... You'll contemplate it later.`, ["Get a move on", 111]],
 		111: [finishEvent],
 		120: [() => {
 			game.gold -= 400;
 			game.health += 10;
 			getArtifact(207);
-		}, "You cram a bunch of gold into the hole, but all of it mysteriously dissapears. Only two objects fall out of the hole: A bottle and a glowing slab. Recognizing the red liquid in the bottle, you quickly chug it down. As soon as you do so, your fatigue begins to wash away.", ["Inspect the slab", 121]],
+		}, "You cram a bunch of gold into the hole, but all of it mysteriously dissapears. Shortly after, two objects fall out of the hole: A bottle and a glowing slab. Recognizing the red liquid in the bottle, you quickly chug it down. As soon as you do so, your fatigue begins to wash away.", ["Inspect the slab", 121]],
 		121: [null, `The mysterious slab is probably that "Device" mentioned by the text. Picking it up, you realize the glow comes from many individual words on its surface. The words seem to form a complicated poem... You'll have to contemplate it later.`, ["Get a move on", 111]],
 		130: [null, "You decide that it's probably not worth the gold and continue onward.", ["Get a move on", 111]],
 		200: [null, "You decide that it's not worth your time and continue onward.", ["Get a move on", 111]],

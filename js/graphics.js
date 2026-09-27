@@ -879,8 +879,10 @@ const graphics = {
 		if (get.area() == 1) {
 			for (let col = 0; col < 14 + 15; col++) {
 				if (!backAnim[col]?.length) backAnim[col] = [];
-				for (let index = 0; index < 9; index++) {
-					if (!backAnim[col][index]?.length) backAnim[col][index] = [0];
+				for (let index = 0; index < 8; index++) {
+					if (!backAnim[col][index]?.length) {
+						backAnim[col][index] = [0];
+					}
 					if (backAnim[col][index][0] === 0 && Math.random() < 1/100) {
 						backAnim[col][index] = [Math.floor(Math.random() * 10) + 10, Math.floor(Math.random() * 6)];
 					}
@@ -888,36 +890,41 @@ const graphics = {
 			}
 			for (let col = 0; col < 12; col++) {
 				if (!backAnim[col][9]) backAnim[col][9] = [];
-				for (let index = 0; index < 6; index++) {
-					if (!backAnim[col][9][index]) backAnim[col][9][index] = 0;
+				for (let index = 0; index < 8; index++) {
+					if (!backAnim[col][9][index]) {
+						backAnim[col][9][index] = 0;
+					}
 					if (backAnim[col][9][index] === 0 && Math.random() < 1/200) {
 						backAnim[col][9][index] = Math.floor(Math.random() * 20) + 20;
 					}
 				}
 			}
-			draw.image(I.background.hallway, 0, 42);
+			draw.image(I.background.hallway, 0, 58);
 			if (!backAnim[29]) backAnim[29] = 0;
 			for (let col = 0; col < 12; col++) {
-				draw.imageSector(I.background.panel, Math.floor(backAnim[29]) * 35, 0, 35, 42, col * 34 - 6, 0);
-				for (let index = 0; index < 6; index++) {
-					if (backAnim[col][9][index] > 0) backAnim[col][9][index]--;
-					else draw.imageSector(I.background.panel_cover, index * 35, 0, 35, 42, col * 34 - 6, 0);
+				draw.imageSector(I.background.panel, Math.floor(backAnim[29]) * 35, 0, 35, 58, col * 34 - 6, 0);
+				for (let index = 0; index < 8; index++) {
+					if (backAnim[col][9][index] > 0) {
+						backAnim[col][9][index]--;
+					} else {
+						draw.imageSector(I.background.panel_cover, index * 35, 0, 35, 58, col * 34 - 6, 0);
+					}
 				}
 			}
 			backAnim[29]++;
 			if (backAnim[29] >= 12) backAnim[29] = 0;
 			for (let col = 0; col < 14; col++) {
-				for (let index = 0; index < 9; index++) {
+				for (let index = 0; index < 8; index++) {
 					if (backAnim[col][index][0] > 0) {
-						draw.imageSector(I.background.tiles, backAnim[col][index][1] * 15, 0, 15, 8, col * 34 - index * 9 + 9, index * 18 + 44);
+						draw.imageSector(I.background.tiles, backAnim[col][index][1] * 15, 0, 15, 8, col * 34 - index * 9 + 9, index * 18 + 60);
 						backAnim[col][index][0]--;
 					}
 				}
 			}
 			for (let col = 0; col < 15; col++) {
-				for (let index = 0; index < 9; index++) {
+				for (let index = 0; index < 8; index++) {
 					if (backAnim[col + 14][index][0] > 0) {
-						draw.imageSector(I.background.tiles, backAnim[col][index][1] * 15, 8, 15, 8, col * 34 - index * 9 - 12, index * 18 + 53);
+						draw.imageSector(I.background.tiles, backAnim[col][index][1] * 15, 8, 15, 8, col * 34 - index * 9 - 12, index * 18 + 69);
 						backAnim[col + 14][index][0]--;
 					}
 				}
