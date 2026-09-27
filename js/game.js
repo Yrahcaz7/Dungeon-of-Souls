@@ -1,4 +1,4 @@
-const VERSION = 3_000_070;
+const VERSION = 3_000_071;
 
 /**
  * Returns the starting global data.
@@ -489,7 +489,7 @@ function updateVisuals() {
 		} else {
 			draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": DIR.CENTER});
 		}
-		graphics.menu(menuSelect[0] === MENU.MAIN);
+		graphics.menu(menuSelected(MENU.MAIN));
 		if (selected(S.WELCOME)) {
 			draw.box(80 + 2, 83, 240 - 4, 34);
 			if (game.difficulty === 0) {
@@ -497,10 +497,10 @@ function updateVisuals() {
 			} else {
 				draw.lore(200 - 1, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start much stronger from the beginning.\nAdditionally, all non-boss enemies have a special effect.\nOtherwise, it is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
 			}
-		} else if ([MENU.PREV_GAMES, MENU.PREV_GAME_INFO, MENU.PREV_GAME_SORT, MENU.CONF_REMOVE_PREV_GAME].includes(menuSelect[0])) {
-			graphics.prevGames(menuSelect[0] === MENU.PREV_GAMES);
+		} else if (menuSelected(MENU.PREV_GAMES, MENU.PREV_GAME_INFO, MENU.PREV_GAME_SORT, MENU.CONF_REMOVE_PREV_GAME)) {
+			graphics.prevGames(menuSelected(MENU.PREV_GAMES));
 		}
-		if (menuSelect[0] === MENU.PREV_GAME_INFO) {
+		if (menuSelected(MENU.PREV_GAME_INFO)) {
 			if (menuSelect[1] % 3 === 0) {
 				graphics.deck();
 			} else if (menuSelect[1] % 3 == 1) {
@@ -508,15 +508,15 @@ function updateVisuals() {
 			} else if (menuSelect[1] % 3 == 2) {
 				graphics.prevGameKills();
 			}
-		} else if (menuSelect[0] === MENU.PREV_GAME_SORT) {
+		} else if (menuSelected(MENU.PREV_GAME_SORT)) {
 			graphics.prevGameSort();
 		}
 		if (selected(S.WELCOME)) {
 			return;
-		} else if ([MENU.START_NEW_RUN, MENU.CHANGE_DIFFICULTY, MENU.CHANGE_SEED, MENU.ENTER_SEED, MENU.CONF_REMOVE_PREV_GAME, MENU.OLD_SAVE_ALERT, MENU.OLD_SAVE_COPY_FAILED].includes(menuSelect[0])) {
-			graphics.conf(menuSelect[0] !== MENU.ENTER_SEED);
+		} else if (menuSelected(MENU.START_NEW_RUN, MENU.CHANGE_DIFFICULTY, MENU.CHANGE_SEED, MENU.ENTER_SEED, MENU.CONF_REMOVE_PREV_GAME, MENU.OLD_SAVE_ALERT, MENU.OLD_SAVE_COPY_FAILED)) {
+			graphics.conf(!menuSelected(MENU.ENTER_SEED));
 		}
-		if (menuSelect[0] === MENU.ENTER_SEED) {
+		if (menuSelected(MENU.ENTER_SEED)) {
 			graphics.seedInput();
 		}
 		if (hasArtifact(202) && game.floor == 10 && transition < 100) {

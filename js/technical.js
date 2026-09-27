@@ -175,7 +175,7 @@ document.addEventListener("keydown", event => {
 	if (!loaded) return;
 	holdTimer = 0;
 	const key = (event.key.length === 1 ? event.key.toUpperCase() : event.key);
-	if (menuSelect[0] === MENU.ENTER_SEED) {
+	if (menuSelected(MENU.ENTER_SEED)) {
 		if (key.length === 1 && /[0-9A-F]/.test(key) && !event.repeat && actionTimer === -1 && newSeed.length < 6) {
 			newSeed += key;
 		} else if (key === "V" && (event.ctrlKey || event.metaKey) && !event.repeat && actionTimer === -1 && newSeed.length < 6) {
@@ -195,17 +195,17 @@ document.addEventListener("keydown", event => {
 			performAction();
 		}
 		action = -1;
-	} else if (key === "E" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1 && game.turn === TURN.PLAYER) {
+	} else if (key === "E" && !event.repeat && menuSelected(-1) && actionTimer === -1 && game.turn === TURN.PLAYER) {
 		if (selected(S.CONF_END_TURN)) game.select = [S.HAND, game.prevCard];
 		else endTurnConfirm();
 		action = -1;
-	} else if (key === "1" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1) {
+	} else if (key === "1" && !event.repeat && menuSelected(-1) && actionTimer === -1) {
 		shortcutTo(S.DECK);
-	} else if (key === "2" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1) {
+	} else if (key === "2" && !event.repeat && menuSelected(-1) && actionTimer === -1) {
 		shortcutTo(S.DISCARD);
-	} else if (key === "3" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1 && game.void.length) {
+	} else if (key === "3" && !event.repeat && menuSelected(-1) && actionTimer === -1 && game.void.length) {
 		shortcutTo(S.VOID);
-	} else if (key === "0" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1) {
+	} else if (key === "0" && !event.repeat && menuSelected(-1) && actionTimer === -1) {
 		if (selected(S.CARDS)) {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [S.MAP, get.availableLocations().length];
@@ -215,11 +215,11 @@ document.addEventListener("keydown", event => {
 		}
 		action = -1;
 		actionTimer = 2;
-	} else if (key === "C" && !event.repeat && menuSelect[0] === MENU.PREV_GAMES && actionTimer === -1) {
+	} else if (key === "C" && !event.repeat && menuSelected(MENU.PREV_GAMES) && actionTimer === -1) {
 		menuSelect = [MENU.PREV_GAME_SORT, 0, menuSelect];
 		action = -1;
 		actionTimer = 2;
-	} else if (key === "R" && !event.repeat && menuSelect[0] === MENU.PREV_GAMES && actionTimer === -1) {
+	} else if (key === "R" && !event.repeat && menuSelected(MENU.PREV_GAMES) && actionTimer === -1) {
 		menuSelect = [MENU.CONF_REMOVE_PREV_GAME, 1, menuSelect];
 		action = -1;
 		actionTimer = 2;

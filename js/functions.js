@@ -15,6 +15,22 @@ function prevSelected(...selectionTypes) {
 }
 
 /**
+ * Returns a boolean indicating whether the current menu selection belongs to any of the specified selection types.
+ * @param {...number} selectionTypes - Any number of values from `MENU`.
+ */
+function menuSelected(...selectionTypes) {
+	return selectionTypes.includes(menuSelect[0]);
+}
+
+/**
+ * Returns a boolean indicating whether the previous stacked menu selection belongs to any of the specified selection types.
+ * @param {...number} selectionTypes - Any number of values from `MENU`.
+ */
+function prevMenuSelected(...selectionTypes) {
+	return menuSelect[2] !== undefined && selectionTypes.includes(menuSelect[2][0]);
+}
+
+/**
  * Returns a boolean indicating whether the middleground layers are hidden.
  */
 function hidden() {
@@ -25,14 +41,14 @@ function hidden() {
  * Returns a boolean indicating whether a menu is being viewed.
  */
 function inMenu() {
-	return menuSelect[0] !== -1 || selected(S.WELCOME);
+	return !menuSelected(-1) || selected(S.WELCOME);
 }
 
 /**
  * Returns a boolean indicating whether a deck outside battle is being viewed.
  */
 function inOutsideDeck() {
-	return menuSelect[0] === MENU.PREV_GAME_INFO || selected(S.CARDS, S.PURIFIER, S.CONF_PURIFY, S.REFINER, S.CONF_REFINE);
+	return menuSelected(MENU.PREV_GAME_INFO) || selected(S.CARDS, S.PURIFIER, S.CONF_PURIFY, S.REFINER, S.CONF_REFINE);
 }
 
 /**
@@ -48,7 +64,7 @@ function inDeck() {
  */
 function currentDeck() {
 	if (inMenu()) {
-		if (menuSelect[0] === MENU.PREV_GAME_INFO) return global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].cards;
+		if (menuSelected(MENU.PREV_GAME_INFO)) return global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].cards;
 	} else {
 		if (selected(S.DECK) && game.select[1]) return Card.sort(game.deck.slice());
 		if (selected(S.DISCARD) && game.select[1]) return game.discard;

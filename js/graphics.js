@@ -1349,7 +1349,7 @@ const graphics = {
 			}
 		}
 		// draw top bar
-		if (menuSelect[0] === MENU.PREV_GAME_INFO) draw.topBar("Cards From Run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].num);
+		if (menuSelected(MENU.PREV_GAME_INFO)) draw.topBar("Cards From Run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].num);
 		else if (selected(S.DECK)) draw.topBar("Deck");
 		else if (selected(S.DISCARD)) draw.topBar("Discard");
 		else if (selected(S.VOID)) draw.topBar("Void");
@@ -1893,18 +1893,18 @@ const graphics = {
 	conf(focused = true) {
 		let text = ["Are you sure?"];
 		let options = ["YES", "NO"];
-		if (menuSelect[0] === MENU.START_NEW_RUN) {
+		if (menuSelected(MENU.START_NEW_RUN)) {
 			text = ["Are you sure you want to start a new run?", "If you have an ongoing run, it will be lost forever!"];
-		} else if (menuSelect[0] === MENU.CHANGE_DIFFICULTY) {
+		} else if (menuSelected(MENU.CHANGE_DIFFICULTY)) {
 			text = ["Are you sure you want to change the difficulty to " + (game.difficulty ? "easy" : "hard") + "?", "If you have an ongoing run, it will be reset!"];
-		} else if (menuSelect[0] === MENU.CHANGE_SEED || menuSelect[0] === MENU.ENTER_SEED) {
+		} else if (menuSelected(MENU.CHANGE_SEED, MENU.ENTER_SEED)) {
 			text = ["Are you sure you want to change the seed?", "If you have an ongoing run, it will be reset!", "The new run will also not count towards your high score."];
-		} else if (menuSelect[0] === MENU.CONF_REMOVE_PREV_GAME) {
+		} else if (menuSelected(MENU.CONF_REMOVE_PREV_GAME)) {
 			text = ["Are you sure you want to remove run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[2][1] / 3)]].num + " from the list?", "This will permanently remove all of its information."];
-		} else if (menuSelect[0] === MENU.OLD_SAVE_ALERT) {
+		} else if (menuSelected(MENU.OLD_SAVE_ALERT)) {
 			text = ["ALERT: You have an old save from version " + get.versionDisplay(parseSave(localStorage.getItem(ID + "/old/global"))?.version || 0) + ", do you want to keep it?", "(You can play old versions by downloading the files from GitHub)"];
 			options = ["DISMISS", "COPY SAVE", "DELETE SAVE"];
-		} else if (menuSelect[0] === MENU.OLD_SAVE_COPY_FAILED) {
+		} else if (menuSelected(MENU.OLD_SAVE_COPY_FAILED)) {
 			text = ["The old save could not be copied. Make sure this page has clipboard permissions.", "Try to copy old save again?"];
 		} else if (selected(S.CONF_END_TURN)) {
 			text = ["Are you sure you want to end your turn?"];
@@ -1936,7 +1936,7 @@ const graphics = {
 		draw.box(x, y, width, height);
 		draw.lore(x + 1, y + 1, text.join("\n"), {"text-small": true});
 		if (focused) {
-			const select = (menuSelect[0] == -1 ? game.select[1] : menuSelect[1]);
+			const select = (menuSelected(-1) ? game.select[1] : menuSelect[1]);
 			let offset = 0;
 			for (let index = 0; index < options.length; index++) {
 				const boxWidth = options[index].length * 6 + 1;
