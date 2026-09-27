@@ -25,7 +25,7 @@ class EnemyAnimationSource {
 		return (this.enemies instanceof Function ? this.enemies() : this.enemies);
 	}
 	/**
-	 * Progresses the animations of the enemies the source animates.
+	 * Progresses the non-action animations of the enemies the source animates.
 	 */
 	progressAnimations() {
 		const enemies = this.getEnemies();
@@ -176,6 +176,48 @@ class EnemyAnimationSource {
 		}
 	}
 	/**
+	 * Progresses the currently active invertible animation.
+	 */
+	progressInvertibleAction() {
+		if (this.action[1] === ANIM.STARTING) {
+			this.action[0]++;
+		} else if (this.action[1] === ANIM.ENDING) {
+			this.action[0]--;
+		}
+	}
+	/**
+	 * Handles the progression of the currently active sentry attack action.
+	 * @param {number} hitFrame - The index of the frame where the action is performed.
+	 * @param {number} endFrame - The last frame index of the animation. Defaults to `hitFrame + 1`.
+	 * @param {boolean} resetIdle - Whether to reset the acting enemy's idle animation at the end. Defaults to `true`.
+	 */
+	handleSentryAttack(hitFrame, endFrame = hitFrame + 1, resetIdle = true) {
+		this.progressInvertibleAction();
+		if (this.action[0] > endFrame) {
+			this.action[0] = endFrame;
+			this.action[1] = ANIM.ENDING;
+		} else if (this.action[0] === hitFrame && this.action[1] === ANIM.ENDING) {
+			enemy.middleAction();
+		} else if (this.action[0] < 0) {
+			if (resetIdle) {
+				this.idle[index] = 0;
+			}
+			enemy.finishAction();
+		}
+	}
+	/**
+	 * Performs and finishes the currently active defend action when appropriate.
+	 * @param {number} hitFrame - The index of the frame where the action is performed.
+	 * @param {number} endFrame - The last frame index of the animation. Defaults to `hitFrame`.
+	 */
+	finishDefendAction(hitFrame, endFrame = hitFrame) {
+		if (this.action[0] > endFrame) {
+			enemy.finishAction();
+		} else if (this.action[0] === hitFrame) {
+			enemy.middleAction();
+		}
+	}
+	/**
 	 * Draws an acting enemy that the source animates on the canvas.
 	 * @param {number} x - the x-coordinate to draw the enemy at.
 	 * @param {number} y - the y-coordinate to draw the enemy at.
@@ -220,8 +262,7 @@ class EnemyAnimationSource {
 				} else {
 					draw.imageSector(I.enemy.slime.small_attack, Math.floor(this.action[0]) * 128, 0, 128, 64, x - 64, y);
 				}
-				if (this.action[1] === ANIM.STARTING) this.action[0]++;
-				else if (this.action[1] === ANIM.ENDING) this.action[0]--;
+				this.progressInvertibleAction();
 				if (this.action[0] === 20) {
 					this.action[0] = 18;
 					this.action[1] = ANIM.ENDING;
@@ -240,7 +281,7 @@ class EnemyAnimationSource {
 					draw.imageSector(I.enemy.slime.prime_attack, Math.floor(this.action[0]) * 36, 0, 36, 18, x - 40, 80);
 				}
 				this.action[0]++;
-				if (this.action[0] === 20) {
+				if (this.action[0] > 19) {
 					enemy.finishAction();
 				} else if (this.action[0] === 19) {
 					enemy.middleAction();
@@ -285,7 +326,7 @@ class EnemyAnimationSource {
 				}
 				ctx.globalAlpha = 1;
 				this.action[0]++;
-				if (this.action[0] === 24) {
+				if (this.action[0] > 23) {
 					enemy.finishAction();
 				} else if (this.action[0] === 18) {
 					enemy.middleAction();
@@ -301,17 +342,7 @@ class EnemyAnimationSource {
 					const end = this.actionData;
 					draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
 				}
-				if (this.action[1] === ANIM.STARTING) this.action[0]++;
-				else if (this.action[1] === ANIM.ENDING) this.action[0]--;
-				if (this.action[0] === 5) {
-					this.action[0] = 4;
-					this.action[1] = ANIM.ENDING;
-				} else if (this.action[0] === 3 && this.action[1] === ANIM.ENDING) {
-					enemy.middleAction();
-				} else if (this.action[0] < 0) {
-					this.idle[index] = 0;
-					enemy.finishAction();
-				}
+				this.handleSentryAttack(3, 4);
 			} else if (type === SENTRY.SMALL) {
 				if (!this.actionData.length) this.actionData = [
 					(isDefending(playerAnim[1]) ? 92 : 72),
@@ -323,17 +354,7 @@ class EnemyAnimationSource {
 					const end = this.actionData;
 					draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
 				}
-				if (this.action[1] === ANIM.STARTING) this.action[0]++;
-				else if (this.action[1] === ANIM.ENDING) this.action[0]--;
-				if (this.action[0] === 12) {
-					this.action[0] = 11;
-					this.action[1] = ANIM.ENDING;
-				} else if (this.action[0] === 10 && this.action[1] === ANIM.ENDING) {
-					enemy.middleAction();
-				} else if (this.action[0] < 0) {
-					this.idle[index] = 0;
-					enemy.finishAction();
-				}
+				this.handleSentryAttack(10, 11);
 			} else if (type === SENTRY.PRIME && this.prime[index] == -1) {
 				if (!this.actionData.length) this.actionData = [
 					(isDefending(playerAnim[1]) ? 92 : 72),
@@ -347,30 +368,10 @@ class EnemyAnimationSource {
 					start[1] += 7;
 					draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 2);
 				}
-				if (this.action[1] === ANIM.STARTING) this.action[0]++;
-				else if (this.action[1] === ANIM.ENDING) this.action[0]--;
-				if (this.action[0] === 13) {
-					this.action[0] = 12;
-					this.action[1] = ANIM.ENDING;
-				} else if (this.action[0] === 11 && this.action[1] === ANIM.ENDING) {
-					enemy.middleAction();
-				} else if (this.action[0] < 0) {
-					this.idle[index] = 0;
-					enemy.finishAction();
-				}
+				this.handleSentryAttack(11, 12);
 			} else if (type === SENTRY.FLAMING) {
 				draw.imageSector(I.enemy.sentry.flaming_attack, Math.floor(this.action[0]) * 364, 0, 364, 128, x - 300, y - 32);
-				if (this.action[1] === ANIM.STARTING) this.action[0]++;
-				else if (this.action[1] === ANIM.ENDING) this.action[0]--;
-				if (this.action[0] === 4) {
-					this.action[0] = 3;
-					this.action[1] = ANIM.ENDING;
-				} else if (this.action[0] === 2 && this.action[1] === ANIM.ENDING) {
-					enemy.middleAction();
-				} else if (this.action[0] < 0) {
-					this.idle[index] = 0;
-					enemy.finishAction();
-				}
+				this.handleSentryAttack(2, 3);
 			} else if (type === SINGULARITY) {
 				if (!this.actionData.length) this.actionData = [
 					Math.floor(Math.random() * 4),
@@ -388,16 +389,7 @@ class EnemyAnimationSource {
 					const end = [[94, 95], [92, 87], [72, 82]][this.actionData[1]];
 					draw.curvedLine(start[0], start[1], (start[0] + end[0]) / 2, start[1], end[0], end[1], "#f00", 4);
 				}
-				if (this.action[1] === ANIM.STARTING) this.action[0]++;
-				else if (this.action[1] === ANIM.ENDING) this.action[0]--;
-				if (this.action[0] === 9) {
-					this.action[0] = 8;
-					this.action[1] = ANIM.ENDING;
-				} else if (this.action[0] === 7 && this.action[1] === ANIM.ENDING) {
-					enemy.middleAction();
-				} else if (this.action[0] < 0) {
-					enemy.finishAction();
-				}
+				this.handleSentryAttack(7, 8, false);
 			}
 		} else if (intent === INTENT.DEFEND) {
 			if (type === SLIME.BIG || type === SLIME.SMALL || type === SLIME.PRIME || type === SLIME.STICKY || type === SINGULARITY) {
@@ -430,53 +422,29 @@ class EnemyAnimationSource {
 				}
 				ctx.globalAlpha = 1;
 				this.action[0]++;
-				if (this.action[0] === 16) {
-					enemy.finishAction();
-				} else if (this.action[0] === 15) {
-					enemy.middleAction();
-				}
+				this.finishDefendAction(15);
 			} else if (type === FRAGMENT && this.prime[index] == -1) {
 				draw.imageSector(I.enemy.fragment.defend, Math.floor(this.action[0]) * 64, 0, 64, 64, x, y + 1);
 				draw.clock(x + 2, y + 5, -1, 2 - Math.abs(Math.floor(this.idle[index]) - 2));
 				this.action[0] += 0.5;
-				if (this.action[0] > 6) {
-					enemy.finishAction();
-				} else if (this.action[0] === 6) {
-					enemy.middleAction();
-				}
+				this.finishDefendAction(6);
 				this.idle[index] = 0;
 			} else if (type === SENTRY.BIG) {
 				draw.imageSector(I.enemy.sentry.big_defend, Math.floor(this.action[0]) * 64, 0, 64, 64, x, y + 1);
 				this.action[0]++;
-				if (this.action[0] === 8) {
-					enemy.finishAction();
-				} else if (this.action[0] === 7) {
-					enemy.middleAction();
-				}
+				this.finishDefendAction(7);
 			} else if (type === SENTRY.SMALL) {
 				draw.imageSector(I.enemy.sentry.small_defend, Math.floor(this.action[0]) * 64, 0, 64, 64, x, y);
 				this.action[0]++;
-				if (this.action[0] === 6) {
-					enemy.finishAction();
-				} else if (this.action[0] === 5) {
-					enemy.middleAction();
-				}
+				this.finishDefendAction(5);
 			} else if (type === SENTRY.PRIME && this.prime[index] == -1) {
 				draw.imageSector(I.enemy.sentry.prime_defend, Math.floor(this.action[0]) * 64, 0, 64, 64, x, y);
 				this.action[0]++;
-				if (this.action[0] === 10) {
-					enemy.finishAction();
-				} else if (this.action[0] === 9) {
-					enemy.middleAction();
-				}
+				this.finishDefendAction(9);
 			} else if (type === SENTRY.FLAMING) {
 				draw.imageSector(I.enemy.sentry.flaming_defend, Math.floor(this.action[0]) * 72, 0, 72, 67, x - 4, y - 15);
 				this.action[0]++;
-				if (this.action[0] === 7) {
-					enemy.finishAction();
-				} else if (this.action[0] === 6) {
-					enemy.middleAction();
-				}
+				this.finishDefendAction(6);
 			}
 		}
 	}

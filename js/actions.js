@@ -1127,7 +1127,7 @@ const performAction = (() => {
 				else musicElement.pause();
 				musicPopup();
 			} else if (option === OPTION.PERFECT_SCREEN || option === OPTION.PERFECT_SIZE) {
-				fixCanvas(true);
+				fixCanvas();
 			} else if (option === OPTION.MUSIC_TRACK) {
 				fadeMusic();
 			}

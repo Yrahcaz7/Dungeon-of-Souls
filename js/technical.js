@@ -72,15 +72,15 @@ let ctx;
 /** @type {boolean} */
 let loaded = false;
 
-window.onload = async function() {
+window.addEventListener("load", async function() {
 	canvas = document.getElementById("canvas");
 	ctx = canvas.getContext("2d");
 	ctx.imageSmoothingEnabled = false;
 	draw.lore(200 - 2, 100 - 5.5 * 3, "Loading graphics...\n\n0.0%", {"color": "#fff", "text-align": DIR.CENTER});
 	await Promise.all([loadImages(), loadSave()]);
-	fixCanvas(true);
+	fixCanvas();
 	loaded = true;
-}
+});
 
 /**
  * Clears the canvas.
@@ -90,14 +90,11 @@ function clearCanvas() {
 }
 
 /**
- * Fixes the canvas.
- * @param {boolean} resize - whether to resize the canvas. Defaults to `false`.
+ * Fixes the canvas's CSS styling.
  */
-function fixCanvas(resize = false) {
+function fixCanvas() {
 	if (global.options[OPTION.PERFECT_SCREEN]) {
-		if (resize) {
-			canvas.style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
-		}
+		canvas.style = "width: " + (800 * global.options[OPTION.PERFECT_SIZE]) + "px";
 		const width = +(canvas.style.width.match(/\d+/) || [800])[0];
 		if (window.innerHeight <= width / 2) {
 			if (window.innerWidth <= width) {
@@ -109,9 +106,7 @@ function fixCanvas(resize = false) {
 			canvas.className = "";
 		}
 	} else {
-		if (resize) {
-			canvas.style = "";
-		}
+		canvas.style = "";
 		if (window.innerHeight <= window.innerWidth / 2) {
 			canvas.className = "fixed";
 		} else {
@@ -120,7 +115,7 @@ function fixCanvas(resize = false) {
 	}
 }
 
-window.onresize = fixCanvas;
+window.addEventListener("resize", fixCanvas);
 
 let action = -1;
 let lastAction = -1;
@@ -176,7 +171,7 @@ function shortcutTo(location) {
 	actionTimer = 2;
 }
 
-document.onkeydown = event => {
+document.addEventListener("keydown", event => {
 	if (!loaded) return;
 	holdTimer = 0;
 	const key = (event.key.length === 1 ? event.key.toUpperCase() : event.key);
@@ -268,14 +263,14 @@ document.onkeydown = event => {
 	}
 	if (!event.repeat && lastAction === action && global.options[OPTION.FAST_MOVEMENT]) gameTick();
 	if (action !== -1) lastAction = action;
-}
+});
 
-document.onkeyup = event => {
+document.addEventListener("keyup", event => {
 	const key = (event.key.length === 1 ? event.key.toUpperCase() : event.key);
 	if (["W", "ArrowUp", "A", "ArrowLeft", "S", "ArrowDown", "D", "ArrowRight"].includes(key)) {
 		action = -1;
 	}
-}
+});
 
 /**
  * Throws an error with extra information added.

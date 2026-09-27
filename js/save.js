@@ -60,7 +60,7 @@ async function hardReset() {
 	loaded = false;
 	game = getStartGameData();
 	global = getStartGlobalData();
-	fixCanvas(true);
+	fixCanvas();
 	resetVars(true);
 	loaded = true;
 	save();
@@ -297,15 +297,17 @@ const loadSave = (() => {
 	}
 })();
 
-document.onvisibilitychange = (() => {
+document.addEventListener("visibilitychange", (() => {
 	let musicPausedOnHide = false;
 	return () => {
 		if (document.hidden) {
 			musicPausedOnHide = !musicElement.paused;
 			musicElement.pause();
-			if (loaded) save();
+			if (loaded) {
+				save();
+			}
 		} else if (musicPausedOnHide) {
 			musicElement.play();
 		}
 	}
-})();
+})());
