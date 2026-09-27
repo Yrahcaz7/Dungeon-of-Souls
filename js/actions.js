@@ -65,6 +65,24 @@ const selection = (() => {
 		};
 		return false;
 	};
+	/**
+	 * Changes the event selection index by `increment` one or more times until it is valid.
+	 * @param {number} increment - The selection increment.
+	 * @returns {boolean} Whether the action was handled.
+	 */
+	function changeEventSelection(increment) {
+		const event = getCurrentEvent();
+		let index = game.select[1] + increment;
+		while (event[index + 2] && event[index + 2][2] instanceof Function && !event[index + 2][2]()) {
+			index += increment;
+		}
+		if (index >= 0 && index < event.length - 2) {
+			game.select[1] = index;
+			actionTimer = 1;
+			return true;
+		}
+		return false;
+	};
 	return () => {
 		// timers
 		actionTimer = Math.max(actionTimer, 0) - 1;
@@ -237,19 +255,15 @@ const selection = (() => {
 		};
 		// event
 		if (game.select[0] === S.EVENT) {
-			const event = getCurrentEvent();
 			if (game.select[1] === -1 && action !== -1) {
-				game.select[1] = 0;
-				actionTimer = 1;
-				return;
+				const handled = changeEventSelection(1);
+				if (handled) return;
 			} else if (action === DIR.UP && game.select[1] > 0) {
-				game.select[1]--;
-				actionTimer = 1;
-				return;
-			} else if (action === DIR.DOWN && game.select[1] < event.length - 3) {
-				game.select[1]++;
-				actionTimer = 1;
-				return;
+				const handled = changeEventSelection(-1);
+				if (handled) return;
+			} else if (action === DIR.DOWN && game.select[1] < getCurrentEvent().length - 3) {
+				const handled = changeEventSelection(1);
+				if (handled) return;
 			};
 		};
 		// select extras

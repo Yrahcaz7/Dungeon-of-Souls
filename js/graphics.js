@@ -593,9 +593,9 @@ const draw = {
 
 /**
  * For each keyword in (or reffered to by) `keywords`, excecutes `func`.
- * @param {number[] | {}} keywords - An array containing keywords or an object with keywords as keys. These keywords are iterated over.
+ * @param {number[] | {[key: number]: any}} keywords - An array containing keywords or an object with keywords as keys. These keywords are iterated over.
  * @param {(type: number, height: number) => void} func - The function to excecute for each keyword.
- * @param {number[] | {}} exclude - An array containing keywords or an object with keywords as keys. These keywords are excluded from iteration.
+ * @param {number[] | {[key: number]: any}} exclude - An array containing keywords or an object with keywords as keys. These keywords are excluded from iteration.
  */
 const forKeywordIn = (() => {
 	let _keywords = {};
@@ -1704,13 +1704,14 @@ const graphics = {
 		draw.rect("#0008");
 		const event = getCurrentEvent();
 		if (event.length === 0) {
-			throwError(`Invalid event: ${get.area()}-${game.room[3] - 100}-${game.turn - TURN.EVENT_START}`);
+			throwError(`Invalid event: ${get.area()}#${game.room[3]}#${game.turn - TURN.EVENT_START}`);
 		};
 		draw.textBox(125 - 1, 40, 50, wrapText(event[1] instanceof Function ? event[1]() : event[1], 50), {"text-small": true});
 		for (let index = 2; index < event.length; index++) {
 			const x = 100 + (index - 2) * 20;
 			const text = (event[index][0] instanceof Function ? event[index][0]() : event[index][0]);
-			if (index == game.select[1] + 2) draw.lore(200 - 2, x, "<#ff0>\> " + text + "  </#ff0>", {"color": "#fff", "text-align": DIR.CENTER});
+			if (event[index][2] instanceof Function && !event[index][2]()) draw.lore(200 - 2, x, text, {"color": "#888", "text-align": DIR.CENTER});
+			else if (index == game.select[1] + 2) draw.lore(200 - 2, x, "\> " + text + "  ", {"color": "#ff0", "text-align": DIR.CENTER});
 			else draw.lore(200 - 2, x, text, {"color": "#fff", "text-align": DIR.CENTER});
 		};
 	},

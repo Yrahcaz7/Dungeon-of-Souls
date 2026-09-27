@@ -206,12 +206,12 @@ const EVENTS = {
 		222: [finishEvent],
 	}],
 	1: [{
-		0: [null, "As you walk down a rather spacious hallway, you spot a strange gray box to the side. On one of its faces, there is a square hole that seems to be glowing. Do you investigate it?", ["Yes", 100], ["No", 200]],
-		100: [null, `Upon closer inspection, you see glowing words inside the hole. It reads: "Deposit physical currency here. Unregistered users will recieve a new device." You're not quite sure what it means, but maybe giving it some gold will do something?`, ["Deposit 100 gold", 110], ["Deposit 400 gold", 120], ["Don't deposit anything", 130]],
+		0: [null, "As you walk down a rather spacious hallway, you spot a strange gray box by the left wall. The side facing you has a large square hole in it that is slightly glowing.", ["Investigate the box", 100], ["Ingore it", 200]],
+		100: [null, `Upon closer inspection, you see glowing words inside the hole. It reads: "Deposit physical currency here. Unregistered users will recieve a new device." You're not quite sure what it means, but maybe giving it some gold will do something?`, ["Deposit 100 gold", 110, () => game.gold >= 100], ["Deposit 400 gold", 120, () => game.gold >= 400], ["Don't deposit anything", 130]],
 		110: [() => {
 			game.gold -= 100;
 			getArtifact(207);
-		}, `After throwing in a decent amount of gold, a strange object fell out of the hole. It is probably the "Device" that the text spoke of. The "Device" has many glowing words on it, some of them unfamiliar. The words seem to form a complicated poem... You'll contemplate it later.`, ["Get a move on", 111]],
+		}, `After throwing in a decent amount of gold, a strange object fell out of the hole. It's probably the "Device" that the text spoke of. The "Device" has many glowing words on it, some of them unfamiliar. The words seem to form a complicated poem... You'll contemplate it later.`, ["Get a move on", 111]],
 		111: [finishEvent],
 		120: [() => {
 			game.gold -= 400;
