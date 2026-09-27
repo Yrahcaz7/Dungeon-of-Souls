@@ -169,6 +169,16 @@ const loadSave = (() => {
 		if (version < 3_000_057) {
 			delete game.enemyStage;
 		}
+		// classify enemies (all versions)
+		game.enemies = game.enemies.map(enemy => Enemy.classify(enemy));
+		// classify cards (all versions)
+		for (const key of ["cards", "deck", "hand", "discard", "void"]) {
+			game[key] = game[key].map(card => Card.classify(card));
+		}
+		game.enemyAtt[2] = Card.classify(game.enemyAtt[2]);
+		for (const prevGame of global.prevGames) {
+			prevGame.cards = prevGame.cards.map(card => Card.classify(card));
+		}
 		// reset game end screen fade-in (all versions)
 		if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) {
 			game.select[1] = 0;
@@ -184,16 +194,6 @@ const loadSave = (() => {
 			} else {
 				game.enemies[game.enemyNum].startAction();
 			}
-		}
-		// classify enemies (all versions)
-		game.enemies = game.enemies.map(enemy => Enemy.classify(enemy));
-		// classify cards (all versions)
-		for (const key of ["cards", "deck", "hand", "discard", "void"]) {
-			game[key] = game[key].map(card => Card.classify(card));
-		}
-		game.enemyAtt[2] = Card.classify(game.enemyAtt[2]);
-		for (const prevGame of global.prevGames) {
-			prevGame.cards = prevGame.cards.map(card => Card.classify(card));
 		}
 	}
 	const versionCutoff = 3_000_045;
