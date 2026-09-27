@@ -154,7 +154,7 @@ function tryUseClipboard(write = false, onSuccess = null, onFail = null) {
  * @param {number} location - the shortcut changes the selection to `[location, 1]`.
  */
 function shortcutTo(location) {
-	if (game.select[0] === location && game.select[1]) {
+	if (selected(location) && game.select[1]) {
 		if (game.select[2]) {
 			game.select = game.select[2];
 		} else {
@@ -196,7 +196,7 @@ document.addEventListener("keydown", event => {
 		}
 		action = -1;
 	} else if (key === "E" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1 && game.turn === TURN.PLAYER) {
-		if (game.select[0] === S.CONF_END_TURN) game.select = [S.HAND, game.prevCard];
+		if (selected(S.CONF_END_TURN)) game.select = [S.HAND, game.prevCard];
 		else endTurnConfirm();
 		action = -1;
 	} else if (key === "1" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1) {
@@ -206,7 +206,7 @@ document.addEventListener("keydown", event => {
 	} else if (key === "3" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1 && game.void.length) {
 		shortcutTo(S.VOID);
 	} else if (key === "0" && !event.repeat && menuSelect[0] === -1 && actionTimer === -1) {
-		if (game.select[0] === S.CARDS) {
+		if (selected(S.CARDS)) {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [S.MAP, get.availableLocations().length];
 		} else {

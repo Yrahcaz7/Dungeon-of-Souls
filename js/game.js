@@ -1,4 +1,4 @@
-const VERSION = 3_000_069;
+const VERSION = 3_000_070;
 
 /**
  * Returns the starting global data.
@@ -490,7 +490,7 @@ function updateVisuals() {
 			draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": DIR.CENTER});
 		}
 		graphics.menu(menuSelect[0] === MENU.MAIN);
-		if (game.select[0] === S.WELCOME) {
+		if (selected(S.WELCOME)) {
 			draw.box(80 + 2, 83, 240 - 4, 34);
 			if (game.difficulty === 0) {
 				draw.lore(200 - 1, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the \"?\" at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
@@ -511,7 +511,7 @@ function updateVisuals() {
 		} else if (menuSelect[0] === MENU.PREV_GAME_SORT) {
 			graphics.prevGameSort();
 		}
-		if (game.select[0] === S.WELCOME) {
+		if (selected(S.WELCOME)) {
 			return;
 		} else if ([MENU.START_NEW_RUN, MENU.CHANGE_DIFFICULTY, MENU.CHANGE_SEED, MENU.ENTER_SEED, MENU.CONF_REMOVE_PREV_GAME, MENU.OLD_SAVE_ALERT, MENU.OLD_SAVE_COPY_FAILED].includes(menuSelect[0])) {
 			graphics.conf(menuSelect[0] !== MENU.ENTER_SEED);
@@ -532,36 +532,36 @@ function updateVisuals() {
 	graphics.middleLayer();
 	graphics.foregrounds();
 	if (!hidden()) {
-		if (game.select[0] === SS.SELECT_HAND) {
+		if (selected(SS.SELECT_HAND)) {
 			graphics.handSelect();
 		} else {
 			graphics.hand();
 		}
 	}
-	if (game.select[0] === S.MAP) {
+	if (selected(S.MAP)) {
 		graphics.map();
-	} else if (game.select[0] === S.EVENT) {
+	} else if (selected(S.EVENT)) {
 		graphics.event();
-	} else if (game.select[0] === S.REWARDS) {
+	} else if (selected(S.REWARDS)) {
 		graphics.rewards();
-	} else if (game.select[0] === S.CARD_REWARD) {
+	} else if (selected(S.CARD_REWARD)) {
 		graphics.cardRewards();
-	} else if (game.select[0] === S.ARTIFACT_REWARD) {
+	} else if (selected(S.ARTIFACT_REWARD)) {
 		graphics.artifactRewards();
-	} else if (game.select[0] === S.HELP && game.select[1]) {
+	} else if (selected(S.HELP) && game.select[1]) {
 		graphics.info();
-	} else if (game.select[0] === S.OPTIONS && game.select[1]) {
+	} else if (selected(S.OPTIONS) && game.select[1]) {
 		graphics.options();
-	} else if ((game.select[0] === S.DECK || game.select[0] === S.DISCARD || game.select[0] === S.VOID) && game.select[1]) {
-		if (game.select[2] && (game.select[2][0] === S.MAP || game.select[2][0] === S.CARDS)) {
+	} else if (selected(S.DECK, S.DISCARD, S.VOID) && game.select[1]) {
+		if (prevSelected(S.MAP, S.CARDS)) {
 			graphics.map(false);
 		}
 		graphics.deck();
-	} else if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY || game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) {
+	} else if (selected(S.PURIFIER, S.CONF_PURIFY, S.REFINER, S.CONF_REFINE)) {
 		graphics.rewards(false);
-		graphics.deck(game.select[0] === S.PURIFIER || game.select[0] === S.REFINER);
-	} else if (game.select[0] === S.CARDS) {
-		if ((!game.select[1] && !game.select[2]) || (game.select[2] && game.select[2][0] === S.MAP)) {
+		graphics.deck(selected(S.PURIFIER, S.REFINER));
+	} else if (selected(S.CARDS)) {
+		if ((!game.select[1] && !game.select[2]) || prevSelected(S.MAP)) {
 			graphics.map(false);
 		}
 		graphics.deck();
@@ -569,20 +569,20 @@ function updateVisuals() {
 	if (!inDeck()) {
 		graphics.target();
 	}
-	if (game.select[0] === S.CONF_END_TURN || game.select[0] === S.CONF_PURIFY || game.select[0] === S.CONF_REFINE || game.select[0] === S.CONF_PEARL) {
+	if (selected(S.CONF_END_TURN, S.CONF_PURIFY, S.CONF_REFINE, S.CONF_PEARL)) {
 		graphics.conf();
-	} else if (game.select[0] === S.CONF_EXIT) {
+	} else if (selected(S.CONF_EXIT)) {
 		graphics.rewards(false);
 		graphics.conf();
-	} else if (game.select[0] === S.CONF_SURRENDER) {
+	} else if (selected(S.CONF_SURRENDER)) {
 		graphics.options(false);
 		graphics.conf();
-	} else if (game.select[0] === S.CONF_HAND_ALIGN) {
+	} else if (selected(S.CONF_HAND_ALIGN)) {
 		graphics.map(false);
 		graphics.conf();
 	}
 	graphics.popups();
-	if (game.select[0] === S.GAME_OVER || game.select[0] === S.GAME_WON) {
+	if (selected(S.GAME_OVER, S.GAME_WON)) {
 		graphics.gameEnd();
 	}
 	if (hasArtifact(202) && game.floor == 10 && transition < 100) {

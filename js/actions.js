@@ -20,7 +20,7 @@ const selection = (() => {
 	 */
 	function deckSelection() {
 		const len = currentDeck().length;
-		const cols = (menuSelect[0] === -1 && game.select[0] === S.REFINER ? 3 : 6);
+		const cols = (menuSelect[0] === -1 && selected(S.REFINER) ? 3 : 6);
 		if (action === DIR.LEFT) {
 			if (game.cardSelect > 0) {
 				game.cardSelect--;
@@ -142,7 +142,7 @@ const selection = (() => {
 		}
 		if (inMenu()) return;
 		// confirmation
-		if ([S.CONF_END_TURN, S.CONF_EXIT, S.CONF_SURRENDER, S.CONF_REFINE, S.CONF_PEARL].includes(game.select[0])) {
+		if (selected(S.CONF_END_TURN, S.CONF_EXIT, S.CONF_SURRENDER, S.CONF_REFINE, S.CONF_PEARL)) {
 			if (action === DIR.LEFT && game.select[1]) {
 				game.select[1] = 0;
 				actionTimer = 1;
@@ -151,7 +151,7 @@ const selection = (() => {
 				actionTimer = 1;
 			}
 			return;
-		} else if ([S.CONF_HAND_ALIGN, S.CONF_PURIFY].includes(game.select[0])) {
+		} else if (selected(S.CONF_HAND_ALIGN, S.CONF_PURIFY)) {
 			if (action === DIR.LEFT && game.select[1] > 0) {
 				game.select[1]--;
 				actionTimer = 1;
@@ -162,7 +162,7 @@ const selection = (() => {
 			return;
 		}
 		// rewards
-		if (game.select[0] === S.REWARDS) {
+		if (selected(S.REWARDS)) {
 			if ((action === DIR.RIGHT || action === DIR.DOWN) && game.select[1] < game.rewards.length - 1) {
 				game.select[1]++;
 				actionTimer = 1;
@@ -171,8 +171,8 @@ const selection = (() => {
 				actionTimer = 1;
 			}
 			return;
-		} else if ([S.CARD_REWARD, S.ARTIFACT_REWARD].includes(game.select[0])) {
-			const selectMax = (game.select[0] === S.CARD_REWARD ? get.cardRewardChoices() : 3);
+		} else if (selected(S.CARD_REWARD, S.ARTIFACT_REWARD)) {
+			const selectMax = (selected(S.CARD_REWARD) ? get.cardRewardChoices() : 3);
 			if (game.select[1] < 0) {
 				if (action === DIR.RIGHT) {
 					game.select[1] = 0;
@@ -199,7 +199,7 @@ const selection = (() => {
 		}
 		// map
 		const availableLocations = get.availableLocations();
-		if (game.select[0] === S.MAP && game.state === STATE.EVENT_FIN && availableLocations.length) {
+		if (selected(S.MAP) && game.state === STATE.EVENT_FIN && availableLocations.length) {
 			if (action === DIR.UP) {
 				if (game.select[1] == -1) {
 					game.select[1] = availableLocations.length - 1;
@@ -229,7 +229,7 @@ const selection = (() => {
 					return;
 				}
 			}
-		} else if (game.select[0] === S.MAP) {
+		} else if (selected(S.MAP)) {
 			if (action === DIR.UP && game.select[1] == -1) {
 				game.select[1] = availableLocations.length;
 			} else if (action === DIR.DOWN && game.select[1] == availableLocations.length) {
@@ -237,7 +237,7 @@ const selection = (() => {
 			}
 		}
 		// event
-		if (game.select[0] === S.EVENT) {
+		if (selected(S.EVENT)) {
 			if (game.select[1] === -1 && action !== -1) {
 				const handled = changeEventSelection(1);
 				if (handled) return;
@@ -250,17 +250,17 @@ const selection = (() => {
 			}
 		}
 		// select extras
-		if (action === DIR.UP && game.select[0] === S.ENEMY) {
+		if (action === DIR.UP && selected(S.ENEMY)) {
 			game.select = [S.LOOKER, 0];
 			actionTimer = 1;
 			return;
 		}
 		// select / deselect player and more extras
-		if (action === DIR.UP && game.select[0] === S.PLAYER) {
+		if (action === DIR.UP && selected(S.PLAYER)) {
 			game.select = [S.ARTIFACTS, 0];
 			actionTimer = 1;
 			return;
-		} else if (action === DIR.UP && game.select[0] === S.VOID && !game.select[1]) {
+		} else if (action === DIR.UP && selected(S.VOID) && !game.select[1]) {
 			if (hasPopups()) {
 				game.select = [S.POPUPS, 0];
 				while (game.select[1] < activePopups.length && !activePopups[game.select[1]].length) {
@@ -273,11 +273,11 @@ const selection = (() => {
 			}
 			actionTimer = 1;
 			return;
-		} else if ([DIR.RIGHT, DIR.DOWN].includes(action) && game.select[0] === S.VOID && !game.select[1]) {
+		} else if ([DIR.RIGHT, DIR.DOWN].includes(action) && selected(S.VOID) && !game.select[1]) {
 			game.select = [S.DISCARD, 0];
 			actionTimer = 1;
 			return;
-		} else if (action === DIR.UP && game.select[0] === S.DISCARD && !game.select[1]) {
+		} else if (action === DIR.UP && selected(S.DISCARD) && !game.select[1]) {
 			if (game.void.length) {
 				game.select = [S.VOID, 0];
 			} else if (hasPopups()) {
@@ -293,17 +293,17 @@ const selection = (() => {
 			actionTimer = 1;
 			return;
 		} else if (action === DIR.LEFT) {
-			if (game.select[0] === S.HAND && !game.select[1]) {
+			if (selected(S.HAND) && !game.select[1]) {
 				game.select = [S.PLAYER, 0];
 				actionTimer = 1;
 				return;
-			} else if (game.select[0] === S.VOID && !game.select[1]) {
+			} else if (selected(S.VOID) && !game.select[1]) {
 				if (!game.enemies.length) game.select = [S.PLAYER, 0];
 				else if (!game.hand[0]) game.select = [S.ENEMY, 0];
 				else game.select = [S.HAND, game.prevCard];
 				actionTimer = 1;
 				return;
-			} else if (game.select[0] === S.DISCARD && !game.select[1]) {
+			} else if (selected(S.DISCARD) && !game.select[1]) {
 				if (game.void.length) game.select = [S.VOID, 0];
 				else if (!game.enemies.length) game.select = [S.PLAYER, 0];
 				else if (!game.hand[0]) game.select = [S.ENEMY, 0];
@@ -312,7 +312,7 @@ const selection = (() => {
 				return;
 			}
 		} else if (action === DIR.RIGHT) {
-			if (game.select[0] === S.PLAYER) {
+			if (selected(S.PLAYER)) {
 				if (!game.enemies.length) {
 					if (game.void.length) game.select = [S.VOID, 0];
 					else game.select = [S.DISCARD, 0];
@@ -322,7 +322,7 @@ const selection = (() => {
 				else game.select = [S.HAND, game.prevCard];
 				actionTimer = 1;
 				return;
-			} else if (game.select[0] === S.HAND && game.select[1] == game.hand.length - 1) {
+			} else if (selected(S.HAND) && game.select[1] == game.hand.length - 1) {
 				if (hasPopups()) {
 					game.select = [S.POPUPS, 0];
 					while (game.select[1] < activePopups.length && !activePopups[game.select[1]].length) {
@@ -337,28 +337,28 @@ const selection = (() => {
 			}
 		}
 		if ([DIR.UP, DIR.RIGHT].includes(action)) {
-			if (game.select[0] === S.DECK && !game.select[1]) {
+			if (selected(S.DECK) && !game.select[1]) {
 				game.select = [S.END_TURN, 0];
 				actionTimer = 1;
 				return;
-			} else if (game.select[0] === S.END_TURN) {
+			} else if (selected(S.END_TURN)) {
 				game.select = [S.PLAYER, 0];
 				actionTimer = 1;
 				return;
 			}
 		} else if ([DIR.LEFT, DIR.DOWN].includes(action)) {
-			if (game.select[0] === S.END_TURN) {
+			if (selected(S.END_TURN)) {
 				game.select = [S.DECK, 0];
 				actionTimer = 1;
 				return;
-			} else if (game.select[0] === S.PLAYER) {
+			} else if (selected(S.PLAYER)) {
 				game.select = [S.END_TURN, 0];
 				actionTimer = 1;
 				return;
 			}
 		}
 		// popup selection
-		if (game.select[0] === S.POPUPS) {
+		if (selected(S.POPUPS)) {
 			if (game.select[1] >= activePopups.length) {
 				game.select[1] = activePopups.length - 1;
 				return;
@@ -404,15 +404,20 @@ const selection = (() => {
 			}
 		}
 		// deck selection
-		if (([S.DECK, S.DISCARD, S.VOID].includes(game.select[0]) && game.select[1]) || [S.CARDS, S.PURIFIER, S.REFINER].includes(game.select[0])) {
+		if ((selected(S.DECK, S.DISCARD, S.VOID) && game.select[1]) || selected(S.CARDS, S.PURIFIER, S.REFINER)) {
 			const handled = deckSelection();
 			if (handled) return;
 		}
 		// scrolling
-		if (action === DIR.UP && game.select[0] === S.HELP && infoPos > 0 && infoLimit > 0) infoPos -= 11;
-		else if (action === DIR.DOWN && game.select[0] === S.HELP && infoPos < infoLimit) infoPos += 11;
+		if (selected(S.HELP)) {
+			if (action === DIR.UP && infoPos > 0 && infoLimit > 0) {
+				infoPos -= 11;
+			} else if (action === DIR.DOWN && infoPos < infoLimit) {
+				infoPos += 11;
+			}
+		}
 		// select options
-		if (game.select[0] === S.OPTIONS) {
+		if (selected(S.OPTIONS)) {
 			if (action === DIR.UP && game.select[1] > 1) {
 				game.select[1]--;
 				actionTimer = 1;
@@ -424,24 +429,24 @@ const selection = (() => {
 			}
 		}
 		// deselect extras
-		if ([S.LOOKER, S.HELP, S.OPTIONS].includes(game.select[0]) && !game.select[1]) {
-			if (action === DIR.LEFT && game.select[0] === S.LOOKER) {
+		if (selected(S.LOOKER, S.HELP, S.OPTIONS) && !game.select[1]) {
+			if (action === DIR.LEFT && selected(S.LOOKER)) {
 				game.select = [S.ARTIFACTS, game.artifacts.length - 1];
 				actionTimer = 1;
 				return;
-			} else if (action === DIR.LEFT && game.select[0] === S.HELP) {
+			} else if (action === DIR.LEFT && selected(S.HELP)) {
 				game.select = [S.LOOKER, 0];
 				actionTimer = 1;
 				return;
-			} else if (action === DIR.LEFT && game.select[0] === S.OPTIONS) {
+			} else if (action === DIR.LEFT && selected(S.OPTIONS)) {
 				game.select = [S.HELP, 0];
 				actionTimer = 1;
 				return;
-			} else if (action === DIR.RIGHT && game.select[0] === S.LOOKER) {
+			} else if (action === DIR.RIGHT && selected(S.LOOKER)) {
 				game.select = [S.HELP, 0];
 				actionTimer = 1;
 				return;
-			} else if (action === DIR.RIGHT && game.select[0] === S.HELP) {
+			} else if (action === DIR.RIGHT && selected(S.HELP)) {
 				game.select = [S.OPTIONS, 0];
 				actionTimer = 1;
 				return;
@@ -462,16 +467,19 @@ const selection = (() => {
 			}
 		}
 		// artifacts
-		if (game.select[0] === S.ARTIFACTS) {
+		if (selected(S.ARTIFACTS)) {
 			if (action === DIR.LEFT) {
 				game.select[1]--;
 			} else if (action === DIR.RIGHT) {
-				if (game.select[1] >= game.artifacts.length - 1) game.select = [S.LOOKER, 0];
-				else game.select[1]++;
+				if (game.select[1] >= game.artifacts.length - 1) {
+					game.select = [S.LOOKER, 0];
+				} else {
+					game.select[1]++;
+				}
 			} else if (action === DIR.DOWN) {
 				game.select = [S.PLAYER, 0];
 			}
-			if (game.select[0] === S.ARTIFACTS) {
+			if (selected(S.ARTIFACTS)) {
 				game.select[1] = Math.min(Math.max(game.select[1], 0), game.artifacts.length - 1);
 			}
 			if (action === DIR.LEFT || action === DIR.RIGHT || action === DIR.DOWN) {
@@ -480,9 +488,9 @@ const selection = (() => {
 			}
 		}
 		// select hand
-		if (game.select[0] === -1) game.select = [S.HAND, 0];
+		if (selected(-1)) game.select = [S.HAND, 0];
 		// cards in hand
-		if (game.select[0] === S.HAND) {
+		if (selected(S.HAND)) {
 			if (!game.hand) {
 				game.select = [S.END_TURN, 0];
 			} else {
@@ -499,7 +507,7 @@ const selection = (() => {
 					}
 					game.select = [S.ENEMY, to];
 				}
-				if (game.select[0] === S.HAND) {
+				if (selected(S.HAND)) {
 					game.select[1] = Math.min(Math.max(game.select[1], 0), game.hand.length - 1);
 				}
 				if (action === DIR.LEFT || action === DIR.RIGHT || action === DIR.UP) {
@@ -509,7 +517,7 @@ const selection = (() => {
 			}
 		}
 		// hand selection from effect
-		if (game.select[0] === SS.SELECT_HAND) {
+		if (selected(SS.SELECT_HAND)) {
 			if (action === DIR.LEFT && game.select[1] >= 0) {
 				game.select[1]--;
 				actionTimer = 1;
@@ -521,7 +529,7 @@ const selection = (() => {
 			}
 		}
 		// select enemy
-		if ([S.ATTACK, S.ENEMY].includes(game.select[0])) {
+		if (selected(S.ATTACK, S.ENEMY)) {
 			if (action === DIR.LEFT) {
 				if (game.select[1] < game.enemies.length - 1) game.select[1]++;
 				else game.select = [S.PLAYER, 0];
@@ -533,11 +541,13 @@ const selection = (() => {
 				else game.select = [S.DISCARD, 0];
 				actionTimer = 1;
 				return;
-			} else if (action === DIR.DOWN && game.select[0] === S.ENEMY) {
+			} else if (action === DIR.DOWN && selected(S.ENEMY)) {
 				if (!game.hand[0]) {
 					if (game.void.length) game.select = [S.VOID, 0];
 					else game.select = [S.DISCARD, 0];
-				} else game.select = [S.HAND, game.prevCard];
+				} else {
+					game.select = [S.HAND, game.prevCard];
+				}
 				actionTimer = 1;
 				return;
 			}
@@ -633,7 +643,7 @@ const performAction = (() => {
 		// action timer
 		if (actionTimer > -1 || (handAnim.length > 0 && game.state !== STATE.EVENT_FIN)) return;
 		// menus
-		if (game.select[0] === S.WELCOME) {
+		if (selected(S.WELCOME)) {
 			game.select = [-1, 0];
 			actionTimer = 2;
 		} else if (menuSelect[0] === MENU.MAIN) {
@@ -751,7 +761,7 @@ const performAction = (() => {
 		if (inMenu() || actionTimer > -1) return;
 		// cutscene
 		const availableLocations = get.availableLocations();
-		if (game.select[0] === S.CUTSCENE) {
+		if (selected(S.CUTSCENE)) {
 			if (game.select[1] > 0) {
 				game.select = [S.MAP, availableLocations.length];
 				cutsceneAnim = [];
@@ -763,7 +773,7 @@ const performAction = (() => {
 			// only one card can be active
 			if (game.enemyAtt[3]) return;
 			// attack enemy
-			if (game.select[0] === S.ATTACK) {
+			if (selected(S.ATTACK)) {
 				if (back) {
 					game.select = [S.HAND, game.enemyAtt[0]];
 					game.enemyAtt = [-1, -1, new Card(), false];
@@ -785,7 +795,7 @@ const performAction = (() => {
 				return;
 			}
 			// activate special selection effect
-			if (game.select[0] === SS.SELECT_HAND) {
+			if (selected(SS.SELECT_HAND)) {
 				if (game.select[1] === -1 || game.select[1] === game.hand.length - 1 || back) {
 					handSelectPos = [];
 					game.select = [S.HAND, game.enemyAtt[0]];
@@ -807,18 +817,18 @@ const performAction = (() => {
 				return;
 			}
 			// play card
-			if (game.select[0] === S.HAND && !back) {
-				const selected = game.hand[game.select[1]];
-				const id = selected.id;
+			if (selected(S.HAND) && !back) {
+				const isSelected = game.hand[game.select[1]];
+				const id = isSelected.id;
 				if (CARDS[id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
-					if (CARDS[selected.id].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
+					if (CARDS[isSelected.id].rarity == 2) notif = [game.select[1], 0, "unplayable", -2];
 					else notif = [game.select[1], 0, "unplayable", 0];
 					actionTimer = 1;
-				} else if (CARDS[id].can && !CARDS[id].can(selected.level)) {
-					if (CARDS[selected.id].rarity == 2) notif = [game.select[1], 0, selected.getAttr("cannotMessage"), -2];
-					else notif = [game.select[1], 0, selected.getAttr("cannotMessage"), 0];
+				} else if (CARDS[id].can && !CARDS[id].can(isSelected.level)) {
+					if (CARDS[isSelected.id].rarity == 2) notif = [game.select[1], 0, isSelected.getAttr("cannotMessage"), -2];
+					else notif = [game.select[1], 0, isSelected.getAttr("cannotMessage"), 0];
 					actionTimer = 1;
-				} else if (game.energy >= getCardCost(selected)) {
+				} else if (game.energy >= getCardCost(isSelected)) {
 					if (CARDS[id].select) { // effects of cards that have a special selection
 						game.enemyAtt[0] = game.select[1];
 						const specialSelect = (CARDS[id].select instanceof Function ? CARDS[id].select() : CARDS[id].select);
@@ -827,22 +837,22 @@ const performAction = (() => {
 						actionTimer = 4;
 					} else if (CARDS[id].effect) { // effects of cards that activate right away
 						if (CARDS[id].effectAnim) startAnim.effect(CARDS[id].effectAnim);
-						CARDS[id].effect(selected.level);
-						game.energy -= getCardCost(selected);
+						CARDS[id].effect(isSelected.level);
+						game.energy -= getCardCost(isSelected);
 						discardCard(game.select[1], true);
-						activateArtifacts(FUNC.PLAY_CARD, selected);
+						activateArtifacts(FUNC.PLAY_CARD, isSelected);
 						if (game.prevCard) game.select = [S.HAND, game.prevCard - 1];
 						else game.select = [S.HAND, 0];
 						updateData();
 						postCardActivation();
 					} else if (CARDS[id].damage || CARDS[id].attack) { // effects of attack cards
 						if (CARDS[id].target === false) {
-							game.energy -= getCardCost(selected);
-							game.enemyAtt[2] = selected;
+							game.energy -= getCardCost(isSelected);
+							game.enemyAtt[2] = isSelected;
 							activateAttackEffects(id);
 							game.enemyAtt[3] = true;
 							discardCard(game.select[1], true);
-							activateArtifacts(FUNC.PLAY_CARD, selected);
+							activateArtifacts(FUNC.PLAY_CARD, isSelected);
 							if (game.prevCard) game.select = [S.HAND, game.prevCard - 1];
 							else game.select = [S.HAND, 0];
 							updateData();
@@ -855,7 +865,7 @@ const performAction = (() => {
 						}
 					}
 				} else {
-					if (CARDS[selected.id].rarity == 2) notif = [game.select[1], 0, "not enough energy", -2];
+					if (CARDS[isSelected.id].rarity == 2) notif = [game.select[1], 0, "not enough energy", -2];
 					else notif = [game.select[1], 0, "not enough energy", 0];
 					actionTimer = 1;
 				}
@@ -863,12 +873,12 @@ const performAction = (() => {
 			}
 		}
 		// game end
-		if ([S.GAME_OVER, S.GAME_WON].includes(game.select[0]) && game.select[1] === 50 && !back) {
+		if (selected(S.GAME_OVER, S.GAME_WON) && game.select[1] === 50 && !back) {
 			endRun();
 			return;
 		}
 		// confirmation
-		if (game.select[0] === S.CONF_END_TURN) {
+		if (selected(S.CONF_END_TURN)) {
 			if (game.select[1] || back) {
 				game.select = [S.HAND, game.prevCard];
 			} else {
@@ -877,7 +887,7 @@ const performAction = (() => {
 			}
 			actionTimer = 2;
 			return;
-		} else if (game.select[0] === S.CONF_EXIT) {
+		} else if (selected(S.CONF_EXIT)) {
 			if (game.select[1] || back) {
 				game.select = [S.REWARDS, game.rewards.length - 1];
 			} else {
@@ -885,7 +895,7 @@ const performAction = (() => {
 			}
 			actionTimer = 2;
 			return;
-		} else if (game.select[0] === S.CONF_SURRENDER) {
+		} else if (selected(S.CONF_SURRENDER)) {
 			if (game.select[1] || back) {
 				game.select = [S.OPTIONS, Object.keys(global.options).length + 2];
 				actionTimer = 2;
@@ -893,7 +903,7 @@ const performAction = (() => {
 				endRun();
 			}
 			return;
-		} else if (game.select[0] === S.CONF_HAND_ALIGN) {
+		} else if (selected(S.CONF_HAND_ALIGN)) {
 			if (game.select[1] === 2 || back) {
 				game.select = [S.MAP, 0];
 			} else {
@@ -906,7 +916,7 @@ const performAction = (() => {
 			}
 			actionTimer = 2;
 			return;
-		} else if (game.select[0] === S.CONF_PURIFY) {
+		} else if (selected(S.CONF_PURIFY)) {
 			if (game.select[1] === 1 || back) {
 				game.select = [S.PURIFIER, 0];
 			} else {
@@ -919,7 +929,7 @@ const performAction = (() => {
 			}
 			actionTimer = 2;
 			return;
-		} else if (game.select[0] === S.CONF_REFINE) {
+		} else if (selected(S.CONF_REFINE)) {
 			if (game.select[1] || back) {
 				game.select = [S.REFINER, 0];
 			} else {
@@ -933,7 +943,7 @@ const performAction = (() => {
 			}
 			actionTimer = 2;
 			return;
-		} else if (game.select[0] === S.CONF_PEARL && !back) {
+		} else if (selected(S.CONF_PEARL) && !back) {
 			if (game.select[1]) {
 				game.select = [S.HAND, 0];
 			} else {
@@ -945,7 +955,7 @@ const performAction = (() => {
 			return;
 		}
 		// rewards
-		if (game.select[0] === S.REWARDS && !back) {
+		if (selected(S.REWARDS) && !back) {
 			const arr = game.rewards[game.select[1]];
 			if (!arr[2]) {
 				if (arr[0] === REWARD.GOLD) {
@@ -972,24 +982,29 @@ const performAction = (() => {
 			}
 			actionTimer = 2;
 			return;
-		} else if ([S.CARD_REWARD, S.ARTIFACT_REWARD].includes(game.select[0])) {
+		} else if (selected(S.CARD_REWARD, S.ARTIFACT_REWARD)) {
 			let index = 0;
-			if (game.select[0] === S.CARD_REWARD) index = game.rewards.findIndex(arr => arr[0] === REWARD.CARD);
-			else if (game.select[0] === S.ARTIFACT_REWARD) index = game.rewards.findIndex(arr => arr[0] === REWARD.ARTIFACT);
+			if (selected(S.CARD_REWARD)) {
+				index = game.rewards.findIndex(arr => arr[0] === REWARD.CARD);
+			} else if (selected(S.ARTIFACT_REWARD)) {
+				index = game.rewards.findIndex(arr => arr[0] === REWARD.ARTIFACT);
+			}
 			if (game.select[1] >= 0 && !back) {
-				if (game.select[0] === S.CARD_REWARD) {
+				if (selected(S.CARD_REWARD)) {
 					game.cards.push(new Card(game.room[5][game.select[1]]));
-				} else if (game.select[0] === S.ARTIFACT_REWARD) {
+				} else if (selected(S.ARTIFACT_REWARD)) {
 					getArtifact(game.room[6][game.select[1]]);
 				}
-				if (index >= 0) game.rewards[index][2] = true;
+				if (index >= 0) {
+					game.rewards[index][2] = true;
+				}
 			}
 			game.select = [S.REWARDS, Math.max(index, 0)];
 			actionTimer = 2;
 			return;
 		}
 		// map
-		if (game.select[0] === S.MAP && game.state === STATE.EVENT_FIN && availableLocations[game.select[1]] !== undefined && !back) {
+		if (selected(S.MAP) && game.state === STATE.EVENT_FIN && availableLocations[game.select[1]] !== undefined && !back) {
 			const now = new Date();
 			if (game.floor === 9 && game.difficulty === 1 && ((now.getHours() % 12 === 11 && now.getMinutes() >= 59) || (now.getHours() % 12 === 0 && now.getMinutes() <= 1))) {
 				game.select = [S.CONF_HAND_ALIGN, 2];
@@ -1004,7 +1019,7 @@ const performAction = (() => {
 			return;
 		}
 		// event
-		if (game.select[0] === S.EVENT && !back) {
+		if (selected(S.EVENT) && !back) {
 			let event = getCurrentEvent();
 			if (event[game.select[1] + 2]) {
 				if (typeof event[game.select[1] + 2][1] == "string") {
@@ -1014,14 +1029,14 @@ const performAction = (() => {
 					game.turn = TURN.EVENT_START + (next instanceof Function ? next() : next);
 					event = getCurrentEvent();
 					if (event[0] instanceof Function) event[0]();
-					if (game.select[0] === S.EVENT) game.select[1] = -1;
+					if (selected(S.EVENT)) game.select[1] = -1;
 				}
 				actionTimer = 2;
 				return;
 			}
 		}
 		// popups
-		if (game.select[0] === S.POPUPS && activePopups[game.select[1]] && !back) {
+		if (selected(S.POPUPS) && activePopups[game.select[1]] && !back) {
 			const action = activePopups[game.select[1]][4];
 			activePopups[game.select[1]] = [];
 			while (game.select[1] >= 0 && !activePopups[game.select[1]].length) {
@@ -1040,7 +1055,7 @@ const performAction = (() => {
 			return;
 		}
 		// purifier
-		if (game.select[0] === S.PURIFIER) {
+		if (selected(S.PURIFIER)) {
 			if (back) {
 				const index = game.rewards.findIndex(arr => arr[0] === REWARD.PURIFIER);
 				game.select = [S.REWARDS, Math.max(index, 0)];
@@ -1051,7 +1066,7 @@ const performAction = (() => {
 			return;
 		}
 		// refiner
-		if (game.select[0] === S.REFINER) {
+		if (selected(S.REFINER)) {
 			if (back) {
 				const index = game.rewards.findIndex(arr => arr[0] === REWARD.REFINER);
 				game.select = [S.REWARDS, Math.max(index, 0)];
@@ -1064,50 +1079,50 @@ const performAction = (() => {
 			}
 		}
 		// activate / deactivate extras
-		if ([S.DECK, S.DISCARD, S.VOID].includes(game.select[0])) {
+		if (selected(S.DECK, S.DISCARD, S.VOID)) {
 			if (game.select[2]) game.select = game.select[2];
 			else if (game.select[1] === 0 && !back) game.select = [game.select[0], 1, game.select];
 			else game.select[1] = 0;
 			actionTimer = 2;
 			return;
-		} else if (game.select[0] === S.ARTIFACTS && game.select[1] === 0 && !back) {
+		} else if (selected(S.ARTIFACTS) && game.select[1] === 0 && !back) {
 			game.select = [S.MAP, -1];
 			actionTimer = 2;
 			return;
-		} else if (game.select[0] === S.MAP && (game.select[1] === -1 || back) && !(game.state === STATE.EVENT_FIN && onFloorWithCutscene())) {
+		} else if (selected(S.MAP) && (game.select[1] === -1 || back) && !(game.state === STATE.EVENT_FIN && onFloorWithCutscene())) {
 			game.select = [S.ARTIFACTS, 0];
 			actionTimer = 2;
 			return;
-		} else if (game.select[0] === S.MAP && game.select[1] === availableLocations.length) {
+		} else if (selected(S.MAP) && game.select[1] === availableLocations.length) {
 			game.select = [S.CARDS, 0, game.select];
 			actionTimer = 2;
 			return;
-		} else if (game.select[0] === S.CARDS) {
+		} else if (selected(S.CARDS)) {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [S.MAP, availableLocations.length];
 			actionTimer = 2;
 			return;
-		} else if (game.select[0] === S.LOOKER) {
+		} else if (selected(S.LOOKER)) {
 			if (game.select[1] === 0 && !back) game.select[1] = 1;
 			else game.select[1] = 0;
 			actionTimer = 2;
 			return;
-		} else if (game.select[0] === S.HELP) {
+		} else if (selected(S.HELP)) {
 			if (game.select[1] <= 2 && !back) game.select[1]++;
 			else game.select[1] = 0;
 			actionTimer = 2;
 			return;
-		} else if (game.select[0] === S.OPTIONS && (game.select[1] <= 1 || back)) {
+		} else if (selected(S.OPTIONS) && (game.select[1] <= 1 || back)) {
 			if (game.select[1] === 0 && !back) game.select[1] = 1;
 			else game.select[1] = 0;
 			actionTimer = 2;
 			return;
-		} else if (game.select[0] === S.END_TURN && game.turn === TURN.PLAYER && !back) {
+		} else if (selected(S.END_TURN) && game.turn === TURN.PLAYER && !back) {
 			endTurnConfirm();
 			return;
 		}
 		// options
-		if (game.select[0] === S.OPTIONS) {
+		if (selected(S.OPTIONS)) {
 			const option = +Object.keys(global.options)[game.select[1] - 2];
 			if (option === OPTION.PERFECT_SIZE) {
 				let index = PIXEL_SIZES.indexOf(global.options[OPTION.PERFECT_SIZE]) + 1;

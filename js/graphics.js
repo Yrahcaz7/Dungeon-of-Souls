@@ -454,10 +454,10 @@ const draw = {
 	 * @param {Card | number} card - the card object or card id.
 	 * @param {number} x - the x-coordinate to draw the card at.
 	 * @param {number} y - the y-coordinate to draw the card at.
-	 * @param {boolean} selected - whether the card is selected. Defaults to `false`.
+	 * @param {boolean} isSelected - whether the card is selected. Defaults to `false`.
 	 * @param {boolean} outside - whether the card is outside the battle. Defaults to `false`.
 	 */
-	card(card, x, y, selected = false, outside = false) {
+	card(card, x, y, isSelected = false, outside = false) {
 		// setup
 		if (!(card instanceof Object)) card = new Card(card);
 		let img = I.card.error;
@@ -470,7 +470,7 @@ const draw = {
 		const type = CARD_TYPE[Math.floor(card.id / 1000)];
 		if (I.card.outline[type]) draw.image(I.card.outline[type], x + 3, y + 3);
 		// card selector
-		if (selected) {
+		if (isSelected) {
 			let selectorName = "card";
 			if (rarity == 2) selectorName += "_rare";
 			if (CARDS[card.id].keywords.includes(CARD_EFF.UNPLAYABLE)) selectorName += "_unplayable";
@@ -723,12 +723,12 @@ const info = {
 	deck(type, xPlus = 0, yPlus = 0) {
 		const deck = currentDeck();
 		if (!deck[game.cardSelect] || (typeof type === "number" && !EFF_DESC[type])) return 0;
-		const refining = (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE);
+		const refining = selected(S.REFINER, S.CONF_REFINE);
 		const cols = (refining ? 3 : 6);
-		const selected = [game.cardSelect % cols, Math.floor(game.cardSelect / cols)];
-		let x = (refining ? 72 : 71) + (selected[0] * (refining ? 68 : 66)) + xPlus;
-		const y = (refining ? 16 : 15) + (selected[1] * (refining ? 100 : 98)) - game.deckScroll + yPlus;
-		if (selected[0] >= (refining ? 2 : 4)) {
+		const isSelected = [game.cardSelect % cols, Math.floor(game.cardSelect / cols)];
+		let x = (refining ? 72 : 71) + (isSelected[0] * (refining ? 68 : 66)) + xPlus;
+		const y = (refining ? 16 : 15) + (isSelected[1] * (refining ? 100 : 98)) - game.deckScroll + yPlus;
+		if (isSelected[0] >= (refining ? 2 : 4)) {
 			let ref = CARDS[deck[game.cardSelect].id];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) {
 				x -= 143;
@@ -943,10 +943,16 @@ const graphics = {
 					ctx.globalAlpha = transition / 100;
 				}
 				draw.image(I.background.tunnel_of_time, 0 - backAnim[3]);
-				if (!game.enemies[0]?.eff[ENEMY_EFF.COUNTDOWN]) backAnim[3]++;
-				else backAnim[3]--;
-				if (backAnim[3] >= 16) backAnim[3] -= 16;
-				else if (backAnim[3] < 0) backAnim[3] += 16;
+				if (!game.enemies[0]?.eff[ENEMY_EFF.COUNTDOWN]) {
+					backAnim[3]++;
+				} else {
+					backAnim[3]--;
+				}
+				if (backAnim[3] >= 16) {
+					backAnim[3] -= 16;
+				} else if (backAnim[3] < 0) {
+					backAnim[3] += 16;
+				}
 				ctx.globalAlpha = 1;
 			}
 			if (game.floor != 10) {
@@ -957,13 +963,17 @@ const graphics = {
 				if (time[0] >= 12) time[0] = time[0] - 12;
 				draw.image(I.background.clock_face, 170, y);
 				draw.clock(170, y, time[0], time[1]);
-			} else if (game.select[0] === S.CUTSCENE && (!inMenu() || game.select[1])) {
-				if (cutsceneAnim.length == 0) cutsceneAnim = [0];
+			} else if (selected(S.CUTSCENE) && (!inMenu() || game.select[1])) {
+				if (cutsceneAnim.length == 0) {
+					cutsceneAnim = [0];
+				}
 				const PORTAL_THRESHOLD = 64;
 				const x = 170;
 				const y = 64 - Math.abs(Math.round(backAnim[2]) - 2);
 				if (cutsceneAnim[0] >= PORTAL_THRESHOLD + 2 || game.select[1]) {
-					if (!inMenu()) draw.image(I.background.enter_portal, 185, 31 - Math.abs(Math.round(backAnim[0]) - 2));
+					if (!inMenu()) {
+						draw.image(I.background.enter_portal, 185, 31 - Math.abs(Math.round(backAnim[0]) - 2));
+					}
 					draw.imageSector(I.background.clock_portal, ((Math.floor(cutsceneAnim[0] / 2) % 12) + 2) * 60, 0, 60, 60, x, y);
 					game.select[1] = 1;
 				} else if (cutsceneAnim[0] >= PORTAL_THRESHOLD) {
@@ -1040,7 +1050,7 @@ const graphics = {
 			else if (past[0] === S.ARTIFACT_REWARD) graphics.artifactRewards(false);
 		}
 		// looker
-		if (game.select[0] === S.LOOKER && game.select[1] === 1) {
+		if (selected(S.LOOKER) && game.select[1] === 1) {
 			draw.imageSector(I.extra.looker, 16, 0, 16, 16, 343, 3);
 			draw.image(I.select.round, 342, 2);
 			return;
@@ -1070,37 +1080,37 @@ const graphics = {
 		for (let index = 0; index < game.artifacts.length; index++) {
 			if (!ARTIFACTS[game.artifacts[index]].big) continue;
 			draw.image(I.artifact[game.artifacts[index]], (index * 18) - 6, 5);
-			if (game.select[0] === S.ARTIFACTS && game.select[1] === index) draw.image(I.artifact._.wo[game.artifacts[index]], (index * 18) - 7, 4);
+			if (selected(S.ARTIFACTS) && game.select[1] === index) draw.image(I.artifact._.wo[game.artifacts[index]], (index * 18) - 7, 4);
 		}
 		// small artifacts
 		for (let index = 0; index < game.artifacts.length; index++) {
 			if (ARTIFACTS[game.artifacts[index]].big) continue;
 			draw.image(I.artifact[game.artifacts[index]], (index * 18) + 2, 13);
-			if (game.select[0] === S.ARTIFACTS && game.select[1] === index) draw.image(I.artifact._.wo[game.artifacts[index]], (index * 18) + 1, 12);
+			if (selected(S.ARTIFACTS) && game.select[1] === index) draw.image(I.artifact._.wo[game.artifacts[index]], (index * 18) + 1, 12);
 		}
 		// selected
-		if (game.select[0] === S.LOOKER) draw.image(I.select.round, 342, 2);
-		else if (game.select[0] === S.HELP) draw.image(I.select.round, 361, 2);
-		else if (game.select[0] === S.OPTIONS) draw.image(get.area() == 1 ? I.select.options : I.select.options_yellow, 380, 2);
-		else if (game.select[0] === S.END_TURN) draw.image(I.select.round, 2, 162);
-		else if (game.select[0] === S.DECK && !game.select[1]) draw.image(I.select.deck, 3, 181);
-		else if (game.select[0] === S.VOID && !game.select[1]) draw.image(I.select.round, 380, 162);
-		else if (game.select[0] === S.DISCARD && !game.select[1]) draw.image(I.select.discard, 381, 181);
+		if (selected(S.LOOKER)) draw.image(I.select.round, 342, 2);
+		else if (selected(S.HELP)) draw.image(I.select.round, 361, 2);
+		else if (selected(S.OPTIONS)) draw.image(get.area() == 1 ? I.select.options : I.select.options_yellow, 380, 2);
+		else if (selected(S.END_TURN)) draw.image(I.select.round, 2, 162);
+		else if (selected(S.DECK) && !game.select[1]) draw.image(I.select.deck, 3, 181);
+		else if (selected(S.VOID) && !game.select[1]) draw.image(I.select.round, 380, 162);
+		else if (selected(S.DISCARD) && !game.select[1]) draw.image(I.select.discard, 381, 181);
 		// info
 		draw.lore(1, 1, "Floor " + game.floor + " - " + game.gold + " gold", {"color": (get.area() == 1 ? "#000" : "#fff")});
 		// intents
-		if (!hidden() && !(game.select[0] === S.LOOKER || game.select[0] === S.HELP || game.select[0] === S.OPTIONS)) {
+		if (!hidden() && !selected(S.LOOKER, S.HELP, S.OPTIONS)) {
 			for (let index = 0; index < game.enemies.length; index++) {
 				draw.intent(index);
 			}
 		}
 		// selected enemy
-		if (game.select[0] === S.ATTACK || game.select[0] === S.ENEMY) {
+		if (selected(S.ATTACK, S.ENEMY)) {
 			draw.enemyIcons(game.select[1]);
 			if (enemyPos[game.select[1]]?.length && isEnemyVisible(game.select[1])) {
 				enemyAnim.drawEnemy(enemyPos[game.select[1]][0], enemyPos[game.select[1]][1], game.select[1]);
 			}
-			if (!game.enemies[game.select[1]].transition && game.select[1] == game.enemyNum) {
+			if (!game.enemies[game.select[1]].transition && game.select[1] === game.enemyNum) {
 				enemyAnim.drawEnemyActing(enemyPos[game.select[1]][0], enemyPos[game.select[1]][1], game.select[1]);
 			}
 		}
@@ -1198,25 +1208,25 @@ const graphics = {
 	 */
 	enemy() {
 		// icons
+		const isSelected = selected(S.ATTACK, S.ENEMY);
 		for (let index = 0; index < game.enemies.length; index++) {
-			if ((game.select[0] === S.ATTACK || game.select[0] === S.ENEMY) && index == game.select[1]) continue;
+			if (isSelected && index == game.select[1]) continue;
 			draw.enemyIcons(index);
 		}
 		// enemy drawing
-		const selected = (game.select[0] === S.ATTACK || game.select[0] === S.ENEMY);
 		for (let index = 0; index < game.enemies.length; index++) {
-			if (enemyPos[index]?.length && isEnemyVisible(index) && (!selected || index !== game.select[1])) {
+			if (enemyPos[index]?.length && isEnemyVisible(index) && (!isSelected || index !== game.select[1])) {
 				enemyAnim.drawEnemy(enemyPos[index][0], enemyPos[index][1], index);
 			}
 		}
 		// action animations
-		if (game.enemies[game.enemyNum] && !game.enemies[game.enemyNum].transition && (!selected || game.enemyNum !== game.select[1])) {
+		if (game.enemies[game.enemyNum] && !game.enemies[game.enemyNum].transition && (!isSelected || game.enemyNum !== game.select[1])) {
 			enemyAnim.drawEnemyActing(enemyPos[game.enemyNum][0], enemyPos[game.enemyNum][1], game.enemyNum);
 		}
 		// move idle animations along
 		enemyAnim.progressAnimations();
 		// draw intents
-		if (game.select[0] === S.LOOKER || game.select[0] === S.HELP || game.select[0] === S.OPTIONS) {
+		if (selected(S.LOOKER, S.HELP, S.OPTIONS)) {
 			for (let index = 0; index < game.enemies.length; index++) {
 				draw.intent(index);
 			}
@@ -1290,14 +1300,14 @@ const graphics = {
 		// draw background
 		draw.rect("#000c");
 		// setup refinable deck
-		if ((game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) && !refinableDeck.length) {
+		const refining = selected(S.REFINER, S.CONF_REFINE);
+		if (refining && !refinableDeck.length) {
 			refinableDeck = game.cards.filter(card => card.level === 0);
 			if (!refinableDeck.length) refinableDeck = [new Card()];
 		}
 		// setup for deck drawing
 		const deck = currentDeck();
 		const len = deck.length;
-		const refining = (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE);
 		const cols = (refining ? 3 : 6);
 		const scrollPadding = (refining ? 14 : 11);
 		const startX = (refining ? 3 : 2);
@@ -1305,7 +1315,7 @@ const graphics = {
 		const spaceX = (refining ? 68 : 66);
 		const spaceY = (refining ? 100 : 98);
 		// draw right bar
-		if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) {
+		if (refining) {
 			draw.rect("#fff", 207, 14, 1, 185);
 			let cardObj = deck[game.cardSelect];
 			draw.lore(213, 18, "Press B to go back to the reward selection screen.\n\nPress space or enter to refine the selected card.\n\nA preview of the refined card is shown below.", {"color": "#fff", "text-small": true});
@@ -1318,9 +1328,9 @@ const graphics = {
 			if (game.cardSelect > len - 1) game.cardSelect = len - 1;
 			const maxScroll = Math.max(spaceY * (Math.floor((len - 1) / cols) - 1) + scrollPadding, 0);
 			if (game.deckScroll > maxScroll) game.deckScroll = maxScroll;
-			const selected = [game.cardSelect % cols, Math.floor(game.cardSelect / cols)];
+			const isSelected = [game.cardSelect % cols, Math.floor(game.cardSelect / cols)];
 			for (let x = (len - 1) % cols, y = Math.floor((len - 1) / cols); y >= 0; x--) {
-				if (x !== selected[0] || y !== selected[1] || !focused) {
+				if (x !== isSelected[0] || y !== isSelected[1] || !focused) {
 					draw.card(deck[x + (y * cols)], startX + (x * spaceX), startY + (y * spaceY) - game.deckScroll, false, inOutsideDeck());
 				}
 				if (x === 0) {
@@ -1329,32 +1339,32 @@ const graphics = {
 				}
 			}
 			if (focused) {
-				draw.card(deck[game.cardSelect], startX + (selected[0] * spaceX), startY + (selected[1] * spaceY) - game.deckScroll, true, inOutsideDeck());
+				draw.card(deck[game.cardSelect], startX + (isSelected[0] * spaceX), startY + (isSelected[1] * spaceY) - game.deckScroll, true, inOutsideDeck());
 				graphics.target();
-				if (game.deckScroll >= spaceY * selected[1]) {
-					game.deckScroll -= Math.min(10, Math.abs(game.deckScroll - (spaceY * selected[1])));
-				} else if (game.deckScroll <= (spaceY * (selected[1] - 1)) + scrollPadding) {
-					game.deckScroll += Math.min(10, Math.abs(game.deckScroll - ((spaceY * (selected[1] - 1)) + scrollPadding)));
+				if (game.deckScroll >= spaceY * isSelected[1]) {
+					game.deckScroll -= Math.min(10, Math.abs(game.deckScroll - (spaceY * isSelected[1])));
+				} else if (game.deckScroll <= (spaceY * (isSelected[1] - 1)) + scrollPadding) {
+					game.deckScroll += Math.min(10, Math.abs(game.deckScroll - ((spaceY * (isSelected[1] - 1)) + scrollPadding)));
 				}
 			}
 		}
 		// draw top bar
 		if (menuSelect[0] === MENU.PREV_GAME_INFO) draw.topBar("Cards From Run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].num);
-		else if (game.select[0] === S.DECK) draw.topBar("Deck");
-		else if (game.select[0] === S.DISCARD) draw.topBar("Discard");
-		else if (game.select[0] === S.VOID) draw.topBar("Void");
-		else if (game.select[0] === S.CARDS) draw.topBar("Cards");
-		else if (game.select[0] === S.PURIFIER || game.select[0] === S.CONF_PURIFY) draw.topBar("Purifier: Pick a Card to Destroy");
-		else if (game.select[0] === S.REFINER || game.select[0] === S.CONF_REFINE) draw.topBar("Refiner: Pick a Card to Improve");
+		else if (selected(S.DECK)) draw.topBar("Deck");
+		else if (selected(S.DISCARD)) draw.topBar("Discard");
+		else if (selected(S.VOID)) draw.topBar("Void");
+		else if (selected(S.CARDS)) draw.topBar("Cards");
+		else if (selected(S.PURIFIER, S.CONF_PURIFY)) draw.topBar("Purifier: Pick a Card to Destroy");
+		else if (selected(S.REFINER, S.CONF_REFINE)) draw.topBar("Refiner: Pick a Card to Improve");
 	},
 	/**
 	 * Draws the player's hand on the canvas.
 	 */
 	hand() {
-		if (game.select[0] === S.ATTACK) {
+		if (selected(S.ATTACK)) {
 			draw.card(game.enemyAtt[2], 50, 22, true);
 			return;
-		} else if (game.select[0] === S.PLAYER || game.select[0] === S.ENEMY) {
+		} else if (selected(S.PLAYER, S.ENEMY)) {
 			return;
 		}
 		updateAnimatedHandData();
@@ -1362,7 +1372,7 @@ const graphics = {
 		for (let index = 0; index < handAnimCards.length && index < handAnimPositions.length; index++) {
 			const effIndex = index - (handAnimOffsets[index] || 0);
 			if (effIndex >= 0 && !cardAnim[effIndex]) cardAnim[effIndex] = 0;
-			if (((game.select[0] === S.HAND && game.select[1] == effIndex) || (effIndex == game.prevCard && global.options[OPTION.STICKY_CARDS])) && handAnimPositions[index][1] === undefined) {
+			if (((selected(S.HAND) && game.select[1] == effIndex) || (effIndex == game.prevCard && global.options[OPTION.STICKY_CARDS])) && handAnimPositions[index][1] === undefined) {
 				temp = index;
 			} else {
 				if (handAnimPositions[index][1] === undefined) {
@@ -1437,7 +1447,7 @@ const graphics = {
 		if (inDeck()) {
 			const cardObj = currentDeck()[game.cardSelect];
 			if (cardObj) graphics.cardInfo("deck", cardObj);
-		} else if (game.select[0] === S.ATTACK || game.select[0] === S.ENEMY) {
+		} else if (selected(S.ATTACK, S.ENEMY)) {
 			const enemy = game.enemies[game.select[1]];
 			const type = enemy.type;
 			const pos = enemyPos[game.select[1]];
@@ -1492,7 +1502,7 @@ const graphics = {
 					y += info.enemy(type, x, (left ? y + 12 : y));
 				});
 			}
-		} else if (game.select[0] === S.PLAYER) {
+		} else if (selected(S.PLAYER)) {
 			const coords = [58, 69, 24, 39];
 			draw.selector(coords[0], coords[1], coords[2], coords[3]);
 			draw.lore(coords[0] + (coords[2] / 2) - 1, 61.5, CHARACTER_NAME[game.character][global.charStage[game.character]], {"color": "#fff", "text-align": DIR.CENTER, "text-small": true});
@@ -1505,34 +1515,34 @@ const graphics = {
 				}
 				y += info.player(type, x, y);
 			});
-		} else if (game.select[0] === S.ARTIFACTS) {
+		} else if (selected(S.ARTIFACTS)) {
 			info.artifact(game.artifacts[game.select[1]]);
-		} else if (game.select[0] === S.ARTIFACT_REWARD) {
+		} else if (selected(S.ARTIFACT_REWARD)) {
 			info.artifact(game.room[6][game.select[1]], 160 + (game.select[1] * 32), 109);
-		} else if (game.select[0] === S.CARD_REWARD && game.select[1] > -1 && game.select[1] < get.cardRewardChoices()) {
+		} else if (selected(S.CARD_REWARD) && game.select[1] > -1 && game.select[1] < get.cardRewardChoices()) {
 			graphics.cardInfo("reward", new Card(game.room[5][game.select[1]]));
-		} else if (game.select[0] === S.LOOKER) {
+		} else if (selected(S.LOOKER)) {
 			info.menuItem(DIR.UP, 2, "View Background");
-		} else if (game.select[0] === S.HELP) {
+		} else if (selected(S.HELP)) {
 			info.menuItem(DIR.UP, 1, "View Manual");
-		} else if (game.select[0] === S.OPTIONS && game.select[1] <= 1) {
+		} else if (selected(S.OPTIONS) && game.select[1] <= 1) {
 			info.menuItem(DIR.UP, 0, "Configure Options");
-		} else if (game.select[0] === S.END_TURN) {
+		} else if (selected(S.END_TURN)) {
 			info.menuItem(DIR.LEFT, 1, "End Turn");
-		} else if (game.select[0] === S.DECK) {
+		} else if (selected(S.DECK)) {
 			info.menuItem(DIR.LEFT, 0, "View Deck");
-		} else if (game.select[0] === S.VOID) {
+		} else if (selected(S.VOID)) {
 			info.menuItem(DIR.RIGHT, 1, "View Void");
-		} else if (game.select[0] === S.DISCARD) {
+		} else if (selected(S.DISCARD)) {
 			info.menuItem(DIR.RIGHT, 0, "View Discard");
-		} else if (game.select[0] === S.MAP) {
+		} else if (selected(S.MAP)) {
 			info.menuItem(S.MAP, game.select[1]);
 		}
 		if (inMenu()) {
 			return;
-		} else if ((game.select[0] === S.HAND || (game.select[0] !== S.ATTACK && game.select[0] !== S.ENEMY && !hidden() && global.options[OPTION.STICKY_CARDS])) && game.hand.length && game.prevCard < game.hand.length) {
+		} else if ((selected(S.HAND) || (!selected(S.ATTACK, S.ENEMY) && !hidden() && global.options[OPTION.STICKY_CARDS])) && game.hand.length && game.prevCard < game.hand.length) {
 			graphics.cardInfo("card", game.hand[game.prevCard]);
-		} else if (game.select[0] === SS.SELECT_HAND) {
+		} else if (selected(SS.SELECT_HAND)) {
 			if (game.select[1] >= 0 && game.select[1] < game.hand.length - 1) {
 				graphics.cardInfo("cardSelect", game.hand[game.select[1] >= game.enemyAtt[0] ? game.select[1] + 1 : game.select[1]]);
 			} else {
@@ -1567,7 +1577,7 @@ const graphics = {
 				draw.image(I.popup.back, x, 150 - (index * 21));
 				draw.lore(x + 13, 150 - (index * 21) + 8, activePopups[index][3] ? activePopups[index][1] + "\n" + activePopups[index][3] : activePopups[index][1], {"text-small": !!activePopups[index][3]});
 				if (I.popup[activePopups[index][0]]) draw.image(I.popup[activePopups[index][0]], x + 2, 150 - (index * 21) + 2);
-				if (game.select[0] === S.POPUPS && game.select[1] == index) {
+				if (selected(S.POPUPS) && game.select[1] == index) {
 					draw.image(I.select.popup, x - 1, 150 - (index * 21) - 1);
 				}
 				ctx.globalAlpha = 1;
@@ -1758,10 +1768,10 @@ const graphics = {
 	 */
 	gameEnd() {
 		// draw background
-		ctx.globalAlpha = game.select[1] / (game.select[0] === S.GAME_WON ? 50 : 64);
+		ctx.globalAlpha = game.select[1] / (selected(S.GAME_WON) ? 50 : 64);
 		if (game.select[1] < 50) game.select[1]++;
 		draw.rect("#000");
-		if (game.select[0] === S.GAME_WON) {
+		if (selected(S.GAME_WON)) {
 			draw.image(I.player.victorious, 168, 42 + Math.round(Math.abs(winAnim - 4) - 2), I.player.victorious.width * 2, I.player.victorious.height * 2);
 			winAnim += Math.random() * 0.05 + 0.05;
 			if (winAnim >= 8) winAnim -= 8;
@@ -1769,7 +1779,7 @@ const graphics = {
 		}
 		// calculate header text
 		let text = "";
-		if (game.select[0] === S.GAME_WON) {
+		if (selected(S.GAME_WON)) {
 			text += "YOU BEAT THE GAME ";
 			if (hasArtifact(202)) text += "<#fcf050>WITH DETERMINATION</#fcf050>";
 			else if (game.difficulty) text += "ON <#f00>HARD MODE!</#f00>";
@@ -1793,12 +1803,14 @@ const graphics = {
 			}
 		}
 		factors.push(["Saved " + game.gold + " gold", 1, Math.floor(game.gold / 5)]);
-		if (game.select[0] === S.GAME_WON) factors.push(["Saved " + game.health + " health", 5, game.health]);
+		if (selected(S.GAME_WON)) {
+			factors.push(["Saved " + game.health + " health", 5, game.health]);
+		}
 		// calculate text position and color
 		let len = factors.length;
 		if (game.difficulty) len += 2;
-		const normalColor = (game.select[0] === S.GAME_WON ? "#0f0" : "#f00");
-		const hardColor = (game.select[0] === S.GAME_WON ? "#f00" : "#0f0");
+		const normalColor = (selected(S.GAME_WON) ? "#0f0" : "#f00");
+		const hardColor = (selected(S.GAME_WON) ? "#f00" : "#0f0");
 		// draw header and footer text
 		draw.lore(200 - 2, 100 - (len + 17) * 2.75, text, {"color": normalColor, "text-align": DIR.CENTER});
 		draw.lore(200 - 2, 100 + (len + 15) * 2.75, "PRESS ENTER TO END THE RUN", {"color": normalColor, "text-align": DIR.CENTER});
@@ -1807,8 +1819,11 @@ const graphics = {
 		for (let index = 0; index < factors.length; index++) {
 			text += factors[index][0] + ":\n";
 		}
-		if (game.difficulty) text += "\nBase score:\n\nTotal score:";
-		else text += "\nTotal score:";
+		if (game.difficulty) {
+			text += "\nBase score:\n\nTotal score:";
+		} else {
+			text += "\nTotal score:";
+		}
 		draw.lore(120, 100 - (len - 7) * 2.75, text, {"color": normalColor, "text-small": true});
 		text = "";
 		let totalScore = 0;
@@ -1857,7 +1872,7 @@ const graphics = {
 			draw.imageSector(I.background.difficulty, 0, 2 * 16, 64, 16, 168, 146);
 			ctx.globalAlpha = 1;
 		}
-		if (game.select[0] !== S.WELCOME) {
+		if (!selected(S.WELCOME)) {
 			let text = "";
 			for (let index = 0; index < MAIN_MENU_OPTIONS.length; index++) {
 				if (index === menuSelect[1] && focused) {
@@ -1891,22 +1906,22 @@ const graphics = {
 			options = ["DISMISS", "COPY SAVE", "DELETE SAVE"];
 		} else if (menuSelect[0] === MENU.OLD_SAVE_COPY_FAILED) {
 			text = ["The old save could not be copied. Make sure this page has clipboard permissions.", "Try to copy old save again?"];
-		} else if (game.select[0] === S.CONF_END_TURN) {
+		} else if (selected(S.CONF_END_TURN)) {
 			text = ["Are you sure you want to end your turn?"];
-		} else if (game.select[0] === S.CONF_EXIT) {
+		} else if (selected(S.CONF_EXIT)) {
 			text = ["Are you sure you want to finish collecting rewards?", "There are still rewards left unclaimed."];
-		} else if (game.select[0] === S.CONF_SURRENDER) {
+		} else if (selected(S.CONF_SURRENDER)) {
 			text = ["Are you sure you want to end your current run by surrendering?", "This choice cannot be undone."];
-		} else if (game.select[0] === S.CONF_HAND_ALIGN) {
+		} else if (selected(S.CONF_HAND_ALIGN)) {
 			text = ["Are you sure you want to align the hands of time?", "You will regret it. There is no going back."];
 			options = ["YES", "NO", "BACK"];
-		} else if (game.select[0] === S.CONF_PURIFY) {
+		} else if (selected(S.CONF_PURIFY)) {
 			text = ["Are you sure you want to destroy the card " + game.cards[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only destroy one copy of the card."];
 			options = ["YES", "RESELECT", "BACK"];
-		} else if (game.select[0] === S.CONF_REFINE) {
+		} else if (selected(S.CONF_REFINE)) {
 			text = ["Are you sure you want to improve the card " + refinableDeck[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only improve one copy of the card."];
 			options = ["YES", "BACK"];
-		} else if (game.select[0] === S.CONF_PEARL) {
+		} else if (selected(S.CONF_PEARL)) {
 			text = ["As the dark cloud clears, you see a strange pearl resting on the ground.", "Will you pick it up? This will consume 1 energy."];
 		}
 		let width = 39;
@@ -1916,7 +1931,7 @@ const graphics = {
 		}
 		const height = Math.ceil(text.length * 5.5) + 15;
 		const x = (400 - width) / 2;
-		const y = (game.select[0] === S.CONF_REFINE ? 20 : (200 - height) / 2);
+		const y = (selected(S.CONF_REFINE) ? 20 : (200 - height) / 2);
 		draw.rect("#0008");
 		draw.box(x, y, width, height);
 		draw.lore(x + 1, y + 1, text.join("\n"), {"text-small": true});
@@ -1936,7 +1951,7 @@ const graphics = {
 			draw.lore(x + 3 + offset, y + height - 11, options[index]);
 			offset += boxWidth + 3;
 		}
-		if (game.select[0] === S.CONF_REFINE) {
+		if (selected(S.CONF_REFINE)) {
 			draw.card(refinableDeck[game.cardSelect], 100, 51, true, true);
 			draw.card(new Card(refinableDeck[game.cardSelect].id, 1), 234, 51, true, true);
 			draw.image(I.card.refine, 200 - I.card.refine.width / 2, 95);
@@ -1976,11 +1991,11 @@ const graphics = {
 		// scrolling
 		if (focused) {
 			const scrollPadding = 11;
-			const selected = Math.floor(menuSelect[1] / 3);
-			if (menuScroll >= spaceY * selected) {
-				menuScroll -= Math.min(10, Math.abs(menuScroll - (spaceY * selected)));
-			} else if (menuScroll <= (spaceY * (selected - 3)) + scrollPadding) {
-				menuScroll += Math.min(10, Math.abs(menuScroll - ((spaceY * (selected - 3)) + scrollPadding)));
+			const isSelected = Math.floor(menuSelect[1] / 3);
+			if (menuScroll >= spaceY * isSelected) {
+				menuScroll -= Math.min(10, Math.abs(menuScroll - (spaceY * isSelected)));
+			} else if (menuScroll <= (spaceY * (isSelected - 3)) + scrollPadding) {
+				menuScroll += Math.min(10, Math.abs(menuScroll - ((spaceY * (isSelected - 3)) + scrollPadding)));
 			}
 			const maxScroll = Math.max(spaceY * (global.prevGames.length - 4) + scrollPadding, 0);
 			if (menuScroll > maxScroll) menuScroll = maxScroll;

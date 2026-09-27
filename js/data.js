@@ -306,7 +306,7 @@ function updateData() {
 		game.select = [S.GAME_OVER, 0];
 	}
 	// game won
-	if (game.floor == 20 && game.state === STATE.EVENT_FIN && game.select[0] === S.MAP) {
+	if (game.floor == 20 && game.state === STATE.EVENT_FIN && selected(S.MAP)) {
 		game.turn = -1;
 		game.state = STATE.GAME_END;
 		game.select = [S.GAME_WON, 0];
@@ -319,7 +319,7 @@ function updateData() {
 	Card.sort(game.void);
 	Card.sort(game.discard);
 	// other
-	if (game.select[0] === S.HAND) {
+	if (selected(S.HAND)) {
 		if (game.hand.length) game.prevCard = game.select[1];
 		else game.select = [S.END_TURN, 0];
 	}
