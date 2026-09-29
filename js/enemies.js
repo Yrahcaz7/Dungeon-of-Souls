@@ -8,7 +8,10 @@ class Enemy {
 	defendPower = 0;
 	intent = INTENT.ATTACK;
 	intentHistory = [INTENT.ATTACK];
+	/** @type {{[key: number]: number}} */
 	eff = {};
+	/** @type {[number, number] | null} */
+	transition = null;
 	/**
 	 * Returns a new enemy.
 	 * @param {number | null} type - the enemy's type.

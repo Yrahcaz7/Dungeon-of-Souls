@@ -718,11 +718,12 @@ const performAction = (() => {
 			} else if (menuSelect[1]) {
 				menuSelect = [MENU.PREV_GAMES, 0];
 				menuScroll = 0;
-				sortedPrevGames = getSortedIndexes(global.prevGames, (a, b) => (
-					prevGamesSort[1]
-						? getPrevGameSortValue(b) - getPrevGameSortValue(a)
-						: getPrevGameSortValue(a) - getPrevGameSortValue(b)
-				));
+				sortedPrevGames = getSortedIndexes(global.prevGames, (a, b) => {
+					const aVal = getPrevGameSortValue(a);
+					const bVal = getPrevGameSortValue(b);
+					const sortValue = (aVal < bVal ? -1 : (aVal === bVal ? 0 : 1));
+					return prevGamesSort[1] ? 0 - sortValue : sortValue;
+				});
 			} else {
 				menuSelect[1]++;
 			}
@@ -969,14 +970,14 @@ const performAction = (() => {
 			const arr = game.rewards[game.select[1]];
 			if (!arr[2]) {
 				if (arr[0] === REWARD.GOLD) {
-					game.gold += arr[1];
+					game.gold += arr[1] ?? 0;
 					arr[2] = true;
 				} else if (arr[0] === REWARD.CARD) {
 					game.select = [S.CARD_REWARD, -1];
 				} else if (arr[0] === REWARD.ARTIFACT) {
 					game.select = [S.ARTIFACT_REWARD, -1];
 				} else if (arr[0] === REWARD.HEALTH) {
-					game.health += arr[1];
+					game.health += arr[1] ?? 0;
 					arr[2] = true;
 				} else if (arr[0] === REWARD.PURIFIER) {
 					game.select = [S.PURIFIER, 0];

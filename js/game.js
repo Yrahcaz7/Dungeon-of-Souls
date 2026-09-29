@@ -27,7 +27,7 @@ let global = getStartGlobalData();
 
 /**
  * Returns the starting game data.
- * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, floor: number, gold: number, location: number, rewards: (number | boolean)[][], state: number, turn: number, select: [number, number] | [number, number, [number, number]], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyAtt: [number, number, Card, boolean], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {}, room: MapNode | [], map: MapNode[][], paths: number[][][], traveled: number[], scribbles: number[], seed: string, randomState: number[], version: number, cheat?: boolean}}
+ * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, floor: number, gold: number, location: number, rewards: ([number] | [number, number] | [number, undefined, boolean] | [number, number, boolean])[], state: number, turn: number, select: [number, number] | [number, number, [number, number]], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyAtt: [number, number, Card, boolean], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {[key: number]: number}, room: MapNode | [], map: MapNode[][], paths: number[][][], traveled: number[], scribbles: number[], seed: string, randomState: number[], version: number, cheat?: boolean}}
  */
 function getStartGameData() { return {
 	character: CHARACTER.KNIGHT,

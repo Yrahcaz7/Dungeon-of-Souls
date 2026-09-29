@@ -597,15 +597,16 @@ const draw = {
 
 /**
  * For each keyword in (or reffered to by) `keywords`, excecutes `func`.
- * @param {number[] | {[key: number]: any}} keywords - An array containing keywords or an object with keywords as keys. These keywords are iterated over.
- * @param {(type: number, height: number) => void} func - The function to excecute for each keyword.
- * @param {number[] | {[key: number]: any}} exclude - An array containing keywords or an object with keywords as keys. These keywords are excluded from iteration.
  */
 const forKeywordIn = (() => {
 	let _keywords = {};
-	let _func = {};
+	let _func = (_type, _height) => {};
 	let logged = {};
-	const logKeyword = type => {
+	/**
+	 * If `type` has not been logged, excecutes `func`.
+	 * @param {number} type - The keyword to excecute `func` with.
+	 */
+	function logKeyword(type) {
 		if (logged[type] || !EFF_DESC[type]) return;
 		logged[type] = true;
 		const height = Math.ceil((EFF_DESC[type].match(/\n/g) || []).length * 5.5 + (_keywords[type] > 0 ? 22 : 11));
@@ -615,6 +616,12 @@ const forKeywordIn = (() => {
 		else if (type === ENEMY_EFF.PLAN_DEFEND) logKeyword(EFF.DEFUP);
 		else if (type === ENEMY_EFF.PERSISTENCE) logKeyword(ENEMY_EFF.REVIVAL);
 	}
+	/**
+	 * For each keyword in (or reffered to by) `keywords`, excecutes `func`.
+	 * @param {number[] | {[key: number]: any}} keywords - An array containing keywords or an object with keywords as keys. These keywords are iterated over.
+	 * @param {(type: number, height: number) => void} func - The function to excecute for each keyword.
+	 * @param {number[] | {[key: number]: any}} exclude - An array containing keywords or an object with keywords as keys. These keywords are excluded from iteration.
+	 */
 	return (keywords, func, exclude = []) => {
 		_keywords = keywords;
 		_func = func;
@@ -699,7 +706,7 @@ const info = {
 		const choices = get.cardRewardChoices();
 		let x = (199 - (choices * 68 / 2)) + 70 + (game.select[1] * 68) + xPlus;
 		const y = 51 + yPlus;
-		if (game.select[1] == choices - 1 && choices >= 4) {
+		if (game.select[1] == choices - 1 && choices >= 4 && game.room[5]) {
 			const ref = CARDS[game.room[5][game.select[1]]];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) {
 				x -= 143;
@@ -1365,7 +1372,9 @@ const graphics = {
 		let temp = -1;
 		for (let index = 0; index < handAnimCards.length && index < handAnimPositions.length; index++) {
 			const effIndex = index - (handAnimOffsets[index] || 0);
-			if (effIndex >= 0 && !cardAnim[effIndex]) cardAnim[effIndex] = 0;
+			if (effIndex >= 0 && !cardAnim[effIndex]) {
+				cardAnim[effIndex] = 0;
+			}
 			if (((selected(S.HAND) && game.select[1] == effIndex) || (effIndex == game.prevCard && global.options[OPTION.STICKY_CARDS])) && handAnimPositions[index][1] === undefined) {
 				temp = index;
 			} else {
@@ -1389,7 +1398,7 @@ const graphics = {
 				"text-align": DIR.CENTER,
 			});
 			notif[1]++;
-			if (notif[1] > 16) notif = [-1, 0];
+			if (notif[1] > 16) notif = [-1, 0, "", 0];
 		}
 	},
 	/**
@@ -1511,9 +1520,9 @@ const graphics = {
 			});
 		} else if (selected(S.ARTIFACTS)) {
 			info.artifact(game.artifacts[game.select[1]]);
-		} else if (selected(S.ARTIFACT_REWARD)) {
+		} else if (selected(S.ARTIFACT_REWARD) && game.room[6]) {
 			info.artifact(game.room[6][game.select[1]], 160 + (game.select[1] * 32), 109);
-		} else if (selected(S.CARD_REWARD) && game.select[1] > -1 && game.select[1] < get.cardRewardChoices()) {
+		} else if (selected(S.CARD_REWARD) && game.room[5] && game.select[1] > -1 && game.select[1] < get.cardRewardChoices()) {
 			graphics.cardInfo("reward", new Card(game.room[5][game.select[1]]));
 		} else if (selected(S.LOOKER)) {
 			info.menuItem(DIR.UP, 2, "View Background");
@@ -1607,6 +1616,10 @@ const graphics = {
 	 * @param {boolean} focused - whether the card reward layer is focused. Defaults to `true`.
 	 */
 	cardRewards(focused = true) {
+		if (!game.room[5]) {
+			throwError("No card rewards available.");
+			return;
+		}
 		const choices = get.cardRewardChoices();
 		const x = 198 - (choices * 68 / 2);
 		const y = 20;
@@ -1628,6 +1641,10 @@ const graphics = {
 	 * @param {boolean} focused - whether the artifact reward layer is focused. Defaults to `true`.
 	 */
 	artifactRewards(focused = true) {
+		if (!game.room[6]) {
+			throwError("No artifact rewards available.");
+			return;
+		}
 		graphics.rewards(false);
 		const x = 140;
 		const y = 70;
@@ -1677,16 +1694,22 @@ const graphics = {
 		}
 		draw.image(I.extra.deck, 22, 16);
 		draw.lore(23, 22, game.cards.length, {"color": "#fff"});
-		if (game.select[1] === availableLocations.length && focused) draw.image(I.select.deck, 21, 15);
+		if (game.select[1] === availableLocations.length && focused) {
+			draw.image(I.select.deck, 21, 15);
+		}
 		if (!(game.state === STATE.EVENT_FIN && onFloorWithCutscene())) {
 			draw.image(I.extra.end, 22, 179);
-			if (game.select[1] === -1 && focused) draw.image(I.select.round, 21, 178);
+			if (game.select[1] === -1 && focused) {
+				draw.image(I.select.round, 21, 178);
+			}
 		}
 		draw.lore(1, 1, "Floor " + game.floor + " - " + game.gold + " gold", {"color": "#fff"});
 		draw.lore(399, 1, "Seed: " + game.seed, {"color": "#fff", "text-align": DIR.LEFT});
 		// draw scribbles
 		for (let index = area * 2; index < (area + 1) * 2 && index < game.scribbles.length; index++) {
-			if (game.scribbles[index] < 0) continue;
+			if (game.scribbles[index] < 0) {
+				continue;
+			}
 			const x = 35 + 9 * 32;
 			const y = 24.5 + 4 * (index % 2) * 32;
 			draw.image(I.map.scribble_back, x - 4, y - 2.5, 80 / SCALE, 80 / SCALE);
@@ -1697,7 +1720,9 @@ const graphics = {
 		for (let row1 = area * 10; row1 < (area + 1) * 10 && row1 < mapPathPoints.length; row1++) {
 			for (const node1 in mapPathPoints[row1]) {
 				for (const node2 in mapPathPoints[row1][node1]) {
-					if (game.traveled[row1] == node1 && game.traveled[row1 + 1] == node2) continue;
+					if (game.traveled[row1] === +node1 && game.traveled[row1 + 1] === +node2) {
+						continue;
+					}
 					draw.polyline(mapPathPoints[row1][node1][node2], "#b84", 3);
 				}
 			}
@@ -1717,8 +1742,11 @@ const graphics = {
 				const drawY = game.map[x][y][2];
 				if (I.map.node[type] instanceof Image) {
 					if (focused) {
-						if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node._.wo[type], drawX - 1, drawY - 1);
-						else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node._.bo[type], drawX - 1, drawY - 1);
+						if (x === coordSel[0] && y === coordSel[1]) {
+							draw.image(I.map.node._.wo[type], drawX - 1, drawY - 1);
+						} else if (x === coordOn[0] && y === coordOn[1]) {
+							draw.image(I.map.node._.bo[type], drawX - 1, drawY - 1);
+						}
 					}
 					draw.image(I.map.node[type], drawX, drawY);
 				} else {
@@ -1730,8 +1758,12 @@ const graphics = {
 					}
 					if (num >= 0) {
 						if (focused) {
-							if (x == coordSel[0] && y == coordSel[1]) draw.image(I.map.node[type]._.wo[num], drawX - 1, drawY - 1);
-							else if (x == coordOn[0] && y == coordOn[1]) draw.image(I.map.node[type]._.bo[num], drawX - 1, drawY - 1);
+							if (x === coordSel[0] && y === coordSel[1]) {
+								draw.image(I.map.node[type]._.wo[num], drawX - 1, drawY - 1);
+							}
+							else if (x === coordOn[0] && y === coordOn[1]) {
+								draw.image(I.map.node[type]._.bo[num], drawX - 1, drawY - 1);
+							}
 						}
 						draw.image(I.map.node[type][num], drawX, drawY);
 					}
@@ -1896,7 +1928,7 @@ const graphics = {
 			text = ["Are you sure you want to change the difficulty to " + (game.difficulty ? "easy" : "hard") + "?", "If you have an ongoing run, it will be reset!"];
 		} else if (menuSelected(MENU.CHANGE_SEED, MENU.ENTER_SEED)) {
 			text = ["Are you sure you want to change the seed?", "If you have an ongoing run, it will be reset!", "The new run will also not count towards your high score."];
-		} else if (menuSelected(MENU.CONF_REMOVE_PREV_GAME)) {
+		} else if (menuSelected(MENU.CONF_REMOVE_PREV_GAME) && menuSelect[2]) {
 			text = ["Are you sure you want to remove run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[2][1] / 3)]].num + " from the list?", "This will permanently remove all of its information."];
 		} else if (menuSelected(MENU.OLD_SAVE_ALERT)) {
 			text = ["ALERT: You have an old save from version " + get.versionDisplay(parseSave(localStorage.getItem(ID + "/old/global"))?.version || 0) + ", do you want to keep it?", "(You can play old versions by downloading the files from GitHub)"];

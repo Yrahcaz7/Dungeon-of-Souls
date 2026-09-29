@@ -215,7 +215,7 @@ const loadImages = (() => {
 	/**
 	 * Loads an image or all images in a folder.
 	 * @param {object} ref - a reference to the containing folder.
-	 * @param {string} name - the name of the image to load.
+	 * @param {string | number} name - the name of the image to load.
 	 * @param {string} path - the path of the containing folder.
 	 */
 	async function loadImage(ref, name, path) {
@@ -259,18 +259,22 @@ const loadImages = (() => {
 	return async () => {
 		const startTime = performance.now();
 		// setup cards
-		for (const id in CARDS) {
-			if (id <= 0) continue;
+		for (const strId in CARDS) {
+			const id = +strId;
+			if (id <= 0) {
+				continue;
+			}
 			I.card[CARDS[id].rarity][id] = new Image;
 			if (CARDS[id].rarity >= 0) {
-				CARD_IDS[CARDS[id].rarity].push(+id);
+				CARD_IDS[CARDS[id].rarity].push(id);
 			}
 		}
 		// setup artifacts
-		for (const id in ARTIFACTS) {
+		for (const strId in ARTIFACTS) {
+			const id = +strId;
 			I.artifact[id] = new Image;
 			if (id >= 100 && id < 200) {
-				ARTIFACT_IDS.push(+id);
+				ARTIFACT_IDS.push(id);
 			}
 		}
 		// setup effect icons

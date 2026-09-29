@@ -286,9 +286,10 @@ const CARD_TYPE = ["error", "attack", "defense", "skill", "magic", "curse"];
 // Loads all card data.
 (() => {
 	/**
-	 * Checks if a number is enclosed within an array recursively.
-	 * @param {number | (number | number[])[]} arr - The array to check.
-	 * @param {number} num - The number to check for.
+	 * Checks if an element is enclosed within an array recursively.
+	 * @template T
+	 * @param {T | (T | T[])[]} arr - The array to check.
+	 * @param {T} num - The element to check for.
 	 */
 	function encloses(arr, num) {
 		if (arr instanceof Array) {
@@ -309,17 +310,26 @@ const CARD_TYPE = ["error", "attack", "defense", "skill", "magic", "curse"];
 		// color text
 		desc.nodes = desc.nodes.map(node => typeof node === "string" ? colorText(node) : node);
 		// list keywords
-		if (!ref.keywords) ref.keywords = [];
+		if (!ref.keywords) {
+			ref.keywords = [];
+		}
 		for (const obj of [EFF, ENEMY_EFF, CARD_EFF]) {
 			for (const effect in EFF) {
-				if (!EFF_NAME[obj[effect]]) continue;
+				if (!EFF_NAME[obj[effect]]) {
+					continue;
+				}
 				if (!ref.keywords.includes(obj[effect]) && desc.nodes.some(node => node === obj[effect] || encloses(node, obj[effect]))) {
 					ref.keywords.push(obj[effect]);
 				}
 			}
 		}
 		// extra info
-		if (!ref.keywords.includes(CARD_EFF.DESC) && desc.nodes.some(node => /apply/i.test(node)) && desc.nodes.some(node => /card/i.test(node))) ref.keywords.push(CARD_EFF.DESC);
+		if (!ref.keywords.includes(CARD_EFF.DESC)
+			&& desc.nodes.some(node => typeof node === "string" && /apply/i.test(node))
+			&& desc.nodes.some(node => typeof node === "string" && /card/i.test(node))
+		) {
+			ref.keywords.push(CARD_EFF.DESC);
+		}
 		// return desc
 		return desc;
 	}
@@ -402,6 +412,7 @@ class Card {
 	}
 }
 
+/** @type {[number[], number[], number[]]} */
 const CARD_IDS = [[], [], []];
 
 /**

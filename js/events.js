@@ -79,7 +79,7 @@ const doScreenShake = (() => {
 		strength = Math.min(strength, 1);
 		let animation = [];
 		if (screenShakeAnimation instanceof Animation && screenShakeAnimation.playState !== "finished") {
-			const transform = document.defaultView.getComputedStyle(document.body).transform.split(/\(|, |\)/g);
+			const transform = window.getComputedStyle(document.body).transform.split(/\(|, |\)/g);
 			animation.push({transform: "translate(" + transform[transform.length - 3] + "px, " + transform[transform.length - 2] + "px)"});
 			screenShakeAnimation.cancel();
 		} else {
@@ -213,7 +213,11 @@ const EVENTS = {
  * @returns {Array}
  */
 function getCurrentEvent() {
-	if (game.state !== STATE.EVENT) return [];
-	if (game.room[3] < EVENTS.any.length) return EVENTS.any[game.room[3]][game.turn - TURN.EVENT_START] || [];
+	if (game.state !== STATE.EVENT || typeof game.room[3] !== "number") {
+		return [];
+	}
+	if (game.room[3] < EVENTS.any.length) {
+		return EVENTS.any[game.room[3]][game.turn - TURN.EVENT_START] || [];
+	}
 	return EVENTS[get.area()][game.room[3] - 100][game.turn - TURN.EVENT_START] || [];
 }

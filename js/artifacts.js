@@ -139,6 +139,7 @@ function activateArtifacts(type, ...params) {
 	}
 }
 
+/** @type {number[]} */
 const ARTIFACT_IDS = [];
 
 /**

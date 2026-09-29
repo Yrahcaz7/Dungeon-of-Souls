@@ -1,7 +1,11 @@
+/**
+ * @typedef {(string | number | (string | number | boolean | DescNodeList)[])[]} DescNodeList
+ */
+
 class Desc {
 	/**
 	 * Returns a new description.
-	 * @param {(string | (string | number | boolean)[])[]} nodes - the nodes of the description.
+	 * @param {DescNodeList} nodes - the nodes of the description.
 	 */
 	constructor(...nodes) {
 		this.nodes = nodes;
@@ -20,7 +24,7 @@ class Desc {
 		const DESC_EFFECTS = {[DESC.DAMAGE]: "attackEffects", [DESC.SHIELD]: "defendEffects"};
 		/**
 		 * Returns a string constructed from the specified description nodes.
-		 * @param {(string | (string | number | boolean)[])[]} nodes - the nodes to construct the string from.
+		 * @param {DescNodeList} nodes - the nodes to construct the string from.
 		 * @param {number} id - the id of the card to draw the description for.
 		 * @param {boolean} outside - whether the card is outside the battle.
 		 * @returns {[string, boolean]}
