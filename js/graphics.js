@@ -137,10 +137,10 @@ const draw = {
 	/**
 	 * Draws a polygon on the canvas.
 	 * @param {number[][]} points - the coordinates of the polygon's points.
-	 * @param style - the polygon's style object.
+	 * @param {{"background-color"?: string, "border-width"?: number, "border-color"?: string}} styles - the polygon's style object.
 	 */
-	polygon(points, style = {"background-color": "#000", "border-width": 0, "border-color": "#000"}) {
-		style = Object.assign({"background-color": "#000", "border-width": 0, "border-color": "#000"}, style);
+	polygon(points, styles = {}) {
+		const style = Object.assign({"background-color": "#000", "border-width": 0, "border-color": "#000"}, styles);
 		ctx.beginPath();
 		ctx.fillStyle = style["background-color"];
 		ctx.strokeStyle = style["border-color"];
@@ -157,10 +157,10 @@ const draw = {
 	 * @param {number} x - the x-coordinate of the circle's center.
 	 * @param {number} y - the y-coordinate of the circle's center.
 	 * @param {number} radius - the radius of the circle.
-	 * @param style - the polygon's style object.
+	 * @param {{"background-color"?: string, "border-width"?: number, "border-color"?: string}} styles - the polygon's style object.
 	 */
-	circle(x, y, radius, style = {"background-color": "#000", "border-width": 0, "border-color": "#000"}) {
-		style = Object.assign({"background-color": "#000", "border-width": 0, "border-color": "#000"}, style);
+	circle(x, y, radius, styles = {}) {
+		const style = Object.assign({"background-color": "#000", "border-width": 0, "border-color": "#000"}, styles);
 		ctx.beginPath();
 		ctx.fillStyle = style["background-color"];
 		ctx.strokeStyle = style["border-color"];
@@ -215,14 +215,17 @@ const draw = {
 	 * @param {string} char - the character to draw.
 	 * @param {number} x - the x-coordinate to draw the character at.
 	 * @param {number} y - the y-coordinate to draw the character at.
-	 * @param style - the character's style object.
+	 * @param {{color?: string, "highlight-color"?: string, "text-small"?: boolean}} styles - the character's style object.
 	 */
-	char(char, x, y, style = {"color": "#000", "highlight-color": "", "text-small": false}) {
-		style = Object.assign({"color": "#000", "highlight-color": "", "text-small": false}, style);
+	char(char, x, y, styles = {}) {
+		const style = Object.assign({"color": "#000", "text-small": false}, styles);
 		// highlight
-		if (style["highlight-color"] && char.charCodeAt() >= 32) {
-			if (style["text-small"]) draw.rect(style["highlight-color"], x - 0.5, y - 0.5, 3.5, 5.5);
-			else draw.rect(style["highlight-color"], x - 1, y - 1, 7, 11);
+		if (style["highlight-color"] && char.charCodeAt(0) >= 32) {
+			if (style["text-small"]) {
+				draw.rect(style["highlight-color"], x - 0.5, y - 0.5, 3.5, 5.5);
+			} else {
+				draw.rect(style["highlight-color"], x - 1, y - 1, 7, 11);
+			}
 		}
 		// draw char
 		if (CHARACTERS[char]) {
@@ -242,10 +245,10 @@ const draw = {
 	 * @param {number} x - the x-coordinate to draw the lore at.
 	 * @param {number} y - the y-coordinate to draw the lore at.
 	 * @param {string | number} str - the string containing the lore.
-	 * @param style - the lore's style object.
+	 * @param {{"color"?: string, "highlight-color"?: string, "text-align"?: number, "text-small"?: boolean}} styles - the lore's style object.
 	 */
-	lore(x, y, str, style = {"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false}) {
-		style = Object.assign({"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false}, style);
+	lore(x, y, str, styles = {}) {
+		const style = Object.assign({"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false}, styles);
 		let color = style["color"];
 		let highlight = "";
 		let textAlign = style["text-align"];
@@ -409,11 +412,13 @@ const draw = {
 	 * @param {number} y - the y-coordinate to draw the box at.
 	 * @param {number} width - the box's width.
 	 * @param {number} height - the box's height.
-	 * @param style - the box's style object.
+	 * @param {{"background-color"?: string, "border-width"?: number, "border-color"?: string}} styles - the box's style object.
 	 */
-	box(x, y, width, height, style = {"background-color": "#ddd", "border-width": 1, "border-color": "#000"}) {
-		style = Object.assign({"background-color": "#ddd", "border-width": 1, "border-color": "#000"}, style);
-		if (style["background-color"]) draw.rect(style["background-color"], x, y, width, height);
+	box(x, y, width, height, styles = {}) {
+		const style = Object.assign({"background-color": "#ddd", "border-width": 1, "border-color": "#000"}, styles);
+		if (style["background-color"]) {
+			draw.rect(style["background-color"], x, y, width, height);
+		}
 		const borderW = style["border-width"];
 		if (borderW > 0) {
 			draw.rect(style["border-color"], x - borderW, y - borderW, width + borderW, borderW); // top
@@ -433,20 +438,14 @@ const draw = {
 	 */
 	bars(x, y, health, maxHealth, shield = 0, maxShield = 0) {
 		let cutoff = Math.round(Math.min(Math.max(health / maxHealth, 0), 1) * 62);
-		if ((health < 10 && maxHealth >= 10) || (health < 100 && maxHealth >= 100) || (health < 1000 && maxHealth >= 1000)) {
-			health = "0" + health;
-		}
 		draw.imageSector(I.bar.health_full, 0, 0, cutoff + 1, 12, x, y + 65);
 		draw.imageSector(I.bar.health_empty, cutoff + 1, 0, 64 - (cutoff + 1), 12, x + (cutoff + 1), y + 65);
-		draw.lore(x + 31, y + 67, health, {"text-align": DIR.LEFT});
+		draw.lore(x + 31, y + 67, padNumber(health, Math.floor(Math.log10(maxHealth)) + 1), {"text-align": DIR.LEFT});
 		draw.lore(x + 34, y + 67, maxHealth);
 		cutoff = Math.round(Math.min(Math.max(shield / maxShield, 0), 1) * 62);
-		if ((shield < 10 && maxShield >= 10) || (shield < 100 && maxShield >= 100) || (shield < 1000 && maxShield >= 1000)) {
-			shield = "0" + shield;
-		}
 		draw.imageSector(I.bar.shield_full, 0, 0, cutoff + 1, 12, x, y + 76);
 		draw.imageSector(I.bar.shield_empty, cutoff + 1, 0, 64 - (cutoff + 1), 12, x + (cutoff + 1), y + 76);
-		draw.lore(x + 31, y + 78, shield, {"text-align": DIR.LEFT});
+		draw.lore(x + 31, y + 78, padNumber(shield, Math.floor(Math.log10(maxShield)) + 1), {"text-align": DIR.LEFT});
 		draw.lore(x + 34, y + 78, maxShield);
 	},
 	/**
@@ -510,11 +509,11 @@ const draw = {
 	 * @param {number} x - the x-coordinate to draw the textbox at.
 	 * @param {number} y - the y-coordinate to draw the textbox at.
 	 * @param {number} width - the textbox's width, measured in characters.
-	 * @param {string} str - the string containing the lore to insert into the textbox.
-	 * @param style - the textbox's style object.
+	 * @param {string | number} str - the string containing the lore to insert into the textbox.
+	 * @param {{"color"?: string, "highlight-color"?: string, "text-align"?: number, "text-small"?: boolean, "background-color"?: string, "border-width"?: number, "border-color"?: string}} styles - the textbox's style object.
 	 */
-	textBox(x, y, width, str, style = {"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false, "background-color": "#ddd", "border-width": 1, "border-color": "#000"}) {
-		style = Object.assign({"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false, "background-color": "#ddd", "border-width": 1, "border-color": "#000"}, style);
+	textBox(x, y, width, str, styles = {}) {
+		const style = Object.assign({"color": "#000", "highlight-color": "#222", "text-align": DIR.RIGHT, "text-small": false, "background-color": "#ddd", "border-width": 1, "border-color": "#000"}, styles);
 		const lines = (("" + str).match(/\n/g) || []).length;
 		let height = NaN;
 		if (style["text-small"]) {
@@ -552,7 +551,7 @@ const draw = {
 	 * @param {number} x - the x-coordinate to draw the row at.
 	 * @param {number} y - the y-coordinate to draw the row at.
 	 * @param {string[]} text - the text of the stats to display.
-	 * @param {string[]} styles - for each element, replaces the default style for the respective text.
+	 * @param {{"color"?: string, "highlight-color"?: string, "text-align"?: number, "text-small"?: boolean}[]} styles - for each element, replaces the default style for the respective text.
 	 * @param {number} endPadding - adds extra padding at the end of the row.
 	 */
 	prevGameRow(x, y, text = [], styles = [], endPadding = 0) {
@@ -846,7 +845,6 @@ const info = {
 			const selection = get.availableLocations()[index];
 			if (selection !== undefined) {
 				const node = game.map[game.floor + 1][selection];
-				const area = get.area(game.floor + (game.state === STATE.EVENT_FIN ? 1 : 0));
 				if (node[0] === ROOM.BOSS) loc = [258, 100];
 				else loc = [node[1] + 19, node[2] + 2];
 				if (node[0] === ROOM.BATTLE) desc = "Enter Battle";
@@ -1182,14 +1180,10 @@ const graphics = {
 			}
 			// bars
 			draw.bars(x + 22, y + 15, game.health, get.maxHealth(), game.shield, get.maxShield());
-			let energy = game.energy;
-			if (energy < 10 && get.maxEnergy() >= 10) {
-				energy = "0" + energy;
-			}
 			const cutoff = Math.min(Math.max(Math.round(game.energy / get.maxEnergy() * 30), 0), 30);
 			draw.imageSector(I.bar.energy_full, 0, 0, cutoff + 1, 32, x - 1, y + 16);
 			draw.imageSector(I.bar.energy_empty, cutoff + 1, 0, 32 - (cutoff + 1), 32, x + cutoff, y + 16);
-			draw.lore(x + 14, y + 28, energy, {"text-align": DIR.LEFT});
+			draw.lore(x + 14, y + 28, padNumber(game.energy, Math.floor(Math.log10(get.maxEnergy())) + 1), {"text-align": DIR.LEFT});
 			draw.lore(x + 17, y + 28, get.maxEnergy());
 		}
 	})(),
@@ -1558,25 +1552,28 @@ const graphics = {
 		const TRANS_TIME = 20;
 		return () => {
 			for (let index = 0; index < activePopups.length && index <= 6; index++) {
-				if (!activePopups[index].length) continue;
-				if (activePopups[index][2] >= STAY_TIME + TRANS_TIME) {
+				const popup = activePopups[index];
+				if (!popup.length) {
+					continue;
+				}
+				if (popup[2] >= STAY_TIME + TRANS_TIME) {
 					activePopups[index] = [];
 					continue;
 				}
-				activePopups[index][2]++;
-				let x = (activePopups[index][1].length * 6) + 13;
-				if (activePopups[index][3]) {
-					x = (Math.max(activePopups[index][1].length, activePopups[index][3].length) * 3) + 13;
+				popup[2]++;
+				let x = (popup[1].length * 6) + 13;
+				if (popup[3]) {
+					x = (Math.max(popup[1].length, popup[3].length) * 3) + 13;
 				}
-				if (activePopups[index][2] >= STAY_TIME) {
-					x *= (STAY_TIME + TRANS_TIME - activePopups[index][2]) / TRANS_TIME;
-				} else if (activePopups[index][2] < TRANS_TIME) {
-					x *= activePopups[index][2] / TRANS_TIME;
+				if (popup[2] >= STAY_TIME) {
+					x *= (STAY_TIME + TRANS_TIME - popup[2]) / TRANS_TIME;
+				} else if (popup[2] < TRANS_TIME) {
+					x *= popup[2] / TRANS_TIME;
 				}
 				x = 400 - x;
 				draw.image(I.popup.back, x, 150 - (index * 21));
-				draw.lore(x + 13, 150 - (index * 21) + 8, activePopups[index][3] ? activePopups[index][1] + "\n" + activePopups[index][3] : activePopups[index][1], {"text-small": !!activePopups[index][3]});
-				if (I.popup[activePopups[index][0]]) draw.image(I.popup[activePopups[index][0]], x + 2, 150 - (index * 21) + 2);
+				draw.lore(x + 13, 150 - (index * 21) + 8, popup[3] ? popup[1] + "\n" + popup[3] : popup[1], {"text-small": !!popup[3]});
+				if (I.popup[popup[0]]) draw.image(I.popup[popup[0]], x + 2, 150 - (index * 21) + 2);
 				if (selected(S.POPUPS) && game.select[1] == index) {
 					draw.image(I.select.popup, x - 1, 150 - (index * 21) - 1);
 				}

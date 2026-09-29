@@ -1,14 +1,20 @@
 class EnemyAnimationSource {
+	/** @type {number[]} The progress of each enemy's idle animation. */
 	idle = [];
+	/** @type {number[]} The progress of each enemy's prime/boss animation, if any. */
 	prime = [];
+	/** @type {(Enemy | number)[] | (() => (Enemy | number)[])} The enemies this source animates. */
 	enemies = [];
+	/** The progress of synchronized animations. */
 	sync = 0;
+	/** The current action state. */
 	action = [0, ANIM.STARTING];
+	/** Any data associated with the current action. */
 	actionData = [];
 	/**
 	 * Returns a new enemy animation source.
 	 * @param {number} maxSize - the maximum size of the source.
-	 * @param {(Enemy | number)[] | () => (Enemy | number)[]} enemies - the enemies the source will animate.
+	 * @param {(Enemy | number)[] | (() => (Enemy | number)[])} enemies - the enemies the source will animate.
 	 */
 	constructor(maxSize, enemies) {
 		for (let index = 0; index < maxSize; index++) {
@@ -81,6 +87,7 @@ class EnemyAnimationSource {
 		const type = (enemy instanceof Enemy ? enemy.type : enemy);
 		const shield = (enemy instanceof Enemy ? enemy.shield : 0);
 		const transition = (enemy instanceof Enemy ? enemy.transition : undefined);
+		const intent = (enemy instanceof Enemy ? enemy.intent : -1);
 		if (type === SLIME.BIG || type === SLIME.SMALL || type === SLIME.PRIME || type === SLIME.STICKY) {
 			const typeName = (type === SLIME.BIG ? "big" : (type === SLIME.SMALL ? "small" : (type === SLIME.PRIME ? ((this.prime[index] == -1 || noPrimeAnim) ? "prime" : "to_prime") : "sticky")));
 			const animType = ((type !== SLIME.PRIME || this.prime[index] == -1 || noPrimeAnim) ? "idle" : "prime");
@@ -125,13 +132,13 @@ class EnemyAnimationSource {
 				} else {
 					draw.imageSector(I.enemy.fragment.idle, Math.floor(this.idle[index]) * 64, 0, 64, 64, x, y + 1);
 				}
-				if (index !== game.enemyNum || enemy.intent !== INTENT.ATTACK || transition) {
+				if (index !== game.enemyNum || intent !== INTENT.ATTACK || transition) {
 					draw.clock(x + 2, y + 5, -1, 2 - Math.abs(Math.floor(this.idle[index]) - 2));
 				}
 			} else if (this.prime[index] >= 18) {
 				draw.imageSector(I.enemy.fragment.open, Math.floor(this.prime[index] - 18) * 64, 0, 64, 64, x, y + 1);
 				draw.clock(x + 2, y + 5, 6, 0, (this.prime[index] - 18) * 5);
-				if (shield > 0) transition = [0, TRANSITION.TO_SHIELD];
+				if (shield > 0) enemy.transition = [0, TRANSITION.TO_SHIELD];
 			} else {
 				x += (18 - this.prime[index]) * 8;
 				draw.imageSector(I.enemy.fragment.roll, Math.floor(this.prime[index] % 4) * 64, 0, 64, 64, x, y + 1);
@@ -228,7 +235,10 @@ class EnemyAnimationSource {
 	 */
 	drawEnemyActing(x, y, index) {
 		const enemy = this.getEnemies()[index];
-		if (!(enemy instanceof Enemy)) throwError(`${enemy} is not of type "Enemy".`, TypeError);
+		if (!(enemy instanceof Enemy)) {
+			throwError(`${enemy} is not of type "Enemy".`, TypeError);
+			return;
+		}
 		const type = enemy.type;
 		const intent = enemy.intent;
 		if (intent === INTENT.ATTACK) {

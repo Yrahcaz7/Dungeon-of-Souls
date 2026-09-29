@@ -80,7 +80,7 @@ function currentDeck() {
  * Returns a boolean indicating whether the current floor ends in a cutscene.
  */
 function onFloorWithCutscene() {
-	return game.floor == 10;
+	return game.floor === 10;
 }
 
 /**
@@ -282,7 +282,7 @@ function shuffle(deck) {
  * Updates the positions of the cards in hand.
  * @param {Card[]} prevHand - the previous hand. Defaults to `game.hand`.
  * @param {number} discardIndex - the discarded card's index, if any.
- * @param {number} prevCardAnim - the y-position of the discarded card. Defaults to `146`.
+ * @param {number} discardY - the y-position of the discarded card. Defaults to `146`.
  */
 function updateHandPos(prevHand = game.hand, discardIndex = -1, discardY = 146) {
 	// calculate handPos
@@ -296,9 +296,13 @@ function updateHandPos(prevHand = game.hand, discardIndex = -1, discardY = 146) 
 		}
 	}
 	// start card draw/discard animation
-	if (loaded && handPos.length != prevHandPos.length && !hidden() && !selected(S.PLAYER, S.ENEMY) && (handAnim.length == 0 || handAnim.at(-1)[0] < 10 || Math.sign(handPos.length - prevHandPos.length) != Math.sign(prevHandPos.length - handAnim.at(-1)[2].length))) {
-		handAnim.push([10, prevHand, prevHandPos, []]);
-		if (discardIndex >= 0) handAnim.at(-1)[3][discardIndex] = discardY;
+	const topAnim = handAnim.at(-1);
+	if (loaded && handPos.length != prevHandPos.length && !hidden() && !selected(S.PLAYER, S.ENEMY)
+		&& (!topAnim || topAnim[0] < 10 || Math.sign(handPos.length - prevHandPos.length) != Math.sign(prevHandPos.length - topAnim[2].length))
+	) {
+		const yValues = [];
+		if (discardIndex >= 0) yValues[discardIndex] = discardY;
+		handAnim.push([10, prevHand, prevHandPos, yValues]);
 	}
 }
 
@@ -364,13 +368,15 @@ function updateAnimatedHandData() {
 function drawCards(num) {
 	const prevHand = game.hand.slice();
 	for (; num > 0 && game.deck.length > 0; num--) {
-		game.hand.push(game.deck.pop());
+		const card = game.deck.pop();
+		if (card) game.hand.push(card);
 	}
 	if (num > 0) {
 		game.deck = shuffle(game.discard);
 		game.discard = [];
 		for (; num > 0 && game.deck.length > 0; num--) {
-			game.hand.push(game.deck.pop());
+			const card = game.deck.pop();
+			if (card) game.hand.push(card);
 		}
 	}
 	updateHandPos(prevHand);
@@ -398,7 +404,7 @@ function discardCard(index, used = false) {
 	else game.discard.push(new Card(cardObj.id, cardObj.level, cardObj.eff[CARD_EFF.TEMP]));
 	const prevHand = game.hand.slice();
 	game.hand.splice(index, 1);
-	updateHandPos(prevHand, index, 146 - Math.floor(cardAnim.splice(index, 1)));
+	updateHandPos(prevHand, index, 146 - Math.floor(cardAnim.splice(index, 1)[0]));
 }
 
 /**
@@ -446,7 +452,7 @@ function startEnemyTransition(index, prevShield = game.enemies[index].shield) {
  * @param {number} exMod - the extra damage modifier. Defaults to `1`.
  * @param {number} index - the index of the enemy. Defaults to `game.enemyAtt[1]`.
  * @param {boolean} attack - whether the damage is considered an attack / "combat damage". Defaults to `true`.
- * @param {boolean} mult - multiplies the damage after all other effects. Defaults to `1`.
+ * @param {number} mult - multiplies the damage after all other effects. Defaults to `1`.
  */
 function dealDamage(amount, exMod = 1, index = game.enemyAtt[1], attack = true, mult = 1) {
 	if (isNaN(amount)) throwError(`"${amount}" is not of type "number".`, TypeError);

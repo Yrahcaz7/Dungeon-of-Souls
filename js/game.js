@@ -1,8 +1,8 @@
-const VERSION = 3_000_071;
+const VERSION = 3_000_072;
 
 /**
  * Returns the starting global data.
- * @returns {{options: {}, highScore: number, prevGames: {character: number, difficulty: number, health: number, floor: number, gold: number, kills: {}, artifacts: number[], cards: Card[], seed: string, startVersion: number, endVersion: number, result: number, score: number, newHighScore: true | undefined, cheat: true | undefined, num: number}[], nextGameNum: number, charStage: {}, version: number}}
+ * @returns {{options: {}, highScore: number, prevGames: {character: number, difficulty: number, health: number, floor: number, gold: number, kills: {}, artifacts: number[], cards: Card[], seed: string, startVersion: number, endVersion: number, result: number, score: number, newHighScore?: boolean, cheat?: boolean, num: number}[], nextGameNum: number, charStage: {}, version: number}}
  */
 function getStartGlobalData() { return {
 	options: {
@@ -27,7 +27,7 @@ let global = getStartGlobalData();
 
 /**
  * Returns the starting game data.
- * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, floor: number, gold: number, location: number, rewards: (number | boolean)[], state: number, turn: number, select: [number, number, [number, number] | undefined], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyAtt: [number, number, Card, boolean], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {}, room: (number | (number | number[])[])[], map: (number | (number | number[])[])[][][], paths: number[][][], traveled: number[], scribbles: number[], seed: string, randomState: number[], version: number}}
+ * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, floor: number, gold: number, location: number, rewards: (number | boolean)[][], state: number, turn: number, select: [number, number] | [number, number, [number, number]], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyAtt: [number, number, Card, boolean], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {}, room: MapNode | [], map: MapNode[][], paths: number[][][], traveled: number[], scribbles: number[], seed: string, randomState: number[], version: number, cheat?: boolean}}
  */
 function getStartGameData() { return {
 	character: CHARACTER.KNIGHT,
@@ -64,19 +64,19 @@ function getStartGameData() { return {
 	traveled: [],
 	scribbles: [],
 	seed: (() => {
-		let str = (Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase();
-		for (let index = str.length - 1; index > 0; index--) {
+		let digits = (Math.round(Date.now() * (Math.random() + 0.01)) % (16 ** 6 - 1)).toString(16).toUpperCase().split("");
+		for (let index = digits.length - 1; index > 0; index--) {
 			let rand = Math.floor(Math.random() * (index + 1));
-			[str[index], str[rand]] = [str[rand], str[index]];
+			[digits[index], digits[rand]] = [digits[rand], digits[index]];
 		}
-		return str;
+		return digits.join("");
 	})(),
 	randomState: [],
 	version: VERSION,
 }}
 let game = getStartGameData();
 
-/** @type {[string, string, number, string, (() => void) | null][]} */
+/** @type {([string, string, number, string, (() => void) | null] | [])[]} */
 let activePopups = [];
 /** @type {[number, number, string, number]} */
 let notif = [-1, 0, "", 0];
@@ -84,7 +84,7 @@ let notif = [-1, 0, "", 0];
 let refinableDeck = [];
 /** @type {number} */
 let winAnim = 0;
-/** @type {[number, number, [number, number] | undefined]} */
+/** @type {[number, number] | [number, number, [number, number]]} */
 let menuSelect = [MENU.MAIN, 0];
 /** @type {string} */
 let newSeed = "";
@@ -102,7 +102,12 @@ let musicElement;
 let musicDuration = 0;
 
 document.addEventListener("DOMContentLoaded", () => {
-	musicElement = document.getElementById("music");
+	const element = document.getElementById("music");
+	if (element instanceof HTMLAudioElement) {
+		musicElement = element;
+		return;
+	}
+	throwError("Music HTML element could not be loaded.");
 });
 
 /**
@@ -115,8 +120,9 @@ document.addEventListener("DOMContentLoaded", () => {
 function createPopup(type, description, secondLine = "", action = null) {
 	let oldest = 0;
 	for (let index = 0; index <= activePopups.length && index < 7; index++) {
-		if (activePopups[index]?.length) {
-			if (activePopups[index] && activePopups[index][2] > activePopups[oldest][2]) {
+		const popup = activePopups[index];
+		if (popup?.length) {
+			if (popup[2] > popup[2]) {
 				oldest = index;
 			}
 		} else {
@@ -132,9 +138,8 @@ function createPopup(type, description, secondLine = "", action = null) {
  */
 function musicPopup() {
 	if (global.options[OPTION.MUSIC]) {
-		const track = /^.+\/(.+)\.wav$/.exec(musicElement.src)[1];
-		if (track) createPopup("music", track.replace(/_/g, " "));
-		else createPopup("music", "music is on");
+		const track = /^.+\/(.+)\.wav$/.exec(musicElement.src)?.[1];
+		createPopup("music", track ? track.replace(/_/g, " ") : "music is on");
 	} else {
 		createPopup("music", "music is off");
 	}
@@ -208,6 +213,7 @@ function fadeMusic() {
  * @param {boolean} firstTurn - if true, it is the player's first turn.
  */
 function startTurn(firstTurn = false) {
+	/** @type {[number, number]} */
 	let toSelect = [S.HAND, 0];
 	// end of enemy turn effects
 	if (!firstTurn) {
@@ -377,7 +383,7 @@ function endBattle() {
 	activateArtifacts(FUNC.FLOOR_CLEAR);
 	// set rewards
 	game.rewards = [];
-	if (game.room[4] > 0) {
+	if (game.room[4] && game.room[4] > 0) {
 		game.rewards.push([REWARD.GOLD, game.room[4]]);
 	}
 	if (get.cardRewardChoices() > 0) {
@@ -423,7 +429,7 @@ function loadRoom() {
 	// enter room
 	game.traveled.push(game.location);
 	const type = (game.location[0] === -1 ? ROOM.BATTLE : game.map[game.floor][game.location][0]);
-	if (type === ROOM.BATTLE || type === ROOM.PRIME || type === ROOM.BOSS) {
+	if ((type === ROOM.BATTLE || type === ROOM.PRIME || type === ROOM.BOSS) && game.room[3] instanceof Array) {
 		for (let index = 0; index < game.room[3].length; index++) {
 			const enemy = game.room[3][index];
 			if (enemy instanceof Array) {
@@ -440,7 +446,7 @@ function loadRoom() {
 		game.select = [S.REWARDS, 0];
 		game.state = STATE.EVENT_FIN;
 		game.rewards = [];
-		if (game.room[4] > 0) {
+		if (game.room[4] && game.room[4] > 0) {
 			game.rewards.push([REWARD.GOLD, game.room[4]]);
 		}
 		if (get.cardRewardChoices() > 0) {

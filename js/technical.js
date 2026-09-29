@@ -73,8 +73,18 @@ let ctx;
 let loaded = false;
 
 window.addEventListener("load", async function() {
-	canvas = document.getElementById("canvas");
-	ctx = canvas.getContext("2d");
+	const element = document.getElementById("canvas");
+	if (!(element instanceof HTMLCanvasElement)) {
+		throwError("Canvas HTML element could not be loaded.");
+		return;
+	}
+	canvas = element;
+	const context = canvas.getContext("2d");
+	if (!context) {
+		throwError("Canvas context could not be loaded.");
+		return;
+	}
+	ctx = context;
 	ctx.imageSmoothingEnabled = false;
 	draw.lore(200 - 2, 100 - 5.5 * 3, "Loading graphics...\n\n0.0%", {"color": "#fff", "text-align": DIR.CENTER});
 	await Promise.all([loadImages(), loadSave()]);
@@ -161,18 +171,16 @@ function shortcutTo(location) {
 			game.select = [location, 0];
 		}
 	} else {
-		if (game.select[2]) {
-			game.select = [location, 1, game.select[2]];
-		} else {
-			game.select = [location, 1, game.select];
-		}
+		game.select = [location, 1, game.select.length === 3 ? game.select[2] : game.select];
 	}
 	action = -1;
 	actionTimer = 2;
 }
 
 document.addEventListener("keydown", event => {
-	if (!loaded) return;
+	if (!loaded) {
+		return;
+	}
 	holdTimer = 0;
 	const key = (event.key.length === 1 ? event.key.toUpperCase() : event.key);
 	if (menuSelected(MENU.ENTER_SEED)) {
@@ -180,6 +188,10 @@ document.addEventListener("keydown", event => {
 			newSeed += key;
 		} else if (key === "V" && (event.ctrlKey || event.metaKey) && !event.repeat && actionTimer === -1 && newSeed.length < 6) {
 			tryUseClipboard(false, result => {
+				if (!result) {
+					console.warn("Error: Clipboard does not contain text.");
+					return;
+				}
 				const pasteText = result.trim().toUpperCase();
 				if (/^[0-9A-F]+$/.test(pasteText)) {
 					newSeed = (newSeed + pasteText).slice(0, 6);
@@ -210,16 +222,15 @@ document.addEventListener("keydown", event => {
 			if (game.select[2]) game.select = game.select[2];
 			else game.select = [S.MAP, get.availableLocations().length];
 		} else {
-			if (game.select[2]) game.select = [S.CARDS, 1, game.select[2]];
-			else game.select = [S.CARDS, 1, game.select];
+			game.select = [S.CARDS, 1, game.select.length === 3 ? game.select[2] : game.select];
 		}
 		action = -1;
 		actionTimer = 2;
-	} else if (key === "C" && !event.repeat && menuSelected(MENU.PREV_GAMES) && actionTimer === -1) {
+	} else if (key === "C" && !event.repeat && menuSelected(MENU.PREV_GAMES) && actionTimer === -1 && menuSelect.length === 2) {
 		menuSelect = [MENU.PREV_GAME_SORT, 0, menuSelect];
 		action = -1;
 		actionTimer = 2;
-	} else if (key === "R" && !event.repeat && menuSelected(MENU.PREV_GAMES) && actionTimer === -1) {
+	} else if (key === "R" && !event.repeat && menuSelected(MENU.PREV_GAMES) && actionTimer === -1 && menuSelect.length === 2) {
 		menuSelect = [MENU.CONF_REMOVE_PREV_GAME, 1, menuSelect];
 		action = -1;
 		actionTimer = 2;
@@ -241,28 +252,26 @@ document.addEventListener("keydown", event => {
 		action = -1;
 	}
 	if (key === "Escape") { // exits fullscreen
-		if (document.body.exitFullscreen) {
-			document.body.exitFullscreen();
-		} else if (document.body.webkitExitFullscreen) {
-			document.body.webkitExitFullscreen();
-		} else if (document.body.mozExitFullScreen) {
-			document.body.mozExitFullScreen();
-		} else if (document.body.msExitFullscreen) {
-			document.body.msExitFullscreen();
+		if (document.exitFullscreen) {
+			document.exitFullscreen();
+		} else {
+			// @ts-ignore
+			document.webkitExitFullscreen?.();
 		}
 	} else if (key === "Tab") { // enters fullscreen
-		if (document.body.requestFullscreen) {
-			document.body.requestFullscreen();
-		} else if (document.body.webkitRequestFullscreen) {
-			document.body.webkitRequestFullscreen();
-		} else if (document.body.mozRequestFullScreen) {
-			document.body.mozRequestFullScreen();
-		} else if (document.body.msRequestFullscreen) {
-			document.body.msRequestFullscreen();
+		if (document.documentElement.requestFullscreen) {
+			document.documentElement.requestFullscreen();
+		} else {
+			// @ts-ignore
+			document.documentElement.webkitRequestFullscreen?.();
 		}
 	}
-	if (!event.repeat && lastAction === action && global.options[OPTION.FAST_MOVEMENT]) gameTick();
-	if (action !== -1) lastAction = action;
+	if (!event.repeat && lastAction === action && global.options[OPTION.FAST_MOVEMENT]) {
+		gameTick();
+	}
+	if (action !== -1) {
+		lastAction = action;
+	}
 });
 
 document.addEventListener("keyup", event => {
@@ -282,7 +291,18 @@ function throwError(description, errorType = Error) {
 }
 
 /**
+ * Converts a number to a string, padding it with leading zeros up to length `places`.
+ * @param {number} num - The number to convert.
+ * @param {number} places - The maximum length the result can be padded to.
+ */
+function padNumber(num, places) {
+	let str = "" + num;
+	return "0".repeat(Math.max(places - str.length, 0)) + str;
+}
+
+/**
  * Returns a sorted index array.
+ * @template T
  * @param {T[]} arr - The array to sort.
  * @param {(a: T, b: T) => number} func - Function used to determine the order of the indexes. It should return a negative value if the first argument is less than the second argument, zero if they're equal, and a positive value otherwise. (Use `(a, b) => a - b)` to sort numbers in ascending order.)
  */

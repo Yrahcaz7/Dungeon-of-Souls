@@ -10,7 +10,7 @@ const selection = (() => {
 	 */
 	function hasPopups() {
 		for (let index = 0; index < activePopups.length; index++) {
-			if (activePopups[index]?.length) return true;
+			if (activePopups[index].length) return true;
 		}
 		return false;
 	}
@@ -710,8 +710,10 @@ const performAction = (() => {
 			if (back) {
 				if (menuSelect[1]) {
 					menuSelect[1]--;
-				} else {
+				} else if (menuSelect[2]) {
 					menuSelect = menuSelect[2];
+				} else {
+					menuSelect = [MENU.PREV_GAMES, 0];
 				}
 			} else if (menuSelect[1]) {
 				menuSelect = [MENU.PREV_GAMES, 0];
@@ -726,6 +728,10 @@ const performAction = (() => {
 			}
 			actionTimer = 2;
 		} else if (menuSelected(MENU.CONF_REMOVE_PREV_GAME)) {
+			if (!menuSelect[2]) {
+				menuSelect = [MENU.PREV_GAMES, 0];
+				return;
+			}
 			if (!menuSelect[1] && !back) {
 				if (global.prevGames.length <= 1) {
 					global.prevGames = [];
@@ -994,9 +1000,9 @@ const performAction = (() => {
 				index = game.rewards.findIndex(arr => arr[0] === REWARD.ARTIFACT);
 			}
 			if (game.select[1] >= 0 && !back) {
-				if (selected(S.CARD_REWARD)) {
+				if (selected(S.CARD_REWARD) && game.room[5]) {
 					game.cards.push(new Card(game.room[5][game.select[1]]));
-				} else if (selected(S.ARTIFACT_REWARD)) {
+				} else if (selected(S.ARTIFACT_REWARD) && game.room[6]) {
 					getArtifact(game.room[6][game.select[1]]);
 				}
 				if (index >= 0) {
@@ -1084,7 +1090,7 @@ const performAction = (() => {
 		}
 		// activate / deactivate extras
 		if (selected(S.DECK, S.DISCARD, S.VOID)) {
-			if (game.select[2]) game.select = game.select[2];
+			if (game.select.length === 3) game.select = game.select[2];
 			else if (game.select[1] === 0 && !back) game.select = [game.select[0], 1, game.select];
 			else game.select[1] = 0;
 			actionTimer = 2;
@@ -1097,7 +1103,7 @@ const performAction = (() => {
 			game.select = [S.ARTIFACTS, 0];
 			actionTimer = 2;
 			return;
-		} else if (selected(S.MAP) && game.select[1] === availableLocations.length) {
+		} else if (selected(S.MAP) && game.select[1] === availableLocations.length && game.select.length === 2) {
 			game.select = [S.CARDS, 0, game.select];
 			actionTimer = 2;
 			return;

@@ -42,8 +42,8 @@ const generateMapPathPoints = (() => {
 				pathPoints[subdivisionIndex + sub + 1][1] = 0.5 * (ay * tCubed[sub] + by * tSquared[sub] + cy * t[sub] + dy);
 			}
 		}
-		pathPoints.push(points.at(-2));
-		pathPoints.push(points.at(-1));
+		pathPoints.push(points[points.length - 2]);
+		pathPoints.push(points[points.length - 1]);
 		return pathPoints;
 	}
 	/**
@@ -57,7 +57,7 @@ const generateMapPathPoints = (() => {
 		for (let iteration = 0; iteration < 10; iteration++) {
 			let nextArr = [];
 			for (let path = 0; path < arr.length; path++) {
-				const lastNode = arr[path].at(-1);
+				const lastNode = arr[path][arr[path].length - 1];
 				for (let index = 0; index < game.paths[lastNode[0]][lastNode[1]].length; index++) {
 					const node = game.paths[lastNode[0]][lastNode[1]][index];
 					let innerArr = arr[path].slice();
@@ -142,18 +142,26 @@ const BOSS_ENEMIES = [FRAGMENT, SINGULARITY];
 
 /**
  * Returns the type of a battle, or `-1` if the specified node is not a battle.
- * @param {(number | (number | number[])[])[]} node - the node to get the battle type of.
+ * @param {MapNode} node - the node to get the battle type of.
  */
 function getBattleType(node) {
-	if (node[0] === ROOM.BATTLE) {
-		if (node[3].length === 1) {
-			return (BIG_ENEMIES.includes(node[3][0]) ? 0 : 3);
-		} else if (node[3].length === 2) {
-			return (BIG_ENEMIES.includes(node[3][0]) ? 2 : 1);
+	if (node[0] === ROOM.BATTLE && node[3] instanceof Array) {
+		if (node[3]?.length === 1) {
+			return (BIG_ENEMIES.includes(node[3][0] instanceof Array ? node[3][0][0] : node[3][0]) ? 0 : 3);
+		}
+		if (node[3]?.length === 2) {
+			return (BIG_ENEMIES.includes(node[3][0] instanceof Array ? node[3][0][0] : node[3][0]) ? 2 : 1);
 		}
 	}
 	return -1;
 }
+
+/**
+ * @typedef {[number, number, number]
+ *     | [number, number, number, number | (number | [number, number])[], number, number[]]
+ *     | [number, number, number, (number | [number, number])[], number, number[], number[]]
+ * } MapNode
+ */
 
 /**
  * Generates a map and saves it.
@@ -170,6 +178,7 @@ const generateMap = (() => {
 	/**
 	 * Gets a weaker small enemy in the map syntax.
 	 * @param {number} row - the row the enemy will be contained in.
+	 * @returns {[number, number]}
 	 */
 	function getWeakerSmallEnemy(row) {
 		const area = get.area(row);
@@ -201,6 +210,7 @@ const generateMap = (() => {
 	 * @param {number} row - the row of the map node.
 	 * @param {number} y - the y-coordinate of the map node.
 	 * @param {number} attribute - the attribute of the map node, if any.
+	 * @returns {MapNode}
 	 */
 	function getMapNode(row, y, attribute = -1) {
 		const area = get.area(row);
@@ -433,7 +443,7 @@ const generateMap = (() => {
 		const eventShift = randomInt(0, 1);
 		for (let index = 1; index <= 10; index++) {
 			const rowNum = index + area * 10;
-			await generateMapRow(rowNum);
+			generateMapRow(rowNum);
 			if (rowNum % 10 > 1 && rowNum % 10 < 9) {
 				let newRow = game.map[rowNum];
 				// add treasure

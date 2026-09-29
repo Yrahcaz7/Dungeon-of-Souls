@@ -11,16 +11,16 @@ class Enemy {
 	eff = {};
 	/**
 	 * Returns a new enemy.
-	 * @param {number} type - the enemy's type.
+	 * @param {number | null} type - the enemy's type.
 	 * @param {number} power - the enemy's power. Defaults to `1`.
 	 */
-	constructor(type, power = 1) {
+	constructor(type = null, power = 1) {
 		if (!type) return;
 		// setup
 		if (SMALL_ENEMIES.includes(type)) power--;
 		else if (PRIME_ENEMIES.includes(type)) power++;
 		else if (BOSS_ENEMIES.includes(type)) power += 2;
-		power += 2 + (game.difficulty + hasArtifact(202)) * 0.5 + game.floor * 0.05;
+		power += 2 + (game.difficulty + (+hasArtifact(202))) * 0.5 + game.floor * 0.05;
 		this.type = type;
 		if (type === SINGULARITY) this.maxHealth = (power * 10) * 1.25;
 		else if (type === FRAGMENT) this.maxHealth = (power * 10) * 1.05;

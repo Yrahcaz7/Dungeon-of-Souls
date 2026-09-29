@@ -165,10 +165,6 @@ const loadSave = (() => {
 	 * @param {number} version - The version the save is from.
 	 */
 	function fixSave(version) {
-		// game.enemyStage is no longer used (as of v3.0.57)
-		if (version < 3_000_057) {
-			delete game.enemyStage;
-		}
 		// classify enemies (all versions)
 		game.enemies = game.enemies.map(enemy => Enemy.classify(enemy));
 		// classify cards (all versions)
@@ -196,7 +192,7 @@ const loadSave = (() => {
 			}
 		}
 	}
-	const versionCutoff = 3_000_045;
+	const versionCutoff = 3_000_057;
 	let suffix = "";
 	let item = "";
 	let obj = {};
@@ -206,7 +202,7 @@ const loadSave = (() => {
 	 */
 	function updateData(newSuffix) {
 		suffix = newSuffix;
-		item = localStorage.getItem(ID + suffix);
+		item = localStorage.getItem(ID + suffix) ?? "";
 		obj = parseSave(item);
 	}
 	/**

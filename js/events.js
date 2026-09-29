@@ -171,10 +171,7 @@ const EVENTS = {
 			time[0] = 11 - time[0];
 			time[1] = 59 - time[1];
 			time[2] = 59 - time[2];
-			if (time[0] < 10) time[0] = "0" + time[0];
-			if (time[1] < 10) time[1] = "0" + time[1];
-			if (time[2] < 10) time[2] = "0" + time[2];
-			return `The numbers on the block are "${time[0]}:${time[1]}:${time[2]}". The numbers seem to be changing over time... You can't understand how this works.`;
+			return `The numbers on the block are "${padNumber(time[0], 2)}:${padNumber(time[1], 2)}:${padNumber(time[2], 2)}". The numbers seem to be changing over time... You can't understand how this works.`;
 		}, ["Leave the ruins", 110], ["Investigate more", 120]],
 		110: [null, "Not wanting to waste even more time, you turn around to leave the ruins... And you see an enemy right next to you!", ["Battle Start!", 111]],
 		111: [() => startEventBattle(BATTLE.AMBUSH, 1.1)],

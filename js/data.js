@@ -261,7 +261,9 @@ function updateData() {
 	}
 	// enemy plans
 	for (let index = 0; index < game.enemies.length; index++) {
-		if (index == game.enemyNum) continue;
+		if (index === game.enemyNum) {
+			continue;
+		}
 		const enemy = game.enemies[index];
 		if (enemy.eff[ENEMY_EFF.PLAN_ATTACK]) {
 			if (enemy.intent === INTENT.ATTACK && game.shield >= Math.ceil(enemy.getTotalAttackPower() * get.takeDamageMult(index))) {
@@ -271,7 +273,7 @@ function updateData() {
 				delete enemy.eff[ENEMY_EFF.PLAN_ATTACK];
 			} else if (enemy.intent === INTENT.DEFEND && enemy.shield > 0) {
 				enemy.intent = INTENT.ATTACK;
-				enemy.intentHistory.push(this.intent);
+				enemy.intentHistory.push(enemy.intent);
 				enemy.eff[[ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 2)]] = 1;
 				delete enemy.eff[ENEMY_EFF.PLAN_ATTACK];
 			}
