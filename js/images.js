@@ -126,7 +126,7 @@ const I = {
 		item: new Image,
 		item_green: new Image,
 		item_border: new Image,
-		selector: [4],
+		selector: Array.from({length: 4}, () => new Image),
 	}, extra: {
 		options: new Image,
 		help: new Image,
@@ -148,8 +148,8 @@ const I = {
 	}, artifact: {
 		_: {wo: {}},
 	}, intent: {
-		defend: [11],
-		attack: [11],
+		defend: Array.from({length: 11}, () => new Image),
+		attack: Array.from({length: 11}, () => new Image),
 		buff: new Image,
 		summon: new Image,
 		ritual: new Image,
@@ -168,8 +168,8 @@ const I = {
 		scribbles: new Image,
 		scribble_back: new Image,
 		node: {
-			100: [4, {wo: [], bo: []}],
-			101: [2, {wo: [], bo: []}],
+			100: Array.from({length: 4}, () => new Image),
+			101: Array.from({length: 2}, () => new Image),
 			102: new Image,
 			103: new Image,
 			104: new Image,
@@ -203,7 +203,7 @@ const loadImages = (() => {
 		if (ref[name] instanceof Image) {
 			return 1 + Object.keys(ref._ || {}).length;
 		} else if (ref[name] instanceof Array) {
-			return ref[name][0] * (1 + Object.keys(ref[name][1] || {}).length);
+			return ref[name].length * (1 + Object.keys(ref._ || {}).length);
 		} else {
 			let count = 0;
 			for (const folder in ref[name]) {
@@ -225,20 +225,23 @@ const loadImages = (() => {
 				promises.push(new Promise(resolve => ref[name].onload = resolve).then(updateLoadProg));
 			}
 			for (const extra in ref._) {
-				if (ref._[extra][name]?.src) continue;
+				if (ref._[extra][name]?.src) {
+					continue;
+				}
 				ref._[extra][name] = new Image;
 				ref._[extra][name].src = path + extra + "/" + name + ".png";
 				promises.push(new Promise(resolve => ref._[extra][name].onload = resolve).then(updateLoadProg));
 			}
 		} else if (ref[name] instanceof Array) {
-			const num = ref[name][0];
-			const extras = ref[name][1];
-			ref[name] = [];
-			if (extras) {
+			if (ref._) {
+				const extras = {};
+				for (const key in ref._) {
+					extras[key] = {};
+				}
+				// @ts-ignore
 				ref[name]._ = extras;
 			}
-			for (let index = 0; index < num; index++) {
-				ref[name].push(new Image);
+			for (let index = 0; index < ref[name].length; index++) {
 				promises.push(loadImage(ref[name], index, path + name + "/"));
 			}
 		} else {

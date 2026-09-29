@@ -18,8 +18,12 @@ let handAnimOffsets = [];
 let enemyAnim = new EnemyAnimationSource(6, () => game.enemies);
 /** @type {EnemyAnimationSource} */
 let menuEnemyAnim = new EnemyAnimationSource(10, [...SMALL_ENEMIES, ...BIG_ENEMIES, ...PRIME_ENEMIES, ...SPECIAL_ENEMIES, ...BOSS_ENEMIES]);
-/** @type {(number | (number | number[])[])[]} */
-let backAnim = [0, 1.5, 3, 0];
+/** @type {[number, number, number, number]} */
+let templeAnim = [0, 1.5, 3, 0];
+/** @type {number[][][]} */
+let hallwayAnim = [];
+/** @type {number} */
+let panelColorFrame = 0;
 /** @type {number[]} */
 let intentAnim = [0, 1.5, 3, 0.5, 2, 3.5];
 /** @type {number[]} */
@@ -881,56 +885,58 @@ const graphics = {
 	 * Draws the background layer on the canvas.
 	 */
 	backgrounds() {
-		if (get.area() == 1) {
+		if (get.area() === 1) {
 			for (let col = 0; col < 14 + 15; col++) {
-				if (!backAnim[col]?.length) backAnim[col] = [];
+				if (!hallwayAnim[col]?.length) {
+					hallwayAnim[col] = [];
+				}
 				for (let index = 0; index < 8; index++) {
-					if (!backAnim[col][index]?.length) {
-						backAnim[col][index] = [0];
+					if (!hallwayAnim[col][index]?.length) {
+						hallwayAnim[col][index] = [0];
 					}
-					if (backAnim[col][index][0] === 0 && Math.random() < 1/100) {
-						backAnim[col][index] = [Math.floor(Math.random() * 10) + 10, Math.floor(Math.random() * 6)];
+					if (hallwayAnim[col][index][0] === 0 && Math.random() < 1/100) {
+						hallwayAnim[col][index] = [Math.floor(Math.random() * 10) + 10, Math.floor(Math.random() * 6)];
 					}
 				}
 			}
 			for (let col = 0; col < 12; col++) {
-				if (!backAnim[col][9]) backAnim[col][9] = [];
+				if (!hallwayAnim[col][9]) {
+					hallwayAnim[col][9] = [];
+				}
 				for (let index = 0; index < 8; index++) {
-					if (!backAnim[col][9][index]) {
-						backAnim[col][9][index] = 0;
+					if (!hallwayAnim[col][9][index]) {
+						hallwayAnim[col][9][index] = 0;
 					}
-					if (backAnim[col][9][index] === 0 && Math.random() < 1/200) {
-						backAnim[col][9][index] = Math.floor(Math.random() * 20) + 20;
+					if (hallwayAnim[col][9][index] === 0 && Math.random() < 1/200) {
+						hallwayAnim[col][9][index] = Math.floor(Math.random() * 20) + 20;
 					}
 				}
 			}
 			draw.image(I.background.hallway, 0, 58);
-			if (!backAnim[29]) backAnim[29] = 0;
 			for (let col = 0; col < 12; col++) {
-				draw.imageSector(I.background.panel, Math.floor(backAnim[29]) * 35, 0, 35, 58, col * 34 - 6, 0);
+				draw.imageSector(I.background.panel, Math.floor(panelColorFrame) * 35, 0, 35, 58, col * 34 - 6, 0);
 				for (let index = 0; index < 8; index++) {
-					if (backAnim[col][9][index] > 0) {
-						backAnim[col][9][index]--;
+					if (hallwayAnim[col][9][index] > 0) {
+						hallwayAnim[col][9][index]--;
 					} else {
 						draw.imageSector(I.background.panel_cover, index * 35, 0, 35, 58, col * 34 - 6, 0);
 					}
 				}
 			}
-			backAnim[29]++;
-			if (backAnim[29] >= 12) backAnim[29] = 0;
+			panelColorFrame = (panelColorFrame + 1) % 12;
 			for (let col = 0; col < 14; col++) {
 				for (let index = 0; index < 8; index++) {
-					if (backAnim[col][index][0] > 0) {
-						draw.imageSector(I.background.tiles, backAnim[col][index][1] * 15, 0, 15, 8, col * 34 - index * 9 + 9, index * 18 + 60);
-						backAnim[col][index][0]--;
+					if (hallwayAnim[col][index][0] > 0) {
+						draw.imageSector(I.background.tiles, hallwayAnim[col][index][1] * 15, 0, 15, 8, col * 34 - index * 9 + 9, index * 18 + 60);
+						hallwayAnim[col][index][0]--;
 					}
 				}
 			}
 			for (let col = 0; col < 15; col++) {
 				for (let index = 0; index < 8; index++) {
-					if (backAnim[col + 14][index][0] > 0) {
-						draw.imageSector(I.background.tiles, backAnim[col][index][1] * 15, 8, 15, 8, col * 34 - index * 9 - 12, index * 18 + 69);
-						backAnim[col + 14][index][0]--;
+					if (hallwayAnim[col + 14][index][0] > 0) {
+						draw.imageSector(I.background.tiles, hallwayAnim[col][index][1] * 15, 8, 15, 8, col * 34 - index * 9 - 12, index * 18 + 69);
+						hallwayAnim[col + 14][index][0]--;
 					}
 				}
 			}
@@ -940,30 +946,30 @@ const graphics = {
 				draw.image(I.background.cave);
 				draw.rect("#10106080");
 				draw.image(I.background.temple);
-				draw.image(I.background.floating_arch, 136, 35 - Math.abs(Math.round(backAnim[0]) - 2));
-				draw.image(I.background.debris, 151, 93 - Math.abs(Math.round(backAnim[1]) - 2));
+				draw.image(I.background.floating_arch, 136, 35 - Math.abs(Math.round(templeAnim[0]) - 2));
+				draw.image(I.background.debris, 151, 93 - Math.abs(Math.round(templeAnim[1]) - 2));
 			}
 			if (hasArtifact(202) && game.floor == 10) {
 				if (transition < 100) {
 					ctx.globalAlpha = transition / 100;
 				}
-				draw.image(I.background.tunnel_of_time, 0 - backAnim[3]);
+				draw.image(I.background.tunnel_of_time, 0 - templeAnim[3]);
 				if (!game.enemies[0]?.eff[ENEMY_EFF.COUNTDOWN]) {
-					backAnim[3]++;
+					templeAnim[3]++;
 				} else {
-					backAnim[3]--;
+					templeAnim[3]--;
 				}
-				if (backAnim[3] >= 16) {
-					backAnim[3] -= 16;
-				} else if (backAnim[3] < 0) {
-					backAnim[3] += 16;
+				if (templeAnim[3] >= 16) {
+					templeAnim[3] -= 16;
+				} else if (templeAnim[3] < 0) {
+					templeAnim[3] += 16;
 				}
 				ctx.globalAlpha = 1;
 			}
 			if (game.floor != 10) {
 				const now = new Date();
 				let time = [now.getHours(), now.getMinutes()];
-				const y = 64 - Math.abs(Math.round(backAnim[2]) - 2);
+				const y = 64 - Math.abs(Math.round(templeAnim[2]) - 2);
 				time[0] += (time[1] / 60);
 				if (time[0] >= 12) time[0] = time[0] - 12;
 				draw.image(I.background.clock_face, 170, y);
@@ -974,10 +980,10 @@ const graphics = {
 				}
 				const PORTAL_THRESHOLD = 64;
 				const x = 170;
-				const y = 64 - Math.abs(Math.round(backAnim[2]) - 2);
+				const y = 64 - Math.abs(Math.round(templeAnim[2]) - 2);
 				if (cutsceneAnim[0] >= PORTAL_THRESHOLD + 2 || game.select[1]) {
 					if (!inMenu()) {
-						draw.image(I.background.enter_portal, 185, 31 - Math.abs(Math.round(backAnim[0]) - 2));
+						draw.image(I.background.enter_portal, 185, 31 - Math.abs(Math.round(templeAnim[0]) - 2));
 					}
 					draw.imageSector(I.background.clock_portal, ((Math.floor(cutsceneAnim[0] / 2) % 12) + 2) * 60, 0, 60, 60, x, y);
 					game.select[1] = 1;
@@ -996,9 +1002,9 @@ const graphics = {
 				}
 				cutsceneAnim[0]++;
 			}
-			for (let index = 0; index < 3; index++) {
-				backAnim[index] += (Math.random() + 0.5) * 0.075;
-				if (backAnim[index] >= 4) backAnim[index] -= 4;
+			for (let index = 0; index < templeAnim.length; index++) {
+				templeAnim[index] += (Math.random() + 0.5) * 0.075;
+				if (templeAnim[index] >= 4) templeAnim[index] -= 4;
 			}
 		}
 	},

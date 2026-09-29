@@ -38,7 +38,6 @@ function resetVars(prevGamesMenu = false) {
 	handAnimOffsets = [];
 	enemyAnim = new EnemyAnimationSource(enemyAnim.idle.length, enemyAnim.enemies);
 	menuEnemyAnim = new EnemyAnimationSource(menuEnemyAnim.idle.length, menuEnemyAnim.enemies);
-	backAnim = [0, 1.5, 3, 0];
 	intentAnim = [0, 1.5, 3, 0.5, 2, 3.5];
 	cardAnim = [];
 	effAnim = [0, null];
