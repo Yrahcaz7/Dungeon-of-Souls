@@ -18,12 +18,6 @@ let handAnimOffsets = [];
 let enemyAnim = new EnemyAnimationSource(6, () => game.enemies);
 /** @type {EnemyAnimationSource} */
 let menuEnemyAnim = new EnemyAnimationSource(10, [...SMALL_ENEMIES, ...BIG_ENEMIES, ...PRIME_ENEMIES, ...SPECIAL_ENEMIES, ...BOSS_ENEMIES]);
-/** @type {[number, number, number, number]} */
-let templeAnim = [0, 1.5, 3, 0];
-/** @type {number[][][]} */
-let hallwayAnim = [];
-/** @type {number} */
-let panelColorFrame = 0;
 /** @type {number[]} */
 let intentAnim = [0, 1.5, 3, 0.5, 2, 3.5];
 /** @type {number[]} */
@@ -884,31 +878,34 @@ const graphics = {
 	/**
 	 * Draws the background layer on the canvas.
 	 */
-	backgrounds() {
-		if (get.area() === 1) {
-			for (let col = 0; col < 14 + 15; col++) {
-				if (!hallwayAnim[col]?.length) {
-					hallwayAnim[col] = [];
-				}
+	backgrounds: (() => {
+		/** @type {[number, number, number, number]} */
+		let templeAnim = [0, 1.5, 3, 0];
+		/** @type {number[][][]} */
+		let hallwayAnim = (() => {
+			return Array.from({length: 14 + 15}, () => {
+				let arr = Array.from({length: 8}, () => [0]);
+				arr[8] = Array.from({length: 8}, () => 0);
+				return arr;
+			});
+		})();
+		/** @type {number} */
+		let panelColorFrame = 0;
+		/**
+		 * Draws the Act 2 hallway background.
+		 */
+		function drawHallway() {
+			for (let col = 0; col < hallwayAnim.length; col++) {
 				for (let index = 0; index < 8; index++) {
-					if (!hallwayAnim[col][index]?.length) {
-						hallwayAnim[col][index] = [0];
-					}
 					if (hallwayAnim[col][index][0] === 0 && Math.random() < 1/100) {
 						hallwayAnim[col][index] = [Math.floor(Math.random() * 10) + 10, Math.floor(Math.random() * 6)];
 					}
 				}
 			}
 			for (let col = 0; col < 12; col++) {
-				if (!hallwayAnim[col][9]) {
-					hallwayAnim[col][9] = [];
-				}
 				for (let index = 0; index < 8; index++) {
-					if (!hallwayAnim[col][9][index]) {
-						hallwayAnim[col][9][index] = 0;
-					}
-					if (hallwayAnim[col][9][index] === 0 && Math.random() < 1/200) {
-						hallwayAnim[col][9][index] = Math.floor(Math.random() * 20) + 20;
+					if (hallwayAnim[col][8][index] === 0 && Math.random() < 1/200) {
+						hallwayAnim[col][8][index] = Math.floor(Math.random() * 20) + 20;
 					}
 				}
 			}
@@ -916,8 +913,8 @@ const graphics = {
 			for (let col = 0; col < 12; col++) {
 				draw.imageSector(I.background.panel, Math.floor(panelColorFrame) * 35, 0, 35, 58, col * 34 - 6, 0);
 				for (let index = 0; index < 8; index++) {
-					if (hallwayAnim[col][9][index] > 0) {
-						hallwayAnim[col][9][index]--;
+					if (hallwayAnim[col][8][index] > 0) {
+						hallwayAnim[col][8][index]--;
 					} else {
 						draw.imageSector(I.background.panel_cover, index * 35, 0, 35, 58, col * 34 - 6, 0);
 					}
@@ -941,7 +938,11 @@ const graphics = {
 				}
 			}
 			draw.rect("#0003");
-		} else {
+		}
+		/**
+		 * Draws the Act 1 temple background.
+		 */
+		function drawTemple() {
 			if (transition < 100) {
 				draw.image(I.background.cave);
 				draw.rect("#10106080");
@@ -1007,7 +1008,14 @@ const graphics = {
 				if (templeAnim[index] >= 4) templeAnim[index] -= 4;
 			}
 		}
-	},
+		return () => {
+			if (get.area() === 1) {
+				drawHallway();
+			} else {
+				drawTemple();
+			};
+		};
+	})(),
 	/**
 	 * Draws the middle layer on the canvas.
 	 */
