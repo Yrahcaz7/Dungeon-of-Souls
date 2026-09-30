@@ -261,7 +261,7 @@ function updateData() {
 				delete enemy.eff[ENEMY_EFF.PLAN_ATTACK];
 			} else if (enemy.intent === INTENT.DEFEND && enemy.shield > 0) {
 				enemy.intent = INTENT.ATTACK;
-				enemy.intentHistory.push(this.intent);
+				enemy.intentHistory.push(enemy.intent);
 				enemy.eff[[ENEMY_EFF.PLAN_SUMMON, ENEMY_EFF.PLAN_DEFEND][Math.floor(random() * 2)]] = 1;
 				delete enemy.eff[ENEMY_EFF.PLAN_ATTACK];
 			};
