@@ -55,11 +55,14 @@ const selection = (() => {
 	 */
 	function changeEventSelection(increment) {
 		const event = getCurrentEvent();
+		if (!event) {
+			return false;
+		}
 		let index = game.select[1] + increment;
-		while (event[index + 2] && event[index + 2][2] instanceof Function && !event[index + 2][2]()) {
+		while (event.options[index] && event.options[index][2] instanceof Function && !event.options[index][2]?.()) {
 			index += increment;
 		}
-		if (index >= 0 && index < event.length - 2) {
+		if (index >= 0 && index < event.options.length) {
 			game.select[1] = index;
 			actionTimer = 1;
 			return true;
@@ -244,7 +247,7 @@ const selection = (() => {
 			} else if (action === DIR.UP && game.select[1] > 0) {
 				const handled = changeEventSelection(-1);
 				if (handled) return;
-			} else if (action === DIR.DOWN && game.select[1] < getCurrentEvent().length - 3) {
+			} else if (action === DIR.DOWN && game.select[1] < (getCurrentEvent()?.options.length || 0) - 1) {
 				const handled = changeEventSelection(1);
 				if (handled) return;
 			}
@@ -1032,15 +1035,19 @@ const performAction = (() => {
 		// event
 		if (selected(S.EVENT) && !back) {
 			let event = getCurrentEvent();
-			if (event[game.select[1] + 2]) {
-				if (typeof event[game.select[1] + 2][1] == "string") {
+			if (event?.options[game.select[1]]) {
+				if (typeof event.options[game.select[1]][1] == "string") {
 					game.select[1] = 0;
 				} else {
-					const next = event[game.select[1] + 2][1];
+					const next = event.options[game.select[1]][1];
 					game.turn = TURN.EVENT_START + (next instanceof Function ? next() : next);
 					event = getCurrentEvent();
-					if (event[0] instanceof Function) event[0]();
-					if (selected(S.EVENT)) game.select[1] = -1;
+					if (event?.onEnter instanceof Function) {
+						event.onEnter();
+					}
+					if (selected(S.EVENT)) {
+						game.select[1] = -1;
+					}
 				}
 				actionTimer = 2;
 				return;

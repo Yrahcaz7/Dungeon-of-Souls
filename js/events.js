@@ -99,72 +99,97 @@ const doScreenShake = (() => {
 	}
 })();
 
+/**
+ * @typedef {[string | (() => string), number | (() => number)] | [string | (() => string), number | (() => number), () => boolean]} EventOption
+ */
+
+class EventState {
+	/** @type {null | (() => void)} */
+	onEnter = null;
+	/** @type {string | (() => string)} */
+	text = "";
+	/** @type {EventOption[]} */
+	options = [];
+	/**
+	 * Returns a new event state.
+	 * @param {null | (() => void)} onEnter - A function to run upon entering the state, if any.
+	 * @param {string | (() => string)} text - The text to display in the state, if any.
+	 * @param {EventOption[]} options - The options for the state (in `[text, nextState, requirements?]` syntax), if any.
+	 */
+	constructor(onEnter = null, text = "", options = []) {
+		this.onEnter = onEnter;
+		this.text = text;
+		this.options = options;
+	}
+}
+
+/** @type {{any: {[key: number]: EventState}[], 0: {[key: number]: EventState}[], 1: {[key: number]: EventState}[]}} */
 const EVENTS = {
 	any: [{
-		0: [null, "You see a crowd of enemies up ahead. None of them seem to have noticed you yet. How will you get past them?", ["Charge through", () => chance() ? 20 : 10], ["Sneak past", () => chance(1/4) ? 40 : 30], ["Fight them fairly", 50]],
-		10: [() => logEventDamage(8, true), () => "You tried to charge through as fast as you could, but the enemies hit you for " + getLoggedEvent(EVENT_LOG.DAMAGE) + " damage! Also, one enemy was particularly agile. You will have to fight it off.", ["Battle Start!", 11]],
-		11: [() => startEventBattle(BATTLE.CROWD, 1)],
-		20: [() => logEventDamage(4, true), () => "You successfully got past the enemies! However, you took " + getLoggedEvent(EVENT_LOG.DAMAGE) + " damage while doing so.", ["Get a move on", 21]],
-		21: [finishEvent],
-		30: [() => gainEff(EFF.WEAKNESS), "You tried to sneak past as best as you could, but the enemies still spotted you! You also have hard time getting up. You were crawling around for a while, after all...", ["Battle Start!", 31]],
-		31: [() => {
+		0: new EventState(null, "You see a crowd of enemies up ahead. None of them seem to have noticed you yet. How will you get past them?", [["Charge through", () => chance() ? 20 : 10], ["Sneak past", () => chance(1/4) ? 40 : 30], ["Fight them fairly", 50]]),
+		10: new EventState(() => logEventDamage(8, true), () => "You tried to charge through as fast as you could, but the enemies hit you for " + getLoggedEvent(EVENT_LOG.DAMAGE) + " damage! Also, one enemy was particularly agile. You will have to fight it off.", [["Battle Start!", 11]]),
+		11: new EventState(() => startEventBattle(BATTLE.CROWD, 1)),
+		20: new EventState(() => logEventDamage(4, true), () => "You successfully got past the enemies! However, you took " + getLoggedEvent(EVENT_LOG.DAMAGE) + " damage while doing so.", [["Get a move on", 21]]),
+		21: new EventState(finishEvent),
+		30: new EventState(() => gainEff(EFF.WEAKNESS), "You tried to sneak past as best as you could, but the enemies still spotted you! You also have hard time getting up. You were crawling around for a while, after all...", [["Battle Start!", 31]]),
+		31: new EventState(() => {
 			if (game.floor >= 5) startEventBattle(BATTLE.CROWD, randomInt(2, 3));
 			else startEventBattle(BATTLE.CROWD, 2);
-		}],
-		40: [null, "You successfully got past the enemies! You must have been very lucky. Stealth isn't your strong suit.", ["Get a move on", 21]],
-		50: [() => getArtifact(206), "You vaugely feel something long forgotten... You want to fight these enemies fair and square.", ["Battle Start!", 31]],
+		}),
+		40: new EventState(null, "You successfully got past the enemies! You must have been very lucky. Stealth isn't your strong suit.", [["Get a move on", 21]]),
+		50: new EventState(() => getArtifact(206), "You vaugely feel something long forgotten... You want to fight these enemies fair and square.", [["Battle Start!", 31]]),
 	}, {
-		0: [null, "You see a chasm in the ground ahead. It is clearly blocking your way forward. What do you do?", ["Navigate around the chasm", 100], ["Jump across the chasm", 200], ["Climb down the side", 300]],
-		100: [() => gainEff(EFF.WEAKNESS, 10), "You begin navigating around the chasm. It is very exhausting. You see an enemy in the way. Will you fight or go back?", ["Fight the enemy", 110], ["Go back", 120]],
-		110: [null, "You ready yourself and charge at the enemy.", ["Battle Start!", 111]],
-		111: [() => startEventBattle(BATTLE.AMBUSH)],
-		120: [null, "You are back at the front of the chasm. What will you do?", ["Jump across the chasm", 200], ["Climb down the side", 300]],
-		200: [() => {
+		0: new EventState(null, "You see a chasm in the ground ahead. It is clearly blocking your way forward. What do you do?", [["Navigate around the chasm", 100], ["Jump across the chasm", 200], ["Climb down the side", 300]]),
+		100: new EventState(() => gainEff(EFF.WEAKNESS, 10), "You begin navigating around the chasm. It is very exhausting. You see an enemy in the way. Will you fight or go back?", [["Fight the enemy", 110], ["Go back", 120]]),
+		110: new EventState(null, "You ready yourself and charge at the enemy.", [["Battle Start!", 111]]),
+		111: new EventState(() => startEventBattle(BATTLE.AMBUSH)),
+		120: new EventState(null, "You are back at the front of the chasm. What will you do?", [["Jump across the chasm", 200], ["Climb down the side", 300]]),
+		200: new EventState(() => {
 			logEventDamage(5);
 			doScreenShake(0.5, 1, Math.PI / 2);
-		}, () => "You fail and fall into the chasm. Luckily, the chasm is not that deep. You only took " + getLoggedEvent(EVENT_LOG.DAMAGE) + " damage. What do you do now?", ["Look around", 400], ["Climb up", 500]],
-		300: [null, "You climb down into the chasm unexpectedly easily. However, going back up may be harder. What will you do?", ["Look around", 400], ["Climb up", 500]],
-		400: [null, "You find a platform with two giant cups on it. The left cup is filled with purple ooze. The right cup is filled with glowing water. Clearly one is all you can drink. You would vomit if you had both.", ["Look closer at left cup", 410], ["Look closer at right cup", 420], ["Forget this, climb back up", 500]],
-		410: [null, 'There is some text engraved on the cup: "ENVIGORATING BUT DANGEROUS. CONSUME AT YOUR OWN RISK."', ["Drink from the left cup", () => hasArtifact(103) ? 430 : 411], ["Look closer at right cup", 420], ["Forget this, climb back up", 500]],
-		411: [() => getArtifact(103), "A foul energy courses through your veins. You can now wield Corrosion.", ["Get out of this chasm already", 412]],
-		412: [null, "Just as you start to climb out, you spot something very shiny. You can't seem to resist its allure...", ["Pocket the shiny thing", 413]],
-		413: [() => game.gold += 10, "You pocket the strange lump of gold. It's probably worth around 10 gold coins. You see another shiny thing nearby...", ["Go get the shiny thing", 414], ["Really, get out of here already!", 500]],
-		414: [() => game.gold = 0, "As you reach out to grab the shining rock, a foul energy erupts from within you. Dark tendrils spread outwards, greedily devouring all of your gold. You hear an ominous crackle emerge from yourself. Just what exactly did you drink?", ["GET OUT OF HERE!", 500]],
-		420: [null, 'There is some text engraved on the cup: "PURIFIES THE SOUL REMARKABLY. ONLY FOR THE WORTHY."', ["Drink from the right cup", 421], ["Look closer at left cup", 410], ["Forget this, climb back up", 500]],
-		421: [null, "A powerful energy surges within you...", ["Utilize this energy", 422]],
-		422: [() => {
+		}, () => "You fail and fall into the chasm. Luckily, the chasm is not that deep. You only took " + getLoggedEvent(EVENT_LOG.DAMAGE) + " damage. What do you do now?", [["Look around", 400], ["Climb up", 500]]),
+		300: new EventState(null, "You climb down into the chasm unexpectedly easily. However, going back up may be harder. What will you do?", [["Look around", 400], ["Climb up", 500]]),
+		400: new EventState(null, "You find a platform with two giant cups on it. The left cup is filled with purple ooze. The right cup is filled with glowing water. Clearly one is all you can drink. You would vomit if you had both.", [["Look closer at left cup", 410], ["Look closer at right cup", 420], ["Forget this, climb back up", 500]]),
+		410: new EventState(null, 'There is some text engraved on the cup: "ENVIGORATING BUT DANGEROUS. CONSUME AT YOUR OWN RISK."', [["Drink from the left cup", () => hasArtifact(103) ? 430 : 411], ["Look closer at right cup", 420], ["Forget this, climb back up", 500]]),
+		411: new EventState(() => getArtifact(103), "A foul energy courses through your veins. You can now wield Corrosion.", [["Get out of this chasm already", 412]]),
+		412: new EventState(null, "Just as you start to climb out, you spot something very shiny. You can't seem to resist its allure...", [["Pocket the shiny thing", 413]]),
+		413: new EventState(() => game.gold += 10, "You pocket the strange lump of gold. It's probably worth around 10 gold coins. You see another shiny thing nearby...", [["Go get the shiny thing", 414], ["Really, get out of here already!", 500]]),
+		414: new EventState(() => game.gold = 0, "As you reach out to grab the shining rock, a foul energy erupts from within you. Dark tendrils spread outwards, greedily devouring all of your gold. You hear an ominous crackle emerge from yourself. Just what exactly did you drink?", [["GET OUT OF HERE!", 500]]),
+		420: new EventState(null, 'There is some text engraved on the cup: "PURIFIES THE SOUL REMARKABLY. ONLY FOR THE WORTHY."', [["Drink from the right cup", 421], ["Look closer at left cup", 410], ["Forget this, climb back up", 500]]),
+		421: new EventState(null, "A powerful energy surges within you...", [["Utilize this energy", 422]]),
+		422: new EventState(() => {
 			game.select = [S.REWARDS, 0];
 			game.state = STATE.EVENT_FIN;
 			game.rewards = [[REWARD.PURIFIER], [REWARD.FINISH]];
 			activateArtifacts(FUNC.FLOOR_CLEAR);
-		}],
-		430: [() => game.artifacts = game.artifacts.map(id => id === 103 ? 205 : id), "A foul energy courses through your veins. You feel the Corrosion within you grow...", ["Get out of this chasm already", 412]],
-		500: [null, "After some time, you manage to climb out. You set off again towards your destination.", ["Get a move on", 501]],
-		501: [finishEvent],
+		}),
+		430: new EventState(() => game.artifacts = game.artifacts.map(id => id === 103 ? 205 : id), "A foul energy courses through your veins. You feel the Corrosion within you grow...", [["Get out of this chasm already", 412]]),
+		500: new EventState(null, "After some time, you manage to climb out. You set off again towards your destination.", [["Get a move on", 501]]),
+		501: new EventState(finishEvent),
 	}, {
-		0: [null, "You find a very ominous altar. It is pitch black except some dried blood stains. There is some engraved text on the base. What do you do?", ["Read the text", 100], ["Push it over", 200], ["Ignore it", 300]],
-		100: [null, 'The engraved text reads: "OFFER YOUR BLOOD, AND YOU SHALL BE BLESSED. LET THE RAGE SIMMERING IN YOUR SOUL BREAK FREE." Will you offer your blood?', ["Offer 6 health", 110], ["Offer 25 health", () => hasArtifact(101) ? 130 : 120], ["Cancel", 0]],
-		110: [() => logEventDamage(6), "You cut yourself and bleed onto the altar. Suddenly, an enemy pops out from behind some rocks! It starts hastily running away, quickly vanishing from sight.", ["Get a move on", 111]],
-		111: [finishEvent],
-		120: [() => logEventDamage(25), "You brutally stab yourself and bleed onto the altar. Seemingly in response, a hidden compartment in the altar opens. Inside is a brilliant red gem. Just holding it makes you feel stronger.", ["Take the gem", 121]],
-		121: [() => getArtifact(101), "After pocketing the gem, you stumble around lightheadedly for a bit. Maybe you should be more careful with your blood from now on.", ["Get a move on", 111]],
-		130: [() => game.health += 6, "You brutally stab yourself and bleed onto the altar. Your Gem of Rage glows ever brighter... Suddenly, your blood starts to trickle back into your wound. The blood stains become liquid again and enter as well. You gain 6 health, but you feel rather queasy...", ["Get a move on", 111]],
-		200: [null, "You have a bad feeling about this...", ["Do it anyway", 201], ["Cancel", 0]],
-		201: [null, "You topple the altar, and a dark cloud spreads... You feel sluggish, and you can't see ahead of you.", ["Run out of the cloud", 202]],
-		202: [null, "Blindly running ahead, you smack into an enemy.", ["Battle Start!", 203]],
-		203: [() => {
+		0: new EventState(null, "You find a very ominous altar. It is pitch black except some dried blood stains. There is some engraved text on the base. What do you do?", [["Read the text", 100], ["Push it over", 200], ["Ignore it", 300]]),
+		100: new EventState(null, 'The engraved text reads: "OFFER YOUR BLOOD, AND YOU SHALL BE BLESSED. LET THE RAGE SIMMERING IN YOUR SOUL BREAK FREE." Will you offer your blood?', [["Offer 6 health", 110], ["Offer 25 health", () => hasArtifact(101) ? 130 : 120], ["Cancel", 0]]),
+		110: new EventState(() => logEventDamage(6), "You cut yourself and bleed onto the altar. Suddenly, an enemy pops out from behind some rocks! It starts hastily running away, quickly vanishing from sight.", [["Get a move on", 111]]),
+		111: new EventState(finishEvent),
+		120: new EventState(() => logEventDamage(25), "You brutally stab yourself and bleed onto the altar. Seemingly in response, a hidden compartment in the altar opens. Inside is a brilliant red gem. Just holding it makes you feel stronger.", [["Take the gem", 121]]),
+		121: new EventState(() => getArtifact(101), "After pocketing the gem, you stumble around lightheadedly for a bit. Maybe you should be more careful with your blood from now on.", [["Get a move on", 111]]),
+		130: new EventState(() => game.health += 6, "You brutally stab yourself and bleed onto the altar. Your Gem of Rage glows ever brighter... Suddenly, your blood starts to trickle back into your wound. The blood stains become liquid again and enter as well. You gain 6 health, but you feel rather queasy...", [["Get a move on", 111]]),
+		200: new EventState(null, "You have a bad feeling about this...", [["Do it anyway", 201], ["Cancel", 0]]),
+		201: new EventState(null, "You topple the altar, and a dark cloud spreads... You feel sluggish, and you can't see ahead of you.", [["Run out of the cloud", 202]]),
+		202: new EventState(null, "Blindly running ahead, you smack into an enemy.", [["Battle Start!", 203]]),
+		203: new EventState(() => {
 			gainEff(EFF.WEAKNESS, 2);
 			startEventBattle(BATTLE.AMBUSH);
 			game.enemies[0].gainEff(ENEMY_EFF.SHROUD, 6);
-		}],
-		300: [null, "You decide to ignore the altar and continue on. However, an enemy suddenly jumps out in front of you! It must have been hiding somewhere nearby.", ["Battle Start!", 301]],
-		301: [() => startEventBattle(BATTLE.AMBUSH)],
+		}),
+		300: new EventState(null, "You decide to ignore the altar and continue on. However, an enemy suddenly jumps out in front of you! It must have been hiding somewhere nearby.", [["Battle Start!", 301]]),
+		301: new EventState(() => startEventBattle(BATTLE.AMBUSH)),
 	}],
 	0: [{
-		0: [null, "You approach some strange-looking ruins. You see light coming from within.", ["Enter the ruins", 100], ["Walk around the ruins", 200]],
-		100: [null, "You approach the source of the light. This light seems oddly familiar...", ["Walk closer", 101]],
-		101: [null, "You find the source of the light. It is a gray cube that looks oddly out of place. The block is emitting light on one side, which seems to be forming numbers.", ["Read the numbers", 102]],
-		102: [null, () => {
+		0: new EventState(null, "You approach some strange-looking ruins. You see light coming from within.", [["Enter the ruins", 100], ["Walk around the ruins", 200]]),
+		100: new EventState(null, "You approach the source of the light. This light seems oddly familiar...", [["Walk closer", 101]]),
+		101: new EventState(null, "You find the source of the light. It is a gray cube that looks oddly out of place. The block is emitting light on one side, which seems to be forming numbers.", [["Read the numbers", 102]]),
+		102: new EventState(null, () => {
 			const now = new Date();
 			let time = [now.getHours(), now.getMinutes(), now.getSeconds()];
 			if (time[0] >= 12) time[0] = time[0] - 12;
@@ -172,52 +197,52 @@ const EVENTS = {
 			time[1] = 59 - time[1];
 			time[2] = 59 - time[2];
 			return `The numbers on the block are "${padNumber(time[0], 2)}:${padNumber(time[1], 2)}:${padNumber(time[2], 2)}". The numbers seem to be changing over time... You can't understand how this works.`;
-		}, ["Leave the ruins", 110], ["Investigate more", 120]],
-		110: [null, "Not wanting to waste even more time, you turn around to leave the ruins... And you see an enemy right next to you!", ["Battle Start!", 111]],
-		111: [() => startEventBattle(BATTLE.AMBUSH, 1.1)],
-		120: [null, 'There seems to be something written on the ground, but you can only make out the word "difficulty". The rest is completely unreadable. You also see gold coins lying around.', ["Leave the ruins", 110], ["Pocket the coins", 121]],
-		121: [() => {
+		}, [["Leave the ruins", 110], ["Investigate more", 120]]),
+		110: new EventState(null, "Not wanting to waste even more time, you turn around to leave the ruins... And you see an enemy right next to you!", [["Battle Start!", 111]]),
+		111: new EventState(() => startEventBattle(BATTLE.AMBUSH, 1.1)),
+		120: new EventState(null, 'There seems to be something written on the ground, but you can only make out the word "difficulty". The rest is completely unreadable. You also see gold coins lying around.', [["Leave the ruins", 110], ["Pocket the coins", 121]]),
+		121: new EventState(() => {
 			game.gold += 30;
 			logEventDamage(10, true);
-		}, () => "You greedily pocket all 30 gold coins. Suddenly, an enemy hits you from behind! You took a staggering " + getLoggedEvent(EVENT_LOG.DAMAGE) + " damage!", ["Battle Start!", 111]],
-		200: [null, "You decide not to waste time here. As such, you start walking around the ruins. You then see an enemy in the distance.", ["Fight the enemy", 210], ["Avoid the enemy", 220]],
-		210: [() => {
+		}, () => "You greedily pocket all 30 gold coins. Suddenly, an enemy hits you from behind! You took a staggering " + getLoggedEvent(EVENT_LOG.DAMAGE) + " damage!", [["Battle Start!", 111]]),
+		200: new EventState(null, "You decide not to waste time here. As such, you start walking around the ruins. You then see an enemy in the distance.", [["Fight the enemy", 210], ["Avoid the enemy", 220]]),
+		210: new EventState(() => {
 			playerGainShield(10, 0);
 			gainEff(EFF.REINFORCE);
-		}, "You charge toward the enemy, shield at the ready.", ["Battle Start!", 111]],
-		220: [null, "You decide to be wary and avoid the enemy.", ["Creep further", 221]],
-		221: [null, "You sucessfully got past the enemy!", ["Get a move on", 222]],
-		222: [finishEvent],
+		}, "You charge toward the enemy, shield at the ready.", [["Battle Start!", 111]]),
+		220: new EventState(null, "You decide to be wary and avoid the enemy.", [["Creep further", 221]]),
+		221: new EventState(null, "You sucessfully got past the enemy!", [["Get a move on", 222]]),
+		222: new EventState(finishEvent),
 	}],
 	1: [{
-		0: [null, "As you walk down a rather spacious hallway, you spot a strange gray box by the left wall. The side facing you has a large square hole in it that is slightly glowing.", ["Investigate the box", 100], ["Ingore it", 200]],
-		100: [null, `Upon closer inspection, you see glowing words inside the hole. It reads: "Deposit physical currency here. Unregistered users will recieve a new device." You're not quite sure what it means, but maybe giving it some gold will do something?`, ["Deposit 100 gold", 110, () => game.gold >= 100], ["Deposit 400 gold", 120, () => game.gold >= 400], ["Don't deposit anything", 130]],
-		110: [() => {
+		0: new EventState(null, "As you walk down a rather spacious hallway, you spot a strange gray box by the left wall. The side facing you has a large square hole in it that is slightly glowing.", [["Investigate the box", 100], ["Ingore it", 200]]),
+		100: new EventState(null, `Upon closer inspection, you see glowing words inside the hole. It reads: "Deposit physical currency here. Unregistered users will recieve a new device." You're not quite sure what it means, but maybe giving it some gold will do something?`, [["Deposit 100 gold", 110, () => game.gold >= 100], ["Deposit 400 gold", 120, () => game.gold >= 400], ["Don't deposit anything", 130]]),
+		110: new EventState(() => {
 			game.gold -= 100;
 			getArtifact(207);
-		}, `After throwing in a decent amount of gold, a strange slab fell out of the hole. It's probably the "Device" that the text spoke of. The "Device" has many glowing words on it, some of them unfamiliar. The words seem to form a complicated poem... You'll contemplate it later.`, ["Get a move on", 111]],
-		111: [finishEvent],
-		120: [() => {
+		}, `After throwing in a decent amount of gold, a strange slab fell out of the hole. It's probably the "Device" that the text spoke of. The "Device" has many glowing words on it, some of them unfamiliar. The words seem to form a complicated poem... You'll contemplate it later.`, [["Get a move on", 111]]),
+		111: new EventState(finishEvent),
+		120: new EventState(() => {
 			game.gold -= 400;
 			game.health += 10;
 			getArtifact(207);
-		}, "You cram a bunch of gold into the hole, but all of it mysteriously dissapears. Shortly after, two objects fall out of the hole: A bottle and a glowing slab. Recognizing the red liquid in the bottle, you quickly chug it down. As soon as you do so, your fatigue begins to wash away.", ["Inspect the slab", 121]],
-		121: [null, `The mysterious slab is probably that "Device" mentioned by the text. Picking it up, you realize the glow comes from many individual words on its surface. The words seem to form a complicated poem... You'll have to contemplate it later.`, ["Get a move on", 111]],
-		130: [null, "You decide that it's probably not worth the gold and continue onward.", ["Get a move on", 111]],
-		200: [null, "You decide that it's not worth your time and continue onward.", ["Get a move on", 111]],
+		}, "You cram a bunch of gold into the hole, but all of it mysteriously dissapears. Shortly after, two objects fall out of the hole: A bottle and a glowing slab. Recognizing the red liquid in the bottle, you quickly chug it down. As soon as you do so, your fatigue begins to wash away.", [["Inspect the slab", 121]]),
+		121: new EventState(null, `The mysterious slab is probably that "Device" mentioned by the text. Picking it up, you realize the glow comes from many individual words on its surface. The words seem to form a complicated poem... You'll have to contemplate it later.`, [["Get a move on", 111]]),
+		130: new EventState(null, "You decide that it's probably not worth the gold and continue onward.", [["Get a move on", 111]]),
+		200: new EventState(null, "You decide that it's not worth your time and continue onward.", [["Get a move on", 111]]),
 	}],
 };
 
 /**
- * Gets the current event.
- * @returns {Array}
+ * Gets the current event state.
+ * @returns {EventState | null}
  */
 function getCurrentEvent() {
 	if (game.state !== STATE.EVENT || typeof game.room[3] !== "number") {
-		return [];
+		return null;
 	}
 	if (game.room[3] < EVENTS.any.length) {
-		return EVENTS.any[game.room[3]][game.turn - TURN.EVENT_START] || [];
+		return EVENTS.any[game.room[3]][game.turn - TURN.EVENT_START] || null;
 	}
-	return EVENTS[get.area()][game.room[3] - 100][game.turn - TURN.EVENT_START] || [];
+	return EVENTS[get.area()][game.room[3] - 100][game.turn - TURN.EVENT_START] || null;
 }

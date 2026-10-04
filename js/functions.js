@@ -399,9 +399,12 @@ function addCard(id = 0, level = 0) {
  * @param {boolean} used - whether the card was used. Defaults to `false`.
  */
 function discardCard(index, used = false) {
-	const cardObj = game.hand[index];
-	if (used && CARDS[cardObj.id].keywords.includes(CARD_EFF.ONE_USE)) game.void.push(new Card(cardObj.id, cardObj.level, cardObj.eff[CARD_EFF.TEMP]));
-	else game.discard.push(new Card(cardObj.id, cardObj.level, cardObj.eff[CARD_EFF.TEMP]));
+	const card = game.hand[index];
+	if (used && CARDS[card.id].keywords.includes(CARD_EFF.ONE_USE)) {
+		game.void.push(new Card(card.id, card.level, !!card.eff[CARD_EFF.TEMP]));
+	} else {
+		game.discard.push(new Card(card.id, card.level, !!card.eff[CARD_EFF.TEMP]));
+	}
 	const prevHand = game.hand.slice();
 	game.hand.splice(index, 1);
 	updateHandPos(prevHand, index, 146 - Math.floor(cardAnim.splice(index, 1)[0]));

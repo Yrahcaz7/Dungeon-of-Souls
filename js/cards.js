@@ -347,6 +347,7 @@ const CARD_TYPE = ["error", "attack", "defense", "skill", "magic", "curse"];
 class Card {
 	id = 0;
 	level = 0;
+	/** @type {{[key: number]: number}} */
 	eff = {};
 	/**
 	 * Returns a new card.
