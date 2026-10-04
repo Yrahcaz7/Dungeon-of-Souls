@@ -1801,10 +1801,10 @@ const graphics = {
 			throwError(`Invalid event: ${get.area()}#${game.room[3]}#${game.turn - TURN.EVENT_START}`);
 			return;
 		}
-		draw.textBox(125 - 1, 40, 50, wrapText(event.text instanceof Function ? event.text() : event.text, 50), {"text-small": true});
+		draw.textBox(125 - 1, 40, 50, wrapText(run(event.text), 50), {"text-small": true});
 		for (let index = 0; index < event.options.length; index++) {
 			const x = 100 + (index - 2) * 20;
-			const text = (event.options[index][0] instanceof Function ? event.options[index][0]() : event.options[index][0]);
+			const text = run(event.options[index][0]);
 			if (event.options[index][2] instanceof Function && !event.options[index][2]?.()) draw.lore(200 - 2, x, text, {"color": "#888", "text-align": DIR.CENTER});
 			else if (index === game.select[1]) draw.lore(200 - 2, x, "\> " + text + "  ", {"color": "#ff0", "text-align": DIR.CENTER});
 			else draw.lore(200 - 2, x, text, {"color": "#fff", "text-align": DIR.CENTER});

@@ -845,7 +845,7 @@ const performAction = (() => {
 				} else if (game.energy >= getCardCost(isSelected)) {
 					if (CARDS[id].select) { // effects of cards that have a special selection
 						game.enemyAtt[0] = game.select[1];
-						const specialSelect = (CARDS[id].select instanceof Function ? CARDS[id].select() : CARDS[id].select);
+						const specialSelect = run(CARDS[id].select);
 						game.select = [specialSelect[0], specialSelect[1]];
 						game.enemyAtt[2] = game.hand[game.enemyAtt[0]];
 						actionTimer = 4;
@@ -1036,18 +1036,11 @@ const performAction = (() => {
 		if (selected(S.EVENT) && !back) {
 			let event = getCurrentEvent();
 			if (event?.options[game.select[1]]) {
-				if (typeof event.options[game.select[1]][1] == "string") {
-					game.select[1] = 0;
-				} else {
-					const next = event.options[game.select[1]][1];
-					game.turn = TURN.EVENT_START + (next instanceof Function ? next() : next);
-					event = getCurrentEvent();
-					if (event?.onEnter instanceof Function) {
-						event.onEnter();
-					}
-					if (selected(S.EVENT)) {
-						game.select[1] = -1;
-					}
+				game.turn = TURN.EVENT_START + run(event.options[game.select[1]][1]);
+				event = getCurrentEvent();
+				event?.onEnter?.();
+				if (selected(S.EVENT)) {
+					game.select[1] = -1;
 				}
 				actionTimer = 2;
 				return;
@@ -1068,7 +1061,7 @@ const performAction = (() => {
 					game.select = [S.HAND, game.prevCard];
 				}
 			}
-			if (action instanceof Function) action();
+			action?.();
 			actionTimer = 1;
 			return;
 		}

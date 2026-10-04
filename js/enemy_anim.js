@@ -24,17 +24,10 @@ class EnemyAnimationSource {
 		this.enemies = enemies;
 	}
 	/**
-	 * Returns the enemies the source animates.
-	 * @returns {(Enemy | number)[]}
-	 */
-	getEnemies() {
-		return (this.enemies instanceof Function ? this.enemies() : this.enemies);
-	}
-	/**
 	 * Progresses the non-action animations of the enemies the source animates.
 	 */
 	progressAnimations() {
-		const enemies = this.getEnemies();
+		const enemies = run(this.enemies);
 		for (let index = 0; index < enemies.length; index++) {
 			const enemy = enemies[index];
 			const type = (enemy instanceof Enemy ? enemy.type : enemy);
@@ -83,7 +76,7 @@ class EnemyAnimationSource {
 	 * @param {boolean} noPrimeAnim - whether to skip the prime animation. Defaults to `false`.
 	 */
 	drawEnemy(x, y, index, noPrimeAnim = false) {
-		const enemy = this.getEnemies()[index];
+		const enemy = run(this.enemies)[index];
 		const type = (enemy instanceof Enemy ? enemy.type : enemy);
 		const shield = (enemy instanceof Enemy ? enemy.shield : 0);
 		const transition = (enemy instanceof Enemy ? enemy.transition : null);
@@ -243,7 +236,7 @@ class EnemyAnimationSource {
 	 * @param {number} index - the index of the enemy to draw.
 	 */
 	drawEnemyActing(x, y, index) {
-		const enemy = this.getEnemies()[index];
+		const enemy = run(this.enemies)[index];
 		if (!(enemy instanceof Enemy)) {
 			throwError(`${enemy} is not of type "Enemy".`, TypeError);
 			return;

@@ -140,22 +140,22 @@ let holdTimer = 0;
 function tryUseClipboard(write = false, onSuccess = null, onFail = null) {
 	try {
 		if (navigator.clipboard) {
-			(write instanceof Function ? navigator.clipboard.writeText(write()) : navigator.clipboard.readText()).then(
+			(write ? navigator.clipboard.writeText(write()) : navigator.clipboard.readText()).then(
 				result => {
-					if (onSuccess instanceof Function) onSuccess(result);
+					onSuccess?.(result);
 				},
 				error => {
 					console.warn(error);
-					if (onFail instanceof Function) onFail();
+					onFail?.();
 				},
 			);
 		} else {
 			console.warn("Error: navigator.clipboard is not available in this context.");
-			if (onFail instanceof Function) onFail();
+			onFail?.();
 		}
 	} catch (error) {
 		console.warn(error);
-		if (onFail instanceof Function) onFail();
+		onFail?.();
 	}
 }
 

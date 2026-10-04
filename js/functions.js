@@ -1,4 +1,13 @@
 /**
+ * If `func` is a function, runs it and returns the value. Otherwise, returns `func`.
+ * @template T
+ * @param {T | (() => T)} func - A value or a function that returns a value.
+ */
+function run(func) {
+	return func instanceof Function ? func() : func;
+}
+
+/**
  * Returns a boolean indicating whether the current selection belongs to any of the specified selection types.
  * @param {...number} selectionTypes - Any number of values from `S` or `SS`.
  */

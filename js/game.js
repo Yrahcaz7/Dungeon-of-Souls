@@ -1,4 +1,4 @@
-const VERSION = 3_000_075;
+const VERSION = 3_000_076;
 
 /**
  * Returns the starting global data.
@@ -340,9 +340,7 @@ function postCardActivation() {
 				dealDamage(game.enemyAtt[2].getAttr("damage"));
 			}
 		}
-		if (attCard.attack instanceof Function) {
-			attCard.attack(game.enemyAtt[2].level);
-		}
+		attCard.attack?.(game.enemyAtt[2].level);
 		updateData();
 	}
 	// activate artifacts

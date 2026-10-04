@@ -126,8 +126,7 @@ function hasArtifact(id) {
  */
 function getArtifact(id) {
 	game.artifacts.push(id);
-	const func = ARTIFACTS[id][FUNC.PICKUP];
-	if (func instanceof Function) func();
+	ARTIFACTS[id][FUNC.PICKUP]?.();
 }
 
 /**
@@ -136,8 +135,7 @@ function getArtifact(id) {
  */
 function activateArtifacts(type, ...params) {
 	for (let index = 0; index < game.artifacts.length; index++) {
-		const func = ARTIFACTS[game.artifacts[index]][type];
-		if (func instanceof Function) func(...params);
+		ARTIFACTS[game.artifacts[index]][type]?.(...params);
 	}
 }
 
