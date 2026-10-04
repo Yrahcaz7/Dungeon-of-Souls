@@ -597,8 +597,11 @@ const draw = {
  * For each keyword in (or reffered to by) `keywords`, excecutes `func`.
  */
 const forKeywordIn = (() => {
+	/** @type {number[] | {[key: number]: number}} */
 	let _keywords = {};
+	/** @type {(type: number, height: number) => void} */
 	let _func = (_type, _height) => {};
+	/** @type {{[key: number]: boolean}} */
 	let logged = {};
 	/**
 	 * If `type` has not been logged, excecutes `func`.
@@ -616,7 +619,7 @@ const forKeywordIn = (() => {
 	}
 	/**
 	 * For each keyword in (or reffered to by) `keywords`, excecutes `func`.
-	 * @param {number[] | {[key: number]: any}} keywords - An array containing keywords or an object with keywords as keys. These keywords are iterated over.
+	 * @param {number[] | {[key: number]: number}} keywords - An array containing keywords or an object with keywords as keys. These keywords are iterated over.
 	 * @param {(type: number, height: number) => void} func - The function to excecute for each keyword.
 	 * @param {number[] | {[key: number]: any}} exclude - An array containing keywords or an object with keywords as keys. These keywords are excluded from iteration.
 	 */

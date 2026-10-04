@@ -287,6 +287,7 @@ const DESC = {DAMAGE: 2300, SHIELD: 2301};
 const DESC_NAME = {[DESC.DAMAGE]: "damage", [DESC.SHIELD]: "shield"};
 
 // effects and phrases associated with colors
+/** @type {{[key: string]: (string | number)[]}} */
 const COLOR = {
 	// uncommon
 	"#e70": [EFF.BURN, EFF.BLAZE], // orange
@@ -312,6 +313,7 @@ const COLOR = {
 };
 
 // colors of effects
+/** @type {{[key: string]: string}} */
 const EFF_COLOR = {};
 
 for (const color in COLOR) {

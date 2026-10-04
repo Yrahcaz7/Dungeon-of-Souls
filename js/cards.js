@@ -357,7 +357,9 @@ class Card {
 	constructor(id = 0, level = 0, temp = false) {
 		this.id = id;
 		this.level = level;
-		if (temp) this.eff[CARD_EFF.TEMP] = 1;
+		if (temp) {
+			this.eff[CARD_EFF.TEMP] = 1;
+		}
 	}
 	/**
 	 * Returns an object as a card.
@@ -399,11 +401,17 @@ class Card {
 	 * @param {string} attr - the attribute to return.
 	 */
 	getAttr(attr) {
-		if (!CARDS[this.id] || CARDS[this.id][attr] === null || CARDS[this.id][attr] === undefined) return;
-		if (attr === "name") return CARDS[this.id].name + "+".repeat(this.level);
+		if (!CARDS[this.id] || CARDS[this.id][attr] === null || CARDS[this.id][attr] === undefined) {
+			return;
+		}
+		if (attr === "name") {
+			return CARDS[this.id].name + "+".repeat(this.level);
+		}
 		if (CARDS[this.id][attr] instanceof Object && !(CARDS[this.id][attr] instanceof Desc)) {
 			if (attr === "select") {
-				if (CARDS[this.id][attr][this.level] instanceof Object) return CARDS[this.id][attr][this.level];
+				if (CARDS[this.id][attr][this.level] instanceof Object) {
+					return CARDS[this.id][attr][this.level];
+				}
 				return CARDS[this.id][attr];
 			}
 			return CARDS[this.id][attr][this.level];
@@ -421,10 +429,11 @@ const CARD_IDS = [[], [], []];
  * @param {number} rareChance - the chance for a card in the set to be a rare. Defaults to `3/10`.
  */
 function randomCardSet(length = 0, rareChance = 3/10) {
-	if (length <= 0) return [];
-	if (length > 10) length = 10;
+	if (length <= 0) {
+		return [];
+	}
 	let result = [];
-	for (let index = 0; index < length; index++) {
+	for (let index = 0; index < Math.min(length, 10); index++) {
 		let card = 0;
 		while (!card || result.includes(card)) {
 			let rarity = (chance(rareChance) ? 2 : 1);

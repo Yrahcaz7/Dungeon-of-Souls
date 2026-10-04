@@ -1,5 +1,5 @@
 /**
- * @typedef {(string | number | (string | number | boolean | DescNodeList)[])[]} DescNodeList
+ * @typedef {(string | number | [number, string | boolean] | [number, number] | [number, number, string | DescNodeList])[]} DescNodeList
  */
 
 class Desc {
@@ -33,45 +33,46 @@ class Desc {
 			let str = "";
 			let valueIsLess = false;
 			for (let index = 0; index < nodes.length; index++) {
-				if (nodes[index] instanceof Array) {
-					if (typeof nodes[index][1] === "number") {
-						if (CARDS[id][DESC_EFFECTS[nodes[index][1]]] !== false && !outside) {
-							let extra = get[DESC_EXTRA[nodes[index][1]]](selected(S.ATTACK) ? game.select[1] : game.enemyAtt[1]);
+				const node = nodes[index];
+				if (node instanceof Array) {
+					if (typeof node[1] === "number") {
+						if (CARDS[id][DESC_EFFECTS[node[1]]] !== false && !outside) {
+							let extra = get[DESC_EXTRA[node[1]]](selected(S.ATTACK) ? game.select[1] : game.enemyAtt[1]);
 							if (CARDS[id].keywords.includes(CARD_EFF.UNIFORM)) extra = Math.floor(extra / 2);
-							const mult = get[DESC_MULT[nodes[index][1]]](selected(S.ATTACK) ? game.select[1] : game.enemyAtt[1]);
-							const amount = Math.ceil((nodes[index][0] + extra) * mult);
-							if (amount > nodes[index][0]) {
+							const mult = get[DESC_MULT[node[1]]](selected(S.ATTACK) ? game.select[1] : game.enemyAtt[1]);
+							const amount = Math.ceil((node[0] + extra) * mult);
+							if (amount > node[0]) {
 								str += "<#0f0 highlight>" + amount + "</#0f0>";
-							} else if (amount < nodes[index][0]) {
+							} else if (amount < node[0]) {
 								valueIsLess = true;
 								str += "<#fff highlight>" + amount + "</#fff>";
 							} else {
 								str += amount;
 							}
 						} else {
-							str += nodes[index][0];
+							str += node[0];
 						}
-						str += (nodes[index][2] instanceof Array ? getStringFromNodes(nodes[index][2], id, outside)[0] : nodes[index][2] ?? " ");
-						const color = EFF_COLOR[nodes[index][1]];
-						if (color) str += "<" + color + ">" + DESC_NAME[nodes[index][1]] + "</" + color + ">";
-						else str += DESC_NAME[nodes[index][1]];
+						str += (node[2] instanceof Array ? getStringFromNodes(node[2], id, outside)[0] : node[2] ?? " ");
+						const color = EFF_COLOR[node[1]];
+						if (color) str += "<" + color + ">" + DESC_NAME[node[1]] + "</" + color + ">";
+						else str += DESC_NAME[node[1]];
 					} else {
-						const name = (typeof nodes[index][1] === "string"
-							? EFF_NAME[nodes[index][0]] + nodes[index][1]
-							: (nodes[index][1] === true
-								? EFF_NAME[nodes[index][0]][0].toUpperCase() + EFF_NAME[nodes[index][0]].slice(1)
-								: EFF_NAME[nodes[index][0]]
+						const name = (typeof node[1] === "string"
+							? EFF_NAME[node[0]] + node[1]
+							: (node[1] === true
+								? EFF_NAME[node[0]][0].toUpperCase() + EFF_NAME[node[0]].slice(1)
+								: EFF_NAME[node[0]]
 						));
-						const color = EFF_COLOR[nodes[index][0]];
+						const color = EFF_COLOR[node[0]];
 						if (color) str += "<" + color + ">" + name + "</" + color + ">";
 						else str += name;
 					}
-				} else if (EFF_NAME[nodes[index]]) {
-					const color = EFF_COLOR[nodes[index]];
-					if (color) str += "<" + color + ">" + EFF_NAME[nodes[index]] + "</" + color + ">";
-					else str += EFF_NAME[nodes[index]];
+				} else if (EFF_NAME[node]) {
+					const color = EFF_COLOR[node];
+					if (color) str += "<" + color + ">" + EFF_NAME[node] + "</" + color + ">";
+					else str += EFF_NAME[node];
 				} else {
-					str += nodes[index];
+					str += node;
 				}
 			}
 			return [str, valueIsLess];

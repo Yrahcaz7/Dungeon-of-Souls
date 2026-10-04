@@ -100,7 +100,9 @@ for (const key in ARTIFACTS) {
 	artifact.keywords = [];
 	for (const obj of [EFF, ENEMY_EFF, CARD_EFF]) {
 		for (const effect in obj) {
-			if (!EFF_NAME[obj[effect]]) continue;
+			if (!EFF_NAME[obj[effect]]) {
+				continue;
+			}
 			if (artifact.desc.includes(EFF_NAME[obj[effect]])) {
 				artifact.keywords.push(obj[effect]);
 			}
@@ -155,7 +157,9 @@ function randomArtifact(notInclude = []) {
 				break;
 			}
 		}
-		if (bool) return 0;
+		if (bool) {
+			return 0;
+		}
 	}
 	let result = 0;
 	while (!result || notInclude.includes(result)) {
@@ -169,10 +173,11 @@ function randomArtifact(notInclude = []) {
  * @param {number} length - the length of the set. Defaults to `0`.
  */
 function randomArtifactSet(length = 0) {
-	if (length <= 0) return [];
-	if (length > 5) length = 5;
+	if (length <= 0) {
+		return [];
+	}
 	let result = [];
-	for (let index = 0; index < length; index++) {
+	for (let index = 0; index < Math.min(length, 5); index++) {
 		result.push(randomArtifact(result));
 	}
 	return result;

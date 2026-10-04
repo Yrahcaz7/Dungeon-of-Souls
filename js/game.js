@@ -1,4 +1,4 @@
-const VERSION = 3_000_073;
+const VERSION = 3_000_074;
 
 /**
  * Returns the starting global data.
