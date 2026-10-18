@@ -521,7 +521,6 @@ const generateMap = (() => {
 		game.paths = [];
 		await updateGenProg();
 		game.map[0] = [getMapNode(0, 0, MAP_NODE.FIRST)];
-		game.room = game.map[0][0];
 		await generateArea(0);
 		await generateArea(1);
 		addScribbles();

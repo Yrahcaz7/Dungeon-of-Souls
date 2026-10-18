@@ -707,8 +707,9 @@ const info = {
 		const choices = get.cardRewardChoices();
 		let x = (199 - (choices * 68 / 2)) + 70 + (game.select[1] * 68) + xPlus;
 		const y = 51 + yPlus;
-		if (game.select[1] == choices - 1 && choices >= 4 && game.room[5]) {
-			const ref = CARDS[game.room[5][game.select[1]]];
+		const currentRoom = getCurrentRoom();
+		if (game.select[1] == choices - 1 && choices >= 4 && currentRoom[5]) {
+			const ref = CARDS[currentRoom[5][game.select[1]]];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) {
 				x -= 143;
 			} else {
@@ -1464,6 +1465,7 @@ const graphics = {
 	 * Draws the selector and the info it targets on the canvas.
 	 */
 	target() {
+		const currentRoom = getCurrentRoom();
 		if (inDeck()) {
 			const cardObj = currentDeck()[game.cardSelect];
 			if (cardObj) graphics.cardInfo("deck", cardObj);
@@ -1537,10 +1539,10 @@ const graphics = {
 			});
 		} else if (selected(S.ARTIFACTS)) {
 			info.artifact(game.artifacts[game.select[1]]);
-		} else if (selected(S.ARTIFACT_REWARD) && game.room[6]) {
-			info.artifact(game.room[6][game.select[1]], 160 + (game.select[1] * 32), 109);
-		} else if (selected(S.CARD_REWARD) && game.room[5] && game.select[1] > -1 && game.select[1] < get.cardRewardChoices()) {
-			graphics.cardInfo("reward", new Card(game.room[5][game.select[1]]));
+		} else if (selected(S.ARTIFACT_REWARD) && currentRoom[6]) {
+			info.artifact(currentRoom[6][game.select[1]], 160 + (game.select[1] * 32), 109);
+		} else if (selected(S.CARD_REWARD) && currentRoom[5] && game.select[1] > -1 && game.select[1] < get.cardRewardChoices()) {
+			graphics.cardInfo("reward", new Card(currentRoom[5][game.select[1]]));
 		} else if (selected(S.LOOKER)) {
 			info.menuItem(DIR.UP, 2, "View Background");
 		} else if (selected(S.HELP)) {
@@ -1633,7 +1635,8 @@ const graphics = {
 	 * @param {boolean} focused - whether the card reward layer is focused. Defaults to `true`.
 	 */
 	cardRewards(focused = true) {
-		if (!game.room[5]) {
+		const currentRoom = getCurrentRoom();
+		if (!currentRoom[5]) {
 			throwError("No card rewards available.");
 			return;
 		}
@@ -1646,9 +1649,9 @@ const graphics = {
 		if (choices === 1) draw.lore(200 - 2, y + 1, "Take the\ncard?", {"text-align": DIR.CENTER});
 		else draw.lore(200 - 2, y + 1, "Pick a card:", {"text-align": DIR.CENTER});
 		for (let index = 0; index < choices; index++) {
-			if (index !== game.select[1] || !focused) draw.card(game.room[5][index], (199 - (choices * 68 / 2)) + 1 + (index * 68), 50, false, true);
+			if (index !== game.select[1] || !focused) draw.card(currentRoom[5][index], (199 - (choices * 68 / 2)) + 1 + (index * 68), 50, false, true);
 		}
-		if (game.select[1] >= 0 && focused) draw.card(game.room[5][game.select[1]], (199 - (choices * 68 / 2)) + 1 + (game.select[1] * 68), 50, true, true);
+		if (game.select[1] >= 0 && focused) draw.card(currentRoom[5][game.select[1]], (199 - (choices * 68 / 2)) + 1 + (game.select[1] * 68), 50, true, true);
 		if (game.select[1] < 0 && focused) draw.rect("#fff", x, y + height - 14, width, 14);
 		draw.box(x + 2, y + height - 12, width - 4, 10);
 		draw.lore(x + 3, y + height - 11, "Go back");
@@ -1658,7 +1661,8 @@ const graphics = {
 	 * @param {boolean} focused - whether the artifact reward layer is focused. Defaults to `true`.
 	 */
 	artifactRewards(focused = true) {
-		if (!game.room[6]) {
+		const currentRoom = getCurrentRoom();
+		if (!currentRoom[6]) {
 			throwError("No artifact rewards available.");
 			return;
 		}
@@ -1670,8 +1674,8 @@ const graphics = {
 		draw.box(x, y, width, height, {"background-color": "#aaa"});
 		draw.lore(200 - 2, y + 1, "Pick an artifact:", {"text-align": DIR.CENTER});
 		for (let index = 0; index < 3; index++) {
-			draw.image(I.artifact[game.room[6][index]], 160 + (index * 32), 90);
-			if (index === game.select[1]) draw.image(I.artifact._.wo[game.room[6][index]], 159 + (index * 32), 89);
+			draw.image(I.artifact[currentRoom[6][index]], 160 + (index * 32), 90);
+			if (index === game.select[1]) draw.image(I.artifact._.wo[currentRoom[6][index]], 159 + (index * 32), 89);
 		}
 		if (game.select[1] < 0 && focused) draw.rect("#fff", x, y + height - 14, width, 14);
 		draw.box(x + 2, y + height - 12, width - 4, 10);
@@ -1798,7 +1802,7 @@ const graphics = {
 		draw.rect("#0008");
 		const event = getCurrentEvent();
 		if (!event) {
-			throwError(`Invalid event: ${get.area()}#${game.room[3]}#${game.turn - TURN.EVENT_START}`);
+			throwError(`Invalid event: ${get.area()}#${getCurrentRoom()[3]}#${game.turn - TURN.EVENT_START}`);
 			return;
 		}
 		draw.textBox(125 - 1, 40, 50, wrapText(run(event.text), 50), {"text-small": true});

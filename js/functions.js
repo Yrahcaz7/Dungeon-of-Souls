@@ -118,6 +118,13 @@ function areAnyCardsPlayable() {
 	});
 }
 
+/**
+ * Gets the current room.
+ */
+function getCurrentRoom() {
+	return game.map[game.floor][game.location];
+}
+
 const get = {
 	/**
 	 * Gets the current area number based on the floor.

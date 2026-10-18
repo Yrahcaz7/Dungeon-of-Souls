@@ -238,11 +238,12 @@ const EVENTS = {
  * @returns {EventState | null}
  */
 function getCurrentEvent() {
-	if (game.state !== STATE.EVENT || typeof game.room[3] !== "number") {
+	const currentRoom = getCurrentRoom();
+	if (game.state !== STATE.EVENT || typeof currentRoom[3] !== "number") {
 		return null;
 	}
-	if (game.room[3] < EVENTS.any.length) {
-		return EVENTS.any[game.room[3]][game.turn - TURN.EVENT_START] || null;
+	if (currentRoom[3] < EVENTS.any.length) {
+		return EVENTS.any[currentRoom[3]][game.turn - TURN.EVENT_START] || null;
 	}
-	return EVENTS[get.area()][game.room[3] - 100][game.turn - TURN.EVENT_START] || null;
+	return EVENTS[get.area()][currentRoom[3] - 100][game.turn - TURN.EVENT_START] || null;
 }

@@ -924,7 +924,6 @@ const performAction = (() => {
 				game.floor++;
 				game.location = availableLocations[0];
 				if (game.select[1] === 0) getArtifact(202);
-				game.room = game.map[game.floor][game.location];
 				game.select = [-1, 0];
 				game.state = STATE.ENTER;
 			}
@@ -1004,10 +1003,11 @@ const performAction = (() => {
 				index = game.rewards.findIndex(arr => arr[0] === REWARD.ARTIFACT);
 			}
 			if (game.select[1] >= 0 && !back) {
-				if (selected(S.CARD_REWARD) && game.room[5]) {
-					game.cards.push(new Card(game.room[5][game.select[1]]));
-				} else if (selected(S.ARTIFACT_REWARD) && game.room[6]) {
-					getArtifact(game.room[6][game.select[1]]);
+				const currentRoom = getCurrentRoom();
+				if (selected(S.CARD_REWARD) && currentRoom[5]) {
+					game.cards.push(new Card(currentRoom[5][game.select[1]]));
+				} else if (selected(S.ARTIFACT_REWARD) && currentRoom[6]) {
+					getArtifact(currentRoom[6][game.select[1]]);
 				}
 				if (index >= 0) {
 					game.rewards[index][2] = true;
@@ -1025,7 +1025,6 @@ const performAction = (() => {
 			} else {
 				game.floor++;
 				game.location = availableLocations[game.select[1]];
-				game.room = game.map[game.floor][game.location];
 				game.select = [-1, 0];
 				game.state = STATE.ENTER;
 			}
