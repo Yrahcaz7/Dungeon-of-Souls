@@ -1718,7 +1718,7 @@ const graphics = {
 		if (game.select.get()[1] === availableLocations.length && focused) {
 			draw.image(I.select.deck, 21, 15);
 		}
-		if (!(game.state === STATE.EVENT_FIN && onFloorWithCutscene())) {
+		if (game.select.getPrev()) {
 			draw.image(I.extra.end, 22, 179);
 			if (game.select.get()[1] === -1 && focused) {
 				draw.image(I.select.round, 21, 178);

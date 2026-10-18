@@ -59,15 +59,22 @@ function startEventBattle(type, num = 1) {
 }
 
 /**
- * Finishes an event with no battle or rewards.
+ * Finishes an event with no battle.
+ * @param {([number] | [number, number])[] | null} rewards - The rewards, if any.
  */
-function finishEvent() {
+function finishEvent(rewards = null) {
 	game.select.pop();
 	game.event = [-1, -1];
+	if (rewards) {
+		game.select.push(S.REWARDS);
+		game.rewards = rewards;
+	}
 	if (game.state === STATE.ROOM_EVENT) {
 		game.state = STATE.EVENT_FIN;
 		activateArtifacts(FUNC.FLOOR_CLEAR);
-		mapPopup();
+		if (!rewards) {
+			mapPopup();
+		}
 	}
 }
 
@@ -169,12 +176,7 @@ const EVENTS = {
 		414: new EventState(() => game.gold = 0, "As you reach out to grab the shining rock, a foul energy erupts from within you. Dark tendrils spread outwards, greedily devouring all of your gold. You hear an ominous crackle emerge from yourself. Just what exactly did you drink?", [["GET OUT OF HERE!", 500]]),
 		420: new EventState(null, 'There is some text engraved on the cup: "PURIFIES THE SOUL REMARKABLY. ONLY FOR THE WORTHY."', [["Drink from the right cup", 421], ["Look closer at left cup", 410], ["Forget this, climb back up", 500]]),
 		421: new EventState(null, "A powerful energy surges within you...", [["Utilize this energy", 422]]),
-		422: new EventState(() => {
-			game.select.set(S.REWARDS);
-			game.state = STATE.EVENT_FIN;
-			game.rewards = [[REWARD.PURIFIER], [REWARD.FINISH]];
-			activateArtifacts(FUNC.FLOOR_CLEAR);
-		}),
+		422: new EventState(() => finishEvent([[REWARD.PURIFIER], [REWARD.FINISH]])),
 		430: new EventState(() => game.artifacts = game.artifacts.map(id => id === 103 ? 205 : id), "A foul energy courses through your veins. You feel the Corrosion within you grow...", [["Get out of this chasm already", 412]]),
 		500: new EventState(null, "After some time, you manage to climb out. You set off again towards your destination.", [["Get a move on", 501]]),
 		501: new EventState(finishEvent),

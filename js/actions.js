@@ -636,7 +636,9 @@ const performAction = (() => {
 	 * Exits the rewards menu.
 	 */
 	function exitRewardsMenu() {
-		if (onFloorWithCutscene()) {
+		if (game.state === STATE.EVENT_FIN) {
+			game.select.pop();
+		} else if (onFloorWithCutscene()) {
 			game.select = new SelectState([S.CUTSCENE, 0]);
 		} else {
 			game.select = new SelectState([S.ARTIFACTS, 0]);
@@ -787,7 +789,7 @@ const performAction = (() => {
 		const availableLocations = get.availableLocations();
 		if (game.select.is(S.CUTSCENE)) {
 			if (game.select.get()[1] > 0) {
-				game.select.set(S.MAP, availableLocations.length);
+				game.select = new SelectState([S.MAP, availableLocations.length]); // disallow exiting map
 				cutsceneAnim = [];
 			}
 			return;
@@ -840,17 +842,16 @@ const performAction = (() => {
 			}
 			// play card
 			if (game.select.is(S.HAND) && !back) {
-				const isSelected = game.hand[game.select.get()[1]];
-				const id = isSelected.id;
+				const selectedCard = game.hand[game.select.get()[1]];
+				const id = selectedCard.id;
+				const rarity = CARDS[selectedCard.id].rarity;
 				if (CARDS[id].keywords.includes(CARD_EFF.UNPLAYABLE)) {
-					if (CARDS[isSelected.id].rarity == 2) notif = [game.select.get()[1], 0, "unplayable", -2];
-					else notif = [game.select.get()[1], 0, "unplayable", 0];
+					notif = [game.select.get()[1], 0, "unplayable", rarity === 2 ? -2 : 0];
 					actionTimer = 1;
-				} else if (CARDS[id].can && !CARDS[id].can(isSelected.level)) {
-					if (CARDS[isSelected.id].rarity == 2) notif = [game.select.get()[1], 0, isSelected.getAttr("cannotMessage"), -2];
-					else notif = [game.select.get()[1], 0, isSelected.getAttr("cannotMessage"), 0];
+				} else if (CARDS[id].can && !CARDS[id].can(selectedCard.level)) {
+					notif = [game.select.get()[1], 0, selectedCard.getAttr("cannotMessage"), rarity === 2 ? -2 : 0];
 					actionTimer = 1;
-				} else if (game.energy >= getCardCost(isSelected)) {
+				} else if (game.energy >= getCardCost(selectedCard)) {
 					if (CARDS[id].select) { // effects of cards that have a special selection
 						game.enemyAtt[0] = game.select.get()[1];
 						const specialSelect = run(CARDS[id].select);
@@ -859,24 +860,26 @@ const performAction = (() => {
 						actionTimer = 4;
 					} else if (CARDS[id].effect) { // effects of cards that activate right away
 						if (CARDS[id].effectAnim) startAnim.effect(CARDS[id].effectAnim);
-						CARDS[id].effect(isSelected.level);
-						game.energy -= getCardCost(isSelected);
+						CARDS[id].effect(selectedCard.level);
+						game.energy -= getCardCost(selectedCard);
 						discardCard(game.select.get()[1], true);
-						activateArtifacts(FUNC.PLAY_CARD, isSelected);
+						activateArtifacts(FUNC.PLAY_CARD, selectedCard);
 						game.select.set(S.HAND, Math.max(game.prevCard - 1, 0));
 						updateData();
 						postCardActivation();
 					} else if (CARDS[id].damage || CARDS[id].attack) { // effects of attack cards
 						if (CARDS[id].target === false) {
-							game.energy -= getCardCost(isSelected);
-							game.enemyAtt[2] = isSelected;
+							game.energy -= getCardCost(selectedCard);
+							game.enemyAtt[2] = selectedCard;
 							activateAttackEffects(id);
 							game.enemyAtt[3] = true;
 							discardCard(game.select.get()[1], true);
-							activateArtifacts(FUNC.PLAY_CARD, isSelected);
+							activateArtifacts(FUNC.PLAY_CARD, selectedCard);
 							game.select.set(S.HAND, Math.max(game.prevCard - 1, 0));
 							updateData();
-							if (CARDS[id].attackEffects === false) postCardActivation();
+							if (CARDS[id].attackEffects === false) {
+								postCardActivation();
+							}
 						} else {
 							game.enemyAtt[0] = game.select.get()[1];
 							game.select.push(S.ATTACK, game.enemies.length - 1);
@@ -885,8 +888,7 @@ const performAction = (() => {
 						}
 					}
 				} else {
-					if (CARDS[isSelected.id].rarity == 2) notif = [game.select.get()[1], 0, "not enough energy", -2];
-					else notif = [game.select.get()[1], 0, "not enough energy", 0];
+					notif = [game.select.get()[1], 0, "not enough energy", rarity === 2 ? -2 : 0];
 					actionTimer = 1;
 				}
 				return;
@@ -908,9 +910,8 @@ const performAction = (() => {
 			actionTimer = 2;
 			return;
 		} else if (game.select.is(S.CONF_EXIT)) {
-			if (game.select.get()[1] || back) {
-				game.select.pop();
-			} else {
+			game.select.pop();
+			if (!game.select.get()[1] && !back) {
 				exitRewardsMenu();
 			}
 			actionTimer = 2;
@@ -936,29 +937,27 @@ const performAction = (() => {
 			actionTimer = 2;
 			return;
 		} else if (game.select.is(S.CONF_PURIFY)) {
-			if (game.select.get()[1] === 1 || back) {
-				game.select.pop();
-			} else {
-				if (game.select.get()[1] === 0) game.cards.splice(game.cardSelect, 1);
-				const index = game.rewards.findIndex(arr => arr[0] === REWARD.PURIFIER);
-				if (index >= 0) {
-					if (game.select.get()[1] === 0) game.rewards[index][2] = true;
-					game.select.pop();
+			game.select.pop();
+			if (game.select.get()[1] !== 1 && !back) {
+				if (game.select.get()[1] === 0) {
+					game.cards.splice(game.cardSelect, 1);
+				}
+				const prevSelection = game.select.getPrev();
+				if (prevSelection) {
+					if (game.select.get()[1] === 0) game.rewards[prevSelection[1]][2] = true;
 					game.select.pop();
 				}
 			}
 			actionTimer = 2;
 			return;
 		} else if (game.select.is(S.CONF_REFINE)) {
-			if (game.select.get()[1] || back) {
-				game.select.pop();
-			} else {
+			game.select.pop();
+			if (!game.select.get()[1] && !back) {
 				refinableDeck[game.cardSelect].level = 1;
 				refinableDeck = [];
-				const index = game.rewards.findIndex(arr => arr[0] === REWARD.REFINER);
-				if (index >= 0) {
-					game.rewards[index][2] = true;
-					game.select.pop();
+				const prevSelection = game.select.getPrev();
+				if (prevSelection) {
+					game.rewards[prevSelection[1]][2] = true;
 					game.select.pop();
 				}
 			}
@@ -1004,12 +1003,6 @@ const performAction = (() => {
 			actionTimer = 2;
 			return;
 		} else if (game.select.is(S.CARD_REWARD, S.ARTIFACT_REWARD)) {
-			let index = 0;
-			if (game.select.is(S.CARD_REWARD)) {
-				index = game.rewards.findIndex(arr => arr[0] === REWARD.CARD);
-			} else if (game.select.is(S.ARTIFACT_REWARD)) {
-				index = game.rewards.findIndex(arr => arr[0] === REWARD.ARTIFACT);
-			}
 			if (game.select.get()[1] >= 0 && !back) {
 				const currentRoom = getCurrentRoom();
 				if (game.select.is(S.CARD_REWARD) && currentRoom[5]) {
@@ -1017,8 +1010,9 @@ const performAction = (() => {
 				} else if (game.select.is(S.ARTIFACT_REWARD) && currentRoom[6]) {
 					getArtifact(currentRoom[6][game.select.get()[1]]);
 				}
-				if (index >= 0) {
-					game.rewards[index][2] = true;
+				const prevSelect = game.select.getPrev();
+				if (prevSelect) {
+					game.rewards[prevSelect[1]][2] = true;
 				}
 			}
 			game.select.pop();
