@@ -3,7 +3,7 @@
  * @param {number} eventId - The ID of the event.
  */
 function startEvent(eventId) {
-	game.select = [S.EVENT, -1, game.select.length === 3 ? game.select[2] : game.select];
+	game.select.push(S.EVENT, -1);
 	game.event = [eventId, 0];
 }
 
@@ -62,15 +62,13 @@ function startEventBattle(type, num = 1) {
  * Finishes an event with no battle or rewards.
  */
 function finishEvent() {
+	game.select.pop();
+	game.event = [-1, -1];
 	if (game.state === STATE.ROOM_EVENT) {
-		game.select = [S.ARTIFACTS, 0];
 		game.state = STATE.EVENT_FIN;
 		activateArtifacts(FUNC.FLOOR_CLEAR);
 		mapPopup();
-	} else {
-		game.select = game.select[2] ?? [S.ARTIFACTS, 0];
 	}
-	game.event = [-1, -1];
 }
 
 /**
@@ -172,7 +170,7 @@ const EVENTS = {
 		420: new EventState(null, 'There is some text engraved on the cup: "PURIFIES THE SOUL REMARKABLY. ONLY FOR THE WORTHY."', [["Drink from the right cup", 421], ["Look closer at left cup", 410], ["Forget this, climb back up", 500]]),
 		421: new EventState(null, "A powerful energy surges within you...", [["Utilize this energy", 422]]),
 		422: new EventState(() => {
-			game.select = [S.REWARDS, 0];
+			game.select.set(S.REWARDS);
 			game.state = STATE.EVENT_FIN;
 			game.rewards = [[REWARD.PURIFIER], [REWARD.FINISH]];
 			activateArtifacts(FUNC.FLOOR_CLEAR);

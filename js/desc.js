@@ -37,9 +37,9 @@ class Desc {
 				if (node instanceof Array) {
 					if (typeof node[1] === "number") {
 						if (CARDS[id][DESC_EFFECTS[node[1]]] !== false && !outside) {
-							let extra = get[DESC_EXTRA[node[1]]](selected(S.ATTACK) ? game.select[1] : game.enemyAtt[1]);
+							let extra = get[DESC_EXTRA[node[1]]](game.select.is(S.ATTACK) ? game.select.get()[1] : game.enemyAtt[1]);
 							if (CARDS[id].keywords.includes(CARD_EFF.UNIFORM)) extra = Math.floor(extra / 2);
-							const mult = get[DESC_MULT[node[1]]](selected(S.ATTACK) ? game.select[1] : game.enemyAtt[1]);
+							const mult = get[DESC_MULT[node[1]]](game.select.is(S.ATTACK) ? game.select.get()[1] : game.enemyAtt[1]);
 							const amount = Math.ceil((node[0] + extra) * mult);
 							if (amount > node[0]) {
 								str += "<#0f0 highlight>" + amount + "</#0f0>";

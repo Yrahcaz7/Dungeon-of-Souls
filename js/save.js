@@ -17,7 +17,7 @@ function resetVars(prevGamesMenu = false) {
 	notif = [-1, 0, "", 0];
 	refinableDeck = [];
 	winAnim = 0;
-	menuSelect = [MENU.MAIN, 1];
+	menuSelect = new SelectState([MENU.MAIN, 1]);
 	if (prevGamesMenu) {
 		menuScroll = 0;
 		menuArtifactSelect = 0;
@@ -81,8 +81,8 @@ async function endRun(startNewRun = false, newDifficulty = game.difficulty) {
 	prevGame.health = game.health;
 	prevGame.floor = game.floor;
 	prevGame.gold = game.gold;
-	if (selected(S.GAME_OVER)) prevGame.result = GAME_RESULT.DEFEAT;
-	else if (selected(S.GAME_WON)) prevGame.result = GAME_RESULT.VICTORY;
+	if (game.select.is(S.GAME_OVER)) prevGame.result = GAME_RESULT.DEFEAT;
+	else if (game.select.is(S.GAME_WON)) prevGame.result = GAME_RESULT.VICTORY;
 	else prevGame.result = GAME_RESULT.SURRENDER;
 	prevGame.kills = game.kills;
 	prevGame.artifacts = game.artifacts;
@@ -95,7 +95,7 @@ async function endRun(startNewRun = false, newDifficulty = game.difficulty) {
 		prevGame.score += game.kills[+key] * ENEMY_WORTH[+key];
 	}
 	prevGame.score += Math.floor(game.gold / 5);
-	if (selected(S.GAME_WON)) {
+	if (game.select.is(S.GAME_WON)) {
 		prevGame.score += game.health * 5;
 	}
 	if (game.difficulty) {
@@ -120,7 +120,7 @@ async function endRun(startNewRun = false, newDifficulty = game.difficulty) {
 		game.difficulty = newDifficulty;
 	}
 	if (game.difficulty === prevGame.difficulty) {
-		game.select = [-1, 0]; // skip welcome screen
+		game.select.set(-1); // skip welcome screen
 	}
 	if (newSeed) {
 		game.seed = newSeed;
@@ -128,7 +128,7 @@ async function endRun(startNewRun = false, newDifficulty = game.difficulty) {
 	}
 	resetVars(game.map.length > 0);
 	if (startNewRun) {
-		menuSelect = [-1, 0];
+		menuSelect.set(-1);
 		await generateMap();
 	}
 	loaded = true;
@@ -164,6 +164,8 @@ const loadSave = (() => {
 	 * @param {number} version - The version the save is from.
 	 */
 	function fixSave(version) {
+		// classify select states (all versions)
+		game.select = SelectState.classify(game.select);
 		// classify enemies (all versions)
 		game.enemies = game.enemies.map(enemy => Enemy.classify(enemy));
 		// classify cards (all versions)
@@ -175,8 +177,8 @@ const loadSave = (() => {
 			prevGame.cards = prevGame.cards.map(card => Card.classify(card));
 		}
 		// reset game end screen fade-in (all versions)
-		if (selected(S.GAME_OVER, S.GAME_WON)) {
-			game.select[1] = 0;
+		if (game.select.is(S.GAME_OVER, S.GAME_WON)) {
+			game.select.get()[1] = 0;
 		}
 		// fix in-progress player attack (all versions)
 		if (game.enemyAtt[3]) {
@@ -191,7 +193,7 @@ const loadSave = (() => {
 			}
 		}
 	}
-	const versionCutoff = 3_000_080;
+	const versionCutoff = 3_000_082;
 	let suffix = "";
 	let item = "";
 	let obj = {};
@@ -284,10 +286,10 @@ const loadSave = (() => {
 			await generateMapPathPoints();
 			updateHandPos();
 		} else {
-			menuSelect = [MENU.MAIN, 1];
+			menuSelect.set(MENU.MAIN, 1);
 		}
 		if (parseSave(localStorage.getItem(ID + "/old/global")) || parseSave(localStorage.getItem(ID + "/old/run"))) {
-			menuSelect = [MENU.OLD_SAVE_ALERT, 0];
+			menuSelect.set(MENU.OLD_SAVE_ALERT);
 		}
 	}
 })();

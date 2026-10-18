@@ -8,63 +8,31 @@ function run(func) {
 }
 
 /**
- * Returns a boolean indicating whether the current selection belongs to any of the specified selection types.
- * @param {...number} selectionTypes - Any number of values from `S` or `SS`.
- */
-function selected(...selectionTypes) {
-	return selectionTypes.includes(game.select[0]);
-}
-
-/**
- * Returns a boolean indicating whether the previous stacked selection belongs to any of the specified selection types.
- * @param {...number} selectionTypes - Any number of values from `S` or `SS`.
- */
-function prevSelected(...selectionTypes) {
-	return game.select[2] !== undefined && selectionTypes.includes(game.select[2][0]);
-}
-
-/**
- * Returns a boolean indicating whether the current menu selection belongs to any of the specified selection types.
- * @param {...number} selectionTypes - Any number of values from `MENU`.
- */
-function menuSelected(...selectionTypes) {
-	return selectionTypes.includes(menuSelect[0]);
-}
-
-/**
- * Returns a boolean indicating whether the previous stacked menu selection belongs to any of the specified selection types.
- * @param {...number} selectionTypes - Any number of values from `MENU`.
- */
-function prevMenuSelected(...selectionTypes) {
-	return menuSelect[2] !== undefined && selectionTypes.includes(menuSelect[2][0]);
-}
-
-/**
  * Returns a boolean indicating whether the middleground layers are hidden.
  */
 function hidden() {
-	return (game.select[1] && selected(S.LOOKER, S.HELP, S.OPTIONS, S.DECK, S.DISCARD, S.VOID)) || selected(S.MAP, S.CARDS, S.CONF_HAND_ALIGN, S.CONF_SURRENDER);
+	return (game.select.get()[1] && game.select.is(S.LOOKER, S.HELP, S.OPTIONS, S.DECK, S.DISCARD, S.VOID)) || game.select.is(S.MAP, S.CARDS, S.CONF_HAND_ALIGN, S.CONF_SURRENDER);
 }
 
 /**
  * Returns a boolean indicating whether a menu is being viewed.
  */
 function inMenu() {
-	return !menuSelected(-1) || selected(S.WELCOME);
+	return !menuSelect.is(-1) || game.select.is(S.WELCOME);
 }
 
 /**
  * Returns a boolean indicating whether a deck outside battle is being viewed.
  */
 function inOutsideDeck() {
-	return menuSelected(MENU.PREV_GAME_INFO) || selected(S.CARDS, S.PURIFIER, S.CONF_PURIFY, S.REFINER, S.CONF_REFINE);
+	return menuSelect.is(MENU.PREV_GAME_INFO) || game.select.is(S.CARDS, S.PURIFIER, S.CONF_PURIFY, S.REFINER, S.CONF_REFINE);
 }
 
 /**
  * Returns a boolean indicating whether a deck is being viewed.
  */
 function inDeck() {
-	return (game.select[1] && selected(S.DECK, S.DISCARD, S.VOID)) || inOutsideDeck();
+	return (game.select.get()[1] && game.select.is(S.DECK, S.DISCARD, S.VOID)) || inOutsideDeck();
 }
 
 /**
@@ -73,14 +41,14 @@ function inDeck() {
  */
 function currentDeck() {
 	if (inMenu()) {
-		if (menuSelected(MENU.PREV_GAME_INFO)) return global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].cards;
+		if (menuSelect.is(MENU.PREV_GAME_INFO)) return global.prevGames[sortedPrevGames[Math.floor(menuSelect.get()[1] / 3)]].cards;
 	} else {
-		if (selected(S.DECK) && game.select[1]) return Card.sort(game.deck.slice());
-		if (selected(S.DISCARD) && game.select[1]) return game.discard;
-		if (selected(S.VOID) && game.select[1]) return game.void;
-		if (selected(S.CARDS)) return game.cards;
-		if (selected(S.PURIFIER, S.CONF_PURIFY)) return game.cards;
-		if (selected(S.REFINER, S.CONF_REFINE)) return refinableDeck;
+		if (game.select.is(S.DECK) && game.select.get()[1]) return Card.sort(game.deck.slice());
+		if (game.select.is(S.DISCARD) && game.select.get()[1]) return game.discard;
+		if (game.select.is(S.VOID) && game.select.get()[1]) return game.void;
+		if (game.select.is(S.CARDS)) return game.cards;
+		if (game.select.is(S.PURIFIER, S.CONF_PURIFY)) return game.cards;
+		if (game.select.is(S.REFINER, S.CONF_REFINE)) return refinableDeck;
 	}
 	return [];
 }
@@ -313,7 +281,7 @@ function updateHandPos(prevHand = game.hand, discardIndex = -1, discardY = 146) 
 	}
 	// start card draw/discard animation
 	const topAnim = handAnim.at(-1);
-	if (loaded && handPos.length != prevHandPos.length && !hidden() && !selected(S.PLAYER, S.ENEMY)
+	if (loaded && handPos.length != prevHandPos.length && !hidden() && !game.select.is(S.PLAYER, S.ENEMY)
 		&& (!topAnim || topAnim[0] < 10 || Math.sign(handPos.length - prevHandPos.length) != Math.sign(prevHandPos.length - topAnim[2].length))
 	) {
 		const yValues = [];

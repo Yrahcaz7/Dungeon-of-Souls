@@ -216,9 +216,9 @@ const CARDS = {
 		desc: new Desc("Choose a card from your hand. Apply 1 ", CARD_EFF.COST_REDUCTION, " and 1 ", CARD_EFF.RETENTION, " to the chosen card."),
 		rarity: 2,
 		cost: [1, 0],
-		select() {return [SS.SELECT_HAND, game.select[1] - 1]},
+		select() {return [SS.SELECT_HAND, game.select.get()[1] - 1]},
 		effect(level = 0) {
-			const index = (game.select[1] >= game.enemyAtt[0] ? game.select[1] + 1 : game.select[1]);
+			const index = (game.select.get()[1] >= game.enemyAtt[0] ? game.select.get()[1] + 1 : game.select.get()[1]);
 			if (game.hand[index].eff[CARD_EFF.COST_REDUCTION]) game.hand[index].eff[CARD_EFF.COST_REDUCTION]++;
 			else game.hand[index].eff[CARD_EFF.COST_REDUCTION] = 1;
 			if (game.hand[index].eff[CARD_EFF.RETENTION]) game.hand[index].eff[CARD_EFF.RETENTION]++;

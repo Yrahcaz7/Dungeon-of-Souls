@@ -680,10 +680,10 @@ const info = {
 	 */
 	cardSelect(type, xPlus = 0, yPlus = 0) {
 		if (typeof type === "number" && !EFF_DESC[type]) return 0;
-		let x = handSelectPos[game.select[1]] + 69 + xPlus;
+		let x = handSelectPos[game.select.get()[1]] + 69 + xPlus;
 		const y = 18 + yPlus;
 		if (x + 24 * 3 + 2 > 400) {
-			const ref = CARDS[game.hand[game.select[1]].id];
+			const ref = CARDS[game.hand[game.select.get()[1]].id];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) {
 				x -= 143;
 			} else {
@@ -705,11 +705,11 @@ const info = {
 	reward(type, xPlus = 0, yPlus = 0) {
 		if (typeof type === "number" && !EFF_DESC[type]) return 0;
 		const choices = get.cardRewardChoices();
-		let x = (199 - (choices * 68 / 2)) + 70 + (game.select[1] * 68) + xPlus;
+		let x = (199 - (choices * 68 / 2)) + 70 + (game.select.get()[1] * 68) + xPlus;
 		const y = 51 + yPlus;
 		const currentRoom = getCurrentRoom();
-		if (game.select[1] == choices - 1 && choices >= 4 && currentRoom[5]) {
-			const ref = CARDS[currentRoom[5][game.select[1]]];
+		if (game.select.get()[1] == choices - 1 && choices >= 4 && currentRoom[5]) {
+			const ref = CARDS[currentRoom[5][game.select.get()[1]]];
 			if (ref.keywords.includes(CARD_EFF.UNPLAYABLE) && ref.rarity <= 1) {
 				x -= 143;
 			} else {
@@ -731,7 +731,7 @@ const info = {
 	deck(type, xPlus = 0, yPlus = 0) {
 		const deck = currentDeck();
 		if (!deck[game.cardSelect] || (typeof type === "number" && !EFF_DESC[type])) return 0;
-		const refining = selected(S.REFINER, S.CONF_REFINE);
+		const refining = game.select.is(S.REFINER, S.CONF_REFINE);
 		const cols = (refining ? 3 : 6);
 		const isSelected = [game.cardSelect % cols, Math.floor(game.cardSelect / cols)];
 		let x = (refining ? 72 : 71) + (isSelected[0] * (refining ? 68 : 66)) + xPlus;
@@ -777,8 +777,8 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	enemy(type, xPlus = 0, yPlus = 0) {
-		const pos = enemyPos[game.select[1]];
-		const eff = game.enemies[game.select[1]].eff[type];
+		const pos = enemyPos[game.select.get()[1]];
+		const eff = game.enemies[game.select.get()[1]].eff[type];
 		const x = pos[0] - 72.5 + xPlus;
 		const y = pos[1] + yPlus;
 		let move = 0;
@@ -790,7 +790,7 @@ const info = {
 		}
 		move += draw.textBox(x, y + move, 24, EFF_DESC[type], {"text-small": true});
 		if (type === ENEMY_EFF.COUNTDOWN) {
-			move += draw.textBox(x, y + move, 24, "The next intent will be\nto " + MIN_INTENT_DESC[game.enemies[game.select[1]].intentHistory[eff - 1]] + ".", {"text-small": true});
+			move += draw.textBox(x, y + move, 24, "The next intent will be\nto " + MIN_INTENT_DESC[game.enemies[game.select.get()[1]].intentHistory[eff - 1]] + ".", {"text-small": true});
 		}
 		return move;
 	},
@@ -800,10 +800,10 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	intent(xPlus = 0, yPlus = 0) {
-		const x = enemyPos[game.select[1]][0] - 71 + xPlus;
-		const y = getEnemyIntentPos(game.select[1]) + yPlus;
+		const x = enemyPos[game.select.get()[1]][0] - 71 + xPlus;
+		const y = getEnemyIntentPos(game.select.get()[1]) + yPlus;
 		if (y === y) {
-			const intent = game.enemies[game.select[1]]?.intent;
+			const intent = game.enemies[game.select.get()[1]]?.intent;
 			const desc = FULL_INTENT_DESC[intent === INTENT.SUMMON && game.enemies.length >= 6 ? INTENT.RITUAL : intent];
 			if (desc) {
 				draw.textBox(x, y - (desc.match(/\n/g) || []).length * 3, 28, desc, {"text-small": true});
@@ -817,7 +817,7 @@ const info = {
 	 * @param {number} yOveride - overrides the y-coordinate of the infobox.
 	 */
 	artifact(type, xOveride = NaN, yOveride = NaN) {
-		const x = (isNaN(xOveride) ? 2 + (game.select[1] * 18) : xOveride);
+		const x = (isNaN(xOveride) ? 2 + (game.select.get()[1] * 18) : xOveride);
 		let y = (isNaN(yOveride) ? 32 : yOveride);
 		const obj = ARTIFACTS[type];
 		if (!obj) {
@@ -979,19 +979,19 @@ const graphics = {
 				if (time[0] >= 12) time[0] = time[0] - 12;
 				draw.image(I.background.clock_face, 170, y);
 				draw.clock(170, y, time[0], time[1]);
-			} else if (selected(S.CUTSCENE) && (!inMenu() || game.select[1])) {
+			} else if (game.select.is(S.CUTSCENE) && (!inMenu() || game.select.get()[1])) {
 				if (cutsceneAnim.length == 0) {
 					cutsceneAnim = [0];
 				}
 				const PORTAL_THRESHOLD = 64;
 				const x = 170;
 				const y = 64 - Math.abs(Math.round(templeAnim[2]) - 2);
-				if (cutsceneAnim[0] >= PORTAL_THRESHOLD + 2 || game.select[1]) {
+				if (cutsceneAnim[0] >= PORTAL_THRESHOLD + 2 || game.select.get()[1]) {
 					if (!inMenu()) {
 						draw.image(I.background.enter_portal, 185, 31 - Math.abs(Math.round(templeAnim[0]) - 2));
 					}
 					draw.imageSector(I.background.clock_portal, ((Math.floor(cutsceneAnim[0] / 2) % 12) + 2) * 60, 0, 60, 60, x, y);
-					game.select[1] = 1;
+					game.select.get()[1] = 1;
 				} else if (cutsceneAnim[0] >= PORTAL_THRESHOLD) {
 					draw.imageSector(I.background.clock_portal, (cutsceneAnim[0] - PORTAL_THRESHOLD) * 60, 0, 60, 60, x, y);
 				} else {
@@ -1066,14 +1066,14 @@ const graphics = {
 	 */
 	foregrounds() {
 		// menus
-		const past = game.select[2];
-		if (past) {
-			if (past[0] === S.REWARDS) graphics.rewards(false);
-			else if (past[0] === S.CARD_REWARD) graphics.cardRewards(false);
-			else if (past[0] === S.ARTIFACT_REWARD) graphics.artifactRewards(false);
+		const prevSelection = game.select.getPrev();
+		if (prevSelection) {
+			if (prevSelection[0] === S.REWARDS) graphics.rewards(false);
+			else if (prevSelection[0] === S.CARD_REWARD) graphics.cardRewards(false);
+			else if (prevSelection[0] === S.ARTIFACT_REWARD) graphics.artifactRewards(false);
 		}
 		// looker
-		if (selected(S.LOOKER) && game.select[1] === 1) {
+		if (game.select.is(S.LOOKER) && game.select.get()[1] === 1) {
 			draw.imageSector(I.extra.looker, 16, 0, 16, 16, 343, 3);
 			draw.image(I.select.round, 342, 2);
 			return;
@@ -1103,38 +1103,38 @@ const graphics = {
 		for (let index = 0; index < game.artifacts.length; index++) {
 			if (!ARTIFACTS[game.artifacts[index]].big) continue;
 			draw.image(I.artifact[game.artifacts[index]], (index * 18) - 6, 5);
-			if (selected(S.ARTIFACTS) && game.select[1] === index) draw.image(I.artifact._.wo[game.artifacts[index]], (index * 18) - 7, 4);
+			if (game.select.is(S.ARTIFACTS) && game.select.get()[1] === index) draw.image(I.artifact._.wo[game.artifacts[index]], (index * 18) - 7, 4);
 		}
 		// small artifacts
 		for (let index = 0; index < game.artifacts.length; index++) {
 			if (ARTIFACTS[game.artifacts[index]].big) continue;
 			draw.image(I.artifact[game.artifacts[index]], (index * 18) + 2, 13);
-			if (selected(S.ARTIFACTS) && game.select[1] === index) draw.image(I.artifact._.wo[game.artifacts[index]], (index * 18) + 1, 12);
+			if (game.select.is(S.ARTIFACTS) && game.select.get()[1] === index) draw.image(I.artifact._.wo[game.artifacts[index]], (index * 18) + 1, 12);
 		}
 		// selected
-		if (selected(S.LOOKER)) draw.image(I.select.round, 342, 2);
-		else if (selected(S.HELP)) draw.image(I.select.round, 361, 2);
-		else if (selected(S.OPTIONS)) draw.image(get.area() == 1 ? I.select.options : I.select.options_yellow, 380, 2);
-		else if (selected(S.END_TURN)) draw.image(I.select.round, 2, 162);
-		else if (selected(S.DECK) && !game.select[1]) draw.image(I.select.deck, 3, 181);
-		else if (selected(S.VOID) && !game.select[1]) draw.image(I.select.round, 380, 162);
-		else if (selected(S.DISCARD) && !game.select[1]) draw.image(I.select.discard, 381, 181);
+		if (game.select.is(S.LOOKER)) draw.image(I.select.round, 342, 2);
+		else if (game.select.is(S.HELP)) draw.image(I.select.round, 361, 2);
+		else if (game.select.is(S.OPTIONS)) draw.image(get.area() == 1 ? I.select.options : I.select.options_yellow, 380, 2);
+		else if (game.select.is(S.END_TURN)) draw.image(I.select.round, 2, 162);
+		else if (game.select.is(S.DECK) && !game.select.get()[1]) draw.image(I.select.deck, 3, 181);
+		else if (game.select.is(S.VOID) && !game.select.get()[1]) draw.image(I.select.round, 380, 162);
+		else if (game.select.is(S.DISCARD) && !game.select.get()[1]) draw.image(I.select.discard, 381, 181);
 		// info
 		draw.lore(1, 1, "Floor " + game.floor + " - " + game.gold + " gold", {"color": (get.area() == 1 ? "#000" : "#fff")});
 		// intents
-		if (!hidden() && !selected(S.LOOKER, S.HELP, S.OPTIONS)) {
+		if (!hidden() && !game.select.is(S.LOOKER, S.HELP, S.OPTIONS)) {
 			for (let index = 0; index < game.enemies.length; index++) {
 				draw.intent(index);
 			}
 		}
 		// selected enemy
-		if (selected(S.ATTACK, S.ENEMY)) {
-			draw.enemyIcons(game.select[1]);
-			if (enemyPos[game.select[1]]?.length && isEnemyVisible(game.select[1])) {
-				enemyAnim.drawEnemy(enemyPos[game.select[1]][0], enemyPos[game.select[1]][1], game.select[1]);
+		if (game.select.is(S.ATTACK, S.ENEMY)) {
+			draw.enemyIcons(game.select.get()[1]);
+			if (enemyPos[game.select.get()[1]]?.length && isEnemyVisible(game.select.get()[1])) {
+				enemyAnim.drawEnemy(enemyPos[game.select.get()[1]][0], enemyPos[game.select.get()[1]][1], game.select.get()[1]);
 			}
-			if (!game.enemies[game.select[1]].transition && game.select[1] === game.enemyNum) {
-				enemyAnim.drawEnemyActing(enemyPos[game.select[1]][0], enemyPos[game.select[1]][1], game.select[1]);
+			if (!game.enemies[game.select.get()[1]].transition && game.select.get()[1] === game.enemyNum) {
+				enemyAnim.drawEnemyActing(enemyPos[game.select.get()[1]][0], enemyPos[game.select.get()[1]][1], game.select.get()[1]);
 			}
 		}
 	},
@@ -1227,25 +1227,25 @@ const graphics = {
 	 */
 	enemy() {
 		// icons
-		const isSelected = selected(S.ATTACK, S.ENEMY);
+		const isSelected = game.select.is(S.ATTACK, S.ENEMY);
 		for (let index = 0; index < game.enemies.length; index++) {
-			if (isSelected && index == game.select[1]) continue;
+			if (isSelected && index == game.select.get()[1]) continue;
 			draw.enemyIcons(index);
 		}
 		// enemy drawing
 		for (let index = 0; index < game.enemies.length; index++) {
-			if (enemyPos[index]?.length && isEnemyVisible(index) && (!isSelected || index !== game.select[1])) {
+			if (enemyPos[index]?.length && isEnemyVisible(index) && (!isSelected || index !== game.select.get()[1])) {
 				enemyAnim.drawEnemy(enemyPos[index][0], enemyPos[index][1], index);
 			}
 		}
 		// action animations
-		if (game.enemies[game.enemyNum] && !game.enemies[game.enemyNum].transition && (!isSelected || game.enemyNum !== game.select[1])) {
+		if (game.enemies[game.enemyNum] && !game.enemies[game.enemyNum].transition && (!isSelected || game.enemyNum !== game.select.get()[1])) {
 			enemyAnim.drawEnemyActing(enemyPos[game.enemyNum][0], enemyPos[game.enemyNum][1], game.enemyNum);
 		}
 		// move idle animations along
 		enemyAnim.progressAnimations();
 		// draw intents
-		if (selected(S.LOOKER, S.HELP, S.OPTIONS)) {
+		if (game.select.is(S.LOOKER, S.HELP, S.OPTIONS)) {
 			for (let index = 0; index < game.enemies.length; index++) {
 				draw.intent(index);
 			}
@@ -1264,11 +1264,11 @@ const graphics = {
 			if (infoPos > lim) infoPos = lim;
 			return lim;
 		}
-		if (game.select[1] == 3) {
+		if (game.select.get()[1] == 3) {
 			infoLimit = limit(CHANGELOG);
 			draw.lore(1, 1 - infoPos, "Dungeon of Souls - Changelog", {"color": "#f44"});
 			draw.lore(1, 23 - infoPos, CHANGELOG, {"color": "#fff"});
-		} else if (game.select[1] == 2) {
+		} else if (game.select.get()[1] == 2) {
 			infoLimit = limit(GAMEPLAY);
 			draw.lore(1, 1 - infoPos, "Dungeon of Souls - How To Play", {"color": "#f44"});
 			draw.lore(1, 23 - infoPos, GAMEPLAY, {"color": "#fff"});
@@ -1293,23 +1293,23 @@ const graphics = {
 		for (let index = 0; index < options.length; index++) {
 			let option = global.options[options[index]];
 			if (typeof option == "boolean") {
-				if (game.select[1] - 2 === index && focused) text += "<#ff0>" + OPTION_NAME[options[index]] + ": " + (option ? "ON" : "OFF") + "</#ff0>\n";
+				if (game.select.get()[1] - 2 === index && focused) text += "<#ff0>" + OPTION_NAME[options[index]] + ": " + (option ? "ON" : "OFF") + "</#ff0>\n";
 				else text += OPTION_NAME[options[index]] + ": " + (option ? "ON" : "OFF") + "\n";
 			} else if (typeof option == "number") {
-				if (game.select[1] - 2 === index && focused) text += "<#ff0>" + OPTION_NAME[options[index]] + ": " + option + "x</#ff0>\n";
+				if (game.select.get()[1] - 2 === index && focused) text += "<#ff0>" + OPTION_NAME[options[index]] + ": " + option + "x</#ff0>\n";
 				else text += OPTION_NAME[options[index]] + ": " + option + "x\n";
 			} else {
-				if (game.select[1] - 2 === index && focused) text += "<#ff0>" + OPTION_NAME[options[index]] + ": " + option + "</#ff0>\n";
+				if (game.select.get()[1] - 2 === index && focused) text += "<#ff0>" + OPTION_NAME[options[index]] + ": " + option + "</#ff0>\n";
 				else text += OPTION_NAME[options[index]] + ": " + option + "\n";
 			}
 		}
-		if (game.select[1] - 2 === options.length && focused) text += "\n<#ff0>SURRENDER</#ff0>";
+		if (game.select.get()[1] - 2 === options.length && focused) text += "\n<#ff0>SURRENDER</#ff0>";
 		else text += "\nSURRENDER";
 		draw.rect("#000c");
 		draw.topBar("Options", 378);
 		draw.lore(200 - 2, 15, text.trim().replace(/_/g, " "), {"color": "#fff", "text-align": DIR.CENTER});
 		draw.image(I.extra.options, 380, 2);
-		if (game.select[1] === 1 && focused) draw.image(get.area() === 1 ? I.select.options : I.select.options_yellow, 380, 2);
+		if (game.select.get()[1] === 1 && focused) draw.image(get.area() === 1 ? I.select.options : I.select.options_yellow, 380, 2);
 	},
 	/**
 	 * Draws the current deck being viewed on the canvas.
@@ -1319,7 +1319,7 @@ const graphics = {
 		// draw background
 		draw.rect("#000c");
 		// setup refinable deck
-		const refining = selected(S.REFINER, S.CONF_REFINE);
+		const refining = game.select.is(S.REFINER, S.CONF_REFINE);
 		if (refining && !refinableDeck.length) {
 			refinableDeck = game.cards.filter(card => card.level === 0);
 			if (!refinableDeck.length) refinableDeck = [new Card()];
@@ -1368,22 +1368,22 @@ const graphics = {
 			}
 		}
 		// draw top bar
-		if (menuSelected(MENU.PREV_GAME_INFO)) draw.topBar("Cards From Run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]].num);
-		else if (selected(S.DECK)) draw.topBar("Deck");
-		else if (selected(S.DISCARD)) draw.topBar("Discard");
-		else if (selected(S.VOID)) draw.topBar("Void");
-		else if (selected(S.CARDS)) draw.topBar("Cards");
-		else if (selected(S.PURIFIER, S.CONF_PURIFY)) draw.topBar("Purifier: Pick a Card to Destroy");
-		else if (selected(S.REFINER, S.CONF_REFINE)) draw.topBar("Refiner: Pick a Card to Improve");
+		if (menuSelect.is(MENU.PREV_GAME_INFO)) draw.topBar("Cards From Run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect.get()[1] / 3)]].num);
+		else if (game.select.is(S.DECK)) draw.topBar("Deck");
+		else if (game.select.is(S.DISCARD)) draw.topBar("Discard");
+		else if (game.select.is(S.VOID)) draw.topBar("Void");
+		else if (game.select.is(S.CARDS)) draw.topBar("Cards");
+		else if (game.select.is(S.PURIFIER, S.CONF_PURIFY)) draw.topBar("Purifier: Pick a Card to Destroy");
+		else if (game.select.is(S.REFINER, S.CONF_REFINE)) draw.topBar("Refiner: Pick a Card to Improve");
 	},
 	/**
 	 * Draws the player's hand on the canvas.
 	 */
 	hand() {
-		if (selected(S.ATTACK)) {
+		if (game.select.is(S.ATTACK)) {
 			draw.card(game.enemyAtt[2], 50, 22, true);
 			return;
-		} else if (selected(S.PLAYER, S.ENEMY)) {
+		} else if (game.select.is(S.PLAYER, S.ENEMY)) {
 			return;
 		}
 		updateAnimatedHandData();
@@ -1393,7 +1393,7 @@ const graphics = {
 			if (effIndex >= 0 && !cardAnim[effIndex]) {
 				cardAnim[effIndex] = 0;
 			}
-			if (((selected(S.HAND) && game.select[1] == effIndex) || (effIndex == game.prevCard && global.options[OPTION.STICKY_CARDS])) && handAnimPositions[index][1] === undefined) {
+			if (((game.select.is(S.HAND) && game.select.get()[1] == effIndex) || (effIndex == game.prevCard && global.options[OPTION.STICKY_CARDS])) && handAnimPositions[index][1] === undefined) {
 				temp = index;
 			} else {
 				if (handAnimPositions[index][1] === undefined) {
@@ -1429,14 +1429,14 @@ const graphics = {
 		draw.rect("#000c");
 		draw.image(I.extra.end, 3, 58);
 		draw.image(I.extra.end, 381, 58);
-		if (game.select[1] === -1) draw.image(I.select.round, 2, 57);
-		else if (game.select[1] === game.hand.length - 1) draw.image(I.select.round, 380, 57);
+		if (game.select.get()[1] === -1) draw.image(I.select.round, 2, 57);
+		else if (game.select.get()[1] === game.hand.length - 1) draw.image(I.select.round, 380, 57);
 		for (let index = 0; index < game.hand.length - 1; index++) {
-			if (index === game.select[1]) continue;
+			if (index === game.select.get()[1]) continue;
 			draw.card(game.hand[index >= game.enemyAtt[0] ? index + 1 : index], handSelectPos[index], 17);
 		}
-		if (game.select[1] >= 0 && game.select[1] < game.hand.length - 1) {
-			draw.card(game.hand[game.select[1] >= game.enemyAtt[0] ? game.select[1] + 1 : game.select[1]], handSelectPos[game.select[1]], 17, true);
+		if (game.select.get()[1] >= 0 && game.select.get()[1] < game.hand.length - 1) {
+			draw.card(game.hand[game.select.get()[1] >= game.enemyAtt[0] ? game.select.get()[1] + 1 : game.select.get()[1]], handSelectPos[game.select.get()[1]], 17, true);
 		}
 		draw.topBar("Select a Card");
 	},
@@ -1469,13 +1469,13 @@ const graphics = {
 		if (inDeck()) {
 			const cardObj = currentDeck()[game.cardSelect];
 			if (cardObj) graphics.cardInfo("deck", cardObj);
-		} else if (selected(S.ATTACK, S.ENEMY)) {
-			const enemy = game.enemies[game.select[1]];
+		} else if (game.select.is(S.ATTACK, S.ENEMY)) {
+			const enemy = game.enemies[game.select.get()[1]];
 			const type = enemy.type;
-			const pos = enemyPos[game.select[1]];
+			const pos = enemyPos[game.select.get()[1]];
 			let coords = [];
 			let name = ENEMY_NAME[type];
-			if (type === SLIME.BIG || (type === SLIME.PRIME && enemyAnim.prime[game.select[1]] != -1 && enemyAnim.prime[game.select[1]] < 5)) {
+			if (type === SLIME.BIG || (type === SLIME.PRIME && enemyAnim.prime[game.select.get()[1]] != -1 && enemyAnim.prime[game.select.get()[1]] < 5)) {
 				coords = [5, 26, 54, 38];
 				name = ENEMY_NAME[SLIME.BIG];
 			} else if (type === SLIME.SMALL) {
@@ -1486,7 +1486,7 @@ const graphics = {
 				coords = [-1, 36, 66, 36];
 			} else if (type === SLIME.PUDDLE) {
 				coords = [21, 52, 21, 12];
-			} else if (type === FRAGMENT && (enemyAnim.prime[game.select[1]] == -1 || enemyAnim.prime[game.select[1]] > 18)) {
+			} else if (type === FRAGMENT && (enemyAnim.prime[game.select.get()[1]] == -1 || enemyAnim.prime[game.select.get()[1]] > 18)) {
 				coords = [7, 6, 50, 58];
 			} else if (type === SENTRY.BIG) {
 				coords = [5, 3, 54, 61];
@@ -1504,10 +1504,10 @@ const graphics = {
 					coords[1] = 31 - pos[1];
 					coords[3] -= 31 - pos[1];
 				}
-				const left = game.select[1] === 0 && game.enemies.length > 1;
+				const left = game.select.get()[1] === 0 && game.enemies.length > 1;
 				draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
 				draw.lore(pos[0] + 31, pos[1] + coords[1] - 7.5, name, {"color": "#fff", "text-align": DIR.CENTER, "text-small": true});
-				if (game.select[1] !== game.enemyNum && !game.enemies[game.select[1]].eff[ENEMY_EFF.SHROUD]) {
+				if (game.select.get()[1] !== game.enemyNum && !game.enemies[game.select.get()[1]].eff[ENEMY_EFF.SHROUD]) {
 					info.intent();
 				}
 				const exAtt = enemy.getExtraAttackPower();
@@ -1524,7 +1524,7 @@ const graphics = {
 					y += info.enemy(type, x, (left ? y + 12 : y));
 				});
 			}
-		} else if (selected(S.PLAYER)) {
+		} else if (game.select.is(S.PLAYER)) {
 			const coords = [58, 69, 24, 39];
 			draw.selector(coords[0], coords[1], coords[2], coords[3]);
 			draw.lore(coords[0] + (coords[2] / 2) - 1, 61.5, CHARACTER_NAME[game.character][global.charStage[game.character]], {"color": "#fff", "text-align": DIR.CENTER, "text-small": true});
@@ -1537,38 +1537,38 @@ const graphics = {
 				}
 				y += info.player(type, x, y);
 			});
-		} else if (selected(S.ARTIFACTS)) {
-			info.artifact(game.artifacts[game.select[1]]);
-		} else if (selected(S.ARTIFACT_REWARD) && currentRoom[6]) {
-			info.artifact(currentRoom[6][game.select[1]], 160 + (game.select[1] * 32), 109);
-		} else if (selected(S.CARD_REWARD) && currentRoom[5] && game.select[1] > -1 && game.select[1] < get.cardRewardChoices()) {
-			graphics.cardInfo("reward", new Card(currentRoom[5][game.select[1]]));
-		} else if (selected(S.LOOKER)) {
+		} else if (game.select.is(S.ARTIFACTS)) {
+			info.artifact(game.artifacts[game.select.get()[1]]);
+		} else if (game.select.is(S.ARTIFACT_REWARD) && currentRoom[6]) {
+			info.artifact(currentRoom[6][game.select.get()[1]], 160 + (game.select.get()[1] * 32), 109);
+		} else if (game.select.is(S.CARD_REWARD) && currentRoom[5] && game.select.get()[1] > -1 && game.select.get()[1] < get.cardRewardChoices()) {
+			graphics.cardInfo("reward", new Card(currentRoom[5][game.select.get()[1]]));
+		} else if (game.select.is(S.LOOKER)) {
 			info.menuItem(DIR.UP, 2, "View Background");
-		} else if (selected(S.HELP)) {
+		} else if (game.select.is(S.HELP)) {
 			info.menuItem(DIR.UP, 1, "View Manual");
-		} else if (selected(S.OPTIONS) && game.select[1] <= 1) {
+		} else if (game.select.is(S.OPTIONS) && game.select.get()[1] <= 1) {
 			info.menuItem(DIR.UP, 0, "Configure Options");
-		} else if (selected(S.END_TURN)) {
+		} else if (game.select.is(S.END_TURN)) {
 			info.menuItem(DIR.LEFT, 1, "End Turn");
-		} else if (selected(S.DECK)) {
+		} else if (game.select.is(S.DECK)) {
 			info.menuItem(DIR.LEFT, 0, "View Deck");
-		} else if (selected(S.VOID)) {
+		} else if (game.select.is(S.VOID)) {
 			info.menuItem(DIR.RIGHT, 1, "View Void");
-		} else if (selected(S.DISCARD)) {
+		} else if (game.select.is(S.DISCARD)) {
 			info.menuItem(DIR.RIGHT, 0, "View Discard");
-		} else if (selected(S.MAP)) {
-			info.menuItem(S.MAP, game.select[1]);
+		} else if (game.select.is(S.MAP)) {
+			info.menuItem(S.MAP, game.select.get()[1]);
 		}
 		if (inMenu()) {
 			return;
-		} else if ((selected(S.HAND) || (!selected(S.ATTACK, S.ENEMY) && !hidden() && global.options[OPTION.STICKY_CARDS])) && game.hand.length && game.prevCard < game.hand.length) {
+		} else if ((game.select.is(S.HAND) || (!game.select.is(S.ATTACK, S.ENEMY) && !hidden() && global.options[OPTION.STICKY_CARDS])) && game.hand.length && game.prevCard < game.hand.length) {
 			graphics.cardInfo("card", game.hand[game.prevCard]);
-		} else if (selected(SS.SELECT_HAND)) {
-			if (game.select[1] >= 0 && game.select[1] < game.hand.length - 1) {
-				graphics.cardInfo("cardSelect", game.hand[game.select[1] >= game.enemyAtt[0] ? game.select[1] + 1 : game.select[1]]);
+		} else if (game.select.is(SS.SELECT_HAND)) {
+			if (game.select.get()[1] >= 0 && game.select.get()[1] < game.hand.length - 1) {
+				graphics.cardInfo("cardSelect", game.hand[game.select.get()[1] >= game.enemyAtt[0] ? game.select.get()[1] + 1 : game.select.get()[1]]);
 			} else {
-				info.menuItem(DIR.CENTER, (game.select[1] >= 0 ? 1 : 0), "Cancel");
+				info.menuItem(DIR.CENTER, (game.select.get()[1] >= 0 ? 1 : 0), "Cancel");
 			}
 		}
 	},
@@ -1602,7 +1602,7 @@ const graphics = {
 				draw.image(I.popup.back, x, 150 - (index * 21));
 				draw.lore(x + 13, 150 - (index * 21) + 8, popup[3] ? popup[1] + "\n" + popup[3] : popup[1], {"text-small": !!popup[3]});
 				if (I.popup[popup[0]]) draw.image(I.popup[popup[0]], x + 2, 150 - (index * 21) + 2);
-				if (selected(S.POPUPS) && game.select[1] == index) {
+				if (game.select.is(S.POPUPS) && game.select.get()[1] == index) {
 					draw.image(I.select.popup, x - 1, 150 - (index * 21) - 1);
 				}
 				ctx.globalAlpha = 1;
@@ -1623,9 +1623,9 @@ const graphics = {
 		for (let index = 0; index < game.rewards.length; index++) {
 			const arr = game.rewards[index];
 			draw.image(I.reward.item, 149, 33 + (index * 20));
-			if (game.select[1] === index && focused) draw.image(I.select.item_border, 148, 32 + (index * 20));
+			if (game.select.get()[1] === index && focused) draw.image(I.select.item_border, 148, 32 + (index * 20));
 			if (arr[2]) draw.image(I.select.item_green, 149, 33 + (index * 20));
-			else if (game.select[1] == index && focused) draw.image(I.select.item, 149, 33 + (index * 20));
+			else if (game.select.get()[1] == index && focused) draw.image(I.select.item, 149, 33 + (index * 20));
 			if (arr[0] === REWARD.FINISH) draw.image(I.reward.back, 149, 33 + (index * 20));
 			draw.lore(166, 37 + (index * 20), (arr[0] === REWARD.FINISH ? "" : (arr[1] ?? "1") + " ") + REWARD_NAME[arr[0]]);
 		}
@@ -1649,10 +1649,10 @@ const graphics = {
 		if (choices === 1) draw.lore(200 - 2, y + 1, "Take the\ncard?", {"text-align": DIR.CENTER});
 		else draw.lore(200 - 2, y + 1, "Pick a card:", {"text-align": DIR.CENTER});
 		for (let index = 0; index < choices; index++) {
-			if (index !== game.select[1] || !focused) draw.card(currentRoom[5][index], (199 - (choices * 68 / 2)) + 1 + (index * 68), 50, false, true);
+			if (index !== game.select.get()[1] || !focused) draw.card(currentRoom[5][index], (199 - (choices * 68 / 2)) + 1 + (index * 68), 50, false, true);
 		}
-		if (game.select[1] >= 0 && focused) draw.card(currentRoom[5][game.select[1]], (199 - (choices * 68 / 2)) + 1 + (game.select[1] * 68), 50, true, true);
-		if (game.select[1] < 0 && focused) draw.rect("#fff", x, y + height - 14, width, 14);
+		if (game.select.get()[1] >= 0 && focused) draw.card(currentRoom[5][game.select.get()[1]], (199 - (choices * 68 / 2)) + 1 + (game.select.get()[1] * 68), 50, true, true);
+		if (game.select.get()[1] < 0 && focused) draw.rect("#fff", x, y + height - 14, width, 14);
 		draw.box(x + 2, y + height - 12, width - 4, 10);
 		draw.lore(x + 3, y + height - 11, "Go back");
 	},
@@ -1675,9 +1675,9 @@ const graphics = {
 		draw.lore(200 - 2, y + 1, "Pick an artifact:", {"text-align": DIR.CENTER});
 		for (let index = 0; index < 3; index++) {
 			draw.image(I.artifact[currentRoom[6][index]], 160 + (index * 32), 90);
-			if (index === game.select[1]) draw.image(I.artifact._.wo[currentRoom[6][index]], 159 + (index * 32), 89);
+			if (index === game.select.get()[1]) draw.image(I.artifact._.wo[currentRoom[6][index]], 159 + (index * 32), 89);
 		}
-		if (game.select[1] < 0 && focused) draw.rect("#fff", x, y + height - 14, width, 14);
+		if (game.select.get()[1] < 0 && focused) draw.rect("#fff", x, y + height - 14, width, 14);
 		draw.box(x + 2, y + height - 12, width - 4, 10);
 		draw.lore(x + 3, y + height - 11, "Go back");
 	},
@@ -1715,12 +1715,12 @@ const graphics = {
 		}
 		draw.image(I.extra.deck, 22, 16);
 		draw.lore(23, 22, game.cards.length, {"color": "#fff"});
-		if (game.select[1] === availableLocations.length && focused) {
+		if (game.select.get()[1] === availableLocations.length && focused) {
 			draw.image(I.select.deck, 21, 15);
 		}
 		if (!(game.state === STATE.EVENT_FIN && onFloorWithCutscene())) {
 			draw.image(I.extra.end, 22, 179);
-			if (game.select[1] === -1 && focused) {
+			if (game.select.get()[1] === -1 && focused) {
 				draw.image(I.select.round, 21, 178);
 			}
 		}
@@ -1754,7 +1754,7 @@ const graphics = {
 		}
 		ctx.filter = "none";
 		// draw nodes
-		const coordSel = [game.floor + 1, availableLocations[game.select[1]]];
+		const coordSel = [game.floor + 1, availableLocations[game.select.get()[1]]];
 		const coordOn = [game.floor, game.location];
 		for (let x = area * 10 + 1; x <= (area + 1) * 10; x++) {
 			for (let y = 0; y < game.map[x].length; y++) {
@@ -1812,7 +1812,7 @@ const graphics = {
 			const text = run(event.options[index][0]);
 			if (event.options[index][2] instanceof Function && !event.options[index][2]?.()) {
 				draw.lore(x, y, text, {"color": "#888", "text-align": DIR.CENTER});
-			} else if (index === game.select[1]) {
+			} else if (index === game.select.get()[1]) {
 				draw.lore(x, y, "\> " + text + "  ", {"color": "#ff0", "text-align": DIR.CENTER});
 			} else {
 				draw.lore(x, y, text, {"color": "#fff", "text-align": DIR.CENTER});
@@ -1824,10 +1824,10 @@ const graphics = {
 	 */
 	gameEnd() {
 		// draw background
-		ctx.globalAlpha = game.select[1] / (selected(S.GAME_WON) ? 50 : 64);
-		if (game.select[1] < 50) game.select[1]++;
+		ctx.globalAlpha = game.select.get()[1] / (game.select.is(S.GAME_WON) ? 50 : 64);
+		if (game.select.get()[1] < 50) game.select.get()[1]++;
 		draw.rect("#000");
-		if (selected(S.GAME_WON)) {
+		if (game.select.is(S.GAME_WON)) {
 			draw.image(I.player.victorious, 168, 42 + Math.round(Math.abs(winAnim - 4) - 2), I.player.victorious.width * 2, I.player.victorious.height * 2);
 			winAnim += Math.random() * 0.05 + 0.05;
 			if (winAnim >= 8) winAnim -= 8;
@@ -1835,7 +1835,7 @@ const graphics = {
 		}
 		// calculate header text
 		let text = "";
-		if (selected(S.GAME_WON)) {
+		if (game.select.is(S.GAME_WON)) {
 			text += "YOU BEAT THE GAME ";
 			if (hasArtifact(202)) text += "<#fcf050>WITH DETERMINATION</#fcf050>";
 			else if (game.difficulty) text += "ON <#f00>HARD MODE!</#f00>";
@@ -1859,14 +1859,14 @@ const graphics = {
 			}
 		}
 		factors.push(["Saved " + game.gold + " gold", 1, Math.floor(game.gold / 5)]);
-		if (selected(S.GAME_WON)) {
+		if (game.select.is(S.GAME_WON)) {
 			factors.push(["Saved " + game.health + " health", 5, game.health]);
 		}
 		// calculate text position and color
 		let len = factors.length;
 		if (game.difficulty) len += 2;
-		const normalColor = (selected(S.GAME_WON) ? "#0f0" : "#f00");
-		const hardColor = (selected(S.GAME_WON) ? "#f00" : "#0f0");
+		const normalColor = (game.select.is(S.GAME_WON) ? "#0f0" : "#f00");
+		const hardColor = (game.select.is(S.GAME_WON) ? "#f00" : "#0f0");
 		// draw header and footer text
 		draw.lore(200 - 2, 100 - (len + 17) * 2.75, text, {"color": normalColor, "text-align": DIR.CENTER});
 		draw.lore(200 - 2, 100 + (len + 15) * 2.75, "PRESS ENTER TO END THE RUN", {"color": normalColor, "text-align": DIR.CENTER});
@@ -1928,10 +1928,10 @@ const graphics = {
 			draw.imageSector(I.background.difficulty, 0, 2 * 16, 64, 16, 168, 146);
 			ctx.globalAlpha = 1;
 		}
-		if (!selected(S.WELCOME)) {
+		if (!game.select.is(S.WELCOME)) {
 			let text = "";
 			for (let index = 0; index < MAIN_MENU_OPTIONS.length; index++) {
-				if (index === menuSelect[1] && focused) {
+				if (index === menuSelect.get()[1] && focused) {
 					text += " <#ff0>\> " + MAIN_MENU_OPTIONS[index] + "</#ff0>\n";
 				} else if ((index === 0 && game.map.length === 0) || (index === MAIN_MENU_OPTIONS.length - 1 && global.prevGames.length === 0)) {
 					text += "   <#888>" + MAIN_MENU_OPTIONS[index] + "</#888>\n";
@@ -1949,35 +1949,36 @@ const graphics = {
 	conf(focused = true) {
 		let text = ["Are you sure?"];
 		let options = ["YES", "NO"];
-		if (menuSelected(MENU.START_NEW_RUN)) {
+		const prevSelect = menuSelect.getPrev();
+		if (menuSelect.is(MENU.START_NEW_RUN)) {
 			text = ["Are you sure you want to start a new run?", "If you have an ongoing run, it will be lost forever!"];
-		} else if (menuSelected(MENU.CHANGE_DIFFICULTY)) {
+		} else if (menuSelect.is(MENU.CHANGE_DIFFICULTY)) {
 			text = ["Are you sure you want to change the difficulty to " + (game.difficulty ? "easy" : "hard") + "?", "If you have an ongoing run, it will be reset!"];
-		} else if (menuSelected(MENU.CHANGE_SEED, MENU.ENTER_SEED)) {
+		} else if (menuSelect.is(MENU.CHANGE_SEED, MENU.ENTER_SEED)) {
 			text = ["Are you sure you want to change the seed?", "If you have an ongoing run, it will be reset!", "The new run will also not count towards your high score."];
-		} else if (menuSelected(MENU.CONF_REMOVE_PREV_GAME) && menuSelect[2]) {
-			text = ["Are you sure you want to remove run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect[2][1] / 3)]].num + " from the list?", "This will permanently remove all of its information."];
-		} else if (menuSelected(MENU.OLD_SAVE_ALERT)) {
+		} else if (menuSelect.is(MENU.CONF_REMOVE_PREV_GAME) && prevSelect) {
+			text = ["Are you sure you want to remove run #" + global.prevGames[sortedPrevGames[Math.floor(prevSelect[1] / 3)]].num + " from the list?", "This will permanently remove all of its information."];
+		} else if (menuSelect.is(MENU.OLD_SAVE_ALERT)) {
 			text = ["ALERT: You have an old save from version " + get.versionDisplay(parseSave(localStorage.getItem(ID + "/old/global"))?.version || 0) + ", do you want to keep it?", "(You can play old versions by downloading the files from GitHub)"];
 			options = ["DISMISS", "COPY SAVE", "DELETE SAVE"];
-		} else if (menuSelected(MENU.OLD_SAVE_COPY_FAILED)) {
+		} else if (menuSelect.is(MENU.OLD_SAVE_COPY_FAILED)) {
 			text = ["The old save could not be copied. Make sure this page has clipboard permissions.", "Try to copy old save again?"];
-		} else if (selected(S.CONF_END_TURN)) {
+		} else if (game.select.is(S.CONF_END_TURN)) {
 			text = ["Are you sure you want to end your turn?"];
-		} else if (selected(S.CONF_EXIT)) {
+		} else if (game.select.is(S.CONF_EXIT)) {
 			text = ["Are you sure you want to finish collecting rewards?", "There are still rewards left unclaimed."];
-		} else if (selected(S.CONF_SURRENDER)) {
+		} else if (game.select.is(S.CONF_SURRENDER)) {
 			text = ["Are you sure you want to end your current run by surrendering?", "This choice cannot be undone."];
-		} else if (selected(S.CONF_HAND_ALIGN)) {
+		} else if (game.select.is(S.CONF_HAND_ALIGN)) {
 			text = ["Are you sure you want to align the hands of time?", "You will regret it. There is no going back."];
 			options = ["YES", "NO", "BACK"];
-		} else if (selected(S.CONF_PURIFY)) {
+		} else if (game.select.is(S.CONF_PURIFY)) {
 			text = ["Are you sure you want to destroy the card " + game.cards[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only destroy one copy of the card."];
 			options = ["YES", "RESELECT", "BACK"];
-		} else if (selected(S.CONF_REFINE)) {
+		} else if (game.select.is(S.CONF_REFINE)) {
 			text = ["Are you sure you want to improve the card " + refinableDeck[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only improve one copy of the card."];
 			options = ["YES", "BACK"];
-		} else if (selected(S.CONF_PEARL)) {
+		} else if (game.select.is(S.CONF_PEARL)) {
 			text = ["As the dark cloud clears, you see a strange pearl resting on the ground.", "Will you pick it up? This will consume 1 energy."];
 		}
 		let width = 39;
@@ -1987,12 +1988,12 @@ const graphics = {
 		}
 		const height = Math.ceil(text.length * 5.5) + 15;
 		const x = (400 - width) / 2;
-		const y = (selected(S.CONF_REFINE) ? 20 : (200 - height) / 2);
+		const y = (game.select.is(S.CONF_REFINE) ? 20 : (200 - height) / 2);
 		draw.rect("#0008");
 		draw.box(x, y, width, height);
 		draw.lore(x + 1, y + 1, text.join("\n"), {"text-small": true});
 		if (focused) {
-			const select = (menuSelected(-1) ? game.select[1] : menuSelect[1]);
+			const select = (menuSelect.is(-1) ? game.select.get()[1] : menuSelect.get()[1]);
 			let offset = 0;
 			for (let index = 0; index < options.length; index++) {
 				const boxWidth = options[index].length * 6 + 1;
@@ -2007,7 +2008,7 @@ const graphics = {
 			draw.lore(x + 3 + offset, y + height - 11, options[index]);
 			offset += boxWidth + 3;
 		}
-		if (selected(S.CONF_REFINE)) {
+		if (game.select.is(S.CONF_REFINE)) {
 			draw.card(refinableDeck[game.cardSelect], 100, 51, true, true);
 			draw.card(new Card(refinableDeck[game.cardSelect].id, 1), 234, 51, true, true);
 			draw.image(I.card.refine, 200 - I.card.refine.width / 2, 95);
@@ -2047,7 +2048,7 @@ const graphics = {
 		// scrolling
 		if (focused) {
 			const scrollPadding = 11;
-			const isSelected = Math.floor(menuSelect[1] / 3);
+			const isSelected = Math.floor(menuSelect.get()[1] / 3);
 			if (menuScroll >= spaceY * isSelected) {
 				menuScroll -= Math.min(10, Math.abs(menuScroll - (spaceY * isSelected)));
 			} else if (menuScroll <= (spaceY * (isSelected - 3)) + scrollPadding) {
@@ -2109,7 +2110,9 @@ const graphics = {
 			let styles = [];
 			if (focused) {
 				for (let offset = 0; offset < 3; offset++) {
-					if (index * 3 + offset !== menuSelect[1]) continue;
+					if (index * 3 + offset !== menuSelect.get()[1]) {
+						continue;
+					}
 					text[offset] = text[offset].replace(" ", ">");
 					styles[offset] = {"color": "#ff0"};
 				}
@@ -2126,7 +2129,7 @@ const graphics = {
 	 */
 	prevGameArtifacts(focused = true) {
 		draw.rect("#000c");
-		const prevGame = global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]];
+		const prevGame = global.prevGames[sortedPrevGames[Math.floor(menuSelect.get()[1] / 3)]];
 		if (menuArtifactSelect > prevGame.artifacts.length - 1) menuArtifactSelect = prevGame.artifacts.length - 1;
 		// big artifacts
 		for (let index = 0; index < prevGame.artifacts.length; index++) {
@@ -2148,7 +2151,7 @@ const graphics = {
 	 */
 	prevGameKills() {
 		draw.rect("#000c");
-		const prevGame = global.prevGames[sortedPrevGames[Math.floor(menuSelect[1] / 3)]];
+		const prevGame = global.prevGames[sortedPrevGames[Math.floor(menuSelect.get()[1] / 3)]];
 		const spaceY = 76;
 		let x = 3;
 		const categories = [SMALL_ENEMIES, BIG_ENEMIES, PRIME_ENEMIES, SPECIAL_ENEMIES, BOSS_ENEMIES];
@@ -2187,7 +2190,7 @@ const graphics = {
 	prevGameSort(focused = true) {
 		draw.rect("#000c");
 		let text = "";
-		if (menuSelect[1]) {
+		if (menuSelect.get()[1]) {
 			if (!focused) text = "   Ascending order\n   Descending order";
 			else if (prevGamesSort[1]) text = "   Ascending order\n<#ff0> \> Descending order</#ff0>";
 			else text = "<#ff0> \> Ascending order</#ff0>\n   Descending order";
@@ -2198,7 +2201,7 @@ const graphics = {
 			}
 		}
 		draw.lore(2, 15, text, {"color": "#fff"});
-		draw.topBar(menuSelect[1] ? "Sort in..." : "Sort by...");
+		draw.topBar(menuSelect.get()[1] ? "Sort in..." : "Sort by...");
 	},
 };
 

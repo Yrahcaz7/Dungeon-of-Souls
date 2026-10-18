@@ -1,4 +1,4 @@
-const VERSION = 3_000_080;
+const VERSION = 3_000_082;
 
 /**
  * Returns the starting global data.
@@ -27,7 +27,7 @@ let global = getStartGlobalData();
 
 /**
  * Returns the starting game data.
- * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, gold: number, floor: number, location: number, event: [number, number], rewards: ([number] | [number, number] | [number, undefined, boolean] | [number, number, boolean])[], state: number, turn: number, select: [number, number] | [number, number, [number, number]], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyAtt: [number, number, Card, boolean], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {[key: number]: number}, map: MapNode[][], paths: number[][][], traveled: number[], scribbles: number[], seed: string, randomState: number[], version: number, cheat?: boolean}}
+ * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, gold: number, floor: number, location: number, event: [number, number], rewards: ([number] | [number, number] | [number, undefined, boolean] | [number, number, boolean])[], state: number, turn: number, select: SelectState, prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyAtt: [number, number, Card, boolean], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {[key: number]: number}, map: MapNode[][], paths: number[][][], traveled: number[], scribbles: number[], seed: string, randomState: number[], version: number, cheat?: boolean}}
  */
 function getStartGameData() { return {
 	character: CHARACTER.KNIGHT,
@@ -42,7 +42,7 @@ function getStartGameData() { return {
 	rewards: [],
 	state: STATE.ENTER,
 	turn: -1,
-	select: [S.WELCOME, 0],
+	select: new SelectState([S.WELCOME, 0]),
 	prevCard: -1,
 	cardSelect: 0,
 	kills: {},
@@ -84,8 +84,8 @@ let notif = [-1, 0, "", 0];
 let refinableDeck = [];
 /** @type {number} */
 let winAnim = 0;
-/** @type {[number, number] | [number, number, [number, number]]} */
-let menuSelect = [MENU.MAIN, 0];
+/** @type {SelectState} */
+let menuSelect = new SelectState([MENU.MAIN, 0]);
 /** @type {string} */
 let newSeed = "";
 /** @type {number} */
@@ -149,7 +149,7 @@ function musicPopup() {
  * Creates a "go to the map" popup.
  */
 function mapPopup() {
-	createPopup("go", "go to the map!", "", () => game.select = [S.MAP, -1]);
+	createPopup("go", "go to the map!", "", () => game.select.push(S.MAP, -1));
 }
 
 /**
@@ -214,7 +214,7 @@ function fadeMusic() {
  */
 function startTurn(firstTurn = false) {
 	/** @type {[number, number]} */
-	let toSelect = [S.HAND, 0];
+	game.select.set(S.HAND);
 	// end of enemy turn effects
 	if (!firstTurn) {
 		for (let index = 0; index < game.enemies.length; index++) {
@@ -234,7 +234,7 @@ function startTurn(firstTurn = false) {
 			if (enemy.eff[ENEMY_EFF.SHROUD]) {
 				enemy.eff[ENEMY_EFF.SHROUD]--;
 				if (!enemy.eff[ENEMY_EFF.SHROUD] && !hasArtifact(204)) {
-					toSelect = [S.CONF_PEARL, 0];
+					game.select.push(S.CONF_PEARL);
 				}
 			}
 		}
@@ -254,7 +254,6 @@ function startTurn(firstTurn = false) {
 		game.eff[EFF.BURN] = Math.max(game.eff[EFF.BURN] - game.eff[EFF.FIREPROOF], 0);
 	}
 	game.energy = get.maxEnergy();
-	game.select = toSelect;
 	if (playerAnim[1] !== I.player.idle && playerAnim[1] !== I.player.hit) {
 		startAnim.player(I.player.idle);
 	}
@@ -266,7 +265,7 @@ function startTurn(firstTurn = false) {
 function endTurn() {
 	if (game.state !== STATE.BATTLE) return;
 	// end of your turn effects
-	game.select = [S.END_TURN, 0];
+	game.select = new SelectState([S.END_TURN, 0]);
 	discardHand();
 	notif = [-1, 0, "", 0];
 	if (game.eff[EFF.BURN]) {
@@ -320,8 +319,11 @@ function endTurn() {
  * Ends the player's turn (after a confirmation if the player can still play cards).
  */
 function endTurnConfirm() {
-	if (global.options[OPTION.END_TURN_CONFIRM] && areAnyCardsPlayable()) game.select = [S.CONF_END_TURN, 0];
-	else endTurn();
+	if (global.options[OPTION.END_TURN_CONFIRM] && areAnyCardsPlayable()) {
+		game.select.push(S.CONF_END_TURN);
+	} else {
+		endTurn();
+	}
 	actionTimer = 2;
 }
 
@@ -373,7 +375,7 @@ function endBattle() {
 	// normal things
 	discardHand(true);
 	notif = [-1, 0, "", 0];
-	game.select = [S.REWARDS, 0];
+	game.select = new SelectState([S.ARTIFACTS, 0], [S.REWARDS, 0]);
 	game.state = STATE.EVENT_FIN;
 	game.turn = -1;
 	game.enemyNum = -1;
@@ -443,7 +445,7 @@ function loadRoom() {
 		}
 		enterBattle();
 	} else if (type === ROOM.TREASURE) {
-		game.select = [S.REWARDS, 0];
+		game.select = new SelectState([S.ARTIFACTS, 0], [S.REWARDS, 0]);
 		game.state = STATE.EVENT_FIN;
 		game.rewards = [];
 		if (currentRoom[4] && currentRoom[4] > 0) {
@@ -455,7 +457,7 @@ function loadRoom() {
 		game.rewards.push([REWARD.FINISH]);
 		activateArtifacts(FUNC.FLOOR_CLEAR);
 	} else if (type === ROOM.ORB) {
-		game.select = [S.REWARDS, 0];
+		game.select = new SelectState([S.ARTIFACTS, 0], [S.REWARDS, 0]);
 		game.state = STATE.EVENT_FIN;
 		game.rewards = [[REWARD.HEALTH, Math.floor(get.maxHealth() * 0.5)], [REWARD.PURIFIER]];
 		if (get.area() >= 1) {
@@ -464,7 +466,7 @@ function loadRoom() {
 		game.rewards.push([REWARD.FINISH]);
 		activateArtifacts(FUNC.FLOOR_CLEAR);
 	} else if (type === ROOM.EVENT) {
-		game.select = [S.EVENT, -1];
+		game.select = new SelectState([S.ARTIFACTS, 0], [S.EVENT, -1]);
 		game.state = STATE.ROOM_EVENT;
 		game.rewards = [];
 		if (typeof currentRoom[3] === "number") {
@@ -497,34 +499,34 @@ function updateVisuals() {
 		} else {
 			draw.lore(200 - 2, 53, "Act 1: The Hands of Time", {"color": "#f44", "text-align": DIR.CENTER});
 		}
-		graphics.menu(menuSelected(MENU.MAIN));
-		if (selected(S.WELCOME)) {
+		graphics.menu(menuSelect.is(MENU.MAIN));
+		if (game.select.is(S.WELCOME)) {
 			draw.box(80 + 2, 83, 240 - 4, 34);
 			if (game.difficulty === 0) {
 				draw.lore(200 - 1, 84, "Hello there! Welcome to my game!<s>Use the arrow keys or WASD keys to select things.\nPress enter or the space bar to perform an action.\nFor information on how to play, go to the \"?\" at the top-right of the screen.\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
 			} else {
 				draw.lore(200 - 1, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start much stronger from the beginning.\nAdditionally, all non-boss enemies have a special effect.\nOtherwise, it is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
 			}
-		} else if (menuSelected(MENU.PREV_GAMES, MENU.PREV_GAME_INFO, MENU.PREV_GAME_SORT, MENU.CONF_REMOVE_PREV_GAME)) {
-			graphics.prevGames(menuSelected(MENU.PREV_GAMES));
+		} else if (menuSelect.is(MENU.PREV_GAMES, MENU.PREV_GAME_INFO, MENU.PREV_GAME_SORT, MENU.CONF_REMOVE_PREV_GAME)) {
+			graphics.prevGames(menuSelect.is(MENU.PREV_GAMES));
 		}
-		if (menuSelected(MENU.PREV_GAME_INFO)) {
-			if (menuSelect[1] % 3 === 0) {
+		if (menuSelect.is(MENU.PREV_GAME_INFO)) {
+			if (menuSelect.get()[1] % 3 === 0) {
 				graphics.deck();
-			} else if (menuSelect[1] % 3 == 1) {
+			} else if (menuSelect.get()[1] % 3 == 1) {
 				graphics.prevGameArtifacts();
-			} else if (menuSelect[1] % 3 == 2) {
+			} else if (menuSelect.get()[1] % 3 == 2) {
 				graphics.prevGameKills();
 			}
-		} else if (menuSelected(MENU.PREV_GAME_SORT)) {
+		} else if (menuSelect.is(MENU.PREV_GAME_SORT)) {
 			graphics.prevGameSort();
 		}
-		if (selected(S.WELCOME)) {
+		if (game.select.is(S.WELCOME)) {
 			return;
-		} else if (menuSelected(MENU.START_NEW_RUN, MENU.CHANGE_DIFFICULTY, MENU.CHANGE_SEED, MENU.ENTER_SEED, MENU.CONF_REMOVE_PREV_GAME, MENU.OLD_SAVE_ALERT, MENU.OLD_SAVE_COPY_FAILED)) {
-			graphics.conf(!menuSelected(MENU.ENTER_SEED));
+		} else if (menuSelect.is(MENU.START_NEW_RUN, MENU.CHANGE_DIFFICULTY, MENU.CHANGE_SEED, MENU.ENTER_SEED, MENU.CONF_REMOVE_PREV_GAME, MENU.OLD_SAVE_ALERT, MENU.OLD_SAVE_COPY_FAILED)) {
+			graphics.conf(!menuSelect.is(MENU.ENTER_SEED));
 		}
-		if (menuSelected(MENU.ENTER_SEED)) {
+		if (menuSelect.is(MENU.ENTER_SEED)) {
 			graphics.seedInput();
 		}
 		if (hasArtifact(202) && game.floor == 10 && transition < 100) {
@@ -540,36 +542,36 @@ function updateVisuals() {
 	graphics.middleLayer();
 	graphics.foregrounds();
 	if (!hidden()) {
-		if (selected(SS.SELECT_HAND)) {
+		if (game.select.is(SS.SELECT_HAND)) {
 			graphics.handSelect();
 		} else {
 			graphics.hand();
 		}
 	}
-	if (selected(S.MAP)) {
+	if (game.select.is(S.MAP)) {
 		graphics.map();
-	} else if (selected(S.EVENT)) {
+	} else if (game.select.is(S.EVENT)) {
 		graphics.event();
-	} else if (selected(S.REWARDS)) {
+	} else if (game.select.is(S.REWARDS)) {
 		graphics.rewards();
-	} else if (selected(S.CARD_REWARD)) {
+	} else if (game.select.is(S.CARD_REWARD)) {
 		graphics.cardRewards();
-	} else if (selected(S.ARTIFACT_REWARD)) {
+	} else if (game.select.is(S.ARTIFACT_REWARD)) {
 		graphics.artifactRewards();
-	} else if (selected(S.HELP) && game.select[1]) {
+	} else if (game.select.is(S.HELP) && game.select.get()[1]) {
 		graphics.info();
-	} else if (selected(S.OPTIONS) && game.select[1]) {
+	} else if (game.select.is(S.OPTIONS) && game.select.get()[1]) {
 		graphics.options();
-	} else if (selected(S.DECK, S.DISCARD, S.VOID) && game.select[1]) {
-		if (prevSelected(S.MAP, S.CARDS)) {
+	} else if (game.select.is(S.DECK, S.DISCARD, S.VOID) && game.select.get()[1]) {
+		if (game.select.prevIs(S.MAP, S.CARDS)) {
 			graphics.map(false);
 		}
 		graphics.deck();
-	} else if (selected(S.PURIFIER, S.CONF_PURIFY, S.REFINER, S.CONF_REFINE)) {
+	} else if (game.select.is(S.PURIFIER, S.CONF_PURIFY, S.REFINER, S.CONF_REFINE)) {
 		graphics.rewards(false);
-		graphics.deck(selected(S.PURIFIER, S.REFINER));
-	} else if (selected(S.CARDS)) {
-		if ((!game.select[1] && !game.select[2]) || prevSelected(S.MAP)) {
+		graphics.deck(game.select.is(S.PURIFIER, S.REFINER));
+	} else if (game.select.is(S.CARDS)) {
+		if ((!game.select.get()[1] && !game.select.getPrev()) || game.select.prevIs(S.MAP)) {
 			graphics.map(false);
 		}
 		graphics.deck();
@@ -577,20 +579,20 @@ function updateVisuals() {
 	if (!inDeck()) {
 		graphics.target();
 	}
-	if (selected(S.CONF_END_TURN, S.CONF_PURIFY, S.CONF_REFINE, S.CONF_PEARL)) {
+	if (game.select.is(S.CONF_END_TURN, S.CONF_PURIFY, S.CONF_REFINE, S.CONF_PEARL)) {
 		graphics.conf();
-	} else if (selected(S.CONF_EXIT)) {
+	} else if (game.select.is(S.CONF_EXIT)) {
 		graphics.rewards(false);
 		graphics.conf();
-	} else if (selected(S.CONF_SURRENDER)) {
+	} else if (game.select.is(S.CONF_SURRENDER)) {
 		graphics.options(false);
 		graphics.conf();
-	} else if (selected(S.CONF_HAND_ALIGN)) {
+	} else if (game.select.is(S.CONF_HAND_ALIGN)) {
 		graphics.map(false);
 		graphics.conf();
 	}
 	graphics.popups();
-	if (selected(S.GAME_OVER, S.GAME_WON)) {
+	if (game.select.is(S.GAME_OVER, S.GAME_WON)) {
 		graphics.gameEnd();
 	}
 	if (hasArtifact(202) && game.floor == 10 && transition < 100) {

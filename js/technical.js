@@ -159,15 +159,19 @@ function tryUseClipboard(write = false, onSuccess = null, onFail = null) {
 	}
 }
 
+const keyboundNestedSelectTypes = [S.DECK, S.DISCARD, S.VOID, S.CARDS];
+
 /**
  * Performs a keyboard shortcut that changes the selection.
  * @param {number} location - the shortcut changes the selection to `[location, 1]`.
  */
 function shortcutTo(location) {
-	if (selected(location) && game.select[1]) {
-		game.select = game.select[2] ?? [location, 0];
+	if (game.select.is(location) && game.select.get()[1]) {
+		game.select.pop();
+	} else if (game.select.is(...keyboundNestedSelectTypes)) {
+		game.select.set(location, 1);
 	} else {
-		game.select = [location, 1, game.select.length === 3 ? game.select[2] : game.select];
+		game.select.push(location, 1);
 	}
 	action = -1;
 	actionTimer = 2;
@@ -179,7 +183,7 @@ document.addEventListener("keydown", event => {
 	}
 	holdTimer = 0;
 	const key = (event.key.length === 1 ? event.key.toUpperCase() : event.key);
-	if (menuSelected(MENU.ENTER_SEED)) {
+	if (menuSelect.is(MENU.ENTER_SEED)) {
 		if (key.length === 1 && /[0-9A-F]/.test(key) && !event.repeat && actionTimer === -1 && newSeed.length < 6) {
 			newSeed += key;
 		} else if (key === "V" && (event.ctrlKey || event.metaKey) && !event.repeat && actionTimer === -1 && newSeed.length < 6) {
@@ -203,33 +207,35 @@ document.addEventListener("keydown", event => {
 			performAction();
 		}
 		action = -1;
-	} else if (key === "E" && !event.repeat && menuSelected(-1) && actionTimer === -1 && game.turn === TURN.PLAYER) {
-		if (selected(S.CONF_END_TURN)) {
-			game.select = [S.HAND, game.prevCard];
+	} else if (key === "E" && !event.repeat && menuSelect.is(-1) && actionTimer === -1 && game.turn === TURN.PLAYER) {
+		if (game.select.is(S.CONF_END_TURN)) {
+			game.select.pop();
 		} else {
 			endTurnConfirm();
 		}
 		action = -1;
-	} else if (key === "1" && !event.repeat && menuSelected(-1) && actionTimer === -1) {
+	} else if (key === "1" && !event.repeat && menuSelect.is(-1) && actionTimer === -1) {
 		shortcutTo(S.DECK);
-	} else if (key === "2" && !event.repeat && menuSelected(-1) && actionTimer === -1) {
+	} else if (key === "2" && !event.repeat && menuSelect.is(-1) && actionTimer === -1) {
 		shortcutTo(S.DISCARD);
-	} else if (key === "3" && !event.repeat && menuSelected(-1) && actionTimer === -1 && game.void.length) {
+	} else if (key === "3" && !event.repeat && menuSelect.is(-1) && actionTimer === -1 && game.void.length) {
 		shortcutTo(S.VOID);
-	} else if (key === "0" && !event.repeat && menuSelected(-1) && actionTimer === -1) {
-		if (selected(S.CARDS)) {
-			game.select = game.select[2] ?? [S.MAP, get.availableLocations().length];
+	} else if (key === "0" && !event.repeat && menuSelect.is(-1) && actionTimer === -1) {
+		if (game.select.is(S.CARDS)) {
+			game.select.pop();
+		} else if (game.select.is(...keyboundNestedSelectTypes)) {
+			game.select.set(S.CARDS, 1);
 		} else {
-			game.select = [S.CARDS, 1, game.select.length === 3 ? game.select[2] : game.select];
+			game.select.push(S.CARDS, 1);
 		}
 		action = -1;
 		actionTimer = 2;
-	} else if (key === "C" && !event.repeat && menuSelected(MENU.PREV_GAMES) && actionTimer === -1 && menuSelect.length === 2) {
-		menuSelect = [MENU.PREV_GAME_SORT, 0, menuSelect];
+	} else if (key === "C" && !event.repeat && menuSelect.is(MENU.PREV_GAMES) && actionTimer === -1 && menuSelect.getPrev()) {
+		menuSelect.push(MENU.PREV_GAME_SORT);
 		action = -1;
 		actionTimer = 2;
-	} else if (key === "R" && !event.repeat && menuSelected(MENU.PREV_GAMES) && actionTimer === -1 && menuSelect.length === 2) {
-		menuSelect = [MENU.CONF_REMOVE_PREV_GAME, 1, menuSelect];
+	} else if (key === "R" && !event.repeat && menuSelect.is(MENU.PREV_GAMES) && actionTimer === -1 && menuSelect.getPrev()) {
+		menuSelect.push(MENU.CONF_REMOVE_PREV_GAME, 1);
 		action = -1;
 		actionTimer = 2;
 	} else if ((key === " " || key === "Enter") && !event.repeat && actionTimer === -1) {

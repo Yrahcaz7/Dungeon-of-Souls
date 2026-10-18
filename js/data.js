@@ -305,13 +305,13 @@ function updateData() {
 		startAnim.player(I.player.death);
 		game.turn = -1;
 		game.state = STATE.GAME_END;
-		game.select = [S.GAME_OVER, 0];
+		game.select.push(S.GAME_OVER);
 	}
 	// game won
-	if (game.floor == 20 && game.state === STATE.EVENT_FIN && selected(S.MAP)) {
+	if (game.floor == 20 && game.state === STATE.EVENT_FIN && game.select.is(S.MAP)) {
 		game.turn = -1;
 		game.state = STATE.GAME_END;
-		game.select = [S.GAME_WON, 0];
+		game.select.push(S.GAME_WON);
 	}
 	// state changes
 	endBattle();
@@ -321,9 +321,9 @@ function updateData() {
 	Card.sort(game.void);
 	Card.sort(game.discard);
 	// other
-	if (selected(S.HAND)) {
-		if (game.hand.length) game.prevCard = game.select[1];
-		else game.select = [S.END_TURN, 0];
+	if (game.select.is(S.HAND)) {
+		if (game.hand.length) game.prevCard = game.select.get()[1];
+		else game.select.set(S.END_TURN);
 	}
 	// effects that need another update
 	if (damageAll > 0) {
