@@ -165,11 +165,7 @@ function tryUseClipboard(write = false, onSuccess = null, onFail = null) {
  */
 function shortcutTo(location) {
 	if (selected(location) && game.select[1]) {
-		if (game.select[2]) {
-			game.select = game.select[2];
-		} else {
-			game.select = [location, 0];
-		}
+		game.select = game.select[2] ?? [location, 0];
 	} else {
 		game.select = [location, 1, game.select.length === 3 ? game.select[2] : game.select];
 	}
@@ -208,8 +204,11 @@ document.addEventListener("keydown", event => {
 		}
 		action = -1;
 	} else if (key === "E" && !event.repeat && menuSelected(-1) && actionTimer === -1 && game.turn === TURN.PLAYER) {
-		if (selected(S.CONF_END_TURN)) game.select = [S.HAND, game.prevCard];
-		else endTurnConfirm();
+		if (selected(S.CONF_END_TURN)) {
+			game.select = [S.HAND, game.prevCard];
+		} else {
+			endTurnConfirm();
+		}
 		action = -1;
 	} else if (key === "1" && !event.repeat && menuSelected(-1) && actionTimer === -1) {
 		shortcutTo(S.DECK);
@@ -219,8 +218,7 @@ document.addEventListener("keydown", event => {
 		shortcutTo(S.VOID);
 	} else if (key === "0" && !event.repeat && menuSelected(-1) && actionTimer === -1) {
 		if (selected(S.CARDS)) {
-			if (game.select[2]) game.select = game.select[2];
-			else game.select = [S.MAP, get.availableLocations().length];
+			game.select = game.select[2] ?? [S.MAP, get.availableLocations().length];
 		} else {
 			game.select = [S.CARDS, 1, game.select.length === 3 ? game.select[2] : game.select];
 		}

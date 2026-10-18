@@ -156,10 +156,10 @@ const ANIM = {PENDING: 800, STARTING: 801, MIDDLE: 802, ENDING: 803};
 const FUNC = {FLOOR_CLEAR: 900, PICKUP: 901, PLAYER_TURN_END: 902, PLAY_CARD: 903, AFTER_ATTACK: 904};
 
 // room states
-const STATE = {ENTER: 1000, BATTLE: 1001, EVENT_FIN: 1002, GAME_END: 1003, EVENT: 1004};
+const STATE = {ENTER: 1000, BATTLE: 1001, EVENT_FIN: 1002, GAME_END: 1003, ROOM_EVENT: 1004};
 
 // battle turns
-const TURN = {PLAYER: 1100, ENEMY: 1101, EVENT_START: 10_000};
+const TURN = {PLAYER: 1100, ENEMY: 1101};
 
 // event battle types
 const BATTLE = {CROWD: 1300, AMBUSH: 1301};
@@ -277,7 +277,7 @@ const EFF_DESC = {
 	[ENEMY_EFF.REVIVAL]: "On start of turn, decrease count by 1; then, if count is 0, transform into a Small Slime.",
 	[ENEMY_EFF.REVIVED]: "This dying does not trigger [On death] effects.",
 	[ENEMY_EFF.OVERHEAT]: "On start of turn, increase count by 1. On death, deal\n[count / 2] non-combat damage to all units, rounded down.",
-	[ENEMY_EFF.DUEL_TARGET]: "Take [1 + count / 5] extra damage from the player, rounded down. When a unit gains this effect, all other units lose it.",
+	[ENEMY_EFF.DUEL_TARGET]: "Take [1 + count / 5] extra combat damage, rounded down. When a unit gains this effect, all other units lose it.",
 };
 
 // numeric desc node types
@@ -308,7 +308,7 @@ const COLOR = {
 	"#080": ["sticky goo", "puddle of slime", "small slime", ENEMY_EFF.STICKY], // darker green
 	"#80f": ["decay"], // purple
 	// common
-	"#f44": ["max health", "health", "non-combat damage", "combat damage", "extra damage", "damage", "attacks", "attack", DESC.DAMAGE, EFF.ATKUP, ENEMY_EFF.COUNTDOWN, ENEMY_EFF.SCRAP_HEAP], // red
+	"#f44": ["max health", "health", "non-combat damage", "combat damage", "damage", "attacks", "attack", DESC.DAMAGE, EFF.ATKUP, ENEMY_EFF.COUNTDOWN, ENEMY_EFF.SCRAP_HEAP], // red
 	"#48f": ["extra shield", "shield", "defend", "defense", "aura blades", DESC.SHIELD, EFF.AURA_BLADE, EFF.DEFUP], // blue
 };
 

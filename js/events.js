@@ -1,4 +1,13 @@
 /**
+ * Starts a (non-room) event.
+ * @param {number} eventId - The ID of the event.
+ */
+function startEvent(eventId) {
+	game.select = [S.EVENT, -1, game.select.length === 3 ? game.select[2] : game.select];
+	game.event = [eventId, 0];
+}
+
+/**
  * Makes the player take damage.
  * @param {number} amount - the amount of damage to take.
  * @param {boolean} attack - whether the damage is considered an attack. Defaults to `false`.
@@ -53,10 +62,15 @@ function startEventBattle(type, num = 1) {
  * Finishes an event with no battle or rewards.
  */
 function finishEvent() {
-	game.select = [S.ARTIFACTS, 0];
-	game.state = STATE.EVENT_FIN;
-	activateArtifacts(FUNC.FLOOR_CLEAR);
-	mapPopup();
+	if (game.state === STATE.ROOM_EVENT) {
+		game.select = [S.ARTIFACTS, 0];
+		game.state = STATE.EVENT_FIN;
+		activateArtifacts(FUNC.FLOOR_CLEAR);
+		mapPopup();
+	} else {
+		game.select = game.select[2] ?? [S.ARTIFACTS, 0];
+	}
+	game.event = [-1, -1];
 }
 
 /**
@@ -238,12 +252,11 @@ const EVENTS = {
  * @returns {EventState | null}
  */
 function getCurrentEvent() {
-	const currentRoom = getCurrentRoom();
-	if (game.state !== STATE.EVENT || typeof currentRoom[3] !== "number") {
+	if (game.event[0] < 0) {
 		return null;
 	}
-	if (currentRoom[3] < EVENTS.any.length) {
-		return EVENTS.any[currentRoom[3]][game.turn - TURN.EVENT_START] || null;
+	if (game.event[0] < EVENTS.any.length) {
+		return EVENTS.any[game.event[0]][game.event[1]] || null;
 	}
-	return EVENTS[get.area()][currentRoom[3] - 100][game.turn - TURN.EVENT_START] || null;
+	return EVENTS[get.area()][game.event[0] - 100][game.event[1]] || null;
 }

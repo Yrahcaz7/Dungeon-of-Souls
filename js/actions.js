@@ -1035,7 +1035,7 @@ const performAction = (() => {
 		if (selected(S.EVENT) && !back) {
 			let event = getCurrentEvent();
 			if (event?.options[game.select[1]]) {
-				game.turn = TURN.EVENT_START + run(event.options[game.select[1]][1]);
+				game.event[1] = run(event.options[game.select[1]][1]);
 				event = getCurrentEvent();
 				event?.onEnter?.();
 				if (selected(S.EVENT)) {

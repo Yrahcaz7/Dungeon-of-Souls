@@ -1802,16 +1802,21 @@ const graphics = {
 		draw.rect("#0008");
 		const event = getCurrentEvent();
 		if (!event) {
-			throwError(`Invalid event: ${get.area()}#${getCurrentRoom()[3]}#${game.turn - TURN.EVENT_START}`);
+			throwError(`Invalid event: ${get.area()}#${game.event[0]}#${game.event[1]}`);
 			return;
 		}
 		draw.textBox(125 - 1, 40, 50, wrapText(run(event.text), 50), {"text-small": true});
+		const x = 200 - 2;
 		for (let index = 0; index < event.options.length; index++) {
-			const x = 100 + (index - 2) * 20;
+			const y = 100 + index * 20;
 			const text = run(event.options[index][0]);
-			if (event.options[index][2] instanceof Function && !event.options[index][2]?.()) draw.lore(200 - 2, x, text, {"color": "#888", "text-align": DIR.CENTER});
-			else if (index === game.select[1]) draw.lore(200 - 2, x, "\> " + text + "  ", {"color": "#ff0", "text-align": DIR.CENTER});
-			else draw.lore(200 - 2, x, text, {"color": "#fff", "text-align": DIR.CENTER});
+			if (event.options[index][2] instanceof Function && !event.options[index][2]?.()) {
+				draw.lore(x, y, text, {"color": "#888", "text-align": DIR.CENTER});
+			} else if (index === game.select[1]) {
+				draw.lore(x, y, "\> " + text + "  ", {"color": "#ff0", "text-align": DIR.CENTER});
+			} else {
+				draw.lore(x, y, text, {"color": "#fff", "text-align": DIR.CENTER});
+			}
 		}
 	},
 	/**

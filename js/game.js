@@ -1,4 +1,4 @@
-const VERSION = 3_000_078;
+const VERSION = 3_000_080;
 
 /**
  * Returns the starting global data.
@@ -27,7 +27,7 @@ let global = getStartGlobalData();
 
 /**
  * Returns the starting game data.
- * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, floor: number, gold: number, location: number, rewards: ([number] | [number, number] | [number, undefined, boolean] | [number, number, boolean])[], state: number, turn: number, select: [number, number] | [number, number, [number, number]], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyAtt: [number, number, Card, boolean], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {[key: number]: number}, map: MapNode[][], paths: number[][][], traveled: number[], scribbles: number[], seed: string, randomState: number[], version: number, cheat?: boolean}}
+ * @returns {{character: number, difficulty: number, health: number, shield: number, energy: number, gold: number, floor: number, location: number, event: [number, number], rewards: ([number] | [number, number] | [number, undefined, boolean] | [number, number, boolean])[], state: number, turn: number, select: [number, number] | [number, number, [number, number]], prevCard: number, cardSelect: number, kills: {}, enemies: Enemy[], enemyNum: number, enemyAtt: [number, number, Card, boolean], attackEffects: number[], artifacts: number[], cards: Card[], deck: Card[], deckScroll: number, hand: Card[], discard: Card[], void: Card[], eventLog: {}, eff: {[key: number]: number}, map: MapNode[][], paths: number[][][], traveled: number[], scribbles: number[], seed: string, randomState: number[], version: number, cheat?: boolean}}
  */
 function getStartGameData() { return {
 	character: CHARACTER.KNIGHT,
@@ -35,9 +35,10 @@ function getStartGameData() { return {
 	health: 60,
 	shield: 0,
 	energy: 3,
-	floor: 0,
 	gold: 0,
+	floor: 0,
 	location: 0,
+	event: [-1, -1],
 	rewards: [],
 	state: STATE.ENTER,
 	turn: -1,
@@ -432,12 +433,12 @@ function loadRoom() {
 		for (let index = 0; index < currentRoom[3].length; index++) {
 			const enemy = currentRoom[3][index];
 			if (enemy instanceof Array) {
-				game.enemies.push(new Enemy(+enemy[0], +enemy[1]));
+				game.enemies.push(new Enemy(enemy[0], enemy[1]));
 			} else {
-				game.enemies.push(new Enemy(+enemy));
+				game.enemies.push(new Enemy(enemy));
 			}
 		}
-		if (type === ROOM.BOSS || (game.floor > 10 && game.floor % 10 == 1)) {
+		if (type === ROOM.BOSS || (game.floor > 10 && game.floor % 10 === 1)) {
 			fadeMusic();
 		}
 		enterBattle();
@@ -464,9 +465,13 @@ function loadRoom() {
 		activateArtifacts(FUNC.FLOOR_CLEAR);
 	} else if (type === ROOM.EVENT) {
 		game.select = [S.EVENT, -1];
-		game.state = STATE.EVENT;
+		game.state = STATE.ROOM_EVENT;
 		game.rewards = [];
-		game.turn = TURN.EVENT_START;
+		if (typeof currentRoom[3] === "number") {
+			game.event = [currentRoom[3], 0];
+		} else {
+			throwError(`Invalid event node at (${game.floor}, ${game.location}).`);
+		}
 	}
 }
 
