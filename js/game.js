@@ -1,4 +1,4 @@
-const VERSION = 3_000_087;
+const VERSION = 3_000_088;
 
 /**
  * Returns the starting global data.
@@ -223,18 +223,13 @@ function startTurn(firstTurn = false) {
 				let damage = enemy.eff[EFF.BURN];
 				if (hasArtifact(107)) damage += 3;
 				dealDamage(damage, 0, index, false);
-				enemy.eff[EFF.BURN]--;
 			}
-			if (enemy.eff[EFF.WEAKNESS]) enemy.eff[EFF.WEAKNESS]--;
-			if (enemy.eff[EFF.BLAZE]) enemy.eff[EFF.BLAZE]--;
-			if (enemy.eff[EFF.ATKUP]) enemy.eff[EFF.ATKUP]--;
-			if (enemy.eff[EFF.DEFUP]) enemy.eff[EFF.DEFUP]--;
-			if (enemy.eff[EFF.PULSE]) enemy.eff[EFF.PULSE] = Math.max(enemy.eff[EFF.PULSE] - 2, 0);
-			if (enemy.eff[EFF.HYPERSPEED]) enemy.eff[EFF.HYPERSPEED]--;
-			if (enemy.eff[ENEMY_EFF.SHROUD]) {
-				enemy.eff[ENEMY_EFF.SHROUD]--;
-				if (!enemy.eff[ENEMY_EFF.SHROUD] && !hasArtifact(204)) {
-					startEvent(200);
+			if (enemy.eff[ENEMY_EFF.SHROUD] === 1 && !hasArtifact(204)) {
+				startEvent(200);
+			}
+			for (const key in END_TURN_EFF_COUNT_CHANGE) {
+				if (enemy.eff[key]) {
+					enemy.eff[key] = Math.max(enemy.eff[key] + END_TURN_EFF_COUNT_CHANGE[key], 0);
 				}
 			}
 		}
@@ -270,14 +265,12 @@ function endTurn() {
 	notif = [-1, 0, "", 0];
 	if (game.eff[EFF.BURN]) {
 		takeDamage(game.eff[EFF.BURN], false);
-		game.eff[EFF.BURN]--;
 	}
-	if (game.eff[EFF.WEAKNESS]) game.eff[EFF.WEAKNESS]--;
-	if (game.eff[EFF.BLAZE]) game.eff[EFF.BLAZE]--;
-	if (game.eff[EFF.ATKUP]) game.eff[EFF.ATKUP]--;
-	if (game.eff[EFF.DEFUP]) game.eff[EFF.DEFUP]--;
-	if (game.eff[EFF.PULSE]) game.eff[EFF.PULSE] = Math.max(game.eff[EFF.PULSE] - 2, 0);
-	if (game.eff[EFF.HYPERSPEED]) game.eff[EFF.HYPERSPEED]--;
+	for (const key in END_TURN_EFF_COUNT_CHANGE) {
+		if (game.eff[key]) {
+			game.eff[key] = Math.max(game.eff[key] + END_TURN_EFF_COUNT_CHANGE[key], 0);
+		}
+	}
 	// activate artifacts
 	activateArtifacts(FUNC.PLAYER_TURN_END);
 	// start of enemy turn effects

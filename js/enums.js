@@ -279,6 +279,20 @@ const EFF_DESC = {
 	[ENEMY_EFF.DUEL_TARGET]: "Take [1 + count / 5] extra combat damage, rounded down. When a unit gains this effect, all other units lose it.",
 };
 
+// the increase/decrease of effect counts on end of turn (for entities that have the respective effect)
+const END_TURN_EFF_COUNT_CHANGE = {
+	// -1
+	[EFF.BURN]: -1,
+	[EFF.WEAKNESS]: -1,
+	[EFF.BLAZE]: -1,
+	[EFF.ATKUP]: -1,
+	[EFF.DEFUP]: -1,
+	[EFF.HYPERSPEED]: -1,
+	[ENEMY_EFF.SHROUD]: -1,
+	// -2
+	[EFF.PULSE]: -2,
+};
+
 // numeric desc node types
 const DESC = {DAMAGE: 2300, SHIELD: 2301};
 
