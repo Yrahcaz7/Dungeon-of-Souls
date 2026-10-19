@@ -113,6 +113,12 @@ const get = {
 		return choices;
 	},
 	/**
+	 * Gets the number of artifact reward choices.
+	 */
+	artifactRewardChoices() {
+		return 3;
+	},
+	/**
 	 * Gets the player's hand size.
 	 */
 	handSize() {

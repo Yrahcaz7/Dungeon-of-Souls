@@ -562,7 +562,7 @@ const draw = {
 		});
 	},
 	/**
-	 * Draw's an enemy's icons on the canvas.
+	 * Draws an enemy's icons on the canvas.
 	 * @param {number} index - the index of the enemy.
 	 */
 	enemyIcons(index) {
@@ -588,6 +588,37 @@ const draw = {
 					x = enemyPos[index][0];
 					y += 17;
 				}
+			}
+		}
+	},
+	/**
+	 * Draws a list of artifacts on the canvas.
+	 * @param {number[]} items - The artifacts to draw.
+	 * @param {number} x - The x-coordinate to draw the artifact list at.
+	 * @param {number} y - The y-coordinate to draw the artifact list at.
+	 * @param {number} sep - The separation between each artifact.
+	 * @param {boolean} focused - Whether this layer is focused. Defaults to `true`.
+	 */
+	artifacts(items, x, y, sep, focused = true) {
+		const select = (menuSelect.is(-1) ? game.select.get() : menuSelect.get());
+		// big artifacts
+		for (let index = 0; index < items.length; index++) {
+			if (!ARTIFACTS[items[index]].big) {
+				continue;
+			}
+			draw.image(I.artifact[items[index]], x - 8 + (index * sep), y - 8);
+			if (index === select[1] && focused) {
+				draw.image(I.artifact._.wo[items[index]], x - 9 + (index * sep), y - 9);
+			}
+		}
+		// small artifacts
+		for (let index = 0; index < items.length; index++) {
+			if (ARTIFACTS[items[index]].big) {
+				continue;
+			}
+			draw.image(I.artifact[items[index]], x + (index * sep), y);
+			if (index === select[1] && focused) {
+				draw.image(I.artifact._.wo[items[index]], x - 1 + (index * sep), y - 1);
 			}
 		}
 	},
@@ -1108,18 +1139,7 @@ const graphics = {
 		if (game.void.length) draw.image(I.extra.void, 381, 163);
 		draw.image(I.extra.discard, 382, 182);
 		draw.lore(396, 188, game.discard.length, {"color": "#fff", "text-align": DIR.LEFT});
-		// big artifacts
-		for (let index = 0; index < game.artifacts.length; index++) {
-			if (!ARTIFACTS[game.artifacts[index]].big) continue;
-			draw.image(I.artifact[game.artifacts[index]], (index * 18) - 6, 5);
-			if (game.select.is(S.ARTIFACTS) && game.select.get()[1] === index) draw.image(I.artifact._.wo[game.artifacts[index]], (index * 18) - 7, 4);
-		}
-		// small artifacts
-		for (let index = 0; index < game.artifacts.length; index++) {
-			if (ARTIFACTS[game.artifacts[index]].big) continue;
-			draw.image(I.artifact[game.artifacts[index]], (index * 18) + 2, 13);
-			if (game.select.is(S.ARTIFACTS) && game.select.get()[1] === index) draw.image(I.artifact._.wo[game.artifacts[index]], (index * 18) + 1, 12);
-		}
+		draw.artifacts(game.artifacts, 2, 13, 18, game.select.is(S.ARTIFACTS));
 		// selected
 		if (game.select.is(S.LOOKER)) draw.image(I.select.round, 342, 2);
 		else if (game.select.is(S.HELP)) draw.image(I.select.round, 361, 2);
@@ -1686,10 +1706,7 @@ const graphics = {
 		const height = 60;
 		draw.box(x, y, width, height, {"background-color": "#aaa"});
 		draw.lore(200 - 2, y + 1, "Pick an artifact:", {"text-align": DIR.CENTER});
-		for (let index = 0; index < 3; index++) {
-			draw.image(I.artifact[currentRoom[6][index]], 160 + (index * 32), 90);
-			if (index === game.select.get()[1]) draw.image(I.artifact._.wo[currentRoom[6][index]], 159 + (index * 32), 89);
-		}
+		draw.artifacts(currentRoom[6].slice(0, get.artifactRewardChoices()), 160, 90, 32);
 		if (game.select.get()[1] < 0 && focused) draw.rect("#fff", x, y + height - 14, width, 14);
 		draw.box(x + 2, y + height - 12, width - 4, 10);
 		draw.lore(x + 3, y + height - 11, "Go back");
@@ -2145,29 +2162,7 @@ const graphics = {
 		}
 		draw.rect("#000c");
 		const prevGame = global.prevGames[sortedPrevGames[Math.floor(prevSelect[1] / 3)]];
-		if (menuSelect.get()[1] > prevGame.artifacts.length - 1) {
-			menuSelect.get()[1] = prevGame.artifacts.length - 1;
-		}
-		// big artifacts
-		for (let index = 0; index < prevGame.artifacts.length; index++) {
-			if (!ARTIFACTS[prevGame.artifacts[index]].big) {
-				continue;
-			}
-			draw.image(I.artifact[prevGame.artifacts[index]], (index * 26) + 3, 16);
-			if (index === menuSelect.get()[1] && focused) {
-				draw.image(I.artifact._.wo[prevGame.artifacts[index]], (index * 26) + 2, 15);
-			}
-		}
-		// small artifacts
-		for (let index = 0; index < prevGame.artifacts.length; index++) {
-			if (ARTIFACTS[prevGame.artifacts[index]].big) {
-				continue;
-			}
-			draw.image(I.artifact[prevGame.artifacts[index]], (index * 26) + 11, 24);
-			if (index === menuSelect.get()[1] && focused) {
-				draw.image(I.artifact._.wo[prevGame.artifacts[index]], (index * 26) + 10, 23);
-			}
-		}
+		draw.artifacts(prevGame.artifacts, 11, 24, 26, focused);
 		info.artifact(prevGame.artifacts[menuSelect.get()[1]], menuSelect.get()[1] * 26 + 11, 43);
 		draw.topBar("Artifacts From Run #" + prevGame.num);
 	},

@@ -116,7 +116,7 @@ for (const key in ARTIFACTS) {
  * @param {number} id - the artifact's id.
  */
 function hasArtifact(id) {
-	if (id == 103 && game.artifacts.includes(205)) return true; // make "Corrosion [stage 2]" count as "Corrosion"
+	if (id === 103 && game.artifacts.includes(205)) return true; // make "Corrosion [stage 2]" count as "Corrosion"
 	return game.artifacts.includes(id);
 }
 

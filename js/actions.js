@@ -110,7 +110,11 @@ const selection = (() => {
 		} else if (menuSelect.is(MENU.PREV_GAME_CARDS)) {
 			deckSelection();
 		} else if (menuSelect.is(MENU.PREV_GAME_ARTIFACTS)) {
-			const len = global.prevGames[sortedPrevGames[Math.floor(menuSelect.get()[1] / 3)]].artifacts.length;
+			const prevSelect = menuSelect.getPrev();
+			if (!prevSelect) {
+				return;
+			}
+			const len = global.prevGames[sortedPrevGames[Math.floor(prevSelect[1] / 3)]].artifacts.length;
 			if (action === DIR.LEFT && menuSelect.get()[1] > 0) {
 				menuSelect.get()[1]--;
 				actionTimer = 1;
