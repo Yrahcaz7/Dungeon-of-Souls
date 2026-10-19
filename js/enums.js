@@ -50,13 +50,15 @@ const MENU = {
 	CHANGE_DIFFICULTY: 401, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 	START_NEW_RUN: 402, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 	PREV_GAMES: 403, // N is three times the index of the selected past run in the current sort plus the index of the selected aspect (0 is cards, 1 is artifacts, and 2 is enemies killed).
-	PREV_GAME_INFO: 404, // N is three times the index of the selected past run in the current sort plus the index of the selected aspect (0 is cards, 1 is artifacts, and 2 is enemies killed).
-	PREV_GAME_SORT: 405, // N indicates which PREV_GAME_SORT menu is open.
-	CHANGE_SEED: 406, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
-	ENTER_SEED: 407, // N does not indicate anything.
-	CONF_REMOVE_PREV_GAME: 408, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
-	OLD_SAVE_ALERT: 409, // N indicates which button is selected (2 for the remove button, 1 for the copy button, 0 for the dismiss button).
-	OLD_SAVE_COPY_FAILED: 410, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
+	PREV_GAME_CARDS: 404, // N does not indicate anything.
+	PREV_GAME_ARTIFACTS: 405, // N is the index of the selected artifact.
+	PREV_GAME_ENEMIES: 406, // N does not indicate anything.
+	PREV_GAME_SORT: 407, // N indicates which PREV_GAME_SORT menu is open.
+	CHANGE_SEED: 408, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
+	ENTER_SEED: 409, // N does not indicate anything.
+	CONF_REMOVE_PREV_GAME: 410, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
+	OLD_SAVE_ALERT: 411, // N indicates which button is selected (2 for the remove button, 1 for the copy button, 0 for the dismiss button).
+	OLD_SAVE_COPY_FAILED: 412, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 };
 
 // main menu options

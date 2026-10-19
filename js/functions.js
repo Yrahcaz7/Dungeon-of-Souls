@@ -25,7 +25,7 @@ function inMenu() {
  * Returns a boolean indicating whether a deck outside battle is being viewed.
  */
 function inOutsideDeck() {
-	return menuSelect.is(MENU.PREV_GAME_INFO) || game.select.is(S.CARDS, S.PURIFIER, S.CONF_PURIFY, S.REFINER, S.CONF_REFINE);
+	return menuSelect.is(MENU.PREV_GAME_CARDS) || game.select.is(S.CARDS, S.PURIFIER, S.CONF_PURIFY, S.REFINER, S.CONF_REFINE);
 }
 
 /**
@@ -41,7 +41,8 @@ function inDeck() {
  */
 function currentDeck() {
 	if (inMenu()) {
-		if (menuSelect.is(MENU.PREV_GAME_INFO)) return global.prevGames[sortedPrevGames[Math.floor(menuSelect.get()[1] / 3)]].cards;
+		const prevSelect = menuSelect.getPrev();
+		if (menuSelect.is(MENU.PREV_GAME_CARDS) && prevSelect) return global.prevGames[sortedPrevGames[Math.floor(prevSelect[1] / 3)]].cards;
 	} else {
 		if (game.select.is(S.DECK) && game.select.get()[1]) return Card.sort(game.deck.slice());
 		if (game.select.is(S.DISCARD) && game.select.get()[1]) return game.discard;
@@ -88,9 +89,10 @@ function areAnyCardsPlayable() {
 
 /**
  * Gets the current room.
+ * @returns {MapNode | []}
  */
 function getCurrentRoom() {
-	return game.map[game.floor][game.location];
+	return game.map[game.floor]?.[game.location] || [];
 }
 
 const get = {

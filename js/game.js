@@ -1,4 +1,4 @@
-const VERSION = 3_000_088;
+const VERSION = 3_000_089;
 
 /**
  * Returns the starting global data.
@@ -90,8 +90,6 @@ let menuSelect = new SelectState([MENU.MAIN, 0]);
 let newSeed = "";
 /** @type {number} */
 let menuScroll = 0;
-/** @type {number} */
-let menuArtifactSelect = 0;
 /** @type {[number, boolean]} */
 let prevGamesSort = [0, true];
 /** @type {number[]} */
@@ -502,17 +500,15 @@ function updateVisuals() {
 			} else {
 				draw.lore(200 - 1, 84, "Hello there! Welcome to <#f00>hard mode!</#f00><s>In hard mode, enemies start much stronger from the beginning.\nAdditionally, all non-boss enemies have a special effect.\nOtherwise, it is the same as easy mode... or is it?\nI think that's enough of me blabbering on. Go and start playing!", {"text-align": DIR.CENTER});
 			}
-		} else if (menuSelect.is(MENU.PREV_GAMES, MENU.PREV_GAME_INFO, MENU.PREV_GAME_SORT, MENU.CONF_REMOVE_PREV_GAME)) {
+		} else if (menuSelect.is(MENU.PREV_GAMES, MENU.PREV_GAME_CARDS, MENU.PREV_GAME_ARTIFACTS, MENU.PREV_GAME_ENEMIES, MENU.PREV_GAME_SORT, MENU.CONF_REMOVE_PREV_GAME)) {
 			graphics.prevGames(menuSelect.is(MENU.PREV_GAMES));
 		}
-		if (menuSelect.is(MENU.PREV_GAME_INFO)) {
-			if (menuSelect.get()[1] % 3 === 0) {
-				graphics.deck();
-			} else if (menuSelect.get()[1] % 3 == 1) {
-				graphics.prevGameArtifacts();
-			} else if (menuSelect.get()[1] % 3 == 2) {
-				graphics.prevGameKills();
-			}
+		if (menuSelect.is(MENU.PREV_GAME_CARDS)) {
+			graphics.deck();
+		} else if (menuSelect.is(MENU.PREV_GAME_ARTIFACTS)) {
+			graphics.prevGameArtifacts();
+		} else if (menuSelect.is(MENU.PREV_GAME_ENEMIES)) {
+			graphics.prevGameKills();
 		} else if (menuSelect.is(MENU.PREV_GAME_SORT)) {
 			graphics.prevGameSort();
 		}

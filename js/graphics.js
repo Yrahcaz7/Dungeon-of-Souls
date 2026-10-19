@@ -1379,7 +1379,8 @@ const graphics = {
 			}
 		}
 		// draw top bar
-		if (menuSelect.is(MENU.PREV_GAME_INFO)) draw.topBar("Cards From Run #" + global.prevGames[sortedPrevGames[Math.floor(menuSelect.get()[1] / 3)]].num);
+		const prevSelect = menuSelect.getPrev();
+		if (menuSelect.is(MENU.PREV_GAME_CARDS) && prevSelect) draw.topBar("Cards From Run #" + global.prevGames[sortedPrevGames[Math.floor(prevSelect[1] / 3)]].num);
 		else if (game.select.is(S.DECK)) draw.topBar("Deck");
 		else if (game.select.is(S.DISCARD)) draw.topBar("Discard");
 		else if (game.select.is(S.VOID)) draw.topBar("Void");
@@ -2138,22 +2139,36 @@ const graphics = {
 	 * @param {boolean} focused - whether the previous game artifact layer is focused. Defaults to `true`.
 	 */
 	prevGameArtifacts(focused = true) {
+		const prevSelect = menuSelect.getPrev();
+		if (!prevSelect) {
+			return;
+		}
 		draw.rect("#000c");
-		const prevGame = global.prevGames[sortedPrevGames[Math.floor(menuSelect.get()[1] / 3)]];
-		if (menuArtifactSelect > prevGame.artifacts.length - 1) menuArtifactSelect = prevGame.artifacts.length - 1;
+		const prevGame = global.prevGames[sortedPrevGames[Math.floor(prevSelect[1] / 3)]];
+		if (menuSelect.get()[1] > prevGame.artifacts.length - 1) {
+			menuSelect.get()[1] = prevGame.artifacts.length - 1;
+		}
 		// big artifacts
 		for (let index = 0; index < prevGame.artifacts.length; index++) {
-			if (!ARTIFACTS[prevGame.artifacts[index]].big) continue;
+			if (!ARTIFACTS[prevGame.artifacts[index]].big) {
+				continue;
+			}
 			draw.image(I.artifact[prevGame.artifacts[index]], (index * 26) + 3, 16);
-			if (index == menuArtifactSelect && focused) draw.image(I.artifact._.wo[prevGame.artifacts[index]], (index * 26) + 2, 15);
+			if (index === menuSelect.get()[1] && focused) {
+				draw.image(I.artifact._.wo[prevGame.artifacts[index]], (index * 26) + 2, 15);
+			}
 		}
 		// small artifacts
 		for (let index = 0; index < prevGame.artifacts.length; index++) {
-			if (ARTIFACTS[prevGame.artifacts[index]].big) continue;
+			if (ARTIFACTS[prevGame.artifacts[index]].big) {
+				continue;
+			}
 			draw.image(I.artifact[prevGame.artifacts[index]], (index * 26) + 11, 24);
-			if (index == menuArtifactSelect && focused) draw.image(I.artifact._.wo[prevGame.artifacts[index]], (index * 26) + 10, 23);
+			if (index === menuSelect.get()[1] && focused) {
+				draw.image(I.artifact._.wo[prevGame.artifacts[index]], (index * 26) + 10, 23);
+			}
 		}
-		info.artifact(prevGame.artifacts[menuArtifactSelect], menuArtifactSelect * 26 + 11, 43);
+		info.artifact(prevGame.artifacts[menuSelect.get()[1]], menuSelect.get()[1] * 26 + 11, 43);
 		draw.topBar("Artifacts From Run #" + prevGame.num);
 	},
 	/**

@@ -20,7 +20,6 @@ function resetVars(prevGamesMenu = false) {
 	menuSelect = new SelectState([MENU.MAIN, 1]);
 	if (prevGamesMenu) {
 		menuScroll = 0;
-		menuArtifactSelect = 0;
 		prevGamesSort = [0, true];
 		sortedPrevGames = [];
 	}
@@ -289,7 +288,7 @@ const loadSave = (() => {
 			menuSelect.set(MENU.MAIN, 1);
 		}
 		if (parseSave(localStorage.getItem(ID + "/old/global")) || parseSave(localStorage.getItem(ID + "/old/run"))) {
-			menuSelect.set(MENU.OLD_SAVE_ALERT);
+			menuSelect.push(MENU.OLD_SAVE_ALERT);
 		}
 	}
 })();
