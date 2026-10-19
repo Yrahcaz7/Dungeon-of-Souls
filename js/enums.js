@@ -40,7 +40,6 @@ const S = {
 	REFINER: 329, // N does not indicate anything.
 	CONF_REFINE: 330, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
 	CARDS: 331, // N must be non-zero and it does not indicate anything.
-	CONF_PEARL: 332, // N indicates which button is selected (1 for the decline button, 0 for the accept button).
 	CUTSCENE: 333, // N indicates if the cutscene is over (1 if it is, 0 if not).
 };
 

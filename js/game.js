@@ -1,4 +1,4 @@
-const VERSION = 3_000_086;
+const VERSION = 3_000_087;
 
 /**
  * Returns the starting global data.
@@ -213,8 +213,8 @@ function fadeMusic() {
  * @param {boolean} firstTurn - if true, it is the player's first turn.
  */
 function startTurn(firstTurn = false) {
-	/** @type {[number, number]} */
-	game.select.set(S.HAND);
+	// reset select
+	game.select = new SelectState();
 	// end of enemy turn effects
 	if (!firstTurn) {
 		for (let index = 0; index < game.enemies.length; index++) {
@@ -234,7 +234,7 @@ function startTurn(firstTurn = false) {
 			if (enemy.eff[ENEMY_EFF.SHROUD]) {
 				enemy.eff[ENEMY_EFF.SHROUD]--;
 				if (!enemy.eff[ENEMY_EFF.SHROUD] && !hasArtifact(204)) {
-					game.select.push(S.CONF_PEARL);
+					startEvent(200);
 				}
 			}
 		}
@@ -576,7 +576,7 @@ function updateVisuals() {
 	if (!inDeck()) {
 		graphics.target();
 	}
-	if (game.select.is(S.CONF_END_TURN, S.CONF_PURIFY, S.CONF_REFINE, S.CONF_PEARL)) {
+	if (game.select.is(S.CONF_END_TURN, S.CONF_PURIFY, S.CONF_REFINE)) {
 		graphics.conf();
 	} else if (game.select.is(S.CONF_EXIT)) {
 		graphics.rewards(false);

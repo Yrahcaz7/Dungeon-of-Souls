@@ -145,7 +145,7 @@ const selection = (() => {
 		}
 		if (inMenu()) return;
 		// confirmation
-		if (game.select.is(S.CONF_END_TURN, S.CONF_EXIT, S.CONF_SURRENDER, S.CONF_REFINE, S.CONF_PEARL)) {
+		if (game.select.is(S.CONF_END_TURN, S.CONF_EXIT, S.CONF_SURRENDER, S.CONF_REFINE)) {
 			if (action === DIR.LEFT && game.select.get()[1]) {
 				game.select.get()[1] = 0;
 				actionTimer = 1;
@@ -964,16 +964,6 @@ const performAction = (() => {
 					game.rewards[prevSelection[1]][2] = true;
 					game.select.pop();
 				}
-			}
-			actionTimer = 2;
-			return;
-		} else if (game.select.is(S.CONF_PEARL) && !back) {
-			if (game.select.get()[1]) {
-				game.select.pop();
-			} else {
-				game.energy--; // spend 1 energy picking up the pearl
-				getArtifact(204); // "Shrouded Pearl" artifact
-				game.select.setBackTo(S.ARTIFACTS, game.artifacts.length - 1);
 			}
 			actionTimer = 2;
 			return;

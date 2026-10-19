@@ -193,7 +193,7 @@ const loadSave = (() => {
 			}
 		}
 	}
-	const versionCutoff = 3_000_082;
+	const versionCutoff = 3_000_087;
 	let suffix = "";
 	let item = "";
 	let obj = {};

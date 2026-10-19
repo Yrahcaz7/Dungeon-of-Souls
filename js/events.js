@@ -120,6 +120,7 @@ const doScreenShake = (() => {
 
 /**
  * @typedef {[string | (() => string), number | (() => number)] | [string | (() => string), number | (() => number), () => boolean]} EventOption
+ * @typedef {{[key: number]: EventState}[]} EventInfo
  */
 
 class EventState {
@@ -142,7 +143,7 @@ class EventState {
 	}
 }
 
-/** @type {{any: {[key: number]: EventState}[], 0: {[key: number]: EventState}[], 1: {[key: number]: EventState}[]}} */
+/** @type {{any: EventInfo, 0: EventInfo, 1: EventInfo, exclusive: EventInfo}} */
 const EVENTS = {
 	any: [{
 		0: new EventState(null, "You see a crowd of enemies up ahead. None of them seem to have noticed you yet. How will you get past them?", [["Charge through", () => chance() ? 20 : 10], ["Sneak past", () => chance(1/4) ? 40 : 30], ["Fight them fairly", 50]]),
@@ -245,6 +246,15 @@ const EVENTS = {
 		130: new EventState(null, "You decide that it's probably not worth the gold and continue onward.", [["Get a move on", 111]]),
 		200: new EventState(null, "You decide that it's not worth your time and continue onward.", [["Get a move on", 111]]),
 	}],
+	exclusive: [{
+		0: new EventState(null, "As the dark cloud clears, you spot a strange pearl rolling across the ground next to the toppled altar. What do you do?", [["Pick it up", 10], ["Ingore it", 20]]),
+		10: new EventState(() => {
+			game.enemies[0].gainEff(ENEMY_EFF.SHROUD, 2);
+			getArtifact(204); // "Shrouded Pearl" artifact
+		}, "You quickly grab the pearl before it can roll away. As you do so, the pearl emits a small dark cloud and its color brightens slightly. You'll have to inspect it more later.", [["Continue the battle", 11]]),
+		11: new EventState(finishEvent),
+		20: new EventState(null, "You decide to focus on defeating the enemy in front of you.", [["Continue the battle", 11]]),
+	}],
 };
 
 /**
@@ -255,8 +265,11 @@ function getCurrentEvent() {
 	if (game.event[0] < 0) {
 		return null;
 	}
-	if (game.event[0] < EVENTS.any.length) {
-		return EVENTS.any[game.event[0]][game.event[1]] || null;
+	if (game.event[0] >= 200) {
+		return EVENTS.exclusive[game.event[0] - 200][game.event[1]] || null;
 	}
-	return EVENTS[get.area()][game.event[0] - 100][game.event[1]] || null;
+	if (game.event[0] >= 100) {
+		return EVENTS[get.area()][game.event[0] - 100][game.event[1]] || null;
+	}
+	return EVENTS.any[game.event[0]][game.event[1]] || null;
 }

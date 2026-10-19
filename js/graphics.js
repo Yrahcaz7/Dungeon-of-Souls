@@ -1990,8 +1990,6 @@ const graphics = {
 		} else if (game.select.is(S.CONF_REFINE)) {
 			text = ["Are you sure you want to improve the card " + refinableDeck[game.cardSelect].getAttr("name") + "?", "If you have multiple, this will only improve one copy of the card."];
 			options = ["YES", "BACK"];
-		} else if (game.select.is(S.CONF_PEARL)) {
-			text = ["As the dark cloud clears, you see a strange pearl resting on the ground.", "Will you pick it up? This will consume 1 energy."];
 		}
 		let width = 39;
 		for (let index = 0; index < text.length; index++) {
