@@ -1066,11 +1066,12 @@ const graphics = {
 	 */
 	foregrounds() {
 		// menus
-		const prevSelection = game.select.getPrev();
-		if (prevSelection) {
-			if (prevSelection[0] === S.REWARDS) graphics.rewards(false);
-			else if (prevSelection[0] === S.CARD_REWARD) graphics.cardRewards(false);
-			else if (prevSelection[0] === S.ARTIFACT_REWARD) graphics.artifactRewards(false);
+		if (game.select.prevIs(S.REWARDS, S.PURIFIER, S.CONF_PURIFY, S.REFINER, S.CONF_REFINE)) {
+			graphics.rewards(false);
+		} else if (game.select.prevIs(S.CARD_REWARD)) {
+			graphics.cardRewards(false);
+		} else if (game.select.prevIs(S.ARTIFACT_REWARD)) {
+			graphics.artifactRewards(false);
 		}
 		// looker
 		if (game.select.is(S.LOOKER) && game.select.get()[1] === 1) {
@@ -1322,7 +1323,9 @@ const graphics = {
 		const refining = game.select.is(S.REFINER, S.CONF_REFINE);
 		if (refining && !refinableDeck.length) {
 			refinableDeck = game.cards.filter(card => card.level === 0);
-			if (!refinableDeck.length) refinableDeck = [new Card()];
+			if (!refinableDeck.length) {
+				refinableDeck = [new Card()];
+			}
 		}
 		// setup for deck drawing
 		const deck = currentDeck();
@@ -1640,6 +1643,7 @@ const graphics = {
 			throwError("No card rewards available.");
 			return;
 		}
+		graphics.rewards(false);
 		const choices = get.cardRewardChoices();
 		const x = 198 - (choices * 68 / 2);
 		const y = 20;

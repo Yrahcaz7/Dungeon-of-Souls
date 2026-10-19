@@ -495,29 +495,31 @@ const selection = (() => {
 		if (game.select.is(-1)) game.select.set(S.HAND, 0);
 		// cards in hand
 		if (game.select.is(S.HAND)) {
-			if (!game.hand) {
-				game.select.set(S.END_TURN);
+			if (game.hand.length) {
+				game.prevCard = game.select.get()[1];
 			} else {
-				if (action === DIR.LEFT) {
-					game.select.get()[1]--;
-				} else if (action === DIR.RIGHT) {
-					game.select.get()[1]++;
-				} else if (action === DIR.UP) {
-					let to = 0;
-					for (let index = 1; index < game.enemies.length; index++) {
-						if (enemyPos[index][1] > enemyPos[to][1] || (enemyPos[index][1] == enemyPos[to][1] && enemyPos[index][0] < enemyPos[to][0])) {
-							to = index;
-						}
+				game.select.set(S.END_TURN);
+				return;
+			}
+			if (action === DIR.LEFT) {
+				game.select.get()[1]--;
+			} else if (action === DIR.RIGHT) {
+				game.select.get()[1]++;
+			} else if (action === DIR.UP) {
+				let to = 0;
+				for (let index = 1; index < game.enemies.length; index++) {
+					if (enemyPos[index][1] > enemyPos[to][1] || (enemyPos[index][1] == enemyPos[to][1] && enemyPos[index][0] < enemyPos[to][0])) {
+						to = index;
 					}
-					game.select.set(S.ENEMY, to);
 				}
-				if (game.select.is(S.HAND)) {
-					game.select.get()[1] = Math.min(Math.max(game.select.get()[1], 0), game.hand.length - 1);
-				}
-				if (action === DIR.LEFT || action === DIR.RIGHT || action === DIR.UP) {
-					actionTimer = 1;
-					return;
-				}
+				game.select.set(S.ENEMY, to);
+			}
+			if (game.select.is(S.HAND)) {
+				game.select.get()[1] = Math.min(Math.max(game.select.get()[1], 0), game.hand.length - 1);
+			}
+			if (action === DIR.LEFT || action === DIR.RIGHT || action === DIR.UP) {
+				actionTimer = 1;
+				return;
 			}
 		}
 		// hand selection from effect

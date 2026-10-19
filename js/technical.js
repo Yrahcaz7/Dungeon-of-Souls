@@ -222,11 +222,11 @@ document.addEventListener("keydown", event => {
 		shortcutTo(S.VOID);
 	} else if (key === "0" && !event.repeat && menuSelect.is(-1) && actionTimer === -1) {
 		shortcutTo(S.CARDS);
-	} else if (key === "C" && !event.repeat && menuSelect.is(MENU.PREV_GAMES) && actionTimer === -1 && menuSelect.getPrev()) {
+	} else if (key === "C" && !event.repeat && menuSelect.is(MENU.PREV_GAMES) && actionTimer === -1) {
 		menuSelect.push(MENU.PREV_GAME_SORT);
 		action = -1;
 		actionTimer = 2;
-	} else if (key === "R" && !event.repeat && menuSelect.is(MENU.PREV_GAMES) && actionTimer === -1 && menuSelect.getPrev()) {
+	} else if (key === "R" && !event.repeat && menuSelect.is(MENU.PREV_GAMES) && actionTimer === -1) {
 		menuSelect.push(MENU.CONF_REMOVE_PREV_GAME, 1);
 		action = -1;
 		actionTimer = 2;
