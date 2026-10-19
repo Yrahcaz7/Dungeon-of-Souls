@@ -221,15 +221,7 @@ document.addEventListener("keydown", event => {
 	} else if (key === "3" && !event.repeat && menuSelect.is(-1) && actionTimer === -1 && game.void.length) {
 		shortcutTo(S.VOID);
 	} else if (key === "0" && !event.repeat && menuSelect.is(-1) && actionTimer === -1) {
-		if (game.select.is(S.CARDS)) {
-			game.select.pop();
-		} else if (game.select.is(...keyboundNestedSelectTypes)) {
-			game.select.set(S.CARDS, 1);
-		} else {
-			game.select.push(S.CARDS, 1);
-		}
-		action = -1;
-		actionTimer = 2;
+		shortcutTo(S.CARDS);
 	} else if (key === "C" && !event.repeat && menuSelect.is(MENU.PREV_GAMES) && actionTimer === -1 && menuSelect.getPrev()) {
 		menuSelect.push(MENU.PREV_GAME_SORT);
 		action = -1;

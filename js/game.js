@@ -1,4 +1,4 @@
-const VERSION = 3_000_083;
+const VERSION = 3_000_084;
 
 /**
  * Returns the starting global data.
@@ -375,12 +375,9 @@ function endBattle() {
 	// normal things
 	discardHand(true);
 	notif = [-1, 0, "", 0];
-	game.select = new SelectState([S.ARTIFACTS, 0], [S.REWARDS, 0]);
-	game.state = STATE.EVENT_FIN;
 	game.turn = -1;
 	game.enemyNum = -1;
-	// activate artifact effects
-	activateArtifacts(FUNC.FLOOR_CLEAR);
+	finishNormalFloor();
 	// set rewards
 	game.rewards = [];
 	const currentRoom = getCurrentRoom();
@@ -403,6 +400,15 @@ function endBattle() {
 		game.rewards.push([REWARD.REFINER]);
 	}
 	game.rewards.push([REWARD.FINISH]);
+}
+
+/**
+ * Changes the selection to the rewards menu and activates artifact floor clear effects.
+ */
+function finishNormalFloor() {
+	game.select = new SelectState([S.ARTIFACTS, 0], [S.REWARDS, 0]);
+	game.state = STATE.EVENT_FIN;
+	activateArtifacts(FUNC.FLOOR_CLEAR);
 }
 
 /**
@@ -445,8 +451,7 @@ function loadRoom() {
 		}
 		enterBattle();
 	} else if (type === ROOM.TREASURE) {
-		game.select = new SelectState([S.ARTIFACTS, 0], [S.REWARDS, 0]);
-		game.state = STATE.EVENT_FIN;
+		finishNormalFloor();
 		game.rewards = [];
 		if (currentRoom[4] && currentRoom[4] > 0) {
 			game.rewards.push([REWARD.GOLD, currentRoom[4]]);
@@ -455,16 +460,13 @@ function loadRoom() {
 			game.rewards.push([REWARD.CARD]);
 		}
 		game.rewards.push([REWARD.FINISH]);
-		activateArtifacts(FUNC.FLOOR_CLEAR);
 	} else if (type === ROOM.ORB) {
-		game.select = new SelectState([S.ARTIFACTS, 0], [S.REWARDS, 0]);
-		game.state = STATE.EVENT_FIN;
+		finishNormalFloor();
 		game.rewards = [[REWARD.HEALTH, Math.floor(get.maxHealth() * 0.5)], [REWARD.PURIFIER]];
 		if (get.area() >= 1) {
 			game.rewards.push([REWARD.REFINER]);
 		}
 		game.rewards.push([REWARD.FINISH]);
-		activateArtifacts(FUNC.FLOOR_CLEAR);
 	} else if (type === ROOM.EVENT) {
 		game.select = new SelectState([S.ARTIFACTS, 0], [S.EVENT, -1]);
 		game.state = STATE.ROOM_EVENT;
@@ -562,19 +564,14 @@ function updateVisuals() {
 		graphics.info();
 	} else if (game.select.is(S.OPTIONS) && game.select.get()[1]) {
 		graphics.options();
-	} else if (game.select.is(S.DECK, S.DISCARD, S.VOID) && game.select.get()[1]) {
-		if (game.select.prevIs(S.MAP, S.CARDS)) {
+	} else if (game.select.is(...keyboundNestedSelectTypes) && game.select.get()[1]) {
+		if (game.select.prevIs(S.MAP)) {
 			graphics.map(false);
 		}
 		graphics.deck();
 	} else if (game.select.is(S.PURIFIER, S.CONF_PURIFY, S.REFINER, S.CONF_REFINE)) {
 		graphics.rewards(false);
 		graphics.deck(game.select.is(S.PURIFIER, S.REFINER));
-	} else if (game.select.is(S.CARDS)) {
-		if ((!game.select.get()[1] && !game.select.getPrev()) || game.select.prevIs(S.MAP)) {
-			graphics.map(false);
-		}
-		graphics.deck();
 	}
 	if (!inDeck()) {
 		graphics.target();

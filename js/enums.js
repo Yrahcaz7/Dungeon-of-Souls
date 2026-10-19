@@ -7,7 +7,7 @@ const ROOM = {BATTLE: 100, TREASURE: 101, PRIME: 102, ORB: 103, BOSS: 104, EVENT
 // player attack effects
 const ATT_EFF = {AURA_BLADE: 200};
 
-// normal selections - used in `game.select` as [S, N] or [S, N, [S_PREV, N_PREV]]
+// normal selections - used in `game.select` as [S, N]
 // N is an integer (which defaults to 0) and is defined differently for each following S:
 const S = {
 	HAND: 300, // N is the index of the selected card.
@@ -39,12 +39,12 @@ const S = {
 	EVENT: 328, // N indicates which event is occurring (while game.turn indicates where you are in the event).
 	REFINER: 329, // N does not indicate anything.
 	CONF_REFINE: 330, // N indicates which button is selected (1 for the back button, 0 for the confirm button).
-	CARDS: 331, // N indicates if the CARDS menu is on top of the map (0 if it is, 1 if not).
+	CARDS: 331, // N must be non-zero and it does not indicate anything.
 	CONF_PEARL: 332, // N indicates which button is selected (1 for the decline button, 0 for the accept button).
 	CUTSCENE: 333, // N indicates if the cutscene is over (1 if it is, 0 if not).
 };
 
-// menu selections - used in `menuSelect` as [S, N] or [S, N, [S_PREV, N_PREV]]
+// menu selections - used in `menuSelect` as [S, N]
 // N is an integer (which defaults to 0) and is defined differently for each following S:
 const MENU = {
 	MAIN: 400, // N is the index of the selected main menu option.
@@ -66,7 +66,7 @@ const MAIN_MENU_OPTIONS = ["Resume run", "Start new run", "Change difficulty", "
 // previous game sort options
 const PREV_GAMES_SORT_NAMES = ["Run number", "Result type", "Difficulty", "Highest floor", "Remaining health", "Remaining gold", "Total score", "Seed string", "Number of cards", "Number of artifacts", "Number of enemies killed"];
 
-// special selects from card effects - used in `game.select` as [S, N] or [S, N, [S_PREV, N_PREV]]
+// special selects from card effects - used in `game.select` as [S, N]
 // N is an integer (which defaults to 0) and is defined differently for each following S:
 const SS = {
 	SELECT_HAND: 1200, // N is the index of the selected card in hand if it exists; otherwise, N indicates that the back button is selected.

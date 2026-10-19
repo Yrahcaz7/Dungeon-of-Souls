@@ -1106,7 +1106,7 @@ const performAction = (() => {
 			actionTimer = 2;
 			return;
 		} else if (game.select.is(S.MAP) && game.select.get()[1] === availableLocations.length) {
-			game.select.push(S.CARDS);
+			game.select.push(S.CARDS, 1);
 			actionTimer = 2;
 			return;
 		} else if (game.select.is(S.CARDS)) {
