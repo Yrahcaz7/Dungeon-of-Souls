@@ -320,6 +320,10 @@ function updateData() {
 	Card.sort(game.cards);
 	Card.sort(game.void);
 	Card.sort(game.discard);
+	// other
+	if (game.select.is(S.HAND) && game.hand.length) {
+		game.prevCard = game.select.get()[1];
+	}
 	// effects that need another update
 	if (damageAll > 0) {
 		for (let index = 0; index < game.enemies.length; index++) {

@@ -1,14 +1,12 @@
 class SelectState {
 	/** @type {[number, number][]} */
-	_selections = [[-1, 0]];
+	_selections = [];
 	/**
-	 * Returns a new select state.
+	 * Returns a new select state. (Default select is `[-1, 0]`.)
 	 * @param {[number, number][]} selections - One or more selections, ordered from old to new.
 	 */
 	constructor(...selections) {
-		if (selections.length >= 1) {
-			this._selections = selections;
-		}
+		this._selections = selections.length ? selections : [[-1, 0]];
 	}
 	/**
 	 * Returns an object as a select state.

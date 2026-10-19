@@ -495,9 +495,7 @@ const selection = (() => {
 		if (game.select.is(-1)) game.select.set(S.HAND, 0);
 		// cards in hand
 		if (game.select.is(S.HAND)) {
-			if (game.hand.length) {
-				game.prevCard = game.select.get()[1];
-			} else {
+			if (!game.hand.length) {
 				game.select.set(S.END_TURN);
 				return;
 			}
@@ -573,28 +571,28 @@ const performAction = (() => {
 	 * @param {{result: number, difficulty: number, floor: number, health: number, gold: number, score: number, seed: string, cards: Card[], artifacts: number[], kills: {}}} prevGame - The previous game to get the sort value of.
 	 */
 	function getPrevGameSortValue(prevGame) {
-		if (prevGamesSort[0] == 1) {
+		if (prevGamesSort[0] === 1) {
 			if (prevGame.result === GAME_RESULT.DEFEAT) return 0;
 			if (prevGame.result === GAME_RESULT.VICTORY) return 2;
 			return 1;
-		} else if (prevGamesSort[0] == 2) {
+		} else if (prevGamesSort[0] === 2) {
 			if (prevGame.artifacts.includes(202)) return 999;
 			return prevGame.difficulty;
-		} else if (prevGamesSort[0] == 3) {
+		} else if (prevGamesSort[0] === 3) {
 			return prevGame.floor;
-		} else if (prevGamesSort[0] == 4) {
+		} else if (prevGamesSort[0] === 4) {
 			return prevGame.health;
-		} else if (prevGamesSort[0] == 5) {
+		} else if (prevGamesSort[0] === 5) {
 			return prevGame.gold;
-		} else if (prevGamesSort[0] == 6) {
+		} else if (prevGamesSort[0] === 6) {
 			return prevGame.score;
-		} else if (prevGamesSort[0] == 7) {
+		} else if (prevGamesSort[0] === 7) {
 			return prevGame.seed;
-		} else if (prevGamesSort[0] == 8) {
+		} else if (prevGamesSort[0] === 8) {
 			return prevGame.cards.length;
-		} else if (prevGamesSort[0] == 9) {
+		} else if (prevGamesSort[0] === 9) {
 			return prevGame.artifacts.length;
-		} else if (prevGamesSort[0] == 10) {
+		} else if (prevGamesSort[0] === 10) {
 			let kills = 0;
 			for (const key in prevGame.kills) {
 				kills += prevGame.kills[key];
@@ -625,7 +623,9 @@ const performAction = (() => {
 	 */
 	function activateAttackEffects(id) {
 		// stop if effects are not allowed
-		if (CARDS[id].attackEffects === false) return;
+		if (CARDS[id].attackEffects === false) {
+			return;
+		}
 		// trigger aura blade effect
 		if (game.eff[EFF.AURA_BLADE]) {
 			game.eff[EFF.AURA_BLADE]--;
@@ -652,7 +652,7 @@ const performAction = (() => {
 		if (actionTimer > -1 || (handAnim.length > 0 && game.state !== STATE.EVENT_FIN)) return;
 		// menus
 		if (game.select.is(S.WELCOME)) {
-			game.select.set(-1);
+			game.select = new SelectState();
 			actionTimer = 2;
 		} else if (menuSelect.is(MENU.MAIN)) {
 			if (back) {
@@ -660,13 +660,13 @@ const performAction = (() => {
 			}
 			if (menuSelect.get()[1] === 0) {
 				if (game.map.length > 0) {
-					menuSelect.set(-1);
+					menuSelect = new SelectState();
 				}
 			} else if (menuSelect.get()[1] == 1) {
 				if (game.map.length > 0) {
 					menuSelect.set(MENU.START_NEW_RUN, 1);
 				} else {
-					menuSelect.set(-1);
+					menuSelect = new SelectState();
 					generateMap();
 					return;
 				}
@@ -932,8 +932,10 @@ const performAction = (() => {
 			} else {
 				game.floor++;
 				game.location = availableLocations[0];
-				if (game.select.get()[1] === 0) getArtifact(202);
-				game.select.set(-1);
+				if (game.select.get()[1] === 0) {
+					getArtifact(202); // "Determination" artifact
+				}
+				game.select = new SelectState();
 				game.state = STATE.ENTER;
 			}
 			actionTimer = 2;
@@ -970,7 +972,7 @@ const performAction = (() => {
 				game.select.pop();
 			} else {
 				game.energy--; // spend 1 energy picking up the pearl
-				getArtifact(204); // give player artifact "Shrouded Pearl"
+				getArtifact(204); // "Shrouded Pearl" artifact
 				game.select.setBackTo(S.ARTIFACTS, game.artifacts.length - 1);
 			}
 			actionTimer = 2;
@@ -1029,7 +1031,7 @@ const performAction = (() => {
 			} else {
 				game.floor++;
 				game.location = availableLocations[game.select.get()[1]];
-				game.select.set(-1);
+				game.select = new SelectState();
 				game.state = STATE.ENTER;
 			}
 			actionTimer = 1;
@@ -1058,8 +1060,7 @@ const performAction = (() => {
 			}
 			if (game.select.get()[1] == -1) {
 				if (!game.hand.length) {
-					if (game.void.length) game.select.set(S.VOID);
-					else game.select.set(S.DISCARD);
+					game.select.set(game.void.length ? S.VOID : S.DISCARD);
 				} else {
 					game.select.set(S.HAND, game.prevCard);
 				}

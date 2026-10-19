@@ -652,8 +652,10 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	card(type, xPlus = 0, yPlus = 0) {
-		if (typeof type === "number" && !EFF_DESC[type]) return 0;
-		const normIndex = (game.prevCard == 0 && handAnim.length > 0 ? handAnimCards.indexOf(game.hand[game.prevCard]) : game.prevCard);
+		if (typeof type === "number" && !EFF_DESC[type]) {
+			return 0;
+		}
+		const normIndex = (game.prevCard === 0 && handAnim.length > 0 ? handAnimCards.indexOf(game.hand[game.prevCard]) : game.prevCard);
 		if (normIndex < 0) return 0;
 		const effIndex = normIndex - (handAnimOffsets[game.prevCard] || 0);
 		let x = handAnimPositions[normIndex][0] + 69 + xPlus;
@@ -679,7 +681,9 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	cardSelect(type, xPlus = 0, yPlus = 0) {
-		if (typeof type === "number" && !EFF_DESC[type]) return 0;
+		if (typeof type === "number" && !EFF_DESC[type]) {
+			return 0;
+		}
 		let x = handSelectPos[game.select.get()[1]] + 69 + xPlus;
 		const y = 18 + yPlus;
 		if (x + 24 * 3 + 2 > 400) {
@@ -703,7 +707,9 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	reward(type, xPlus = 0, yPlus = 0) {
-		if (typeof type === "number" && !EFF_DESC[type]) return 0;
+		if (typeof type === "number" && !EFF_DESC[type]) {
+			return 0;
+		}
 		const choices = get.cardRewardChoices();
 		let x = (199 - (choices * 68 / 2)) + 70 + (game.select.get()[1] * 68) + xPlus;
 		const y = 51 + yPlus;
@@ -730,7 +736,9 @@ const info = {
 	 */
 	deck(type, xPlus = 0, yPlus = 0) {
 		const deck = currentDeck();
-		if (!deck[game.cardSelect] || (typeof type === "number" && !EFF_DESC[type])) return 0;
+		if (!deck[game.cardSelect] || (typeof type === "number" && !EFF_DESC[type])) {
+			return 0;
+		}
 		const refining = game.select.is(S.REFINER, S.CONF_REFINE);
 		const cols = (refining ? 3 : 6);
 		const isSelected = [game.cardSelect % cols, Math.floor(game.cardSelect / cols)];
@@ -802,7 +810,7 @@ const info = {
 	intent(xPlus = 0, yPlus = 0) {
 		const x = enemyPos[game.select.get()[1]][0] - 71 + xPlus;
 		const y = getEnemyIntentPos(game.select.get()[1]) + yPlus;
-		if (y === y) {
+		if (!isNaN(y)) {
 			const intent = game.enemies[game.select.get()[1]]?.intent;
 			const desc = FULL_INTENT_DESC[intent === INTENT.SUMMON && game.enemies.length >= 6 ? INTENT.RITUAL : intent];
 			if (desc) {

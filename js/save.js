@@ -120,7 +120,7 @@ async function endRun(startNewRun = false, newDifficulty = game.difficulty) {
 		game.difficulty = newDifficulty;
 	}
 	if (game.difficulty === prevGame.difficulty) {
-		game.select.set(-1); // skip welcome screen
+		game.select = new SelectState(); // skip welcome screen
 	}
 	if (newSeed) {
 		game.seed = newSeed;
@@ -128,7 +128,7 @@ async function endRun(startNewRun = false, newDifficulty = game.difficulty) {
 	}
 	resetVars(game.map.length > 0);
 	if (startNewRun) {
-		menuSelect.set(-1);
+		menuSelect = new SelectState();
 		await generateMap();
 	}
 	loaded = true;
