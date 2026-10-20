@@ -369,8 +369,10 @@ const draw = {
 		if (game.enemies[index].eff[ENEMY_EFF.SHROUD] || index === game.enemyNum) {
 			return;
 		}
-		const x = enemyPos[index][0] + 16;
-		const y = getEnemyIntentPos(index, true);
+		const {x, y} = getEnemyIntentPos(index, 0, Math.round(Math.abs(intentAnim[index] - 2)));
+		if (isNaN(x) || isNaN(y)) {
+			return;
+		}
 		const intent = game.enemies[index].intent;
 		if (intent === INTENT.ATTACK) {
 			const power = Math.ceil(game.enemies[index].getTotalAttackPower() * get.takeDamageMult(index));
@@ -401,8 +403,7 @@ const draw = {
 		} else if (intent === INTENT.NOTHING) {
 			draw.image(I.intent.nothing, x, y);
 		}
-		intentAnim[index] += (Math.random() + 0.5) * 0.15;
-		if (intentAnim[index] >= 4) intentAnim[index] -= 4;
+		intentAnim[index] = (intentAnim[index] + (Math.random() + 0.5) * 0.15) % 4;
 	},
 	/**
 	 * Draws a box on the canvas.
@@ -839,14 +840,14 @@ const info = {
 	 * @param {number} yPlus - adds to the y-coordinate of the infobox.
 	 */
 	intent(xPlus = 0, yPlus = 0) {
-		const x = enemyPos[game.select.get()[1]][0] - 71 + xPlus;
-		const y = getEnemyIntentPos(game.select.get()[1]) + yPlus;
-		if (!isNaN(y)) {
-			const intent = game.enemies[game.select.get()[1]]?.intent;
-			const desc = FULL_INTENT_DESC[intent === INTENT.SUMMON && game.enemies.length >= 6 ? INTENT.RITUAL : intent];
-			if (desc) {
-				draw.textBox(x, y - (desc.match(/\n/g) || []).length * 3, 28, desc, {"text-small": true});
-			}
+		const {x, y} = getEnemyIntentPos(game.select.get()[1], -88 + xPlus, 14 + yPlus);
+		if (isNaN(x) || isNaN(y)) {
+			return;
+		}
+		const intent = game.enemies[game.select.get()[1]]?.intent;
+		const desc = FULL_INTENT_DESC[intent === INTENT.SUMMON && game.enemies.length >= 6 ? INTENT.RITUAL : intent];
+		if (desc) {
+			draw.textBox(x, y - (desc.match(/\n/g) || []).length * 3, 28, desc, {"text-small": true});
 		}
 	},
 	/**
@@ -1502,39 +1503,13 @@ const graphics = {
 			const cardObj = currentDeck()[game.cardSelect];
 			if (cardObj) graphics.cardInfo("deck", cardObj);
 		} else if (game.select.is(S.ATTACK, S.ENEMY)) {
-			const enemy = game.enemies[game.select.get()[1]];
-			const type = enemy.type;
-			const pos = enemyPos[game.select.get()[1]];
-			let coords = [];
-			let name = ENEMY_NAME[type];
-			if (type === SLIME.BIG || (type === SLIME.PRIME && enemyAnim.prime[game.select.get()[1]] != -1 && enemyAnim.prime[game.select.get()[1]] < 5)) {
-				coords = [5, 26, 54, 38];
-				name = ENEMY_NAME[SLIME.BIG];
-			} else if (type === SLIME.SMALL) {
-				coords = [19, 36, 26, 28];
-			} else if (type === SLIME.PRIME) {
-				coords = [0, 7, 64, 57];
-			} else if (type === SLIME.STICKY) {
-				coords = [-1, 36, 66, 36];
-			} else if (type === SLIME.PUDDLE) {
-				coords = [21, 52, 21, 12];
-			} else if (type === FRAGMENT && (enemyAnim.prime[game.select.get()[1]] == -1 || enemyAnim.prime[game.select.get()[1]] > 18)) {
-				coords = [7, 6, 50, 58];
-			} else if (type === SENTRY.BIG) {
-				coords = [5, 3, 54, 61];
-			} else if (type === SENTRY.SMALL) {
-				coords = [4, 34, 56, 30];
-			} else if (type === SENTRY.PRIME) {
-				coords = [9, 0, 46, 64];
-			} else if (type === SENTRY.FLAMING) {
-				coords = [7, 6, 50, 58];
-			} else if (type === SINGULARITY) {
-				coords = [8, 3, 48, 61];
-			}
+			const {coords, name} = getEnemyInfo(game.select.get()[1]);
 			if (coords) {
+				const pos = enemyPos[game.select.get()[1]];
 				if (pos[1] + coords[1] < 31) {
-					coords[1] = 31 - pos[1];
-					coords[3] -= 31 - pos[1];
+					const diff = 31 - (pos[1] + coords[1]);
+					coords[1] += diff;
+					coords[3] -= diff;
 				}
 				const left = game.select.get()[1] === 0 && game.enemies.length > 1;
 				draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
@@ -1542,6 +1517,7 @@ const graphics = {
 				if (game.select.get()[1] !== game.enemyNum && !game.enemies[game.select.get()[1]].eff[ENEMY_EFF.SHROUD]) {
 					info.intent();
 				}
+				const enemy = game.enemies[game.select.get()[1]];
 				const exAtt = enemy.getExtraAttackPower();
 				const exDef = enemy.getExtraDefendPower();
 				if (left) draw.lore(pos[0] + coords[0] - 2.5, pos[1] + coords[1] - 2, "ATK: " + enemy.attackPower + (exAtt ? "+" + exAtt : "") + "\nDEF: " + enemy.defendPower + (exDef ? "+" + exDef : ""), {"color": "#fff", "text-align": DIR.LEFT, "text-small": true});

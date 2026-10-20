@@ -48,7 +48,6 @@ class EnemyAnimationSource {
 					limit = 25;
 					if (this.prime[index] >= 18) {
 						this.prime[index] += 0.5;
-						this.prime[index] = Math.round(this.prime[index] * 1e12) / 1e12;
 					} else {
 						this.prime[index]++;
 					}
@@ -119,7 +118,6 @@ class EnemyAnimationSource {
 					}
 					draw.imageSector(I.enemy.fragment.defend, prog * 64, 0, 64, 64, x, y + 1);
 					transition[0] += 0.5;
-					transition[0] = Math.round(transition[0] * 1e12) / 1e12;
 					if (transition[0] >= 6 && enemy instanceof Enemy) {
 						enemy.transition = null;
 					}

@@ -293,63 +293,70 @@ class Enemy {
 
 /**
  * Checks if an enemy should be visible.
- * @param {number} index - the index of the enemy.
+ * @param {number} index - The index of the enemy.
  */
 function isEnemyVisible(index) {
 	if (!game.enemies[index]) return false;
 	if (index !== game.enemyNum || game.enemies[index].transition) return true;
 	const type = game.enemies[index].type;
 	const intent = game.enemies[index].intent;
-	if (type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && enemyAnim.prime[index] == -1)) return false;
+	if (type === SENTRY.BIG || type === SENTRY.SMALL || (type === SENTRY.PRIME && enemyAnim.prime[index] === -1)) return false;
 	if (intent === INTENT.ATTACK) return !(type === SLIME.SMALL || (type === SLIME.STICKY && enemyAnim.action[0] < 8) || type === SENTRY.FLAMING);
 	if (intent === INTENT.DEFEND) return !(type === SINGULARITY);
 	return true;
 }
 
 /**
- * Gets the position of an enemy's intent.
- * @param {number} index - the index of the enemy.
- * @param {boolean} moving - whether the intent is moving. Defaults to `false`.
+ * Gets the selection coordinates and name of an enemy.
+ * @param {number} index - The index of the enemy.
  */
-function getEnemyIntentPos(index, moving = false) {
-	let y = enemyPos[index][1];
+function getEnemyInfo(index) {
 	const type = game.enemies[index]?.type;
+	const primeAnim = Math.floor(enemyAnim.prime[index]);
+	/** @type {[number, number, number, number] | null} */
+	let coords = null;
+	let name = ENEMY_NAME[type];
 	if (type === SLIME.BIG) {
-		y -= 17;
+		coords = [5, 26, 54, 38];
 	} else if (type === SLIME.SMALL) {
-		y -= 7;
+		coords = [19, 36, 26, 28];
 	} else if (type === SLIME.PRIME) {
-		if (enemyAnim.prime[index] == -1) {
-			y -= 37;
-		} else {
-			y -= 17 + Math.max(enemyAnim.prime[index] - 4, 0) * 2.5;
+		const ratio = (primeAnim === -1 ? 1 : Math.max(primeAnim - 4, 0) / 7);
+		const shiftX = Math.ceil(ratio * 5);
+		const shiftY = Math.ceil(ratio * 20);
+		coords = [5 - shiftX, 26 - shiftY, 54 + shiftX * 2, 38 + shiftY];
+		if (primeAnim !== -1 && primeAnim < 5) {
+			name = ENEMY_NAME[SLIME.BIG];
 		}
 	} else if (type === SLIME.STICKY) {
-		y -= 7;
+		coords = [-1, 36, 66, 36];
 	} else if (type === SLIME.PUDDLE) {
-		y += 9;
-	} else if (type === FRAGMENT) {
-		if (enemyAnim.prime[index] == -1 || enemyAnim.prime[index] > 18) {
-			y -= 36;
-		} else {
-			y = NaN;
-		}
+		coords = [21, 52, 21, 12];
+	} else if (type === FRAGMENT && (primeAnim === -1 || primeAnim >= 18)) {
+		coords = [7, 7, 50, 57];
 	} else if (type === SENTRY.BIG) {
-		y -= 40;
+		coords = [5, 3, 54, 61];
 	} else if (type === SENTRY.SMALL) {
-		y -= 9;
+		coords = [4, 34, 56, 30];
 	} else if (type === SENTRY.PRIME) {
-		y -= 43;
+		coords = [9, 0, 46, 64];
 	} else if (type === SENTRY.FLAMING) {
-		y -= 37;
+		coords = [7, 6, 50, 58];
 	} else if (type === SINGULARITY) {
-		y -= 40;
+		coords = [8, 3, 48, 61];
 	}
-	y = Math.max(y, -2);
-	if (moving) {
-		y += Math.abs(intentAnim[index] - 2);
-	} else {
-		y += 14;
-	}
-	return Math.round(y);
+	return {coords, name};
+}
+
+/**
+ * Gets the coordinates of an enemy's intent.
+ * @param {number} index - The index of the enemy.
+ * @param {number} xPlus - Adds to the x-coordinate of the intent.
+ * @param {number} yPlus - Adds to the y-coordinate of the intent.
+ */
+function getEnemyIntentPos(index, xPlus = 0, yPlus = 0) {
+	return {
+		x: enemyPos[index][0] + 16 + xPlus,
+		y: Math.max(enemyPos[index][1] - 43 + (getEnemyInfo(index).coords?.[1] ?? NaN), -2) + yPlus,
+	};
 }
