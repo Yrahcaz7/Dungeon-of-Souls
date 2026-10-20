@@ -1362,8 +1362,9 @@ const graphics = {
 			};
 			if (coords) {
 				if (pos[1] + coords[1] < 31) {
-					coords[1] = 31 - pos[1];
-					coords[3] -= 31 - pos[1];
+					const diff = 31 - (pos[1] + coords[1]);
+					coords[1] += diff;
+					coords[3] -= diff;
 				};
 				const left = game.select[1] === 0 && game.enemies.length > 1;
 				draw.selector(pos[0] + coords[0], pos[1] + coords[1], coords[2], coords[3]);
